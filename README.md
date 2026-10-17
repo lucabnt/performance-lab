@@ -6,6 +6,8 @@ Applicazione desktop open source per analisi e archivio di test incrementali nel
 
 ## Stato: anteprima di sviluppo 0.3
 
+Piano successivo confermato: completare tutte le lacune della copertura incrementale, inclusi ripristino/accessi e consolidamento operativo; poi Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (già usato dalla società). [Requisiti TD-45–54](docs/REQUISITI_E_TODO.md) e [roadmap INC-01–11](docs/COPERTURA_TEST_E_ROADMAP.md). È pianificazione documentale: queste funzioni non sono dichiarate disponibili nella 0.3. In particolare, il ripristino ZIP e il percorso GUI di prima sincronizzazione da invito sono ancora da completare.
+
 Implementazione locale con dati sintetici e prove automatiche; richiede collaudo su PC puliti, Fedora, FIT reali e client cloud reali prima del rilascio operativo. Nessun dato personale degli allegati è incluso.
 
 

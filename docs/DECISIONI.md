@@ -1,5 +1,11 @@
 # Decisioni e stato dell'implementazione
 
+## Pianificazione confermata / architettura 0.8 — software invariato 0.3
+
+Decisione dell'utente del 17 ottobre 2026: completare **tutte** le lacune incrementali INC-01–11, poi sviluppare Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Il 15 s è un protocollo usato in passato dalla società; la sua definizione storica va acquisita prima di scegliere formule e criteri. Gli altri test rimangono candidati; scambi gassosi nell'incrementale già inclusi nella prima fase. Dettagli e criteri in [COPERTURA_TEST_E_ROADMAP.md](COPERTURA_TEST_E_ROADMAP.md).
+
+Registrate le lacune di gestione società: tre percorsi distinti (creazione, invito, backup), ripristino dati separato dal recupero degli accessi del fondatore, prima sincronizzazione di archivio ancora vuoto, chiarezza dei ruoli e dei dispositivi, rinnovo e revoca. TD-45–54 nel [registro requisiti](REQUISITI_E_TODO.md); scelte UI-17 e REC-01 nell'[architettura](../ARCHITETTURA_PROPOSTA.md). Aggiornamento soltanto documentale: nessuna nuova funzione o credenziale creata e nessuna equivalenza tra Wingate 15 s e 30 s assunta.
+
 ## Stato corrente software 0.3 / architettura 0.7
 
 Nome confermato **Fuorigiri Performance Lab**. Adottate e implementate le scelte TD-30–44 e UI-11–16 del [registro 0.3](REVISIONE_FUORIGIRI_03.md), incluse acquisizione manuale, protocolli senza step, nome figlio ereditato, media/mediana e footer PDF. Gli identificatori tecnici precedenti restano compatibili. Le [mancanze e priorità dei test](COPERTURA_TEST_E_ROADMAP.md) separano capacità attuali e motori futuri. Le sezioni sottostanti conservano la cronologia 0.2.

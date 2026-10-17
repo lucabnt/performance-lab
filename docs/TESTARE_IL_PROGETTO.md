@@ -150,6 +150,8 @@ Linux: `CICLO_API_URL=http://127.0.0.1:8767 npm run dev`. Non basta aprire `fron
 
 ## 6. Provare due dispositivi, ruoli e conflitti senza cloud
 
+**Limite noto della preview 0.3:** la prima associazione tramite invito crea un archivio ancora senza record società; in questo stato la GUI non espone correttamente il passaggio di prima sincronizzazione. Il flusso seguente descrive l'esito atteso e non è ancora interamente completabile dai soli pulsanti. Correzione registrata in TD-48; ruoli e ripristino in TD-45–50 del [registro requisiti](REQUISITI_E_TODO.md). Il backup ZIP non è un invito e non ripristina le credenziali del fondatore; l'importazione guidata del backup non è ancora disponibile.
+
 Usare due directory di avvio diverse e due sessioni browser separate. Per evitare contaminazioni del token utilizzare profili/browser distinti oppure una sessione privata. Prima istanza `.local/pc-a` sulla porta 8766, seconda `.local/pc-b` sulla porta 8767. Basta una cartella locale vuota esterna a entrambe, per esempio `.local/scambio-test`, per simulare il trasporto; non serve un account cloud per questa prova.
 
 1. Dal primo dispositivo creare una società separata in Gestisci società e selezionarla dal menu Società. Il dispositivo diventa fondatore.

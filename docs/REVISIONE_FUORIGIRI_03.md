@@ -2,6 +2,8 @@
 
 Richieste del 17 ottobre 2026. Questo documento esternalizza le osservazioni dell'utente; integra il registro TD precedente senza sostituire i commenti originali. Implementazione nella preview 0.3, non certificazione di rilascio.
 
+**Precisazione successiva:** la collocazione della gestione società è implementata, ma non il percorso completo di recupero/collegamento. Ripristino ZIP assente, recupero delle identità distinto e prima sincronizzazione di società ancora vuota non correttamente esposta: vedere TD-45–50 nel [registro](REQUISITI_E_TODO.md). L'utente ha inoltre confermato come lavoro da implementare tutte le lacune incrementali INC-01–11, poi Sprint breve, Wingate 30 s e Wingate 15 s (TD-51–54). La documentazione di questi punti non ne certifica l'implementazione.
+
 | ID | Richiesta riscritta / criterio verificabile | Esito |
 |---|---|---|
 | TD-30 | Nome prodotto **Fuorigiri Performance Lab** in interfaccia, titolo finestra e report. Crediti e logo societario fissi. | Implementato |

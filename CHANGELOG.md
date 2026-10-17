@@ -1,5 +1,14 @@
 # Changelog
 
+## Architettura 0.8 / requisiti — 17 ottobre 2026
+
+**Tipo: aggiornamento documentale; software invariato alla 0.3.0.** Recepita la richiesta di registrare le osservazioni sugli accessi e confermare il perimetro dei prossimi sviluppi.
+
+- TD-45–50: distinti creazione società, collegamento con invito e ripristino ZIP; registrati ripristino dati mancante, recupero identità del fondatore separato, difetto della prima sincronizzazione con archivio vuoto, gestione comprensibile di operatori/dispositivi/ruoli e limiti della revoca offline. Scelte UI-17 e REC-01.
+- TD-51 / INC-01–11: tutte le lacune per la copertura completa dell'incrementale diventano requisiti confermati da implementare, comprese priorità P2, scambi gassosi nell'incrementale e tutti i punti di consolidamento operativo/distributivo. Aggiunti ID stabili e checklist di accettazione; nessuna voce dichiarata completata.
+- TD-52–54: fase successiva riservata a Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Registrato l'uso storico del 15 s nella società, con necessità di ricostruire il protocollo e mantenere separate durate, versioni e confronti; nessuna equivalenza fisiologica o conversione presunta.
+- Allineati registro principale, roadmap, decisioni e architettura. Gli altri test rimangono candidati, senza implementazione autorizzata da questa pianificazione documentale.
+
 ## Software 0.3.0 / architettura 0.7 — 17 ottobre 2026
 
 - Nome Fuorigiri Performance Lab in UI, finestra e report; dati e identificatori tecnici compatibili.

@@ -1,8 +1,29 @@
 # Requisiti e to-do
 
+## Pianificazione confermata — ripristino/accessi, incrementale completo e test successivi
+
+Aggiornamento documentale del 17 ottobre 2026, successivo alla preview 0.3. **Questi requisiti sono acquisiti e da implementare, non già realizzati.** La richiesta attuale aggiorna il piano; non introduce codice o una nuova versione del software. I dettagli della copertura sono in [COPERTURA_TEST_E_ROADMAP.md](COPERTURA_TEST_E_ROADMAP.md).
+
+Ordine confermato: completare il prodotto per i test incrementali, includendo **tutte** le lacune INC-01–11, quindi affrontare sprint breve/potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Le priorità P0/P1/P2 ordinano il lavoro interno alla prima fase: non rendono facoltative le voci meno urgenti. Il supporto agli scambi gassosi durante un incrementale rientra in questa fase; gli altri test di laboratorio autonomi restano distinti.
+
+| ID | Requisito e criterio di completamento | Stato |
+|---|---|---|
+| TD-45 | Separare in Gestisci società le azioni **Crea nuova società**, **Collega tramite invito** e **Ripristina da backup**, spiegando file richiesto, risultato e passaggio successivo. La password dell'invito non deve sembrare necessaria per creare una società. | **Da sviluppare**: il form attuale mescola i casi e non importa ZIP. |
+| TD-46 | Ripristinare un backup dati ZIP in un archivio locale, con anteprima società/contenuto, verifica formato/versione/integrità, gestione ID già presenti, destinazione isolata e registrazione nel selettore Società. Nessuna sovrascrittura silenziosa; errore o annullamento non devono lasciare un archivio parziale. | **Da sviluppare**: oggi è disponibile soltanto l'esportazione del backup dati. |
+| TD-47 | Distinguere **recupero dei dati** da **recupero degli accessi e del fondatore**. Un backup dati non concede privilegi di amministrazione. Prevedere un percorso protetto per salvare/ripristinare l'identità e le credenziali necessarie, con spiegazione dei limiti se mancano. Documentare il passaggio a un nuovo PC e il recupero dopo perdita del dispositivo. | **Da progettare e sviluppare**: lo ZIP corrente esclude le identità. Formato di recupero cifrato e gestione delle credenziali da specificare; nessun segreto aggiunto automaticamente al backup dati ordinario. |
+| TD-48 | Completare la prima associazione di una società: dopo l'invito mostrare la società anche se ancora senza dati, il proprio ruolo, la configurazione della cartella condivisa e l'azione **Acquisisci dati / Prima sincronizzazione**. Gestire cartella offline, vuota o non valida e operazione ripetuta senza duplicati. | **Difetto da correggere**: il percorso attuale non espone la sincronizzazione quando manca ancora il record società. |
+| TD-49 | Rendere chiari e gestibili **Fondatore**, **Admin dati**, **Visualizzatore** e dispositivo associato. Mostrare ruolo corrente, operatori/dispositivi, stato degli inviti e azioni consentite; distinguere identità locale da login e password d'invito. Definire un flusso tracciato di rinnovo/cambio ruolo senza modifiche manuali ai file. Verificare permessi in GUI, API e dati sincronizzati. | **Parziale, da completare**: ruoli e controlli esistono, ma gestione e spiegazione nell'interfaccia sono insufficienti. Non è richiesto implicitamente un servizio di account online. |
+| TD-50 | Esplicitare effetto e limiti della revoca offline: ultimo scambio, propagazione ai dispositivi, operazioni rifiutate e dati già scaricati. Integrare audit, rinnovo/rotazione credenziali e percorso di recupero coerenti con INC-11. | **Parziale, da completare**: revoca scritture presente; nessuna cancellazione delle copie già ricevute o rotazione automatica della chiave di lettura. |
+| TD-51 | Implementare e verificare **tutte le lacune INC-01–11** della copertura incrementale: file reali, qualità/aderenza, selezione temporale, rampe/discontinui, lattato, contesto, finestre FC, gas, ripetibilità, riconciliazione storica e consolidamento operativo/distributivo. | **Da implementare e validare**; elenco completo e criteri per ciascuna voce nella roadmap. Non basta documentare le formule o aggiungere campi. |
+| TD-52 | Dopo il completamento della fase incrementale, sviluppare e collaudare **Sprint breve / potenza neuromuscolare**, con protocollo e metodo versionati, dati/qualità, metriche di potenza breve, report e storici dedicati. | **Pianificato, non implementato**. Durata e modalità esecutive da specificare prima del motore; 6 s è un esempio, non un default già approvato. |
+| TD-53 | Nella fase successiva sviluppare e collaudare **Wingate 30 s**, con carico/dispositivo, delimitazione dello sforzo, metriche/metodo dichiarati, import manuale o con tracciato, report e confronti coerenti. | **Pianificato, non implementato**. Sprint ripetuti restano un'estensione distinta, non automaticamente inclusa. |
+| TD-54 | Nella stessa fase sviluppare e collaudare **Wingate 15 s**, come protocollo distinto già usato in passato dalla società, con ricostruzione documentata del metodo storico e possibilità di archiviare risultati incompleti senza inventare i campioni. | **Pianificato, non implementato**. Acquisire durata effettiva, carico, modalità di partenza, dispositivo, formule e formato dei referti storici. Non estrapolare 15 s in 30 s e non aggregare automaticamente i due protocolli. |
+
+La scelta dei tre test successivi è confermata dall'utente; i dettagli dei metodi non lo sono ancora. La fase successiva è uno sviluppo con collaudo e validazione, non una promessa di equivalenza con protocolli o valori normativi esterni. Gli altri candidati della roadmap restano fuori dal perimetro confermato per quella fase.
+
 ## Stato corrente 0.3 — Fuorigiri Performance Lab
 
-Nuovi requisiti **TD-30–44** implementati/documentati nel [registro della revisione 0.3](REVISIONE_FUORIGIRI_03.md), con scelte **UI-11–16**, contratto CSV e criteri di accettazione. [Copertura e mancanze del motore](COPERTURA_TEST_E_ROADMAP.md) distingue le priorità incrementali dai test futuri. Le sezioni 0.2 sottostanti restano storico del progetto; il nome prodotto è ora confermato.
+Nuovi requisiti **TD-30–44** implementati/documentati nel [registro della revisione 0.3](REVISIONE_FUORIGIRI_03.md), con scelte **UI-11–16**, contratto CSV e criteri di accettazione. La collocazione della gestione società è presente, ma il percorso completo di collegamento/ripristino non lo è: TD-45–50 precisano il lavoro residuo. [Copertura e mancanze del motore](COPERTURA_TEST_E_ROADMAP.md) distingue la fase incrementale obbligatoria dai test successivi. Le sezioni 0.2 sottostanti restano storico del progetto; il nome prodotto è ora confermato.
 
 
 ## Stato del codice 0.2 — 17 ottobre 2026
@@ -61,7 +82,7 @@ Stati: **presente** = funzionalità riscontrata nel codice; **parziale** = solo 
 | TD-29 | Correggere input manuali e fine sforzo dopo aver visto il grafico, ricalcolando in una nuova revisione. | **Presente**: revisione da UI, ricalcolo dopo fine sforzo, motivo e protezione da aggiornamenti persi; correzione dei risultati storici tramite flusso dedicato. | §8.1 |
 | SUITE-01 | Registrare decisioni UI e condividere componenti con una futura app di gestione allenamenti della stessa suite. | **Parziale**: moduli UI condivisibili, branding fisso e servizi separati; estrazione in pacchetti indipendenti e seconda app future. | §5.1, §15 |
 
-## Ordine proposto di sviluppo
+## Ordine proposto di sviluppo (storico, prima della pianificazione TD-45–54)
 
 1. Modello dati e migrazioni: nascita, categorie/stagioni, stati di archivio, revisioni test, osservazioni e provenienza.
 2. Flussi locali: modifica atleta/test, import CSV, editor protocolli, campi manuali e configurazione dei metodi.

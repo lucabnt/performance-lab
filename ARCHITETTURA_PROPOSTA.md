@@ -1,6 +1,16 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
-Versione 0.7 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.2 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+Versione 0.8 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.3 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+
+## Revisione documentale 0.8 / software invariato 0.3
+
+L'utente conferma come perimetro di sviluppo **tutte** le lacune della copertura incrementale INC-01–11, con i relativi criteri nella [roadmap](docs/COPERTURA_TEST_E_ROADMAP.md). Sono inclusi rampe/discontinui, lattato, gas respiratori nell'incrementale, qualità, ripetibilità e consolidamento operativo/distributivo. Solo successivamente si svilupperanno Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (protocollo già usato dalla società), mantenendo durata, metodo, dati richiesti e confronti separati. Gli altri test restano candidati. Requisiti TD-45–54 nel [registro](docs/REQUISITI_E_TODO.md).
+
+**UI-17 — Tre percorsi distinti per la società.** Creare un archivio nuovo, collegare una società tramite invito e ripristinare un backup sono azioni separate, con spiegazioni e validazioni proprie. La prima associazione deve offrire la sincronizzazione anche prima che arrivi il record società. Il ruolo corrente e l'identità operatore/dispositivo devono essere visibili; password d'invito e login non devono essere confusi.
+
+**REC-01 — Dati e autorità sono recuperi distinti.** Lo ZIP dati corrente non contiene le identità e non restituisce il controllo del fondatore. Il disegno deve prevedere un ripristino dati verificato e un percorso protetto di recupero accessi, con gestione del caso di chiavi mancanti, duplicati e dispositivo perso. Un semplice backup dati non deve attribuire privilegi. Formato cifrato, custodia e trasferimento dell'autorità sono dettagli ancora da specificare prima dello sviluppo; nessuna migrazione o modifica alle credenziali è stata eseguita.
+
+La 0.8 è solo documentale: registra decisioni e mancanze, senza dichiarare implementati ripristino, prima sincronizzazione corretta o nuovi motori.
 
 ## Revisione 0.7 / implementazione 0.3
 

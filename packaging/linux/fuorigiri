@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+export QTWEBENGINEPROCESS_PATH=/app/lib/fuorigiri/_internal/PySide6/Qt/libexec/QtWebEngineProcess
+exec /app/lib/fuorigiri/Fuorigiri "$@"

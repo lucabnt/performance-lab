@@ -1,0 +1,24 @@
+{
+  "app-id": "org.fuorigiri.PerformanceLab",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "25.08",
+  "sdk": "org.freedesktop.Sdk",
+  "command": "fuorigiri",
+  "finish-args": ["--share=network", "--share=ipc", "--socket=wayland", "--socket=fallback-x11", "--device=dri", "--talk-name=org.freedesktop.secrets", "--filesystem=home"],
+  "modules": [{
+    "name": "fuorigiri",
+    "buildsystem": "simple",
+    "build-commands": [
+      "python3 -m venv /run/build/fuorigiri/venv",
+      "venv/bin/python -m pip install --no-index --find-links=wheelhouse -r wheelhouse/requirements-resolved.txt",
+      "venv/bin/python scripts/build.py",
+      "mkdir -p /app/lib/fuorigiri /app/bin /app/share/applications /app/share/icons/hicolor/scalable/apps /app/share/metainfo",
+      "cp -a dist/Fuorigiri/. /app/lib/fuorigiri/",
+      "install -m755 packaging/linux/fuorigiri /app/bin/fuorigiri",
+      "install -m644 packaging/linux/org.fuorigiri.PerformanceLab.desktop /app/share/applications/",
+      "install -m644 packaging/linux/org.fuorigiri.PerformanceLab.metainfo.xml /app/share/metainfo/",
+      "install -m644 frontend/public/branding/fuorigiri.svg /app/share/icons/hicolor/scalable/apps/org.fuorigiri.PerformanceLab.svg"
+    ],
+    "sources": [{"type": "dir", "path": "../..", "skip": [".git", ".venv", ".local", "tmp", "output", "build", "dist", "frontend/node_modules", "wheelhouse/build-venv", "android/.gradle", "android/app/build"]}]
+  }]
+}

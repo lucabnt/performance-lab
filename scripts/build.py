@@ -10,11 +10,12 @@ if not (root/'frontend/dist/index.html').exists():
 command=[sys.executable,'-m','PyInstaller','--noconfirm','--clean','--name','Fuorigiri',
          '--paths',str(root/'backend'),'--add-data',f'{root / "frontend/dist"}{os.pathsep}frontend/dist',
          '--collect-data','matplotlib','--collect-data','reportlab',
+         '--collect-all','keyring',
          '--hidden-import','uvicorn.logging','--hidden-import','uvicorn.loops.auto',
          '--hidden-import','uvicorn.loops.asyncio','--hidden-import','uvicorn.protocols.http.h11_impl',
          '--hidden-import','uvicorn.protocols.http.auto','--hidden-import','uvicorn.protocols.websockets.auto',
          '--hidden-import','uvicorn.lifespan.on']
-if sys.platform=='win32':command.append('--windowed')
+if sys.platform=='win32':command.extend(['--windowed','--icon',str(root/'frontend/public/branding/fuorigiri.ico')])
 command.append(str(root/'desktop_entry.py'))
 env=os.environ.copy()
 if sys.platform=='win32':

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 — 18 ottobre 2026
+
+- Trasporto WebDAV HTTPS e cartella dietro il medesimo contratto, credenziali protette, retry/pubblicazione condizionale/rilettura e nuovo pannello connessione/stato/audit.
+- Controlli accessi/revoche firmati in versioni immutabili, lettura prima della pubblicazione, blocco delle versioni divergenti, rotazione recuperabile del canale e lock di doppia apertura desktop.
+- Icona minimale Fuorigiri mantenuta in SVG, PNG/ICO e vettore Android; integrazione in exe, finestra, installer, web e launcher. Logo societario/credito fissi preservati.
+- Installer Windows per utente; manifest/build Flatpak, checksum/sorgenti e pipeline manuali. Nessuna dipendenza Python/Node/Qt da installare sul PC utente; runtime Flatpak acquisito all’installazione o incluso sul supporto offline.
+- Android: shell Kotlin/WebView, adapter React/native, backend ASGI in-process, SAF per file/report, Keystore e WorkManager; layout compatto. Test del contratto su PC. **APK non disponibile:** gate wheel native aggiornate, toolchain POSIX e test dispositivo ancora aperti.
+- Formule scientifiche, engine 0.5.0, schema 3 e revisioni storiche invariati. [Stato e limiti](docs/CONSOLIDAMENTO_DISTRIBUZIONE_06.md).
+
 ## 0.5.0 — 17 ottobre 2026 / architettura 1.3
 
 - Schema 3 con copia del database pre-migrazione, preset immutabili e identità dell’analisi salvata, risultati legacy invariati e separati nei confronti.

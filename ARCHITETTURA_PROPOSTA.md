@@ -1,5 +1,11 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## Revisione 1.4 / software 0.6 — distribuzione e scambio, Android avviato
+
+18 ottobre 2026. Implementati trasporti cartella/WebDAV comuni, controlli firmati versionati, credenziali OS, rotazione recuperabile della chiave del canale e UI dedicata. Installer Windows con dipendenze incluse; configurazione Flatpak e pipeline per Fedora, ancora da compilare/collaudare su Linux. Nuova icona applicativa distinta dal logo fisso della società. [Scelte, UI, distribuzione e limiti 0.6](docs/CONSOLIDAMENTO_DISTRIBUZIONE_06.md).
+
+Android avviato dopo il consolidamento desktop: React + shell Kotlin/WebView e backend Python ASGI in-process, nessun socket o PC obbligatorio. SAF, Keystore e WorkManager nel sorgente. Revisione MOB-02 della proposta Capacitor; [stato preciso e gate Android](docs/ANDROID.md). Mancano wheel native aggiornate e builder POSIX/toolchain, APK e collaudo reale: non è un requisito concluso. Motore scientifico 0.5.0 e schema dati 3 invariati.
+
 Versione 1.3 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.5 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
 
 ## Revisione 1.3 / software 0.5 — incrementale e report

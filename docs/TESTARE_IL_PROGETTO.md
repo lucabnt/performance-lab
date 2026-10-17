@@ -1,5 +1,19 @@
 # Come testare il progetto, inclusa l'interfaccia
 
+## Verifica 0.6: WebDAV, distribuzione e Android
+
+Eseguire prima `python -m pytest -q`, quindi `npm run build` in frontend. I test WebDAV avviano un server di fixture locale con rete loopback; la configurazione di produzione ammette solo HTTPS. Il test di Credential Manager reale richiede la sessione utente Windows; la sandbox di sviluppo può non avere un logon utilizzabile. La suite non legge password reali.
+
+Per la GUI: `python scripts/serve.py --data .local/qa-06 --port 8768`, aprire l’URL completo con token stampato dal comando. Creare una società sintetica, poi Archivio e scambio → Condivisione e collaboratori. Provare cartella separata e scambio ripetuto; URL WebDAV invalido, password mancante/portachiavi bloccato, server HTTPS di prova, invito visualizzatore, due modifiche concorrenti, risoluzione esplicita. Mai usare dati operativi per questi casi.
+
+Prova WebDAV reale: due account sulla stessa cartella Nextcloud, due archivi/identità, admin e viewer (anche sola lettura sul server), allegati FIT e PDF, perdita rete prima/dopo PUT, doppio invio, credenziale revocata, pacchetto alterato e ripresa. La rotazione richiede prima tutte le modifiche ricevute: provare chiusura del vecchio canale, nuovi inviti, arresto dopo avviso remoto, riavvio e completamento, quindi nuovo recupero accessi. L’esito server fixture non certifica Nextcloud.
+
+Windows: `python scripts/build.py`, compilare `packaging/windows/Fuorigiri.iss`, installare su un PC/VM senza strumenti di sviluppo, avviare offline, creare test e produrre PDF, aggiornare, riaprire l’archivio e disinstallare verificando che il backup/dati restino. Il bundle completo deve avviarsi anche con PATH privo di Python/Node; `Fuorigiri.exe --smoke-test --data <cartella-di-prova>` verifica import, logo, icona, portachiavi importabile e backend. Provare due avvii sullo stesso archivio: il secondo deve essere respinto.
+
+Fedora: seguire [la build Flatpak](CONSOLIDAMENTO_DISTRIBUZIONE_06.md), installare su Fedora pulita, provare Wayland e fallback X11, Secret Service, picker, report, WebDAV e cartella client cloud. Testare anche installazione offline con runtime disponibili sul supporto; la sola `.flatpak` non basta.
+
+Android: `python scripts/build_android.py --check` elenca i gate reali; non scarica librerie né produce un APK fittizio. Dopo compilazione su builder adatto: `gradle -p android connectedDebugAndroidTest`, modalità aereo dopo installazione, riavvio/processo terminato, import ERG/FIT/CSV e report PDF/MD/CSV, invito viewer/admin, Keystore e scambio WebDAV con desktop. Controllare tutte le wheel native, ABI/16 KB, memoria su file grandi, tastiera/grafici/touch, WorkManager con rete/batteria e recupero da errori. I quattro test `test_mobile_runtime.py` verificano il contratto sul PC, non sostituiscono questi casi.
+
 ## Versione 0.5 — preset, metodi e report completi
 
 `.venv/Scripts/python.exe -m pytest -q` verifica il nucleo e le API. Compilare TypeScript/Vite con i comandi sotto. Schema 3: alla prima apertura di un database precedente viene salvata `migrations/before-v3.sqlite`; la storia delle analisi resta invariata. Dettagli e limiti in [IMPLEMENTAZIONE_INCREMENTALE_05.md](IMPLEMENTAZIONE_INCREMENTALE_05.md).

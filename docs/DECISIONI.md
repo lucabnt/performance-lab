@@ -1,5 +1,13 @@
 # Decisioni e stato dell'implementazione
 
+## Architettura 1.4 / software 0.6 — SYNC-01/02, DIST-01/02, MOB-02 e UI-22/23
+
+Decisioni operative e stato in [consolidamento 0.6](CONSOLIDAMENTO_DISTRIBUZIONE_06.md). WebDAV con oggetti immutabili e rilettura, controlli firmati versionati e rotazione del canale recuperabile; credenziali nel portachiavi, ruoli indipendenti dal cloud. Windows: bundle completo e installer per utente. Fedora: Flatpak con runtime, senza dipendenze applicative da installare manualmente. Distribuzione offline Linux deve includere anche i runtime, non la sola `.flatpak`.
+
+UI-22: trasporto → connessione → sincronizzazione → esito/conflitti → registro/rotazione avanzata, nella condivisione della società. UI-23: icona applicativa Fuorigiri distinta dal marchio fisso della società. MOB-02: shell Android Kotlin/WebViewAssetLoader/WebMessageListener con React e backend ASGI in-process, al posto del Capacitor proposto, senza riscrivere il motore Python né usare un server sul telefono. Scelta motivata dal bridge piccolo e dalle API native già necessarie; iOS fuori scope.
+
+La 0.6 non certifica Fedora/Nextcloud/Android né dichiara un APK disponibile. Wheel Pydantic Core/Cryptography aggiornate e toolchain POSIX sono un gate reale; non usare vecchie librerie crittografiche o un validatore ridotto per aggirarlo. La suite conserva gli stessi metodi e l’ordine Android prima dei test Sprint/Wingate.
+
 ## Architettura 1.3 / software 0.5 — SCI-01, UI-20 e UI-21
 
 **SCI-01:** l’utente autorizza la scelta dei metodi sulla base scientifica disponibile. Adottati metodi espliciti e versionati, non una soglia universale: [formule, fonti e limiti](IMPLEMENTAZIONE_INCREMENTALE_05.md). VO2peak separato da massimo verificato; breakpoint ventilatori esplorativi separati dai marker del valutatore; lattato separato da FTP/MLSS e soglia dichiarata.

@@ -1,5 +1,9 @@
 # Sincronizzazione con API cloud — verifica e disegno
 
+## Aggiornamento implementativo 0.6 — WebDAV presente, verifica reale aperta
+
+Il trasporto cartella è stato estratto e WebDAV HTTPS è ora nel codice desktop e riusato dal backend Android. Configurazione nella società, portachiavi, oggetti immutabili, retry/rilettura, accessi firmati versionati e rotazione del canale: [contratto e limiti effettivi](CONSOLIDAMENTO_DISTRIBUZIONE_06.md). Test con server fixture passati; Nextcloud/account reali/Fedora/Android non ancora collaudati. Android ha sorgenti della shell/bridge, non APK disponibile. Le API Drive/Dropbox e i relativi spike con due account rimangono aperti; non compaiono come connessioni funzionanti. La ricerca sottostante conserva le decisioni e non equivale a implementazione di quei provider.
+
 Verifica documentale del **17 ottobre 2026**, architettura 1.2; software invariato 0.4.1. Esaminate le API ufficiali, senza collegare account, creare progetti OAuth o effettuare prove autenticate. Le capacità documentate sono distinte dalle verifiche di interoperabilità ancora necessarie.
 
 ## Risultato

@@ -188,7 +188,7 @@ def create_app(root=None, token=None, frontend=None):
     workspaces=Workspaces(legacy.root,legacy)
     store=workspaces.proxy
     token = token or os.environ.get("FUORIGIRI_TOKEN") or secrets.token_urlsafe(32)
-    app = FastAPI(title="Fuorigiri Performance Lab", version="0.5.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Fuorigiri Performance Lab", version="0.6.0", docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
 
@@ -208,7 +208,8 @@ def create_app(root=None, token=None, frontend=None):
             identity=selected.identity
             read_only=identity['certificate']['role']=='viewer' or identity['certificate']['id'] in selected.revocations()
             allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync',
-                '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore')
+                '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore',
+                '/api/v1/sync/connection','/api/v1/sync/run')
             allowed=allowed or request.url.path=='/api/v1/repeatability' or request.url.path.startswith('/api/v1/repeatability/report/')
             if read_only and not allowed:
                 store.selected.reset(marker)
@@ -423,7 +424,8 @@ def create_app(root=None, token=None, frontend=None):
         from .workspaces import write_json
         from datetime import datetime,timezone
         try:
-            result=exchange(store,data.folder,key)
+            from .sync_service import lock
+            with lock(store.root):result=exchange(store,data.folder,key)
         except (ValueError,OSError) as exc:
             write_json(store.root/'last-sync.json',{'at':datetime.now(timezone.utc).isoformat(),'ok':False,'error':str(exc)})
             raise ValueError(str(exc)) from exc
@@ -442,6 +444,8 @@ def create_app(root=None, token=None, frontend=None):
             return [json.loads(r[0]) for r in db.execute("SELECT body FROM conflicts")]
 
     from .features import install_features
+    from .sync_service import install_sync_api
+    install_sync_api(app,store)
     install_features(app, store, require, download, preview)
     from .analysis_api import install_analysis
     install_analysis(app,store,require,download)

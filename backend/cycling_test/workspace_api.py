@@ -61,7 +61,9 @@ def install_workspaces(app,manager,store,download):
         if not hasattr(store,'identity'):raise ValueError('Selezionare la società prima di applicare il nuovo invito.')
         raw=file.file.read(1_000_001)
         if len(raw)>1_000_000:raise ValueError('Invito troppo grande.')
-        try:return apply_invitation(store,raw,password)
+        from .sync_service import lock
+        try:
+            with lock(store.root):return apply_invitation(store,raw,password)
         except ValueError:raise
         except Exception as exc:raise ValueError('Invito non valido o password errata.') from exc
 
@@ -84,7 +86,9 @@ def install_workspaces(app,manager,store,download):
     @app.post('/api/v1/workspace/invite')
     def invite(data: Invite):
         if not hasattr(store,'identity'):raise ValueError('Creare un workspace separato prima di condividere.')
-        return download(invitation(store,data.name,data.role,data.password,data.replace_id),'application/json','fuorigiri-invito.json')
+        from .sync_service import lock
+        with lock(store.root):
+            return download(invitation(store,data.name,data.role,data.password,data.replace_id),'application/json','fuorigiri-invito.json')
     @app.get('/api/v1/workspace/members')
     def members():
         if not hasattr(store,'identity'):return {'members':[],'folder':'','managed':False}
@@ -105,7 +109,8 @@ def install_workspaces(app,manager,store,download):
     def revoke(id: str):
         if not hasattr(store,'identity') or not store.identity.get('authority_private'):raise ValueError('Solo il dispositivo fondatore revoca gli accessi.')
         if id==store.identity['certificate']['id']:raise ValueError('Non revocare il fondatore da questa procedura.')
-        revoke_member(store,id)
+        from .sync_service import lock
+        with lock(store.root):revoke_member(store,id)
         return {'revoked':id,'note':'Revoca delle scritture recepita dai PC al prossimo scambio. Le copie già ricevute restano disponibili.'}
     @app.get('/api/v1/reports')
     def reports():return store.list('report')

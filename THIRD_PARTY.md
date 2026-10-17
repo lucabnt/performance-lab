@@ -13,3 +13,11 @@ Le versioni risolte sono registrate in `requirements-lock-windows.txt` e `fronte
 
 `frontend/public/branding/progetto-ciclismo.png` è il logo fornito da Luca Bontempi per l'inclusione nel software sviluppato per Progetto Ciclismo - Rodengo Saiano A.S.D. Il marchio è distinto dal codice GPL; la distribuzione del sorgente non concede automaticamente diritti ulteriori sul marchio. L'asset originale è conservato senza modifiche e incluso localmente nel bundle e nei report.
 
+
+## Aggiunte 0.6
+
+Keyring 25.7.0 e relative dipendenze: conservare licenze/metadati delle wheel nel pacchetto; Windows Credential Manager e Linux Secret Service. Android: Kotlin, AndroidX Activity/WebKit/WorkManager, Chaquopy e runtime Python, più le dipendenze native scientifiche/critto elencate in android/requirements.txt. La matrice nativa e la raccolta completa degli avvisi devono essere verificate sul builder Android prima di distribuire un APK.
+
+Inno Setup è uno strumento di build con propria licenza, non una dipendenza da installare sul PC destinatario. Flatpak e i runtime mantengono le proprie licenze. Le pipeline e i checksum non costituiscono una firma del prodotto o un audit legale completo.
+
+La nuova icona Fuorigiri (`fuorigiri.svg` e derivate) è opera del progetto e segue GPL-3.0-or-later. Il logo societario originale e la sua attribuzione rimangono invariati.

@@ -1,0 +1,45 @@
+name: Android build candidate
+on:
+  workflow_dispatch:
+    inputs:
+      wheel_artifact_run:
+        description: Run ID with the reviewed android-native-wheels artifact (both ABIs and SHA256.json)
+        required: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  android:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-native-wheels
+          path: android/wheels
+          run-id: ${{ inputs.wheel_artifact_run }}
+          github-token: ${{ github.token }}
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - run: npm ci && npm run build
+        working-directory: frontend
+      - run: python scripts/build_android.py --check
+      - run: python scripts/build_android.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Fuorigiri-android-debug-candidate
+          path: dist/release/*.apk
+          if-no-files-found: error

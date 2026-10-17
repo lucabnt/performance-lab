@@ -1,4 +1,4 @@
-"""Experimental encrypted folder transport. No inference of remote upload status."""
+"""Signed encrypted exchange over an immutable-object transport."""
 import hashlib
 import json
 from pathlib import Path
@@ -8,74 +8,87 @@ from cryptography.exceptions import InvalidSignature
 from .store import encoded, KINDS
 
 
-def exchange(store, folder, key):
-    folder = Path(folder).resolve()
-    if not folder.is_dir():
-        raise ValueError("La cartella deve già esistere ed essere disponibile offline.")
-    if folder == store.root.resolve() or store.root.resolve() in folder.parents or folder in store.root.resolve().parents:
-        raise ValueError("La cartella di scambio deve essere separata dall'archivio locale.")
+def exchange(store, folder, key, transport=None):
     cipher = Fernet(key.encode())
     channel = hashlib.sha256(key.encode()).hexdigest()[:24]
-    from .compatibility import channel_directory
-    shared = channel_directory(folder, channel)
-    shared.mkdir(exist_ok=True)
+    from .transports import FolderTransport
+    transport=transport or FolderTransport(folder,channel,store.root)
+    names=set(transport.list())
     managed=hasattr(store,'identity')
     if managed:
         from .workspaces import verify,write_json
-        # The founder publishes the public directory; readers can inspect users
-        # and roles without possessing invitation or authority private keys.
-        access_local=store.root/'access.json';access_shared=shared/'access.json'
-        if access_local.exists() and store.identity.get('authority_private'):
-            tmp=shared/(str(uuid4())+'.tmp');tmp.write_bytes(access_local.read_bytes());tmp.replace(access_shared)
-        if access_shared.exists():
+        if 'rotation.json' in names:
             try:
-                access=json.loads(access_shared.read_text(encoding='utf-8'))
-                verify(store.identity['authority_public'],{k:v for k,v in access.items() if k!='signature'},access['signature'])
-                if access['workspace']!=store.identity['workspace']:raise ValueError('Elenco di un’altra società.')
-                previous=json.loads(access_local.read_text(encoding='utf-8')) if access_local.exists() else {'version':-1}
-                if access['version']>previous['version']:write_json(access_local,access)
-            except (InvalidSignature,KeyError,TypeError) as exc:raise ValueError('Elenco accessi non valido.') from exc
-        revocation_file=shared/'revocations.json'
-        local=store.root/'revocations.json'
-        if local.exists() and store.identity.get('authority_private'):
-            tmp=shared/(str(uuid4())+'.tmp');tmp.write_bytes(local.read_bytes());tmp.replace(revocation_file)
-        if revocation_file.exists():
-            rev=json.loads(revocation_file.read_text())
-            try:verify(store.identity['authority_public'],{k:v for k,v in rev.items() if k!='signature'},rev['signature'])
-            except (InvalidSignature,KeyError,TypeError) as exc:raise ValueError('Elenco revoche non valido.') from exc
-            if rev['workspace']!=store.identity['workspace']:raise ValueError('Revoche di un altro workspace.')
-            previous=json.loads(local.read_text()) if local.exists() else {'version':-1}
-            if rev['version']>previous['version']:local.write_text(encoded(rev),encoding='utf-8')
+                notice=json.loads(transport.get('rotation.json'))
+                verify(store.identity['authority_public'],{k:v for k,v in notice.items() if k!='signature'},notice['signature'])
+                if notice['workspace']!=store.identity['workspace'] or notice['from']!=hashlib.sha256(key.encode()).hexdigest():raise ValueError('Avviso di rotazione non valido.')
+            except (InvalidSignature,KeyError,TypeError) as exc:raise ValueError('Firma della rotazione non valida.') from exc
+            raise ValueError('Chiave del canale ruotata dal fondatore. Applicare un nuovo invito; le modifiche locali restano conservate.')
+        if store.identity.get('snapshot'):raise ValueError('Copia di consultazione: scambio non consentito.')
+        # Read before publish. Immutable signed versions prevent a stale owner
+        # overwriting newer revocations. Same-version forks fail closed.
+        updates=[]
+        for stem in ('access','revocations'):
+            local=store.root/(stem+'.json');versions={}
+            raw_values=[local.read_bytes()] if local.exists() else []
+            raw_values += [transport.get(n) for n in sorted(names) if n==stem+'.json' or n.startswith(stem+'-') and n.endswith('.json')]
+            for raw in raw_values:
+                try:
+                    if len(raw)>4_000_000:raise ValueError('Controllo troppo grande.')
+                    value=json.loads(raw)
+                    if not isinstance(value,dict):raise ValueError('Controllo della società non valido.')
+                    verify(store.identity['authority_public'],{k:v for k,v in value.items() if k!='signature'},value['signature'])
+                    if value['workspace']!=store.identity['workspace'] or type(value['version']) is not int or value['version']<1:
+                        raise ValueError('Controllo della società non valido.')
+                    if stem=='access' and (not isinstance(value.get('members'),list) or not isinstance(value.get('founder_id'),str)):
+                        raise ValueError('Schema dell’elenco accessi non valido.')
+                    if stem=='revocations' and (not isinstance(value.get('revoked'),list) or any(not isinstance(x,str) for x in value['revoked']) or not isinstance(value.get('accepted',{}),dict)):
+                        raise ValueError('Schema delle revoche non valido.')
+                    previous=versions.get(value['version'])
+                    if previous and encoded(previous)!=encoded(value):raise ValueError('Versioni degli accessi divergenti: usare un solo dispositivo fondatore e recuperare lo stato corretto.')
+                    versions[value['version']]=value
+                except (InvalidSignature,KeyError,TypeError) as exc:raise ValueError('Firma del controllo accessi non valida.') from exc
+            if stem=='revocations':
+                known=set()
+                for version in sorted(versions):
+                    current=set(versions[version]['revoked'])
+                    if not known.issubset(current):raise ValueError('Le revoche non possono essere rimosse da un controllo successivo.')
+                    known=current
+            if versions:updates.append((stem,local,versions[max(versions)]))
+        for stem,local,value in updates:
+            write_json(local,value)
+            if store.identity.get('authority_private'):
+                raw=encoded(value).encode();digest=hashlib.sha256(raw).hexdigest()
+                name=f'{stem}-{value["version"]:010d}-{digest}.json'
+                transport.put(name,raw);names.add(name)
     with store.connect() as db:
         changes = [json.loads(r[0]) for r in db.execute("SELECT body FROM changes")]
     sent = received = pending = 0
     for change in changes:
         if managed:
             # Viewers relay no writes; admins only relay already authenticated events.
-            if store.identity['certificate']['role']!='admin':continue
+            if store.identity['certificate']['role']!='admin' or store.identity['certificate']['id'] in store.revocations():continue
             try:store.verify_change(change)
             except (ValueError,KeyError,InvalidSignature):continue
-        dest = shared / (change["id"] + ".ctsync")
-        if not dest.exists():
+        name=change['id']+'.ctsync'
+        if name not in names:
             # Self-contained packets: attachments travel with the change.
             import base64
             blobs = {h:base64.b64encode(store.read_object(h)).decode() for h in change["record"].get("objects", [])}
             body = cipher.encrypt(encoded({"change":change,"objects":blobs}).encode())
-            tmp = shared / (str(uuid4()) + ".tmp")
-            tmp.write_bytes(body)
-            tmp.replace(dest)
-            sent += 1
+            sent += int(transport.put(name,body));names.add(name)
     errors = []
     candidates = []
-    for path in shared.glob("*.ctsync"):
+    for name in sorted(names):
+        if not name.endswith('.ctsync'):continue
         try:
-            if path.stat().st_size > 80_000_000:
-                raise ValueError("Pacchetto troppo grande")
-            payload = json.loads(cipher.decrypt(path.read_bytes()))
+            payload = json.loads(cipher.decrypt(transport.get(name)))
+            if not isinstance(payload,dict) or not isinstance(payload.get('change'),dict) or not isinstance(payload['change'].get('record'),dict):
+                raise ValueError('Struttura del pacchetto non valida.')
             change = payload["change"]
             if managed:store.verify_change(change)
             r = change["record"]
-            if change["schema"] != 1 or r["kind"] not in KINDS or change["id"] != r["revision"]:
+            if change["schema"] != 1 or r["kind"] not in KINDS or change["id"] != r["revision"] or name!=change['id']+'.ctsync':
                 raise ValueError("Schema non supportato")
             with store.connect() as db:
                 existing = db.execute("SELECT body FROM changes WHERE id=?", (change["id"],)).fetchone()
@@ -91,7 +104,7 @@ def exchange(store, folder, key):
                 store.object(content)
             candidates.append(change)
         except (ValueError, KeyError, OSError, InvalidToken, InvalidSignature, TypeError) as exc:
-            errors.append(f"{path.name}: pacchetto incompleto o non valido ({type(exc).__name__})")
+            errors.append(f"{name}: pacchetto incompleto o non valido ({type(exc).__name__})")
     while candidates:
         progress = False
         remaining = []
@@ -117,4 +130,6 @@ def exchange(store, folder, key):
             break
     with store.connect() as db:
         conflicts = db.execute("SELECT count(*) FROM conflicts").fetchone()[0]
-    return {"written_to_folder":sent,"received":received,"pending":pending,"conflicts":conflicts,"errors":errors,"status":"Scambio locale eseguito. Upload cloud non verificabile dall'app."}
+    return {"written_to_folder":sent,"published":sent,"received":received,"pending":pending,"conflicts":conflicts,"errors":errors,
+            "transport":"webdav" if transport.remote else "folder","remote_verified":transport.remote,
+            "status":"Pubblicazioni WebDAV rilette e verificate." if transport.remote else "Scambio locale eseguito. Upload cloud non verificabile dall'app."}

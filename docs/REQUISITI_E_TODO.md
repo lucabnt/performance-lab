@@ -1,5 +1,17 @@
 # Requisiti e to-do
 
+## Software 0.6 / architettura 1.4 — sincronizzazione, distribuzione e avvio Android
+
+Consegna concordata: Windows e sorgenti; build Linux/Android rimandate dall’utente il 18 ottobre 2026. Nessuna pipeline remota avviata o release pubblicata.
+
+- **TD-63 / SYNC-01 / UI-22:** trasporti cartella/WebDAV comuni, credenziali OS senza fallback in chiaro, retry per oggetto, pubblicazione condizionale/rilettura, controlli firmati immutabili, registro operativo e gestione esplicita degli errori. Implementato; regressioni/server WebDAV locale verificati. Collaudo Nextcloud reale e tre piattaforme ancora aperto.
+- **TD-64 / SYNC-02:** rotazione della chiave del canale con journal e avviso firmato, inviti rinnovati e recupero accessi aggiornato. Implementato e testata l’interruzione; upgrade di tutti i client alla 0.6 richiesto. Non cancella dati già ricevuti né recupera automaticamente modifiche non inviate da autori revocati.
+- **TD-65 / DIST-01/02:** utente finale senza Python/Node/Qt da installare: installer Windows per utente con bundle completo; Flatpak con runtime per Fedora e distribuzione offline con runtime separatamente inclusi. Installer e pipeline sorgente aggiunti; prove su OS puliti, build Fedora, firma prodotto e completamento degli avvisi di licenza prima del rilascio.
+- **TD-66 / UI-23:** icona minimale Fuorigiri in SVG/PNG/ICO e vettore Android, usata da installer/eseguibile/finestra/launcher/testata/favicon. Il logo originale della società e l’attribuzione fissa restano invariati nei footer.
+- **TD-57 / AND-01–05:** dopo il consolidamento desktop, avviata shell Android e bridge al medesimo backend; SAF/Keystore/WorkManager/layout touch nel sorgente. Contratto testato su Windows, non dispositivo. Gate aperto su wheel native aggiornate, builder Linux/macOS, SDK/JDK/Gradle, APK e collaudo fisico. Non chiudere il requisito con il solo sorgente o con i test ASGI su PC.
+
+Dettagli e limiti: [consolidamento 0.6](CONSOLIDAMENTO_DISTRIBUZIONE_06.md), [Android attuale](ANDROID.md). Nessuna modifica alle formule scientifiche o agli storici in questa fase. Dopo accettazione Android restano nell’ordine Sprint breve → Wingate 30 s → Wingate 15 s. Drive/Dropbox API, compattazione dei canali grandi, rotazione dell’autorità (distinta dalla chiave del canale), audit esterno e collaudo delle librerie native rimangono requisiti aperti.
+
 ## Software 0.5 / architettura 1.3 — incrementale e report gerarchici
 
 Autorizzati gli step 1–4 della lista operativa nel messaggio: preset/migrazioni, motore, GUI/FIT/report e metodi specialistici, scegliendo i metodi con riferimento scientifico quando l’utente non ne dispone. [Implementazione, formule, fonti e limiti](IMPLEMENTAZIONE_INCREMENTALE_05.md).

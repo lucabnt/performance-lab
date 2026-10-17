@@ -1,0 +1,56 @@
+name: Desktop build candidates
+on: [workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m pip install -r requirements-lock-windows.txt
+      - run: npm ci && npm run build
+        working-directory: frontend
+      - run: python -m pytest -q
+      - run: python scripts/build.py
+      - shell: pwsh
+        run: |
+          $smoke = Start-Process -FilePath dist/Fuorigiri/Fuorigiri.exe -ArgumentList '--smoke-test','--data','.local/ci-smoke' -WindowStyle Hidden -PassThru -Wait
+          if ($smoke.ExitCode -ne 0) { throw 'Smoke test failed' }
+          & 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe' packaging/windows/Fuorigiri.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
+      - run: python scripts/release.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Fuorigiri-windows-candidate
+          path: dist/release/
+  flatpak:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci && npm run build
+        working-directory: frontend
+      - run: sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder
+      - run: |
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
+          python3 scripts/prepare_flatpak.py
+          flatpak-builder --user --force-clean --repo=flatpak-repo flatpak-build packaging/linux/org.fuorigiri.PerformanceLab.json
+          flatpak-builder --run flatpak-build packaging/linux/org.fuorigiri.PerformanceLab.json fuorigiri --smoke-test --data /tmp/fuorigiri-ci-smoke
+          mkdir -p dist/release
+          flatpak build-bundle flatpak-repo dist/release/Fuorigiri-0.6.0-linux-x86_64.flatpak org.fuorigiri.PerformanceLab --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Fuorigiri-linux-candidate
+          path: |
+            dist/release/*.flatpak
+            wheelhouse/requirements-resolved.txt
+            wheelhouse/SHA256.json

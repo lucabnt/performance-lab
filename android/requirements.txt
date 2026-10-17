@@ -1,0 +1,12 @@
+# Native wheels must be built for Chaquopy/Python 3.13 and both ABIs.
+# Do not downgrade scientific algorithms or cryptography to get an APK.
+fastapi==0.143.3
+pydantic==2.12.3
+pydantic-core==2.41.4
+httpx==0.28.1
+python-multipart==0.0.20
+fitdecode==0.11.0
+numpy==1.26.2
+matplotlib==3.8.4
+reportlab==4.4.4
+cryptography==50.0.2

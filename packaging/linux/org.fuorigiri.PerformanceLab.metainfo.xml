@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.fuorigiri.PerformanceLab</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Fuorigiri Performance Lab</name>
+  <summary>Analisi e archivio dei test nel ciclismo, anche offline</summary>
+  <description><p>Atleti, protocolli versionati, test incrementali, grafici, report PDF e Markdown, CSV e sincronizzazione cifrata tramite WebDAV o cartella locale.</p></description>
+  <launchable type="desktop-id">org.fuorigiri.PerformanceLab.desktop</launchable>
+  <content_rating type="oars-1.1"/>
+  <releases><release version="0.6.0" date="2026-10-18"/></releases>
+</component>

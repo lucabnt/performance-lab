@@ -1,5 +1,11 @@
 # Fuorigiri Performance Lab
 
+**Versione 0.6.0:** sincronizzazione cifrata via WebDAV o cartella, credenziali nel portachiavi, accessi firmati versionati e rotazione recuperabile del canale. Icona Fuorigiri e installer Windows con dipendenze incluse; build Flatpak predisposta per Fedora. [Distribuzione, uso e limiti](docs/CONSOLIDAMENTO_DISTRIBUZIONE_06.md).
+
+**Consegna attuale: Windows e sorgenti; build Linux/Android rimandate su richiesta dell’utente.**
+
+**Android avviato nel sorgente, APK non ancora disponibile:** shell Kotlin/React, backend Python in-process, SAF/Keystore/WorkManager e test del contratto. Mancano wheel native aggiornate, toolchain POSIX/Android e collaudo del dispositivo. [Stato Android](docs/ANDROID.md).
+
 **Versione 0.5.0:** preset e migrazione schema 3, motore incrementale aggiornato, allineamento/qualità, lattato/gas/ripetibilità e report completi di società, gruppo, stagione e atleta. [Funzioni, fonti scientifiche e limiti](docs/IMPLEMENTAZIONE_INCREMENTALE_05.md), [prova con dati sintetici e GUI](docs/TESTARE_IL_PROGETTO.md). Nessun ricalcolo automatico degli storici e nessuna importazione dei dati personali allegati.
 
 
@@ -12,7 +18,7 @@ Applicazione desktop open source per analisi e archivio di test incrementali nel
 
 **Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.** Logo originale incluso in `frontend/public/branding/` e nel bundle finale. Logo, collegamenti e attribuzione sono fissi; le anagrafiche delle società non modificano il branding del prodotto.
 
-## Stato: anteprima di sviluppo 0.5
+## Stato: anteprima di sviluppo 0.6
 
 Piano successivo confermato: completare tutte le lacune della copertura incrementale, inclusi ripristino/accessi e consolidamento operativo; poi Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (già usato dalla società). [Requisiti TD-45–54](docs/REQUISITI_E_TODO.md) e [roadmap INC-01–11](docs/COPERTURA_TEST_E_ROADMAP.md). La 0.5 sviluppa l’analisi incrementale avanzata e i report gerarchici; collaudo esterno, consolidamento operativo, Android e nuovi test rimangono nelle fasi indicate.
 

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Fuorigiri Performance Lab
+Comment=Analisi e archivio offline dei test nel ciclismo
+Exec=fuorigiri
+Icon=org.fuorigiri.PerformanceLab
+Terminal=false
+Categories=Science;Sports;
+StartupWMClass=Fuorigiri Performance Lab

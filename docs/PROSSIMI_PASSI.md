@@ -1,5 +1,15 @@
 # Prossimi passi — architettura 1.2
 
+**Consegna concordata il 18 ottobre 2026:** Windows e sorgenti; l’utente ha rimandato le build Linux/Android. I gate e i collaudi sotto restano documentati, senza avviare CI o pubblicazioni.
+
+## Stato operativo dopo la 0.6 — non ripetere i blocchi già sviluppati
+
+Step 5 sviluppato e verificato localmente per trasporti/controlli/rotazione e distribuzione Windows. Restano il collaudo Nextcloud con account reali, macchina Windows pulita, build/collaudo Fedora, firma di prodotto e avvisi completi delle dipendenze.
+
+Step 6 avviato: shell Android e bridge al backend reale nel sorgente, SAF/Keystore/WorkManager e layout adattato. Prima attività bloccante: costruire wheel aggiornate Pydantic Core/Cryptography su Linux/macOS, preparare SDK/JDK/Gradle, produrre un APK e collaudarlo su emulatore/telefono. Questo ambiente Windows non ha Linux/WSL o toolchain Android; [Android](ANDROID.md) e `scripts/build_android.py --check` rendono verificabile lo stato. Non trattare il sorgente come app già rilasciata.
+
+L’ordine successivo rimane Android completo e collaudato → Sprint breve → Wingate 30 s → Wingate 15 s. Le vecchie liste sotto sono cronologia; [consolidamento 0.6](CONSOLIDAMENTO_DISTRIBUZIONE_06.md) è il riferimento attuale.
+
 **Stato dopo la 0.5:** sviluppati i blocchi autorizzati di preset/migrazione, motore, interfaccia/report, import e metodi specialistici; vedere [implementazione e limiti](IMPLEMENTAZIONE_INCREMENTALE_05.md). La lista sottostante conserva il piano precedente: il lavoro non riparte da zero. Restano corpus reale/validazione esterna, consolidamento operativo e WebDAV, poi Android e nuovi motori nell’ordine confermato.
 
 

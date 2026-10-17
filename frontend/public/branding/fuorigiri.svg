@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">Fuorigiri Performance Lab</title>
+  <rect width="256" height="256" rx="56" fill="#112d38"/>
+  <path d="M67 184a83 83 0 1 1 141-34" fill="none" stroke="#64d4be" stroke-width="17" stroke-linecap="round"/>
+  <path d="m104 152 71-71" fill="none" stroke="#fff" stroke-width="17" stroke-linecap="round"/>
+  <circle cx="128" cy="128" r="13" fill="#fff"/>
+  <circle cx="185" cy="71" r="9" fill="#f3ce54"/>
+</svg>

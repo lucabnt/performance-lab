@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fuorigiri"
-version = "0.5.0"
+version = "0.6.0"
 description = "Archivio e analisi offline dei test incrementali nel ciclismo"
 requires-python = ">=3.12"
 license = "GPL-3.0-or-later"
 dependencies = ["fastapi", "uvicorn", "python-multipart", "fitdecode", "numpy", "matplotlib", "reportlab", "cryptography"]
 
 [project.optional-dependencies]
-desktop = ["PySide6"]
+desktop = ["PySide6", "keyring==25.7.0"]
 dev = ["pytest", "httpx", "pyinstaller"]
 
 [project.scripts]

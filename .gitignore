@@ -23,3 +23,12 @@ fuorigiri-recupero-accessi*.json
 fuorigiri-backup-dati*.zip
 restore-staging/
 *.ctsync
+
+# Platform build caches, toolchains, signing material and prepared wheels
+wheelhouse/
+android/.gradle/
+android/**/build/
+android/local.properties
+android/wheels/*.whl
+*.jks
+*.keystore

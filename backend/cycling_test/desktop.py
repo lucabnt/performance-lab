@@ -19,9 +19,16 @@ def main():
     parser.add_argument("--port",type=int,default=0)
     parser.add_argument("--smoke-test",action="store_true",help="Verifica le dipendenze del pacchetto senza aprire finestre")
     args = parser.parse_args()
-    base = Path(os.environ.get("LOCALAPPDATA", Path.home()/".local"/"share"))
+    base = Path(os.environ.get("LOCALAPPDATA" if sys.platform=='win32' else 'XDG_DATA_HOME', Path.home()/".local"/"share"))
     from .compatibility import default_data_root
     root = args.data or default_data_root(base)
+    from .instance import InstanceLock
+    try:instance=InstanceLock(root)
+    except ValueError as exc:
+        if args.smoke_test or args.browser:raise SystemExit(str(exc)) from None
+        from PySide6.QtWidgets import QApplication,QMessageBox
+        qt=QApplication(sys.argv[:1]);QMessageBox.information(None,'Fuorigiri già aperto',str(exc))
+        return
     token = secrets.token_urlsafe(32)
     dist = Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parents[2]))/"frontend"/"dist"
     if not dist.is_dir():
@@ -33,8 +40,13 @@ def main():
         from .fit import decode_fit
         from PySide6.QtWebEngineWidgets import QWebEngineView
         from .branding import logo_path
+        from .branding import icon_path
+        from .credentials import backend as credential_backend
+        credential_backend()
         if not logo_path().read_bytes().startswith(b'\x89PNG'):
             raise SystemExit('Logo del prodotto mancante nel bundle.')
+        if not icon_path().read_bytes().startswith(b'\x89PNG'):
+            raise SystemExit('Icona Fuorigiri mancante nel bundle.')
     sock = socket.socket()
     sock.bind(("127.0.0.1",args.port))
     port = sock.getsockname()[1]
@@ -62,23 +74,31 @@ def main():
                 time.sleep(.05)
             with urlopen(f'http://127.0.0.1:{port}/health',timeout=5) as response:
                 if response.status!=200:raise RuntimeError('Health check non riuscito.')
-            (root/'smoke-ok.txt').write_text('Fuorigiri Performance Lab 0.5.0: import, logo e backend HTTP verificati.',encoding='utf-8')
+            (root/'smoke-ok.txt').write_text('Fuorigiri Performance Lab 0.6.0: import, logo e backend HTTP verificati.',encoding='utf-8')
         finally:
-            server.should_exit=True;thread.join(timeout=5);sock.close();handler.close();logger.removeHandler(handler)
+            server.should_exit=True;thread.join(timeout=5);sock.close();handler.close();logger.removeHandler(handler);instance.close()
         return
     url = f"http://127.0.0.1:{port}/#token={token}"
     if args.browser:
         import webbrowser
         threading.Timer(1,lambda:webbrowser.open(url)).start()
-        server.run(sockets=[sock])
+        try:server.run(sockets=[sock])
+        finally:instance.close()
         return
     from PySide6.QtCore import QUrl, QTimer
     from PySide6.QtWidgets import QApplication
+    from PySide6.QtGui import QIcon
     from PySide6.QtWebEngineWidgets import QWebEngineView
     from PySide6.QtWebEngineCore import QWebEnginePage
     thread = threading.Thread(target=serve,daemon=True)
     thread.start()
     qt = QApplication(sys.argv[:1])
+    qt.setApplicationName('Fuorigiri Performance Lab')
+    from .branding import icon_path
+    qt.setWindowIcon(QIcon(str(icon_path())))
+    if sys.platform=='win32':
+        import ctypes
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('Fuorigiri.PerformanceLab')
     class LocalPage(QWebEnginePage):
         def acceptNavigationRequest(self,url,type,is_main):
             if url.scheme() in ('http','https') and url.host() != '127.0.0.1':
@@ -124,6 +144,7 @@ def main():
     thread.join(timeout=5)
     sock.close()
     handler.close();logger.removeHandler(handler)
+    instance.close()
 
 
 if __name__ == "__main__":

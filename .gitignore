@@ -18,4 +18,8 @@ CicloTest.spec
 identity.json
 workspaces.json
 invito-*.json
+fuorigiri-invito*.json
+fuorigiri-recupero-accessi*.json
+fuorigiri-backup-dati*.zip
+restore-staging/
 *.ctsync

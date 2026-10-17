@@ -151,7 +151,7 @@ def create_app(root=None, token=None, frontend=None):
     workspaces=Workspaces(legacy.root,legacy)
     store=workspaces.proxy
     token = token or os.environ.get("CICLO_TOKEN") or secrets.token_urlsafe(32)
-    app = FastAPI(title="Fuorigiri Performance Lab", version="0.3.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Fuorigiri Performance Lab", version="0.4.0", docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
 
@@ -170,7 +170,8 @@ def create_app(root=None, token=None, frontend=None):
         if hasattr(selected,'identity'):
             identity=selected.identity
             read_only=identity['certificate']['role']=='viewer' or identity['certificate']['id'] in selected.revocations()
-            allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync')
+            allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync',
+                '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore')
             if read_only and not allowed:
                 store.selected.reset(marker)
                 return JSONResponse({'detail':'Visualizzatore: operazione di modifica non consentita.'},status_code=403)
@@ -215,6 +216,9 @@ def create_app(root=None, token=None, frontend=None):
             result[kind]=[r for r in result[kind] if r.get('status')!='deleted']
         result["test"] = [{k:v for k,v in t.items() if k != "samples"} for t in store.list("test")]
         result['operator']={k:store.identity['certificate'][k] for k in ('name','role','id')} if hasattr(store,'identity') else {'name':'Locale','role':'admin'}
+        if hasattr(store,'identity'):
+            result['operator'].update(owner=bool(store.identity.get('authority_private')),snapshot=bool(store.identity.get('snapshot')),
+                revoked=store.identity['certificate']['id'] in store.revocations())
         return result
 
     @app.post("/api/v1/organizations")
@@ -349,29 +353,24 @@ def create_app(root=None, token=None, frontend=None):
 
     @app.get("/api/v1/backup")
     def backup():
-        # SQLite backup API, never copy a live database file.
-        import tempfile
-        with tempfile.TemporaryDirectory() as tmp:
-            target = sqlite3.connect(Path(tmp)/"archive.sqlite")
-            with store.connect() as source:
-                source.backup(target)
-            target.close()
-            out = io.BytesIO()
-            with zipfile.ZipFile(out,"w",zipfile.ZIP_DEFLATED) as z:
-                z.write(Path(tmp)/"archive.sqlite","archive.sqlite")
-                for path in (store.root/"objects").iterdir():
-                    if len(path.name) == 64:
-                        z.write(path,"objects/"+path.name)
-                z.writestr("manifest.json",json.dumps({"schema":1,"warning":"Backup non cifrato: custodire in luogo protetto."}))
-            return download(out.getvalue(),"application/zip","ciclo-test-backup.zip")
+        from .recovery import backup_bytes
+        return download(backup_bytes(store),'application/zip','fuorigiri-backup-dati.zip')
 
     @app.post("/api/v1/sync")
     def sync(data: SyncInput):
         from .sync import exchange
+        if hasattr(store,'identity') and store.identity.get('snapshot'):raise ValueError('Copia di consultazione: nessun accesso al canale della società originale.')
         key=store.identity['sync_key'] if hasattr(store,'identity') else data.key
-        if hasattr(store,'identity'):
-            (store.root/'sync-folder.txt').write_text(data.folder,encoding='utf-8')
-        return exchange(store,data.folder,key)
+        from .workspaces import write_json
+        from datetime import datetime,timezone
+        try:
+            result=exchange(store,data.folder,key)
+        except (ValueError,OSError) as exc:
+            write_json(store.root/'last-sync.json',{'at':datetime.now(timezone.utc).isoformat(),'ok':False,'error':str(exc)})
+            raise ValueError(str(exc)) from exc
+        if hasattr(store,'identity'):(store.root/'sync-folder.txt').write_text(data.folder,encoding='utf-8')
+        write_json(store.root/'last-sync.json',{'at':datetime.now(timezone.utc).isoformat(),'ok':not result['errors'],**result})
+        return result
 
     @app.post("/api/v1/sync/key")
     def key():

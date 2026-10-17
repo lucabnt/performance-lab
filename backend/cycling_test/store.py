@@ -128,7 +128,7 @@ class Store:
         digest = hashlib.sha256(content).hexdigest()
         dest = self.root / "objects" / digest
         if not dest.exists():
-            tmp = dest.with_name(digest + "." + str(uuid4()) + ".tmp")
+            tmp = dest.with_name(str(uuid4()) + ".tmp")
             tmp.write_bytes(content)
             tmp.replace(dest)
         return digest

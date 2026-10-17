@@ -1,5 +1,14 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Software 0.4 — 17 ottobre 2026
+
+- 45 test automatici passati su Windows: 13 nuovi casi di recupero/ruoli, inclusi tre modi di ripristino, schema precedente, più società, integrità, file di recupero precedente con directory accessi più recente, password/società errate, percorsi non consentiti, destinazione occupata, rollback, bootstrap, cambio ruolo e revoche con preservazione degli eventi esatti.
+- TypeScript e Vite compilati. GUI browser con dati sintetici: creazione società/apertura automatica, collegamento invito visualizzatore, onboarding senza record e prima sincronizzazione locale con acquisizione di un atleta; anteprima ZIP e ripristino di consultazione, ruolo esplicito nel contesto.
+- I flussi completi di recupero fondatore, copia indipendente, promozione/demozione e revoca sono verificati dalle API/prove automatiche; la GUI è stata provata sui percorsi sopra, non su ogni combinazione di piattaforma e client cloud.
+- Nessun dato operativo o identità reale importati. Archivi e credenziali delle fixture isolati sotto .local/ e tmp/, esclusi dalla repository. Nessuna validazione fisiologica nuova.
+- Pacchetto Windows 0.4 ricompilato: smoke test con import, logo e backend HTTP riuscito in .local/smoke-04; modulo cycling_test.recovery incluso nel bundle. Finestra Qt realmente aperta, versione 0.4 e tre percorsi verificati; apertura della scheda Ripristina da backup controllata. Nessun archivio creato nel profilo predefinito durante questa verifica; finestra poi chiusa. Flussi completi sui dati verificati nelle istanze browser/API isolate.
+
+
 ## Software 0.3 — 17 ottobre 2026
 
 - **32 test passati** su Windows, inclusi sei nuovi casi: protocollo senza step, creazione/revisione di test manuali, gruppo figlio senza nome, CSV obbligatori/facoltativi, media diversa dalla mediana e decodifica/analisi di quattro FIT basati sugli ERG originali.

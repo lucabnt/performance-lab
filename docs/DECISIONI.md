@@ -1,5 +1,10 @@
 # Decisioni e stato dell'implementazione
 
+## Software 0.4 / architettura 0.9 — ripristino e accessi
+
+Adottati e implementati UI-17/REC-01: operazioni società separate, bootstrap prima dei dati, recupero credenziali cifrato distinto dal backup ZIP, copie di consultazione e indipendenti senza privilegi della società originale. Rinnovo/cambio ruolo tramite invito sostitutivo e revoca, applicato sul medesimo archivio locale; stati degli inviti dichiarati come emessi, senza presumere accettazione remota. Revoca con eventi già ricevuti fissati per hash; nessuna promessa di eliminare copie o ruotare automaticamente la chiave di lettura. [Guida operativa](SOCIETA_BACKUP_E_ACCESSI.md). TD-45–49 presenti; TD-50 e INC-11 restano parziali. I test successivi mantengono l’ordine confermato.
+
+
 ## Pianificazione confermata / architettura 0.8 — software invariato 0.3
 
 Decisione dell'utente del 17 ottobre 2026: completare **tutte** le lacune incrementali INC-01–11, poi sviluppare Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Il 15 s è un protocollo usato in passato dalla società; la sua definizione storica va acquisita prima di scegliere formule e criteri. Gli altri test rimangono candidati; scambi gassosi nell'incrementale già inclusi nella prima fase. Dettagli e criteri in [COPERTURA_TEST_E_ROADMAP.md](COPERTURA_TEST_E_ROADMAP.md).

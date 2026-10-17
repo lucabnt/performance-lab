@@ -2,7 +2,21 @@
 
 Aggiornato il 17 ottobre 2026. I comandi partono dalla cartella del progetto. Le prove usano archivi sintetici separati dai dati operativi. L'interfaccia e il motore funzionano senza collegamenti a servizi esterni.
 
-## Novità della preview 0.3
+## Novità della preview 0.4 — società, backup e accessi
+
+Guida dettagliata: [SOCIETA_BACKUP_E_ACCESSI.md](SOCIETA_BACKUP_E_ACCESSI.md). Suite corrente: **45 test passati**. Creare due archivi isolati su porte diverse, poi provare il flusso dal fondatore al visualizzatore/admin; nessun dato reale necessario.
+
+1. Gestisci società → Crea nuova società: soltanto nome società/fondatore obbligatori; apertura automatica. Aggiungere un atleta sintetico.
+2. In Condivisione e collaboratori generare un invito Visualizzatore e pubblicare i dati su una cartella locale condivisa di prova.
+3. Nell’altra istanza usare Collega tramite invito. Prima di acquisire record, verificare che la società abbia già nome/ruolo e pulsante Prima sincronizzazione. Acquisire e controllare comparsa atleta e vincoli di modifica.
+4. Dal fondatore usare Rinnova / cambia ruolo → Admin dati, scaricare il nuovo invito e pubblicare la revoca. Sul destinatario Applica nuovo invito: stesso archivio, nuovo ruolo, scrittura ora consentita. Provare anche la revoca e verificare che gli eventi già autorizzati rimangano disponibili su un terzo dispositivo appena collegato.
+5. Esportare backup dati ZIP e recupero accessi cifrato separatamente. Usare una terza directory di avvio vuota per recuperare il fondatore: anteprima ZIP, modalità originale, file recupero e password. Verificare dati, possibilità di creare inviti e successiva sincronizzazione.
+6. Provare lo stesso ZIP come copia di consultazione (nessuna modifica/canale) e come copia indipendente (nuovo fondatore/canale, nessun invito originale). Se contiene più società, verificarne la selezione.
+7. Password errata, file di altra società, ZIP corrotto, destinazione occupata e società originale già registrata devono fallire senza sovrascrivere dati. Dopo errore la prova deve essere ripetibile; un annullamento prima della conferma non crea un archivio registrato.
+
+Le prove automatiche simulano archivi diversi sullo stesso PC; i client cloud reali e Fedora richiedono ancora collaudo. Il recupero originale è una sostituzione/recupero del fondatore, non una procedura per clonarne l’identità su PC usati contemporaneamente. I segreti delle fixture rimangono fuori dai dati di produzione e dalla repository pubblica.
+
+## Novità della preview 0.3 (precedenti)
 
 Nome dell'app **Fuorigiri Performance Lab**; il bundle conserva il nome tecnico CicloTest e legge le directory precedenti. Suite automatica: 32 casi. Per provare la GUI con i nuovi esempi usare un percorso nuovo:
 
@@ -150,7 +164,7 @@ Linux: `CICLO_API_URL=http://127.0.0.1:8767 npm run dev`. Non basta aprire `fron
 
 ## 6. Provare due dispositivi, ruoli e conflitti senza cloud
 
-**Limite noto della preview 0.3:** la prima associazione tramite invito crea un archivio ancora senza record società; in questo stato la GUI non espone correttamente il passaggio di prima sincronizzazione. Il flusso seguente descrive l'esito atteso e non è ancora interamente completabile dai soli pulsanti. Correzione registrata in TD-48; ruoli e ripristino in TD-45–50 del [registro requisiti](REQUISITI_E_TODO.md). Il backup ZIP non è un invito e non ripristina le credenziali del fondatore; l'importazione guidata del backup non è ancora disponibile.
+**Corretto nella 0.4:** la società appena associata espone ora la prima sincronizzazione anche senza record locali. Il percorso seguente è disponibile dalla GUI. Il backup ZIP rimane distinto dall’invito e dal file di recupero accessi: vedere la guida collegata sopra.
 
 Usare due directory di avvio diverse e due sessioni browser separate. Per evitare contaminazioni del token utilizzare profili/browser distinti oppure una sessione privata. Prima istanza `.local/pc-a` sulla porta 8766, seconda `.local/pc-b` sulla porta 8767. Basta una cartella locale vuota esterna a entrambe, per esempio `.local/scambio-test`, per simulare il trasporto; non serve un account cloud per questa prova.
 

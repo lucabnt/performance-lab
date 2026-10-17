@@ -20,14 +20,28 @@ def exchange(store, folder, key):
     shared.mkdir(exist_ok=True)
     managed=hasattr(store,'identity')
     if managed:
-        from .workspaces import verify
+        from .workspaces import verify,write_json
+        # The founder publishes the public directory; readers can inspect users
+        # and roles without possessing invitation or authority private keys.
+        access_local=store.root/'access.json';access_shared=shared/'access.json'
+        if access_local.exists() and store.identity.get('authority_private'):
+            tmp=shared/(str(uuid4())+'.tmp');tmp.write_bytes(access_local.read_bytes());tmp.replace(access_shared)
+        if access_shared.exists():
+            try:
+                access=json.loads(access_shared.read_text(encoding='utf-8'))
+                verify(store.identity['authority_public'],{k:v for k,v in access.items() if k!='signature'},access['signature'])
+                if access['workspace']!=store.identity['workspace']:raise ValueError('Elenco di un’altra società.')
+                previous=json.loads(access_local.read_text(encoding='utf-8')) if access_local.exists() else {'version':-1}
+                if access['version']>previous['version']:write_json(access_local,access)
+            except (InvalidSignature,KeyError,TypeError) as exc:raise ValueError('Elenco accessi non valido.') from exc
         revocation_file=shared/'revocations.json'
         local=store.root/'revocations.json'
         if local.exists() and store.identity.get('authority_private'):
             tmp=shared/(str(uuid4())+'.tmp');tmp.write_bytes(local.read_bytes());tmp.replace(revocation_file)
         if revocation_file.exists():
             rev=json.loads(revocation_file.read_text())
-            verify(store.identity['authority_public'],{k:v for k,v in rev.items() if k!='signature'},rev['signature'])
+            try:verify(store.identity['authority_public'],{k:v for k,v in rev.items() if k!='signature'},rev['signature'])
+            except (InvalidSignature,KeyError,TypeError) as exc:raise ValueError('Elenco revoche non valido.') from exc
             if rev['workspace']!=store.identity['workspace']:raise ValueError('Revoche di un altro workspace.')
             previous=json.loads(local.read_text()) if local.exists() else {'version':-1}
             if rev['version']>previous['version']:local.write_text(encoded(rev),encoding='utf-8')

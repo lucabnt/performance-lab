@@ -1,5 +1,16 @@
 # Changelog
 
+## Software 0.4.0 / architettura 0.9 — 17 ottobre 2026
+
+- TD-45/UI-17: tre percorsi distinti Crea nuova società, Collega tramite invito, Ripristina da backup; selezione automatica e crediti societari fissi conservati.
+- TD-46/47/REC-01: backup dati schema 2 con checksum, lettura schema 1, anteprima e ripristino validato/atomico in destinazione nuova. Consultazione senza privilegi, copia indipendente con nuove credenziali e provenienza, oppure recupero originale con file del fondatore cifrato separatamente. Verifica delle firme, password e società; nessun segreto nel normale ZIP dati.
+- TD-48: corretta la prima sincronizzazione della società associata ancora vuota; cartella, errori e ultimo scambio visibili.
+- TD-49: ruolo/dispositivo correnti visibili, controlli di scrittura in UI/API, elenco pubblico firmato, rinnovo/cambio ruolo con nuovo invito applicabile alla stessa copia; un visualizzatore può gestire l’aggiunta di archivi indipendenti senza ottenere diritti sulla società selezionata.
+- TD-50 parziale: revoca conservativa con hash esatti degli eventi già acquisiti; restano da sviluppare audit completo, portachiavi e rotazione del canale in INC-11.
+- Ripristini e creazioni pubblicati solo a operazione completa; percorsi occupati/sovrapposti rifiutati. Ridotto il nome temporaneo degli allegati per evitare MAX_PATH su Windows.
+- Aggiunte 13 prove automatiche (45 totali) e guida SOCIETA_BACKUP_E_ACCESSI.md; collaudo GUI su fixture sintetiche. Nessun nuovo motore di analisi dell’incrementale o dei test successivi.
+
+
 ## Architettura 0.8 / requisiti — 17 ottobre 2026
 
 **Tipo: aggiornamento documentale; software invariato alla 0.3.0.** Recepita la richiesta di registrare le osservazioni sugli accessi e confermare il perimetro dei prossimi sviluppi.

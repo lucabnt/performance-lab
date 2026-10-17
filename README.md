@@ -4,14 +4,16 @@ Applicazione desktop open source per analisi e archivio di test incrementali nel
 
 **Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.** Logo originale incluso in `frontend/public/branding/` e nel bundle finale. Logo, collegamenti e attribuzione sono fissi; le anagrafiche delle società non modificano il branding del prodotto.
 
-## Stato: anteprima di sviluppo 0.3
+## Stato: anteprima di sviluppo 0.4
 
-Piano successivo confermato: completare tutte le lacune della copertura incrementale, inclusi ripristino/accessi e consolidamento operativo; poi Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (già usato dalla società). [Requisiti TD-45–54](docs/REQUISITI_E_TODO.md) e [roadmap INC-01–11](docs/COPERTURA_TEST_E_ROADMAP.md). È pianificazione documentale: queste funzioni non sono dichiarate disponibili nella 0.3. In particolare, il ripristino ZIP e il percorso GUI di prima sincronizzazione da invito sono ancora da completare.
+Piano successivo confermato: completare tutte le lacune della copertura incrementale, inclusi ripristino/accessi e consolidamento operativo; poi Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (già usato dalla società). [Requisiti TD-45–54](docs/REQUISITI_E_TODO.md) e [roadmap INC-01–11](docs/COPERTURA_TEST_E_ROADMAP.md). La 0.4 completa il primo intervento su società, ripristino e accessi; analisi incrementale avanzata e nuovi test rimangono da sviluppare.
 
 Implementazione locale con dati sintetici e prove automatiche; richiede collaudo su PC puliti, Fedora, FIT reali e client cloud reali prima del rilascio operativo. Nessun dato personale degli allegati è incluso.
 
 
-Novità 0.3: selettore unico Società e Gestisci società, metriche leggibili, aggregati con media/mediana, archivio riordinato, protocolli senza step e nuovi test solo manuali, CSV con campi richiesti espliciti, PDF con footer societario e quattro FIT sintetici basati sugli ERG originali. [Requisiti e scelte UI](docs/REVISIONE_FUORIGIRI_03.md) · [Copertura e roadmap dei test](docs/COPERTURA_TEST_E_ROADMAP.md).
+Novità 0.4: Gestisci società con creazione/invito/ripristino separati, bootstrap anche senza dati, tre modalità di ripristino, recupero cifrato del fondatore, ruoli visibili e cambio ruolo tramite nuovo invito. [Guida società, backup e accessi](docs/SOCIETA_BACKUP_E_ACCESSI.md).
+
+Novità precedenti 0.3: selettore unico Società e Gestisci società, metriche leggibili, aggregati con media/mediana, archivio riordinato, protocolli senza step e nuovi test solo manuali, CSV con campi richiesti espliciti, PDF con footer societario e quattro FIT sintetici basati sugli ERG originali. [Requisiti e scelte UI](docs/REVISIONE_FUORIGIRI_03.md) · [Copertura e roadmap dei test](docs/COPERTURA_TEST_E_ROADMAP.md).
 
 Per provare tutto con dati fittizi: `python scripts/demo.py --data .local/demo-fuorigiri`, poi `python scripts/serve.py --data .local/demo-fuorigiri`; aprire l'URL stampato. Il generatore rifiuta archivi già popolati. Non importare il CSV storico degli esempi nello stesso archivio che contiene già le esecuzioni FIT corrispondenti.
 
@@ -40,9 +42,9 @@ Limiti ancora presenti:
 - Rampe leggibili/graficabili, ma MAP per step costanti non applicabile. FIT multisessione e timestamp duplicati rifiutati esplicitamente.
 - Formule per soglie da lattato, maturazione/PHV e benchmark esterni non definite; il programma non ne inventa i risultati. Anaerobico resta un'estensione candidata.
 - IT/EN copre navigazione, form e titoli principali dei report. Alcune diagnostiche, descrizioni dei metodi, controlli Plotly e testi secondari restano italiani/inglesi; localizzazione integrale da completare.
-- Scambio manuale. Revoca delle scritture recepita al prossimo scambio, senza cancellazione delle copie o rotazione automatica delle chiavi di lettura. Segreti locali protetti dall'account/filesystem; portachiavi e recupero guidato ancora da completare.
+- Scambio manuale. Revoca delle scritture recepita al prossimo scambio, senza cancellazione delle copie o rotazione automatica delle chiavi di lettura. Segreti locali protetti dall'account/filesystem; portachiavi, trasferimento esclusivo dell’autorità e rotazione completa ancora da completare. Recupero guidato dati/accessi disponibile.
 - Archivio precedente accessibile, senza migrazione automatica nei workspace. Per nuove condivisioni creare un workspace separato.
-- Backup dati scaricabile, ripristino guidato non disponibile. Conservare separatamente le credenziali del fondatore; DB e backup standard non cifrati.
+- Backup dati ZIP e ripristino guidato disponibili; recupero cifrato delle credenziali del fondatore esportabile separatamente. DB e backup dati standard non cifrati.
 - Bundle Windows di sviluppo, senza installer/firma. Fedora/Flatpak e prove su macchine pulite ancora da eseguire.
 
 ## Avvio e test della GUI

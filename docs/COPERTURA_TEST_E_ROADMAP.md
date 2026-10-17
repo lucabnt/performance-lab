@@ -1,6 +1,6 @@
 # Copertura dei test e sviluppi futuri
 
-Stato della preview Fuorigiri Performance Lab 0.3, aggiornamento documentale del 17 ottobre 2026. L'utente ha confermato che **tutte le lacune dell'incrementale elencate sotto sono da implementare**, comprese quelle di priorità P2. Successivamente si procederà con Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Questa pianificazione non prescrive protocolli di esercizio e non dichiara validazione fisiologica. Nessuna delle lacune viene segnata completata da questo aggiornamento.
+Stato della preview Fuorigiri Performance Lab 0.4, aggiornamento del 17 ottobre 2026. L'utente ha confermato che **tutte le lacune dell'incrementale elencate sotto sono da implementare**, comprese quelle di priorità P2. Successivamente si procederà con Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Questa pianificazione non prescrive protocolli di esercizio e non dichiara validazione fisiologica. Nessuna lacuna INC è completata nel suo insieme: la 0.4 realizza il primo sottoinsieme operativo di INC-11 (TD-45–49 e parte di TD-50), come descritto nella [guida società/accessi](SOCIETA_BACKUP_E_ACCESSI.md).
 
 ## Sequenza di sviluppo confermata
 
@@ -14,7 +14,7 @@ Import ERG e protocolli versionati anche senza step, FIT/CSV di campioni, scelta
 
 ## Lacune per una copertura completa dell'incrementale
 
-Tutte le righe sono **da implementare e validare nella fase 1**. P0/P1/P2 indicano urgenza relativa, non opzionalità. Gli ID INC sono stabili e dettagliano TD-51.
+Tutte le righe sono **da completare e validare nella fase 1**; soltanto INC-11 ha il sottoinsieme operativo 0.4 implementato. P0/P1/P2 indicano urgenza relativa, non opzionalità. Gli ID INC sono stabili e dettagliano TD-51.
 
 | ID | Priorità | Mancanza attuale | Criterio per considerarla risolta |
 |---|---|---|---|
@@ -30,10 +30,10 @@ Tutte le righe sono **da implementare e validare nella fase 1**. P0/P1/P2 indica
 | INC-10 | P1 | Dati storici senza versione e origine talvolta incompleta | Riconciliazione assistita del protocollo, provenienza campo per campo e filtri di confrontabilità; mantenere sempre l'originale. |
 | INC-11 | P2 | Interoperabilità e distribuzione ancora da consolidare | Completare **tutti** i punti operativi della checklist seguente, oltre ai flussi TD-45–50; una sola funzione non chiude la voce. |
 
-Checklist di accettazione INC-11, interamente da completare:
+Checklist di accettazione INC-11: i primi due punti sono implementati e collaudati localmente nella 0.4, gli altri rimangono da completare:
 
-- [ ] Ripristino backup dati e recupero degli accessi distinti, con prove di integrità, annullamento e archivio già presente (TD-45–47).
-- [ ] Prima sincronizzazione di una società associata ma vuota, ruoli/dispositivi visibili e revoche comprensibili (TD-48–50).
+- [x] Ripristino backup dati e recupero degli accessi distinti, con prove di integrità, annullamento e archivio già presente (TD-45–47).
+- [x] Prima sincronizzazione di una società associata ma vuota, ruoli/dispositivi visibili e revoche comprensibili (TD-48–50).
 - [ ] Migrazioni testate, compatibilità con archivi e versioni precedenti e gestione del fallimento senza corruzione dei dati.
 - [ ] Integrazione con portachiavi delle piattaforme supportate e recupero delle credenziali secondo un disegno esplicito.
 - [ ] Rotazione delle chiavi e gestione di dispositivi persi/revocati, senza promettere di eliminare copie già scaricate.

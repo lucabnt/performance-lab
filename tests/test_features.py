@@ -1,0 +1,89 @@
+import io
+import zipfile
+import pytest
+from fastapi.testclient import TestClient
+from cycling_test.api import create_app
+from cycling_test.zones import preset, validate, classify, calculate
+from cycling_test.csv_import import decode_trace_csv
+from synthetic import ERG, fit_bytes
+
+
+@pytest.mark.parametrize('channel,values,expected',[
+    ('hr',[80.999,81,89.999,90,99.999,100,105,105.001],[0,1,1,2,2,3,3,4]),
+    ('power',[55,55.001,75,75.001,90,90.001,105,105.001],[0,1,1,2,2,3,3,4])])
+def test_exact_zone_boundaries(channel,values,expected):
+    assert [classify(v,100,preset(channel)) for v in values]==expected
+
+
+@pytest.mark.parametrize('n',[3,5,7])
+def test_dynamic_zones_gap_duration(n):
+    s={'channel':'power','reference':'threshold_w','name':'Custom','version':'1','zones':[{'name':str(i),'upper':(i+1)*20 if i<n-1 else None,'inclusive':True} for i in range(n)]}
+    validate(s)
+    r=calculate(s,100,[{'t':0,'power':10},{'t':2,'power':40},{'t':20,'power':None},{'t':21,'power':20}],0,21)
+    assert sum(z['seconds'] for z in r['zones'])==2
+    assert r['unclassified_s']==19
+    s['zones'][0]['upper']=999
+    with pytest.raises(ValueError):validate(s)
+
+
+def client(tmp_path):
+    c=TestClient(create_app(tmp_path,token='test'));c.headers['X-Ciclo-Token']='test'
+    return c
+
+
+def post(c,path,data):
+    r=c.post('/api/v1/'+path,json=data);assert r.status_code==200,r.text
+    return r.json()
+
+
+def test_revision_manual_report_and_lifecycle(tmp_path):
+    c=client(tmp_path)
+    org=post(c,'organizations',{'name':'Demo'})
+    a=post(c,'athletes',{'organization_id':org['id'],'name':'A','surname':'B','birth_date':'2010-03-01'})
+    assert a['birth_year']==2010
+    p=post(c,'protocols/manual',{'name':'P','family':'P','version':'1','segments':[{'duration_s':600,'start_w':60,'end_w':60,'phase':'warmup'},{'duration_s':240,'start_w':80,'end_w':80}]})
+    r=c.post('/api/v1/traces',files={'file':('x.fit',fit_bytes())});assert r.status_code==200
+    body={'athlete_id':a['id'],'protocol_id':p['id'],'trace_hash':r.json()['hash'],'date':'2026-01-01','settings':{'end_s':840,'weight_kg':50,'threshold_coefficient':.8,'fthr_bpm':180,'rpe':7,'recovery_manual':[{'after_s':90,'hr_bpm':130}]}}
+    t=post(c,'tests',body)
+    assert t['analysis']['threshold_w']==64
+    assert t['analysis']['recovery'][1]['source']=='manuale'
+    first=c.get(f"/api/v1/tests/{t['id']}/report/md").content
+    body['settings']['rpe']=9
+    r=c.put(f"/api/v1/tests/{t['id']}",json={'base':t['revision'],'reason':'RPE corretto','test':body});assert r.status_code==200,r.text
+    assert r.json()['revision']!=t['revision']
+    assert len(c.get(f"/api/v1/records/{t['id']}/revisions").json())==2
+    assert c.put(f"/api/v1/tests/{t['id']}",json={'base':t['revision'],'reason':'Stale','test':body}).status_code==409
+    with zipfile.ZipFile(io.BytesIO(first)) as z:
+        assert 'RPE (1-10): 7' in z.read('report.md').decode()
+    post(c,f"records/{a['id']}/status",{'base':a['revision'],'status':'deleted'})
+    assert not c.get(f"/api/v1/history/{org['id']}").json()['rows']
+
+
+def test_csv_preview_atomic_duplicate_history(tmp_path):
+    c=client(tmp_path);org=post(c,'organizations',{'name':'Demo'})
+    raw=b'atleta_id,cognome,nome,anno_nascita\nx,Demo,Uno,2011\n'
+    def preview(profile,raw):
+        r=c.post('/api/v1/import/preview',data={'organization_id':org['id'],'profile':profile},files={'file':('data.csv',raw)})
+        assert r.status_code==200,r.text
+        return r.json()
+    def commit(profile,p):return post(c,'import/commit',{'organization_id':org['id'],'profile':profile,'staged_hash':p['staged_hash']})
+    p=preview('atleti',raw);assert p['ready']==1;commit('atleti',p)
+    assert preview('atleti',raw)['skipped']==1
+    p=preview('antropometria',b'atleta_id,data,peso_kg\nx,2026-01-01,50\nx,2026-02-01,-5\n')
+    assert len(p['errors'])==1
+    r=c.post('/api/v1/import/commit',json={'organization_id':org['id'],'profile':'antropometria','staged_hash':p['staged_hash']})
+    assert r.status_code==422
+    assert c.get('/api/v1/state').json()['measurement']==[]
+    raw=b'test_id,atleta_id,data,protocollo_id,map_w,peso_kg,soglia_w,soglia_origine\nt1,x,2026-01-01,OLD,200,50,160,stimata_da_map\nt2,x,2026-02-01,OLD,220,50,176,stimata_da_map\n'
+    commit('test_aerobico',preview('test_aerobico',raw))
+    result=c.get(f"/api/v1/history/{org['id']}").json()
+    assert result['groups'][0]['metrics']['map_w']['median']==220
+    result=c.get(f"/api/v1/history/{org['id']}?mode=tests").json()
+    assert result['groups'][0]['metrics']['map_w']['median']==210
+    assert c.get(f"/api/v1/history/{org['id']}/report/pdf").content.startswith(b'%PDF')
+    assert c.get(f"/api/v1/export/{org['id']}").status_code==200
+
+
+def test_trace_csv_units_and_timestamps():
+    assert decode_trace_csv(b't,power,hr\n0,100,120\n1,110,121\n')['samples'][1]['power']==110
+    with pytest.raises(ValueError):decode_trace_csv(b't,power\n0,100\n0,120\n')

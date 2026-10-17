@@ -1,0 +1,16 @@
+.venv/
+node_modules/
+frontend/dist/
+dist/
+build/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+.local/
+tmp/
+*.sqlite*
+*.fit
+*.key
+output/
+*.tsbuildinfo
+CicloTest.spec

@@ -1,0 +1,128 @@
+"""SQLite materialized records plus immutable changes; every write is transactional."""
+import hashlib
+import json
+import sqlite3
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from pathlib import Path
+from uuid import uuid4
+
+KINDS = {"organization", "group", "athlete", "membership", "measurement", "protocol", "test", "report", "import_batch", "zone_scheme"}
+
+
+def encoded(value):
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, allow_nan=False, separators=(",", ":"))
+
+
+class ConflictError(ValueError):
+    pass
+
+
+class Store:
+    def __init__(self, root):
+        self.root = Path(root)
+        self.root.mkdir(parents=True, exist_ok=True)
+        (self.root / "objects").mkdir(exist_ok=True)
+        with self.connect() as db:
+            db.executescript("""
+                CREATE TABLE IF NOT EXISTS records(id TEXT PRIMARY KEY, kind TEXT NOT NULL, revision TEXT NOT NULL, data TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS changes(id TEXT PRIMARY KEY, body TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS conflicts(id TEXT PRIMARY KEY, body TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS config(key TEXT PRIMARY KEY, value TEXT NOT NULL);
+            """)
+            db.execute("INSERT OR IGNORE INTO config VALUES('device',?)", (str(uuid4()),))
+            schema = db.execute("PRAGMA user_version").fetchone()[0]
+            if schema > 2:
+                raise ValueError('Archivio creato con una versione più recente.')
+            # Additive migration: preserve all existing records and immutable changes.
+            db.execute('CREATE INDEX IF NOT EXISTS records_kind ON records(kind)')
+            db.execute('PRAGMA user_version=2')
+
+    def history(self, id):
+        with self.connect() as db:
+            return [c['record'] for row in db.execute('SELECT body FROM changes ORDER BY rowid')
+                    if (c := json.loads(row[0]))['record']['id'] == id]
+
+    def save_batch(self, entries):
+        """Single transaction including the outbox, used after complete import validation."""
+        with self.connect() as db:
+            device = db.execute("SELECT value FROM config WHERE key='device'").fetchone()[0]
+            result = []
+            for kind, payload in entries:
+                if kind not in KINDS:
+                    raise ValueError('Tipo record non valido.')
+                id, revision = payload.get('id', str(uuid4())), str(uuid4())
+                if db.execute('SELECT 1 FROM records WHERE id=?', (id,)).fetchone():
+                    raise ConflictError('Record importato già presente: ripetere anteprima.')
+                data = {**payload, 'id': id, 'kind': kind, 'revision': revision}
+                change = {'schema':1,'id':revision,'device':device,'base':None,'created_at':datetime.now(timezone.utc).isoformat(),'record':data}
+                if hasattr(self, 'sign_change'):
+                    change=self.sign_change(change)
+                db.execute('INSERT INTO records VALUES(?,?,?,?)',(id,kind,revision,encoded(data)))
+                db.execute('INSERT INTO changes VALUES(?,?)',(revision,encoded(change)))
+                result.append(data)
+            return result
+
+    @contextmanager
+    def connect(self):
+        db = sqlite3.connect(self.root / "archive.sqlite", timeout=30)
+        db.row_factory = sqlite3.Row
+        try:
+            yield db
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+
+    def list(self, kind):
+        with self.connect() as db:
+            return [json.loads(r[0]) for r in db.execute("SELECT data FROM records WHERE kind=? ORDER BY rowid DESC", (kind,))]
+
+    def get(self, id):
+        with self.connect() as db:
+            row = db.execute("SELECT data FROM records WHERE id=?", (id,)).fetchone()
+        if row is None:
+            raise KeyError(id)
+        return json.loads(row[0])
+
+    def save(self, kind, payload, id=None, base=None, parents=None):
+        if kind not in KINDS:
+            raise ValueError("Tipo record non valido.")
+        id = id or str(uuid4())
+        revision = str(uuid4())
+        data = {**payload, "id": id, "kind": kind, "revision": revision}
+        with self.connect() as db:
+            old = db.execute("SELECT revision,kind FROM records WHERE id=?", (id,)).fetchone()
+            if old and (old["revision"] != base or old["kind"] != kind):
+                raise ConflictError("Il record è cambiato: ricaricare prima di salvare.")
+            if not old and base:
+                raise ConflictError("Revisione di origine non disponibile.")
+            device = db.execute("SELECT value FROM config WHERE key='device'").fetchone()[0]
+            change = {"schema": 1, "id": revision, "device": device, "base": base,
+                      "created_at": datetime.now(timezone.utc).isoformat(), "record": data}
+            if parents:
+                change['parents']=list(dict.fromkeys([base]+parents))
+            if hasattr(self, 'sign_change'):
+                change = self.sign_change(change)
+            db.execute("INSERT OR REPLACE INTO records VALUES(?,?,?,?)", (id, kind, revision, encoded(data)))
+            db.execute("INSERT INTO changes VALUES(?,?)", (revision, encoded(change)))
+        return data
+
+    def object(self, content):
+        digest = hashlib.sha256(content).hexdigest()
+        dest = self.root / "objects" / digest
+        if not dest.exists():
+            tmp = dest.with_name(digest + "." + str(uuid4()) + ".tmp")
+            tmp.write_bytes(content)
+            tmp.replace(dest)
+        return digest
+
+    def read_object(self, digest):
+        if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+            raise ValueError("Identificatore allegato non valido.")
+        data = (self.root / "objects" / digest).read_bytes()
+        if hashlib.sha256(data).hexdigest() != digest:
+            raise ValueError("Allegato corrotto.")
+        return data

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ciclo-test"
+version = "0.1.0"
+description = "Archivio e analisi offline dei test incrementali nel ciclismo"
+requires-python = ">=3.12"
+license = "GPL-3.0-or-later"
+dependencies = ["fastapi", "uvicorn", "python-multipart", "fitdecode", "numpy", "matplotlib", "reportlab", "cryptography"]
+
+[project.optional-dependencies]
+desktop = ["PySide6"]
+dev = ["pytest", "httpx", "pyinstaller"]
+
+[project.scripts]
+ciclo-test = "cycling_test.desktop:main"
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+
+[tool.pytest.ini_options]
+pythonpath = ["backend"]
+testpaths = ["tests"]

@@ -7,7 +7,7 @@ from cycling_test.api import create_app
 
 
 def main():
-    parser=argparse.ArgumentParser(description='Server locale di test per la GUI CicloTest')
+    parser=argparse.ArgumentParser(description='Server locale di test per la GUI Fuorigiri')
     parser.add_argument('--data',type=Path,default=Path('.local/ui-test'))
     parser.add_argument('--port',type=int,default=8766)
     args=parser.parse_args()

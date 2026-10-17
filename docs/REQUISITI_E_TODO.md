@@ -1,5 +1,31 @@
 # Requisiti e to-do
 
+## Architettura 1.2 — WebDAV confermato e passi successivi
+
+**TD-59 / CLOUD-02:** supportare **WebDAV su Windows, Fedora e Android**, con la stessa semantica di pacchetti cifrati/firmati, uso offline, ruoli e conflitti. **Requisito confermato, non implementato.** Comprende configurazione URL/cartella, credenziali protette, verifica accessi, ripresa e diagnostica, migrazione dal trasporto cartella e collaudo multipiattaforma. Nextcloud proposto come primo server di riferimento, senza promettere compatibilità con qualsiasi server WebDAV. AND-04 e INC-11 includono questa accettazione.
+
+Ordine tecnico raccomandato: interfaccia di trasporto comune → WebDAV desktop → collaudo/porting Android nella fase mobile; lo spike Drive può procedere indipendentemente. Supporto WebDAV non subordinato a OAuth o alla scelta di Google/Dropbox. [Piano operativo aggiornato](PROSSIMI_PASSI.md). Software invariato 0.4.1.
+
+
+## Aggiornamento architettura 1.1 — accesso diretto alle API cloud
+
+**TD-58 / CLOUD-01 — Verificare e progettare lo scambio tramite API ufficiali**, senza dipendenza dal client cartella su Android o dal server Fuorigiri. Ricerca completata in [SINCRONIZZAZIONE_CLOUD_API.md](SINCRONIZZAZIONE_CLOUD_API.md): Drive e Dropbox fattibili come trasporto, con permessi differenti. Proposta: spike Drive con `drive.file` e due account, adapter comune, gestione OAuth/portachiavi, poi Dropbox condiviso; OneDrive candidato; WebDAV ora confermato per desktop e Android in TD-59. **Ricerca/disegno completati; integrazioni e prove autenticate non implementate.**
+
+Il lavoro entra in INC-11/TD-50 e AND-04, con prima verifica sul desktop prima della fase Android. UI-19 esplicita account, cartella, consenso e stato; il ruolo della società resta distinto dall’account cloud. Migrazione dal trasporto cartella da collaudare, soprattutto per file aggiunti esternamente e accesso Drive per-app. Software invariato 0.4.1.
+
+## Aggiornamento 0.4.1 / architettura 1.0 — metodi e Android
+
+Step 2 eseguito come **definizione**, non come implementazione dei nuovi motori: [METODI_INCREMENTALE.md](METODI_INCREMENTALE.md). Confermati durata/copertura ≥95% separati dall’aderenza e assenza di un coefficiente universale di soglia/FTHR. Finestre attuali esplicitate come convenzioni; scostamenti numerici del codice e decisioni specialistiche residue documentati. INC-01–10 restano da implementare e collaudare, INC-11 parziale.
+
+| ID | Requisito / decisione | Stato e accettazione |
+|---|---|---|
+| TD-55 | Definire precisamente metodi incrementali, fonti, finestre, qualità, preset/versioni e casi limite. | **Specifica 1.0 redatta**; convenzioni costanti confermate. Varianti lattato/gas/rampa da validare prima del relativo motore. Successiva attuazione in INC-01–10; nessun ricalcolo storico automatico. |
+| TD-56 | Uniformare il nome Fuorigiri in sorgenti, documenti, package, comandi, header, ambiente e distribuzione. | **Implementato**: `Fuorigiri.exe`, `dist/Fuorigiri/`, `FUORIGIRI_*`, `X-Fuorigiri-*`. Riconoscimento conservativo dei percorsi/canali preesistenti con test. |
+| TD-57 | Sviluppare l’app **Android** offline first per telefoni/tablet, con società, test, storici, report e scambio interoperabile. | **Richiesto, non implementato**. AND-01–05 e UI-18 in [ANDROID.md](ANDROID.md); stack Capacitor + Python incorporato proposto, subordinato allo spike. |
+
+Ordine aggiornato: **(1)** completare e consolidare l’incrementale desktop, predisponendo i contratti portabili; **(2)** fattibilità e sviluppo Android con collaudo offline e scambio desktop/mobile; **(3)** Sprint breve / potenza neuromuscolare, Wingate 30 s, Wingate 15 s. La fattibilità Android può iniziare durante il consolidamento; non si anticipano i nuovi motori prima della copertura incrementale. I candidati ulteriori restano distinti.
+
+
 ## Stato corrente 0.4 — società, ripristino e accessi
 
 17 ottobre 2026. Implementata la prima iterazione TD-45–49: percorsi separati, anteprima/ripristino ZIP, recupero cifrato del fondatore, copia indipendente e di consultazione, prima sincronizzazione da invito anche senza dati, ruoli visibili e rinnovo con nuovo invito. Guida operativa e limiti in [SOCIETA_BACKUP_E_ACCESSI.md](SOCIETA_BACKUP_E_ACCESSI.md). TD-50 rimane parziale per audit completo/rotazione/portachiavi; INC-11 non è completato nel suo insieme. Validazione locale: 45 test, TypeScript/Vite, GUI con dati sintetici; nessun collaudo cloud remoto o Fedora dichiarato.
@@ -80,7 +106,7 @@ Stati: **presente** = funzionalità riscontrata nel codice; **parziale** = solo 
 | TD-22 | Inserire RPE da 1 a 10, associata al test e alla scala dichiarata. | **Presente**: RPE intera 1–10, scala conservata negli input. | §8.1 |
 | TD-23 | In assenza di storico proporre valori medi configurati per i dati manuali, con fonte e conferma esplicita. | **Presente come configurazione facoltativa**: preset con fonte/popolazione, proposto su scelta esplicita e marcato stimato. Nessun valore numerico universale precompilato. | §8.1 |
 | TD-24 | Richiedere data di nascita facoltativa; continuare ad accettare anno soltanto o dato assente. | **Presente**: data facoltativa, solo anno o assenza; verifica coerenza data/anno. | §6.1 |
-| TD-25 | Scegliere un nome legato alla cultura ciclistica italiana, mantenendo Performance Lab e prevedendo nomi coordinati per la suite. | **Da scegliere**: proposte documentate; nome della preview ancora Ciclo Test. | §15 |
+| TD-25 | Scegliere un nome legato alla cultura ciclistica italiana, mantenendo Performance Lab e prevedendo nomi coordinati per la suite. | **Confermato: Fuorigiri Performance Lab**, rinomina tecnica completata nella 0.4.1. | §15 |
 | TD-26 | Usare il testo «Strumenti aperti a supporto del ciclismo giovanile» nella parte bassa dell'app. | **Presente**: motto nel footer accanto all’attribuzione fissa richiesta. | §5.1, UI-03 |
 | TD-27 | Confrontare prodotti open source e commerciali e ricavarne funzionalità candidate. | **Completato come prima ricognizione**: CONFRONTO_PRODOTTI.md; nessuna estensione automatica del perimetro. | §12 |
 | TD-28 | Configurare zone FC e potenza in percentuale di riferimenti selezionati e riportarle nei report. | **Presente**: preset confermato, schemi N zone per canale, riferimenti espliciti, tempi in zona e report/export dinamici; metodi dei riferimenti restano espliciti. | §8.1, §9 |

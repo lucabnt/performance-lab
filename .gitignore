@@ -14,7 +14,7 @@ tmp/
 *.key
 output/
 *.tsbuildinfo
-CicloTest.spec
+Fuorigiri.spec
 identity.json
 workspaces.json
 invito-*.json

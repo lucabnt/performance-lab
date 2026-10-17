@@ -1,5 +1,14 @@
 # Come testare il progetto, inclusa l'interfaccia
 
+## Rinomina 0.4.1 e specifica dei metodi
+
+Avvio da sorgenti e procedura GUI restano quelli sotto. Distribuzione aggiornata: `dist/Fuorigiri/Fuorigiri.exe` su Windows, `dist/Fuorigiri/Fuorigiri` su Linux dopo build nativa. Comandi installati `fuorigiri` e `fuorigiri-performance-lab`; variabili `FUORIGIRI_DATA`, `FUORIGIRI_TOKEN`, `FUORIGIRI_API_URL`. Header interni `X-Fuorigiri-Token` e `X-Fuorigiri-Workspace`: frontend e backend devono essere aggiornati insieme. Riaprire l’app dopo l’aggiornamento per ottenere una nuova sessione; impostazione lingua e selezione società nel browser usano nuove chiavi.
+
+Nuove installazioni: `%LOCALAPPDATA%/Fuorigiri` o `~/.local/share/Fuorigiri`. Se esiste soltanto la directory storica, il programma la riusa senza rinominarla: il registro contiene percorsi assoluti. Se esistono entrambe, usa Fuorigiri; per aprire l’altra passare `--data` esplicito. Non spostare archivi a mano. Lo stesso vale per un canale cloud precedente già presente: viene riutilizzato con le stesse chiavi; i nuovi canali hanno prefisso `fuorigiri-`. Due canali con la stessa chiave sono segnalati come errore invece di dividerne la storia. Per un canale nuovo aggiornare tutti i collaboratori alla stessa versione prima dello scambio. Il formato cifrato e l’estensione `.ctsync` rimangono compatibili.
+
+La [specifica 1.0](METODI_INCREMENTALE.md) contiene i risultati attesi per lo sviluppo del motore successivo: **non tutti i suoi casi passano già nel motore 0.2.0**. Non confondere i test della rinomina con la validazione dei futuri algoritmi. Android è soltanto pianificato in [ANDROID.md](ANDROID.md).
+
+
 Aggiornato il 17 ottobre 2026. I comandi partono dalla cartella del progetto. Le prove usano archivi sintetici separati dai dati operativi. L'interfaccia e il motore funzionano senza collegamenti a servizi esterni.
 
 ## Novità della preview 0.4 — società, backup e accessi
@@ -18,7 +27,7 @@ Le prove automatiche simulano archivi diversi sullo stesso PC; i client cloud re
 
 ## Novità della preview 0.3 (precedenti)
 
-Nome dell'app **Fuorigiri Performance Lab**; il bundle conserva il nome tecnico CicloTest e legge le directory precedenti. Suite automatica: 32 casi. Per provare la GUI con i nuovi esempi usare un percorso nuovo:
+Nome dell'app **Fuorigiri Performance Lab**; dalla 0.4.1 anche il bundle si chiama Fuorigiri. La sezione seguente conserva la procedura 0.3 (32 casi allora disponibili). Per provare la GUI con i nuovi esempi usare un percorso nuovo:
 
 ```powershell
 .venv/Scripts/python.exe scripts/demo.py --data .local/demo-fuorigiri
@@ -130,14 +139,14 @@ Set-Location frontend
 npm run dev
 ```
 
-Aprire l'URL **Vite sviluppo** stampato dal server Python, incluso il suo token. Vite usa `127.0.0.1:5173` e inoltra `/api` al backend `127.0.0.1:8766`. Per un backend su un'altra porta configurare `CICLO_API_URL` prima di avviare Vite:
+Aprire l'URL **Vite sviluppo** stampato dal server Python, incluso il suo token. Vite usa `127.0.0.1:5173` e inoltra `/api` al backend `127.0.0.1:8766`. Per un backend su un'altra porta configurare `FUORIGIRI_API_URL` prima di avviare Vite:
 
 ```powershell
-$env:CICLO_API_URL = 'http://127.0.0.1:8767'
+$env:FUORIGIRI_API_URL = 'http://127.0.0.1:8767'
 npm run dev
 ```
 
-Linux: `CICLO_API_URL=http://127.0.0.1:8767 npm run dev`. Non basta aprire `frontend/index.html` direttamente dal filesystem: serve il backend e, in sviluppo, Vite.
+Linux: `FUORIGIRI_API_URL=http://127.0.0.1:8767 npm run dev`. Non basta aprire `frontend/index.html` direttamente dal filesystem: serve il backend e, in sviluppo, Vite.
 
 ## 5. Checklist manuale della GUI
 
@@ -186,11 +195,11 @@ Dopo la build frontend:
 
 ```powershell
 .venv/Scripts/python.exe scripts/build.py
-dist/CicloTest/CicloTest.exe --smoke-test --data .local/smoke-02
-dist/CicloTest/CicloTest.exe --data .local/ui-test
+dist/Fuorigiri/Fuorigiri.exe --smoke-test --data .local/smoke-02
+dist/Fuorigiri/Fuorigiri.exe --data .local/ui-test
 ```
 
-Controllare che `.local/smoke-02/smoke-ok.txt` esista. La prova smoke verifica import, logo e avvio del backend HTTP senza aprire finestre; aprire anche l'app per verificare la GUI. Distribuire tutta `dist/CicloTest/`, non il solo EXE. Ripetere su un PC pulito, senza Python/Node. La build non equivale ancora a installer firmato. Un bundle Linux va costruito e verificato su Linux.
+Controllare che `.local/smoke-02/smoke-ok.txt` esista. La prova smoke verifica import, logo e avvio del backend HTTP senza aprire finestre; aprire anche l'app per verificare la GUI. Distribuire tutta `dist/Fuorigiri/`, non il solo EXE. Ripetere su un PC pulito, senza Python/Node. La build non equivale ancora a installer firmato. Un bundle Linux va costruito e verificato su Linux.
 
 Usare lo script di build del progetto: su Windows isola il PATH del sottoprocesso per evitare che DLL di altri programmi finiscano nel bundle. Nel collaudo è stata individuata una copia ICU di Poppler che impediva a Qt di caricarsi; la correzione è nello script, senza modifiche al PATH di sistema. Se si sta usando un bundle precedente alla correzione, ricostruirlo interamente prima di ripetere lo smoke test.
 

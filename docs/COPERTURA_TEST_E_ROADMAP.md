@@ -5,8 +5,15 @@ Stato della preview Fuorigiri Performance Lab 0.4, aggiornamento del 17 ottobre 
 ## Sequenza di sviluppo confermata
 
 1. **Fase 1 — Copertura completa dell'incrementale e consolidamento del prodotto:** INC-01–11, con ripristino, prima sincronizzazione e ruoli descritti in TD-45–50 del [registro requisiti](REQUISITI_E_TODO.md). Ogni voce deve superare il suo criterio di accettazione; formule, corpus reale e prove sulle piattaforme sono dipendenze da acquisire, non esclusioni dal perimetro.
-2. **Fase 2 — Primi motori aggiuntivi:** Sprint breve / potenza neuromuscolare (TD-52), Wingate 30 s (TD-53), Wingate 15 s (TD-54). Il 15 s è stato usato in passato dalla società e deve avere una propria identità/versione, con metodo storico documentato. Prima di implementarli servono specifiche del protocollo e risultati attesi; non si deducono automaticamente dal nome del test.
-3. **Dopo la fase 2 — Candidati ulteriori:** CP/W′, time trial/FTP, sprint ripetuti, test submassimali e altri protocolli di laboratorio rimangono candidati, senza impegno di implementazione in questa fase. L'integrazione dei gas in un **test incrementale**, invece, è già inclusa in INC-08.
+2. **Fase 2 — Android:** fattibilità, sviluppo e collaudo dell’app autonoma offline (TD-57/AND-01–05), con report e scambio interoperabile con desktop. Contratti e spike possono essere preparati già durante il consolidamento della fase 1. [Architettura Android](ANDROID.md).
+3. **Fase 3 — Primi motori aggiuntivi:** Sprint breve / potenza neuromuscolare (TD-52), Wingate 30 s (TD-53), Wingate 15 s (TD-54). Il 15 s è stato usato in passato dalla società e deve avere una propria identità/versione, con metodo storico documentato. Prima di implementarli servono specifiche del protocollo e risultati attesi; non si deducono automaticamente dal nome del test.
+4. **Dopo la fase 3 — Candidati ulteriori:** CP/W′, time trial/FTP, sprint ripetuti, test submassimali e altri protocolli di laboratorio rimangono candidati, senza impegno di implementazione in questa fase. L'integrazione dei gas in un **test incrementale**, invece, è già inclusa in INC-08.
+
+## Inserimento Android e step 2 — revisione 1.0
+
+La [specifica dei metodi](METODI_INCREMENTALE.md) formalizza lo step 2 senza dichiarare completate le lacune software: regola degli step confermata, aderenza separata e nessun coefficiente universale di soglia/FTHR. Gli scostamenti rilevati e i metodi specialistici ancora da selezionare sono espliciti.
+
+La nuova richiesta inserisce **Android fra l’incrementale desktop e i nuovi test**. Contratti portabili e spike possono procedere durante il consolidamento; il rilascio mobile richiede archivio autonomo offline, report, ruoli e scambio interoperabile. Non esclude nessun INC né cambia l’ordine Sprint breve → Wingate 30 s → Wingate 15 s.
 
 ## Cosa copre oggi
 
@@ -61,7 +68,7 @@ Le fonti già raccolte per sprint di 6 s e Wingate 30 s sono rispettivamente lo 
 
 ## Ricognizione degli altri test e candidati ulteriori
 
-La tabella conserva il contesto della ricognizione precedente. Per sprint breve e Wingate 30 s prevale la fase 2 confermata sopra; gli sprint ripetuti e gli altri candidati restano fuori dal perimetro confermato. Le vecchie priorità sono indicative e non superano la sequenza concordata.
+La tabella conserva il contesto della ricognizione precedente. Per sprint breve e Wingate 30 s prevale la fase 3 aggiornata sopra, dopo Android; gli sprint ripetuti e gli altri candidati restano fuori dal perimetro confermato. Le vecchie priorità sono indicative e non superano la sequenza concordata.
 
 | Candidato | Valore per la società | Dati / analisi da aggiungere | Priorità proposta |
 |---|---|---|---|

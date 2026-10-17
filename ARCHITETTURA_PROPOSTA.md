@@ -1,6 +1,14 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
-Versione 0.9 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.4 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+Versione 1.2 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.4.1 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+
+## Revisione 1.1 / software invariato 0.4.1 — API cloud
+
+Verifica ufficiale Drive/Dropbox/OneDrive/WebDAV e aggiornamento Android in CLOUD-01/UI-19 (§19). Trasporto diretto API proposto senza server Fuorigiri obbligatorio; permessi per cartella distinti per provider e spike inter-account necessario. [Dettagli e accettazione](docs/SINCRONIZZAZIONE_CLOUD_API.md). Nessuna integrazione già implementata.
+
+## Revisione 1.0 / software 0.4.1 — metodi, nome e Android
+
+Step 2 definito nella [specifica incrementale](docs/METODI_INCREMENTALE.md); conferme su completezza/aderenza e soglia senza coefficienti universali. Rinomina tecnica Fuorigiri con compatibilità degli archivi su disco; Android aggiunto come sviluppo dopo consolidamento incrementale desktop e prima dei nuovi test. Scelte MET-01, NAME-01, MOB-01 e UI-18 nel §18. I nuovi algoritmi e l’app Android rimangono da implementare.
 
 ## Revisione 0.9 / software 0.4 — recupero e accessi
 
@@ -370,7 +378,7 @@ Il costo operativo può limitarsi allo spazio cloud e all'eventuale client terzo
 
 Se diventano necessari ruoli fini, tanti operatori, accesso web continuativo o gestione centralizzata: servizio FastAPI con PostgreSQL, archivio oggetti e autenticazione tramite provider standard. Distribuzione container per VPS/NAS, servizio gestito possibile. Il client resta offline first e usa lo stesso contratto di modifiche.
 
-Per telefono/tablet: prima consultazione web di risultati autorizzati, poi eventualmente import e modifica. React è riutilizzabile, ma persistenza offline browser, OAuth, sincronizzazione, quote storage e disponibilità del motore Python sono lavoro aggiuntivo. Una PWA completamente autonoma non nasce semplicemente pubblicando la UI desktop.
+Per telefono/tablet Android è ora richiesto lo sviluppo di un’app autonoma offline, con consultazione, import e modifica secondo ruolo; supera la precedente ipotesi di sola consultazione web iniziale. React è riutilizzabile tramite adapter e layout responsive, ma archivio privato, motore Python incorporato e integrazione cloud richiedono sviluppo dedicato. Scelte, alternative e dipendenze in [ANDROID.md](docs/ANDROID.md), MOB-01/UI-18.
 
 ## 11. Distribuzione, manutenzione e progetto aperto
 
@@ -413,7 +421,7 @@ Dipendenze bloccate, CI Windows/Linux, formattazione e controlli statici, change
 | 2 — Archivio utilizzabile | Società/gruppi e appartenenze storiche; catalogo/versioni protocolli; export conforme ai tre CSV; revisioni, confronto storico e backup/ripristino |
 | 3 — Sincronizzazione pilota | Due PC offline modificano dati, si riconnettono, convergono o mostrano conflitti espliciti; nessuna perdita silenziosa |
 | 4 — Rilascio desktop | Installer su PC puliti, manuale italiano, pacchetti firmati/verificabili, gestione errori e migrazioni provata |
-| 5 — Accesso mobile | Progetto separato per consultazione web e successivo offline mobile |
+| 5 — Android | App autonoma offline dopo consolidamento incrementale desktop e prima dei nuovi motori Sprint/Wingate; TD-57, AND-01–05 |
 
 Il dettaglio aggiornato delle priorità è nel [registro requisiti](docs/REQUISITI_E_TODO.md). La fase archivio comprende ora import CSV, revisioni manuali, ciclo di vita, categorie/stagioni, confronti e report aggregati. La fase sync richiede isolamento per società e ruoli, non solo trasferimento file. Branding e traduzioni IT/EN rientrano nel rilascio desktop. Il [confronto prodotti](docs/CONFRONTO_PRODOTTI.md) propone ulteriori candidati, senza estendere automaticamente il perimetro approvato.
 
@@ -482,8 +490,30 @@ Integrazione proposta: Test pubblica un risultato validato con atleta, data, met
 
 Pacchetti di scambio con namespace per dominio/app, schema e dipendenze; un client che non comprende un dominio lo conserva senza applicarlo e non lo elimina. Migrazioni e compatibilità sono dichiarate, con prove fra versioni diverse. Condividere i metadati necessari e artefatti autorizzati, non copie indiscriminate di ogni file. Riutilizzare il trasporto cloud per workspace mantenendo separazione logica e permessi.
 
-TD-25, proposta di nome: **Scia Performance Lab**, con **Scia Test** e **Scia Allenamenti**. Alternative: **Gregario Performance Lab** (supporto al lavoro del tecnico) e **Palmarès Performance Lab** (richiamo alla storia sportiva). Sono proposte linguistiche, non nomi approvati né verificati per disponibilità o marchi. Fino alla scelta, CicloTest resta il nome della preview. Il motto richiesto e il credito a Progetto Ciclismo/Luca Bontempi sono indipendenti dal nome scelto.
+TD-25 concluso: nome confermato **Fuorigiri Performance Lab**, adottato anche negli identificatori tecnici della 0.4.1. Le precedenti proposte Scia, Gregario e Palmarès sono superate. Il motto richiesto e il credito fisso a Progetto Ciclismo/Luca Bontempi sono indipendenti dai nomi delle società archiviate.
 
 ## 16. Implementazione 0.2 e collaudo
 
 Il codice implementa i flussi locali, le zone dinamiche, gli storici e i workspace descritti nel [README](README.md). Stato per requisito nel [registro](docs/REQUISITI_E_TODO.md); istruzioni per desktop, browser, Vite e collaborazione in [Testare il progetto](docs/TESTARE_IL_PROGETTO.md). Restano espliciti i limiti scientifici, la localizzazione parziale delle diagnostiche, il recupero delle chiavi, il collaudo cloud reale e il rilascio Fedora. Il branding fisso prevale sulle precedenti ipotesi di personalizzazione.
+
+## 18. Metodi incrementali e Android — revisione 1.0
+
+**MET-01:** [Specifica 1.0 dei metodi](docs/METODI_INCREMENTALE.md), distinta dalla versione del motore. Ultimo step completo su durata e copertura potenza ≥95%, aderenza descrittiva separata; interpolazione solo secondaria; soglia/FTHR senza coefficienti universali. Contratto per campioni, finestre, fonti, null, revisione e confronto; metodi specialistici da validare come indicato. La definizione non chiude i requisiti INC prima di codice, GUI, report e collaudo.
+
+**NAME-01:** Fuorigiri Performance Lab è anche il nome tecnico della distribuzione: `Fuorigiri.exe`, package/comando `fuorigiri`, ambiente `FUORIGIRI_*`, header `X-Fuorigiri-*`. Sostituisce UI-16 della 0.3; il modulo di dominio `cycling_test` resta generico. Nessun cambio di branding/credito fisso. Compatibilità su disco per archivi/canali preesistenti, evitando spostamenti che romperebbero i percorsi o cambi di chiavi.
+
+**MOB-01:** Android richiesto, non più semplice possibilità futura. Contratti portabili preparati con l’incrementale; app dopo consolidamento desktop e prima di Sprint breve, Wingate 30 s e Wingate 15 s. Stack raccomandato da verificare con spike: React/TypeScript + Capacitor, bridge Kotlin, motore Python incorporato tramite Chaquopy; non FastAPI/Qt sul telefono. Dati privati SQLite, migrazioni e stesso protocollo firmato/cifrato, adapter trasporto desktop-cartella/mobile-SAF o API provider. Nessun database aperto sincronizzato via cloud. Alternative e criteri completi in [ANDROID.md](docs/ANDROID.md).
+
+**UI-18:** design system, etichette e branding condivisi nella suite; layout telefono/tablet dedicati con navigazione compatta, grafici touch e flussi offline/import/export espliciti. Adapter applicativo al posto di chiamate fetch disseminate nella UI; desktop continua a utilizzare FastAPI, mobile bridge locale. Non promettere riuso integrale dei layout desktop né accesso a Drive come a un normale percorso locale.
+
+## 19. API cloud dirette — revisione 1.1
+
+**CLOUD-01:** [verifica e disegno delle API](docs/SINCRONIZZAZIONE_CLOUD_API.md), TD-58. Il trasporto cartella resta disponibile; gli adapter API Drive/Dropbox consentiranno lo scambio diretto dei pacchetti cifrati su desktop/Android senza client cloud o server Fuorigiri obbligatori. Android usa API come obiettivo ordinario e SAF/import-export come alternative. Proposta di priorità: spike Drive con permessi minimi e due account, adapter desktop, porting Android; Dropbox successivo e OneDrive candidato; WebDAV successivamente confermato in CLOUD-02 (§20). Non è implementazione né promessa di equivalenza fra permessi dei provider.
+
+Drive `drive.file` è per-file e non va assunto come accesso ricorsivo universale a una cartella: collaudare contenuti creati dall’app, altri collaboratori e client cartella esterno. Dropbox App Folder non è una cartella collaborativa; Full Dropbox ha un consenso più ampio del filtro applicativo. Distinguere OAuth, condivisione del provider e ruolo firmato Fuorigiri; token protetti solo localmente. La compatibilità fra trasporti e la migrazione richiedono inventario e hash verificati.
+
+**UI-19:** collegamento provider/account e creazione/selezione della cartella guidati; mostrare perimetro reale dei permessi, destinazione, coda/ultimo successo, riconnessione ed errori. Nessuna creazione implicita di una società o attribuzione di admin tramite login cloud. Adapter non disponibili non presentati come operativi. Nessun ricalcolo dei test o cambiamento del software nella revisione 1.1.
+
+## 20. WebDAV multipiattaforma — revisione 1.2
+
+**CLOUD-02 / TD-59:** confermato dall’utente il supporto WebDAV per Windows, Fedora e Android; sostituisce la classificazione come candidato della 1.1. Stesso contratto di trasporto, pacchetti cifrati/firmati, outbox locale, ruoli e conflitti. Configurazione URL/cartella e credenziali protette, diagnostica, ripresa e collaudo sulle piattaforme; nessun server Fuorigiri obbligatorio. Proposta: WebDAV primo adapter remoto dopo l’astrazione della cartella, Nextcloud come server di riferimento iniziale; Drive mantiene uno spike separato. Supporto richiesto, non implementato. [Specifiche](docs/SINCRONIZZAZIONE_CLOUD_API.md) e [sequenza operativa](docs/PROSSIMI_PASSI.md).

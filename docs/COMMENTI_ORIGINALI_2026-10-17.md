@@ -1,5 +1,8 @@
 # Commenti originali del 17 ottobre 2026
 
+Nota editoriale 0.4.1: per richiesta dell’utente il nome storico del prodotto è stato normalizzato in **Fuorigiri** anche nelle citazioni sottostanti; per questo il testo non è più una trascrizione letterale del nome originario. Il resto dei commenti conserva la funzione di fonte storica, non di requisito ancora da decidere.
+
+
 Trascrizione della sezione To-Do, conservata per tracciabilità. La versione operativa riscritta è in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md).
 
 ## To-Do 
@@ -27,8 +30,8 @@ Trascrizione della sezione To-Do, conservata per tracciabilità. La versione ope
 - RPE da 1 a 10 tra input manuali import test
 - se nessuno storico dei dati manuali import avere medio default per altezza, peso etc
 - creazione atleta, chiedi data di nascita non solo anno, ma non bloccante
-- nome soluzione CicloTest PERFORMANCE LAB: performance lab va bene, cerchiamo un nome simpatico legato alla cultura ciclistica italiana al posto di CicloTest
-- nella parte bassa: Ciclo Test Strumenti aperti per osservare la progressione > Strumenti aperti a supporto del ciclismo giovanile
+- nome soluzione Fuorigiri PERFORMANCE LAB: performance lab va bene, cerchiamo un nome simpatico legato alla cultura ciclistica italiana al posto di Fuorigiri
+- nella parte bassa: Fuorigiri Strumenti aperti per osservare la progressione > Strumenti aperti a supporto del ciclismo giovanile
 - verificare quali sono i principali software concorrenti, open o closed e elencare le principali funzionalità che potrebbero essere implementate
 - report del test dovrebbe riportare anche zone per frequenza e per watt, da definire in modo custom in termini di percentuale rispetto a FC max o FC soglia e MAP o watt soglia all'import del test, vedi allegato per provare a definire dei default
 - input manuali sul test dovrebbero essere modificabili anche dopo import, uno potrebbe non sapere prima di vedere il grafico il momento di fine dello sforzo per esempio

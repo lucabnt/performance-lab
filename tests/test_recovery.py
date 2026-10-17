@@ -19,7 +19,7 @@ def club(root):
     return manager,entry,store,athlete
 
 def client(root,workspace=''):
-    c=TestClient(create_app(root,token='test'));c.headers.update({'X-Ciclo-Token':'test','X-Ciclo-Workspace':workspace});return c
+    c=TestClient(create_app(root,token='test'));c.headers.update({'X-Fuorigiri-Token':'test','X-Fuorigiri-Workspace':workspace});return c
 
 def modified_zip(raw,transform):
     with zipfile.ZipFile(io.BytesIO(raw)) as z:files={n:z.read(n) for n in z.namelist()}
@@ -89,7 +89,7 @@ def test_api_preview_commit_recovery_and_bootstrap_roles(tmp_path):
     invite=c.post('/api/v1/workspace/invite',json={'name':'Lettore PC2','role':'viewer','password':PASSWORD});assert invite.status_code==200
     joined=b.post('/api/v1/workspaces/join',data={'password':PASSWORD},files={'file':('invite.json',invite.content)})
     assert joined.status_code==200,joined.text
-    b.headers['X-Ciclo-Workspace']=entry['id']
+    b.headers['X-Fuorigiri-Workspace']=entry['id']
     assert not b.get('/api/v1/workspace/members').json()['ready']
     assert b.get('/api/v1/state').json()['organization']==[]
     assert b.post('/api/v1/workspace/recovery',json={'password':PASSWORD}).status_code==403
@@ -149,7 +149,7 @@ def test_api_recover_and_apply_promotion_invitation(tmp_path):
     a,entry,source,athlete=club(tmp_path/'a');owner=client(tmp_path/'a',entry['id']);reader=client(tmp_path/'b')
     raw=owner.post('/api/v1/workspace/invite',json={'name':'PC reader','role':'viewer','password':PASSWORD}).content
     reader.post('/api/v1/workspaces/join',data={'password':PASSWORD},files={'file':('invite.json',raw)})
-    reader.headers['X-Ciclo-Workspace']=entry['id']
+    reader.headers['X-Fuorigiri-Workspace']=entry['id']
     current=reader.get('/api/v1/workspace/members').json()['current']['id']
     renewed=owner.post('/api/v1/workspace/invite',json={'name':'PC admin','role':'admin','password':PASSWORD,'replace_id':current})
     assert renewed.status_code==200
@@ -162,7 +162,7 @@ def test_api_recover_and_apply_promotion_invitation(tmp_path):
     new=client(tmp_path/'recovered');p=new.post('/api/v1/workspaces/restore/preview',files={'file':('backup.zip',data)}).json()
     result=new.post('/api/v1/workspaces/restore',data={'backup_hash':p['backup_hash'],'mode':'recover','password':PASSWORD},files={'recovery_file':('keys.json',keys)})
     assert result.status_code==200,result.text
-    new.headers['X-Ciclo-Workspace']=entry['id']
+    new.headers['X-Fuorigiri-Workspace']=entry['id']
     assert new.get('/api/v1/state').json()['operator']['owner']
     assert new.post('/api/v1/workspace/invite',json={'name':'New PC','role':'viewer','password':PASSWORD}).status_code==200
 

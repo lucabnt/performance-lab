@@ -1,0 +1,27 @@
+# Prossimi passi — architettura 1.2
+
+17 ottobre 2026. Software attuale 0.4.1. Passi già svolti: prima iterazione società/ripristino/accessi (con lacune operative ancora aperte), definizione dei metodi incrementali costanti e ricerca delle API cloud. WebDAV confermato per Windows/Fedora e Android. Il piano seguente ordina il lavoro ancora da eseguire; non dichiara completate le funzioni pianificate.
+
+## Prossima iterazione: metodi versionati e motore costante
+
+1. **Registro dei preset e migrazione dell’archivio.** Separare protocollo, metodo e revisione del risultato; conservare parametri risolti e provenienza. Test preesistenti senza preset classificati come legacy, senza ricalcolo automatico. Migrazione testata anche su errore e riapertura di backup precedente.
+2. **Attuare la specifica incrementale costante.** Copertura senza arrotondamento prima delle soglie, finestre temporali, controlli dei canali, FC/recupero e valori mancanti, interpolazione separata, aderenza descrittiva. Nessun coefficiente universale di soglia. Vettori numerici della specifica trasformati in test; nuova versione del motore, risultati storici preservati.
+3. **Portare il contratto in UI e report.** Metodo/versione, completezza distinta dall’aderenza, qualità per metrica e fonti leggibili. Confronto esplicito fra revisione precedente e nuova; aggregati separati quando i metodi non sono confrontabili.
+
+Questo è il **prossimo blocco da implementare**: rende operativa la definizione già concordata, senza dipendere da account cloud o file di laboratorio ancora mancanti. Accettazione: risultati sintetici attesi, migrazione reversibile tramite backup verificato, GUI/report coerenti e nessuna modifica silenziosa ai test preesistenti.
+
+## Iterazioni successive dell’incrementale desktop
+
+4. **Allineamento e FIT reali, INC-01/03/06/10.** Marker visuali, fine sforzo e pause/esclusioni con motivo; dispositivi/condizioni strutturati, provenienza e riconciliazione storica. Corpus autorizzato da GoldenCheetah/MyWhoosh/Zwift con casi temporali e risultati di riferimento. I FIT sintetici restano test utili, non certificazione degli esportatori.
+5. **Completare i metodi specialistici, INC-04/05/08/09.** Rampe/discontinui, lattato, scambi gassosi e ripetibilità. Prima dei rispettivi motori acquisire varianti/formule del laboratorio, esempi di dati e risultati attesi: non inventare un Dmax o criteri VO₂max dal solo nome. Il nucleo costante non attende questi materiali.
+6. **Consolidare archivio e scambio, INC-11/TD-50/58/59.** Estrarre il trasporto cartella dietro un’interfaccia comune; implementare **WebDAV desktop**, credenziali nel portachiavi, ripresa e conflitti/controlli firmati. Proporre Nextcloud come server iniziale di collaudo; definire esplicitamente gli altri server supportati. Spike Drive con due account in un’attività indipendente, poi adapter Drive/Dropbox secondo esito e priorità. Completare rotazione/recupero, audit e migrazioni: WebDAV da solo non chiude la sicurezza o l’intero INC-11.
+7. **Rilascio desktop collaudato.** Windows e Fedora puliti, installazione/aggiornamento/ripristino, localizzazione completa, report, sincronizzazione con interruzioni e procedura di distribuzione. Distinguere build locale da rilascio operativo validato.
+
+L’estrazione dei trasporti e la fattibilità WebDAV/Drive possono avanzare durante le altre iterazioni; il numero non impone di attendere il completamento dei gas per iniziare la sincronizzazione. Per il collaudo remoto serviranno un server e account di test: questo piano non presume accesso a servizi o credenziali dell’utente.
+
+## Android e nuovi test
+
+8. **Android, TD-57/AND-01–05.** Spike React/Capacitor/Python incorporato preparabile durante il consolidamento; sviluppo completo dopo la copertura incrementale desktop. Archivio autonomo offline, import, grafici, report e **WebDAV mobile confermato**, con prove di scambio Windows/Fedora/Android; adapter Drive/Dropbox quando effettivamente disponibili. Il solo visualizzatore o import/export manuale non chiude il requisito.
+9. **Altri test, nell’ordine confermato:** Sprint breve / potenza neuromuscolare → Wingate 30 s → Wingate 15 s. Definire i protocolli e recuperare quello storico 15 s prima del suo motore, mantenendo metodi e confronti separati. Gli altri candidati restano distinti.
+
+Riferimenti: [metodi incrementali](METODI_INCREMENTALE.md), [copertura completa INC](COPERTURA_TEST_E_ROADMAP.md), [trasporti cloud e WebDAV](SINCRONIZZAZIONE_CLOUD_API.md), [Android](ANDROID.md), [registro requisiti](REQUISITI_E_TODO.md).

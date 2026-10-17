@@ -5,7 +5,7 @@ type Props={api:any,run:any,refresh:any,download:any,token:string,workspace:stri
 const roleName=(role:string,owner=false)=>owner?tr('Fondatore'):role==='admin'?tr('Admin dati'):tr('Visualizzatore');
 
 async function secretDownload(path:string,data:Row,props:Props,name:string){
- const response=await fetch('/api/v1/'+path,{method:'POST',headers:{'Content-Type':'application/json','X-Ciclo-Token':props.token,'X-Ciclo-Workspace':props.workspace},body:JSON.stringify(data)});
+ const response=await fetch('/api/v1/'+path,{method:'POST',headers:{'Content-Type':'application/json','X-Fuorigiri-Token':props.token,'X-Fuorigiri-Workspace':props.workspace},body:JSON.stringify(data)});
  if(!response.ok)throw new Error((await response.json()).detail);
  const url=URL.createObjectURL(await response.blob()),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
 }

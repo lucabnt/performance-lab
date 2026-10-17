@@ -1,5 +1,10 @@
 # Fuorigiri Performance Lab
 
+[API cloud: verifica e disegno](docs/SINCRONIZZAZIONE_CLOUD_API.md), architettura 1.1: proposta di scambio diretto Drive/Dropbox su desktop e Android; ancora da implementare e collaudare con account reali.
+
+Aggiornamento **0.4.1**: eseguibile `Fuorigiri.exe`, bundle `dist/Fuorigiri/`; rinomina tecnica con riconoscimento degli archivi precedenti. [Metodi incrementali, specifica 1.0](docs/METODI_INCREMENTALE.md) distingue convenzioni confermate e lavori ancora necessari. [Android](docs/ANDROID.md) è richiesto e pianificato dopo il consolidamento dell’incrementale desktop, prima dei test Sprint/Wingate; non ancora disponibile.
+
+
 Applicazione desktop open source per analisi e archivio di test incrementali nel ciclismo. **Python + React/TypeScript**, SQLite locale, shell PySide6/Qt WebEngine. Licenza del codice **GPL-3.0-or-later**. Nome prodotto: **Fuorigiri Performance Lab**.
 
 **Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.** Logo originale incluso in `frontend/public/branding/` e nel bundle finale. Logo, collegamenti e attribuzione sono fissi; le anagrafiche delle società non modificano il branding del prodotto.
@@ -74,7 +79,7 @@ Backend su loopback con token di sessione; asset UI locali. CSV temporali in sec
 
 ## Distribuzione e documenti
 
-Dopo la build frontend eseguire `.venv/Scripts/python.exe scripts/build.py`. Distribuire tutta `dist/CicloTest/`, non il solo EXE. PyInstaller va eseguito sul sistema destinatario. La guida descrive `--smoke-test` e verifica su PC pulito.
+Dopo la build frontend eseguire `.venv/Scripts/python.exe scripts/build.py`. Distribuire tutta `dist/Fuorigiri/`, non il solo EXE. PyInstaller va eseguito sul sistema destinatario. La guida descrive `--smoke-test` e verifica su PC pulito.
 
 - [Architettura](ARCHITETTURA_PROPOSTA.md)
 - [Requisiti e stato](docs/REQUISITI_E_TODO.md)

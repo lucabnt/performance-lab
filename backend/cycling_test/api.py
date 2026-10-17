@@ -146,12 +146,12 @@ class SyncInput(Model):
 
 
 def create_app(root=None, token=None, frontend=None):
-    legacy = Store(root or os.environ.get("CICLO_DATA", ".local"))
+    legacy = Store(root or os.environ.get("FUORIGIRI_DATA", ".local"))
     from .workspaces import Workspaces
     workspaces=Workspaces(legacy.root,legacy)
     store=workspaces.proxy
-    token = token or os.environ.get("CICLO_TOKEN") or secrets.token_urlsafe(32)
-    app = FastAPI(title="Fuorigiri Performance Lab", version="0.4.0", docs_url=None, redoc_url=None)
+    token = token or os.environ.get("FUORIGIRI_TOKEN") or secrets.token_urlsafe(32)
+    app = FastAPI(title="Fuorigiri Performance Lab", version="0.4.1", docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
 
@@ -160,10 +160,10 @@ def create_app(root=None, token=None, frontend=None):
         if request.url.hostname not in ("127.0.0.1", "localhost", "testserver"):
             return JSONResponse({"detail":"Host non consentito"},status_code=403)
         if request.url.path.startswith("/api/"):
-            if not secrets.compare_digest(request.headers.get("X-Ciclo-Token", ""), token):
+            if not secrets.compare_digest(request.headers.get("X-Fuorigiri-Token", ""), token):
                 return JSONResponse({"detail":"Sessione non autorizzata. Riaprire l'app."},status_code=401)
         try:
-            selected=workspaces.get(request.headers.get('X-Ciclo-Workspace',''))
+            selected=workspaces.get(request.headers.get('X-Fuorigiri-Workspace',''))
         except ValueError as exc:
             return JSONResponse({'detail':str(exc)},status_code=422)
         marker=store.selected.set(selected)

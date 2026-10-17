@@ -20,7 +20,8 @@ def main():
     parser.add_argument("--smoke-test",action="store_true",help="Verifica le dipendenze del pacchetto senza aprire finestre")
     args = parser.parse_args()
     base = Path(os.environ.get("LOCALAPPDATA", Path.home()/".local"/"share"))
-    root = args.data or base/"CicloTest"
+    from .compatibility import default_data_root
+    root = args.data or default_data_root(base)
     token = secrets.token_urlsafe(32)
     dist = Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parents[2]))/"frontend"/"dist"
     if not dist.is_dir():
@@ -61,7 +62,7 @@ def main():
                 time.sleep(.05)
             with urlopen(f'http://127.0.0.1:{port}/health',timeout=5) as response:
                 if response.status!=200:raise RuntimeError('Health check non riuscito.')
-            (root/'smoke-ok.txt').write_text('Fuorigiri Performance Lab 0.4.0: import, logo e backend HTTP verificati.',encoding='utf-8')
+            (root/'smoke-ok.txt').write_text('Fuorigiri Performance Lab 0.4.1: import, logo e backend HTTP verificati.',encoding='utf-8')
         finally:
             server.should_exit=True;thread.join(timeout=5);sock.close();handler.close();logger.removeHandler(handler)
         return

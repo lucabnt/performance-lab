@@ -10,7 +10,7 @@ LABELS={
  'Fonte peso':'Weight source','Report test incrementale':'Incremental test report','Tracciato del test':'Test recording',
  'Durata s':'Duration s','Media W':'Mean W','FC bpm':'HR bpm','Completo':'Complete','Recupero':'Recovery','Metodo e qualità':'Method and quality',
  'Note':'Notes','Riferimento':'Reference','Zona':'Zone','Limiti assoluti':'Absolute limits','Secondi':'Seconds','Zone':'Zones',
- 'CICLO TEST / REPORT INCREMENTALE':'CICLO TEST / INCREMENTAL REPORT','Step del protocollo':'Protocol stages','Nessuna nota.':'No notes.',
+ 'FUORIGIRI / REPORT INCREMENTALE':'FUORIGIRI / INCREMENTAL REPORT','Step del protocollo':'Protocol stages','Nessuna nota.':'No notes.',
  'Risultato storico: tracciato non disponibile':'Historical result: recording unavailable','Potenza (W)':'Power (W)','FC (bpm)':'HR (bpm)',
  'Cadenza (rpm)':'Cadence (rpm)','Tempo trascorso (min)':'Elapsed time (min)','Storico dei test':'Test history',
  'Gruppo / protocollo':'Group / protocol','Atleti':'Athletes','Soglia W':'Threshold W','MAP W - mediana':'MAP W - median',

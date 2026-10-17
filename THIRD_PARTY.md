@@ -1,6 +1,6 @@
 # Componenti di terze parti
 
-Il codice originale di Ciclo Test è GPL-3.0-or-later. Le dipendenze mantengono le proprie licenze e i relativi avvisi.
+Il codice originale di Fuorigiri è GPL-3.0-or-later. Le dipendenze mantengono le proprie licenze e i relativi avvisi.
 
 Principali componenti: Python, FastAPI, Uvicorn, Pydantic, NumPy, Matplotlib, ReportLab, fitdecode, cryptography, React, TypeScript, Vite, Plotly.js, Lucide, PySide6/Qt e PyInstaller.
 

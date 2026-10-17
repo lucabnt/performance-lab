@@ -1,3 +1,3 @@
-"""Ciclo Test: independent domain, local API and desktop shell."""
+"""Fuorigiri: independent domain, local API and desktop shell."""
 
-__version__ = "0.2.0"
+__version__ = "0.4.1"

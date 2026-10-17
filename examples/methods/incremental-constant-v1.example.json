@@ -1,0 +1,47 @@
+{
+  "purpose": "specification_only_not_loaded_by_current_engine",
+  "specification": "METODI_INCREMENTALE/1.0",
+  "method_id": "incremental.constant.last-complete",
+  "method_version": "1",
+  "time_axis": "elapsed_seconds",
+  "window_intervals": "left_closed_right_open",
+  "integration": {
+    "method": "left_sample_hold",
+    "max_gap_s": 5,
+    "fill_missing": false,
+    "extend_last_sample": false,
+    "coverage_denominator": "requested_window_duration"
+  },
+  "completion": {
+    "reach_planned_end": true,
+    "minimum_power_coverage": 0.95,
+    "require_contiguous_incremental_prefix": true,
+    "round_before_comparison": false,
+    "require_target_adherence": false
+  },
+  "adherence": {
+    "metrics": ["mean_error_w", "mean_error_pct", "mae_w", "rmse_w"],
+    "tolerance": null,
+    "without_tolerance_status": "not_evaluated"
+  },
+  "secondary_method": "incremental.constant.partial-linear/1",
+  "hr_end_stage": {"window_s": 30, "minimum_coverage": 0.8},
+  "hr_peak": {"method": "valid_sample_max", "phase": "whole_effort"},
+  "recovery": {
+    "reference_window_s": 5,
+    "times_s": [60, 90, 120],
+    "window_relative_to_marker_s": [-2, 3],
+    "minimum_coverage": 0.8,
+    "allow_negative_hrr": true
+  },
+  "threshold": {
+    "prefer_declared_value": true,
+    "map_coefficient": null,
+    "coefficient_requires_provenance_and_protocol_version": true,
+    "automatic_fthr": false
+  },
+  "summary_phase": "whole_effort",
+  "missing_value": null,
+  "display_wkg_decimals": 2,
+  "round_intermediate_values": false
+}

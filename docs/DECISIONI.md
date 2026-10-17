@@ -1,5 +1,25 @@
 # Decisioni e stato dell'implementazione
 
+## Architettura 1.2 — CLOUD-02 / TD-59
+
+L’utente conferma **WebDAV per desktop e mobile Android**. Superata la classificazione come candidato nella revisione 1.1. Il contratto di scambio rimane comune ai trasporti e indipendente dai provider proprietari. Proposto WebDAV come primo adapter remoto dopo il refactoring della cartella locale; Nextcloud come server iniziale di collaudo, senza presumerne adozione o disponibilità di credenziali. Riferimenti: [specifica cloud](SINCRONIZZAZIONE_CLOUD_API.md), [prossimi passi](PROSSIMI_PASSI.md). Requisito acquisito, sviluppo non ancora eseguito.
+
+
+## Architettura 1.1 — CLOUD-01 / UI-19
+
+Verificate le API ufficiali in [SINCRONIZZAZIONE_CLOUD_API.md](SINCRONIZZAZIONE_CLOUD_API.md). Corretto il disegno Android: trasporto API diretto come obiettivo ordinario, cartella locale e SAF/import-export come alternative, nessun server Fuorigiri necessario per principio. Drive primo adapter proposto; `drive.file` richiede uno spike inter-account e con file provenienti da client esterno. Dropbox App Folder non soddisfa una società con account distinti: per cartella condivisa considerare Full Dropbox e consenso dichiarato. OneDrive e WebDAV documentati come candidati.
+
+Separati consenso cloud, condivisione della cartella e autorizzazione/ruolo Fuorigiri. UI-19 e TD-58 acquisiscono onboarding provider, token locali protetti, migrazione, stato e prove. Nessun account collegato o provider implementato in questa verifica; software resta 0.4.1. La scelta del primo adapter è una raccomandazione, non un consenso già dato a scope ampi.
+
+## Architettura 1.0 / software 0.4.1 — step 2 e portabilità
+
+**MET-01:** specifica [METODI_INCREMENTALE](METODI_INCREMENTALE.md) con algoritmi, unità, coperture, null, fonti, finestre e vettori di accettazione. Conferma utente: completezza temporale/copertura separata dall’aderenza e nessun coefficiente universale dalla MAP a soglia/FTHR. Il motore corrente non viene reinterpretato né sostituito in questo step documentale. Prima dell’implementazione specialistica restano da scegliere varianti lattato, gas e rampe.
+
+**NAME-01:** richiesta di rinomina tecnica completa; superata la compatibilità dei vecchi nomi pubblici UI-16. Package/comandi/header/configurazione/distribuzione ora Fuorigiri; modulo generico `cycling_test` invariato. Vecchi archivi e canali su disco riconosciuti per non perdere dati: nessun rename automatico di directory con percorsi assoluti, nessuna rigenerazione di identità o chiavi.
+
+**MOB-01 / UI-18:** Android acquisito come sviluppo, dopo completamento incrementale/consolidamento desktop e prima dei motori sprint/Wingate. Raccomandazione da verificare: React/Capacitor + bridge Kotlin + nucleo Python incorporato, archivio privato e trasporto astratto; desktop FastAPI/Qt rimane confermato. API cloud o SAF Android da provare, nessuna presunzione di cartelle locali Drive identiche al PC. [Alternative, dipendenze e accettazione](ANDROID.md).
+
+
 ## Software 0.4 / architettura 0.9 — ripristino e accessi
 
 Adottati e implementati UI-17/REC-01: operazioni società separate, bootstrap prima dei dati, recupero credenziali cifrato distinto dal backup ZIP, copie di consultazione e indipendenti senza privilegi della società originale. Rinnovo/cambio ruolo tramite invito sostitutivo e revoca, applicato sul medesimo archivio locale; stati degli inviti dichiarati come emessi, senza presumere accettazione remota. Revoca con eventi già ricevuti fissati per hash; nessuna promessa di eliminare copie o ruotare automaticamente la chiave di lettura. [Guida operativa](SOCIETA_BACKUP_E_ACCESSI.md). TD-45–49 presenti; TD-50 e INC-11 restano parziali. I test successivi mantengono l’ordine confermato.

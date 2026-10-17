@@ -1,4 +1,4 @@
-export const language = localStorage.getItem('ciclo-language') || 'it';
+export const language = localStorage.getItem('fuorigiri-language') || 'it';
 const translations:Record<string,string> = {
  'SOCIETÀ':'CLUB',
  'Gestisci società':'Manage clubs',
@@ -131,4 +131,4 @@ Object.assign(translations,{
  "allegati": "attachments"
 });
 export function tr(text:string){return language==='en'?(translations[text]||text):text}
-export function setLanguage(value:string){localStorage.setItem('ciclo-language',value);location.reload()}
+export function setLanguage(value:string){localStorage.setItem('fuorigiri-language',value);location.reload()}

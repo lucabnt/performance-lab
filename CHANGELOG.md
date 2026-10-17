@@ -1,5 +1,25 @@
 # Changelog
 
+## Architettura 1.2 — 17 ottobre 2026 / software invariato 0.4.1
+
+- WebDAV confermato per Windows/Fedora e Android: TD-59/CLOUD-02, non più candidato.
+- Aggiornati ordine degli adapter, criteri desktop/mobile e piano dei prossimi passi; nessuna integrazione o credenziale attivata.
+
+
+## Architettura 1.1 — 17 ottobre 2026 / software invariato 0.4.1
+
+- Verificate API ufficiali Drive, Dropbox, OneDrive e Nextcloud/WebDAV; documentati consenso OAuth, limiti dell’accesso per cartella, collaborazione con account distinti e sincronizzazione offline.
+- Aggiunti CLOUD-01/UI-19 e TD-58: adapter comuni, spike Drive con permessi minimi e due account, migrazione/scambio, test di accettazione; Dropbox condiviso distinto da App Folder.
+- Aggiornato il disegno Android: API cloud come obiettivo ordinario, SAF/import-export come alternative. Nessuna integrazione attivata, account collegato o prova autenticata eseguita.
+
+## 0.4.1 — 17 ottobre 2026 / architettura 1.0
+
+- Formalizzati metodi incrementali, convenzioni confermate, formule, finestre, provenienza/versioni, casi di accettazione e scostamenti dal motore corrente. Nessun cambio di algoritmo o ricalcolo dei test in questo step.
+- Nome Fuorigiri esteso a pacchetto, comandi, header, variabili, nomi scaricati e bundle/eseguibile; riconoscimento di archivi e canali precedenti senza modificare identità o chiavi. Superata la precedente scelta UI-16.
+- Aggiunto sviluppo Android TD-57/AND-01–05, dopo consolidamento incrementale desktop e prima di Sprint breve/Wingate; proposta architetturale, limiti del cloud su Android, UI-18 e criteri di collaudo.
+- Aggiornati requisiti, decisioni, architettura e guida di prova. I nuovi metodi specialistici e l’app Android non sono ancora implementati.
+
+
 ## Software 0.4.0 / architettura 0.9 — 17 ottobre 2026
 
 - TD-45/UI-17: tre percorsi distinti Crea nuova società, Collega tramite invito, Ripristina da backup; selezione automatica e crediti societari fissi conservati.

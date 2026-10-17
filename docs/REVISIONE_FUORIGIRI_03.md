@@ -34,7 +34,7 @@ Richieste del 17 ottobre 2026. Questo documento esternalizza le osservazioni del
 
 **UI-15 — Report di suite.** Identità prodotto in testa; nome atleta, data e protocollo immediatamente leggibili. Sintesi numerica e tracciato prima del dettaglio. Footer comune con logo originale, credito fisso e numero pagina. La futura app allenamenti potrà riusare stile, crediti e componenti, mantenendo DB e motore separati secondo SUITE-01.
 
-**UI-16 — Compatibilità tecnica.** Nome visuale nuovo; directory dati `CicloTest`, package Python `cycling_test`, comando `ciclo-test` e header di API precedenti restano stabili per non abbandonare gli archivi esistenti. Aggiunto alias `fuorigiri-performance-lab`. Il bundle conserva per ora il percorso `dist/CicloTest`; questo è un nome tecnico, non il titolo dell'app.
+**UI-16 — Compatibilità tecnica (decisione 0.3 superata dalla 0.4.1).** La rinomina ora comprende bundle `dist/Fuorigiri`, eseguibile `Fuorigiri.exe`, package `fuorigiri`, comandi, header API e variabili d’ambiente. Il modulo Python di dominio resta `cycling_test`. Le precedenti directory dati e i canali già esistenti sono riconosciuti senza spostare archivi o cambiare chiavi; vedere la guida di test. Questa nota sostituisce la precedente scelta di mantenere il nome tecnico storico.
 
 ## Contratto CSV
 

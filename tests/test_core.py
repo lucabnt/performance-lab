@@ -110,7 +110,7 @@ def test_sync_duplicate_conflict_and_partial(tmp_path):
 def test_api_full_workflow(tmp_path):
     client=TestClient(create_app(tmp_path,token='test'))
     assert client.get('/api/v1/state').status_code==401
-    client.headers['X-Ciclo-Token']='test'
+    client.headers['X-Fuorigiri-Token']='test'
     def post(url,body):
         r=client.post('/api/v1/'+url,json=body)
         assert r.status_code==200,r.text

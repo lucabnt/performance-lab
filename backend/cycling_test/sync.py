@@ -16,7 +16,8 @@ def exchange(store, folder, key):
         raise ValueError("La cartella di scambio deve essere separata dall'archivio locale.")
     cipher = Fernet(key.encode())
     channel = hashlib.sha256(key.encode()).hexdigest()[:24]
-    shared = folder / ("ciclo-test-" + channel)
+    from .compatibility import channel_directory
+    shared = channel_directory(folder, channel)
     shared.mkdir(exist_ok=True)
     managed=hasattr(store,'identity')
     if managed:

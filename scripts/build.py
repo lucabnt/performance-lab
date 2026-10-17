@@ -7,7 +7,7 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 if not (root/'frontend/dist/index.html').exists():
     raise SystemExit('Compilare prima frontend: npm ci && npm run build')
-command=[sys.executable,'-m','PyInstaller','--noconfirm','--clean','--name','CicloTest',
+command=[sys.executable,'-m','PyInstaller','--noconfirm','--clean','--name','Fuorigiri',
          '--paths',str(root/'backend'),'--add-data',f'{root / "frontend/dist"}{os.pathsep}frontend/dist',
          '--collect-data','matplotlib','--collect-data','reportlab',
          '--hidden-import','uvicorn.logging','--hidden-import','uvicorn.loops.auto',
@@ -26,8 +26,8 @@ if sys.platform=='win32':
 subprocess.run(command,cwd=root,check=True,env=env)
 import shutil
 for name in ('LICENSE','README.md','THIRD_PARTY.md','ARCHITETTURA_PROPOSTA.md','CHANGELOG.md'):
-    shutil.copy2(root/name,root/'dist/CicloTest'/name)
-(root/'dist/CicloTest/docs').mkdir(exist_ok=True)
+    shutil.copy2(root/name,root/'dist/Fuorigiri'/name)
+(root/'dist/Fuorigiri/docs').mkdir(exist_ok=True)
 for path in (root/'docs').glob('*.md'):
-    shutil.copy2(path,root/'dist/CicloTest/docs'/path.name)
-shutil.copytree(root/'examples',root/'dist/CicloTest/examples',dirs_exist_ok=True)
+    shutil.copy2(path,root/'dist/Fuorigiri/docs'/path.name)
+shutil.copytree(root/'examples',root/'dist/Fuorigiri/examples',dirs_exist_ok=True)

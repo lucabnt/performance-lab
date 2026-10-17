@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Software 0.4.1 / specifica 1.0 — 17 ottobre 2026
+
+- **47 test passati** su Windows: inclusi riconoscimento della directory dati precedente senza spostamenti e scambio nel canale cifrato preesistente con gli stessi eventi/chiavi; due canali per la stessa chiave producono errore esplicito.
+- Bundle `dist/Fuorigiri/Fuorigiri.exe` compilato; smoke test con codice di uscita 0 e marker 0.4.1 in `.local/smoke-fuorigiri-041`: dipendenze, logo e backend HTTP verificati. Nuove specifiche ed esempio JSON inclusi nella distribuzione. La GUI Qt completa della 0.4.1 e Fedora non sono stati nuovamente collaudati in questa revisione.
+- TypeScript e Vite compilati; persiste l’avviso sul bundle Plotly grande. Audit dei file mantenuti: nessuna occorrenza del nome storico, collegamenti locali delle nuove specifiche e JSON di esempio validi. Le scritture separate del marchio ritirato sono limitate al riconoscimento dei percorsi su disco.
+- La specifica dei metodi documenta convenzioni confermate, risultati attesi e scostamenti del motore attuale: **non equivale al superamento dei casi futuri** né a validazione fisiologica. Nessun algoritmo incrementale o risultato storico modificato. Android documentato, non implementato o collaudato.
+- I nomi negli esempi storici di eseguibile/percorso sottostanti sono stati normalizzati in Fuorigiri per richiesta dell’utente: non descrivono una seconda esecuzione retroattiva delle vecchie verifiche.
+
 ## Software 0.4 — 17 ottobre 2026
 
 - 45 test automatici passati su Windows: 13 nuovi casi di recupero/ruoli, inclusi tre modi di ripristino, schema precedente, più società, integrità, file di recupero precedente con directory accessi più recente, password/società errate, percorsi non consentiti, destinazione occupata, rollback, bootstrap, cambio ruolo e revoche con preservazione degli eventi esatti.
@@ -16,7 +24,7 @@
 - GUI nel browser, su archivio isolato sintetico: aggregazione per categoria e media, etichette leggibili, creazione scheda senza step, inserimento di MAP 230 W/peso 50 kg senza FIT e risultato dichiarato 4,6 W/kg.
 - PDF di test e aggregato renderizzati e controllati visivamente: stile blu, tabelle leggibili, logo/credito fisso nel footer di ogni pagina. Report di esempio con tracciato su tre pagine e aggregato su una; il numero di pagine varia con contenuti e zone.
 - Nessuna importazione dei dati personali originali. I quattro FIT sono simulazioni e non certificano gli esportatori reali.
-- Bundle Windows ricompilato: `dist/CicloTest/CicloTest.exe --smoke-test --data .local/smoke-03` riuscito, con marker Fuorigiri 0.3.0. Apertura effettiva della finestra Qt verificata: titolo Fuorigiri Performance Lab, nuovo selettore e asset del prodotto presenti. Le operazioni complete sui dati e lo scroll sono stati provati nella GUI browser; la finestra Qt è stata aperta e chiusa sull'archivio predefinito vuoto, senza aggiungere dati.
+- Bundle Windows ricompilato: `dist/Fuorigiri/Fuorigiri.exe --smoke-test --data .local/smoke-03` riuscito, con marker Fuorigiri 0.3.0. Apertura effettiva della finestra Qt verificata: titolo Fuorigiri Performance Lab, nuovo selettore e asset del prodotto presenti. Le operazioni complete sui dati e lo scroll sono stati provati nella GUI browser; la finestra Qt è stata aperta e chiusa sull'archivio predefinito vuoto, senza aggiungere dati.
 - GUI finale: creazione di Allievi/2027 senza nome; anteprima del contratto CSV antropometria; dettaglio FIT scorso fino al fondo senza trasparenze nel pannello, sfondo bianco e `body` con overflow bloccato. Archivi runtime isolati, nessun dato operativo alterato.
 - La distribuzione comprende anche `examples/protocols` ed `examples/synthetic` con i quattro FIT/CSV e manifest, così possono essere provati senza la repository sorgente.
 
@@ -82,4 +90,4 @@ Individuata e rimossa dalla ricerca delle dipendenze una DLL ICU di Poppler intr
 
 ## Esito finale del bundle Windows
 
-Build pulita riuscita con PATH isolato. Eseguito `CicloTest.exe --smoke-test` sul bundle finale: import, logo e backend HTTP verificati, marker in `.local/smoke-02-final/smoke-ok.txt`. Avviata anche la finestra sul desktop Windows: interfaccia caricata e footer con logo/attribuzione verificati visivamente e tramite accessibilità. Non equivale ancora al collaudo su un PC pulito.
+Build pulita riuscita con PATH isolato. Eseguito `Fuorigiri.exe --smoke-test` sul bundle finale: import, logo e backend HTTP verificati, marker in `.local/smoke-02-final/smoke-ok.txt`. Avviata anche la finestra sul desktop Windows: interfaccia caricata e footer con logo/attribuzione verificati visivamente e tramite accessibilità. Non equivale ancora al collaudo su un PC pulito.

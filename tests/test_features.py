@@ -27,7 +27,7 @@ def test_dynamic_zones_gap_duration(n):
 
 
 def client(tmp_path):
-    c=TestClient(create_app(tmp_path,token='test'));c.headers['X-Ciclo-Token']='test'
+    c=TestClient(create_app(tmp_path,token='test'));c.headers['X-Fuorigiri-Token']='test'
     return c
 
 

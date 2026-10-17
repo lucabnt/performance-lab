@@ -22,7 +22,7 @@ def test_separate_archives_viewer_and_forgery(tmp_path):
     exchange(store,folder,store.identity['sync_key'])
     exchange(viewer,folder,viewer.identity['sync_key'])
     assert viewer.list('organization')[0]['name']=='Club'
-    c=TestClient(create_app(tmp_path/'b',token='t'));c.headers.update({'X-Ciclo-Token':'t','X-Ciclo-Workspace':entry['id']})
+    c=TestClient(create_app(tmp_path/'b',token='t'));c.headers.update({'X-Fuorigiri-Token':'t','X-Fuorigiri-Workspace':entry['id']})
     assert c.post('/api/v1/organizations',json={'name':'Not allowed'}).status_code==403
     assert c.post('/api/v1/athletes',json={'name':'A','surname':'B','organization_id':entry['organization_id']}).status_code==403
     assert c.get('/api/v1/state').json()['operator']['role']=='viewer'

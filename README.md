@@ -1,12 +1,17 @@
-# Ciclo Test · Performance Lab
+# Fuorigiri Performance Lab
 
-Applicazione desktop open source per analisi e archivio di test incrementali nel ciclismo. **Python + React/TypeScript**, SQLite locale, shell PySide6/Qt WebEngine. Licenza del codice **GPL-3.0-or-later**. Nome della suite ancora provvisorio.
+Applicazione desktop open source per analisi e archivio di test incrementali nel ciclismo. **Python + React/TypeScript**, SQLite locale, shell PySide6/Qt WebEngine. Licenza del codice **GPL-3.0-or-later**. Nome prodotto: **Fuorigiri Performance Lab**.
 
 **Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.** Logo originale incluso in `frontend/public/branding/` e nel bundle finale. Logo, collegamenti e attribuzione sono fissi; le anagrafiche delle società non modificano il branding del prodotto.
 
-## Stato: anteprima di sviluppo 0.2
+## Stato: anteprima di sviluppo 0.3
 
 Implementazione locale con dati sintetici e prove automatiche; richiede collaudo su PC puliti, Fedora, FIT reali e client cloud reali prima del rilascio operativo. Nessun dato personale degli allegati è incluso.
+
+
+Novità 0.3: selettore unico Società e Gestisci società, metriche leggibili, aggregati con media/mediana, archivio riordinato, protocolli senza step e nuovi test solo manuali, CSV con campi richiesti espliciti, PDF con footer societario e quattro FIT sintetici basati sugli ERG originali. [Requisiti e scelte UI](docs/REVISIONE_FUORIGIRI_03.md) · [Copertura e roadmap dei test](docs/COPERTURA_TEST_E_ROADMAP.md).
+
+Per provare tutto con dati fittizi: `python scripts/demo.py --data .local/demo-fuorigiri`, poi `python scripts/serve.py --data .local/demo-fuorigiri`; aprire l'URL stampato. Il generatore rifiuta archivi già popolati. Non importare il CSV storico degli esempi nello stesso archivio che contiene già le esecuzioni FIT corrispondenti.
 
 Disponibile:
 

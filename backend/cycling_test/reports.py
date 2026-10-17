@@ -12,6 +12,7 @@ from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from .branding import ATTRIBUTION, logo_path
 from .locales import tr
+from .report_labels import metric_label
 
 CSV_HEADERS = {
     "atleti": "atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note",
@@ -35,7 +36,11 @@ def chart(test, protocol, language='it'):
         ax.tick_params(labelsize=8)
         ax.axvline(test["settings"]["end_s"]/60, color="#555555", linestyle="--", linewidth=.8)
     offset = test["settings"]["offset_s"]
-    axes[0].plot([(p[0]+offset)/60 for p in protocol["definition"]["points"]], [p[1] for p in protocol["definition"]["points"]], color="#abb2af", linewidth=1, label="Target")
+    stop=samples[-1]['t']-offset
+    points=[p for p in protocol['definition']['points'] if p[0]<=stop]
+    segment=next((s for s in protocol['definition']['segments'] if s['start_s']<=stop<s['end_s']),None)
+    if segment:points.append([stop,segment['start_w']+(segment['end_w']-segment['start_w'])*(stop-segment['start_s'])/(segment['end_s']-segment['start_s'])])
+    axes[0].plot([(p[0]+offset)/60 for p in points], [p[1] for p in points], color="#abb2af", linewidth=1, label="Target")
     axes[0].set_xlim(0, samples[-1]["t"]/60)
     axes[-1].set_xlabel(tr("Tempo trascorso (min)",language), fontsize=8)
     out = io.BytesIO()
@@ -60,23 +65,24 @@ def report(test, athlete, protocol, format, language='it'):
                ("Durata riposo prima della misura (s)", val(test["settings"].get("rest_after_s"))),
                ("Durata sforzo (s)", val(a["duration_s"])), ("Copertura potenza", f"{a['power_coverage']*100:.1f}%" if a.get('power_coverage') is not None else 'n.d.')]
     metrics += [('Nascita',athlete.get('birth_date') or val(athlete.get('birth_year'))),('Stato nascita','confermato' if athlete.get('birth_confirmed') else 'da confermare'),
-                ('Watt Soglia',val(a.get('threshold_w'))),('Origine soglia',val(a.get('threshold_source'))),('Coefficiente MAP',val(test['settings'].get('threshold_coefficient'))),
+                ('Watt Soglia',val(a.get('threshold_w'))),('Origine soglia',metric_label(a.get('threshold_source') or 'n.d.',language)),('Coefficiente MAP',val(test['settings'].get('threshold_coefficient'))),
                 ('FTP dichiarata (W)',val(a.get('ftp_w'))),('FTHR (bpm)',val(a.get('fthr_bpm'))),('RPE (1-10)',val(test['settings'].get('rpe'))),
                 ('Fonte peso',test['settings'].get('weight_source','dichiarato'))]
     for l in test['settings'].get('lactate',[]):
         metrics.append((f"Lattato a {l['at_s']} s (mmol/L)",l['mmol_l']))
     zone_rows=[]
     for scheme in a.get('zones',[]):
-        label=scheme['scheme']['channel']+' / '+scheme['scheme']['reference']+' = '+val(scheme['reference_value'])
+        label=('FC' if scheme['scheme']['channel']=='hr' else tr('Potenza',language))+' / '+metric_label(scheme['scheme']['reference'],language)+' = '+val(scheme['reference_value'])
         if not scheme['zones']: zone_rows.append([label,'n.d.','Riferimento assente','-'])
         for z in scheme['zones']:
             interval=('>=' if z['lower_inclusive'] else '>')+str(round(z['lower_value'],2))
             if z['upper_value'] is not None:interval+=' / '+('<=' if z['inclusive'] else '<')+str(round(z['upper_value'],2))
-            zone_rows.append([label,z['name'],interval,str(round(z['seconds'],2))])
+            zone_rows.append([label,z['name'],interval,'n.d.' if z['seconds'] is None else str(round(z['seconds'],2))])
     stage_rows = [[str(r["number"]), str(r["end_w"]), str(round(r["actual_s"],1)), val(r["power"]["mean"]), val(r["hr"]["mean"]), "Si" if r["complete"] else "No"] for r in a["steps"]]
     metrics=[(tr(k,language),tr(v,language) if isinstance(v,str) and k=='Stato nascita' else v) for k,v in metrics]
     png = chart(test, protocol,language)
     note = "Convenzione provvisoria: " + a["method"] + " FC fine step: media ultimi 30 s. Recupero: finestra da t-2 a t+3 s; riferimento media ultimi 5 s di sforzo."
+    if test.get('historical'):note=a['method']+' I valori sono dichiarati; nessuna verifica sui campioni.'
     if language=='en':
         note='Provisional convention: last completed constant incremental stage; power coverage at least 95%, without target-adherence validation. Stage HR: last 30 seconds. Recovery: window t-2 to t+3 seconds, reference: last 5 seconds of effort.' if not test.get('historical') else 'Imported declared historical results; original samples unavailable.'
     trace = f"Motore {a['engine']} | Test {test['id']} | Revisione {test['revision']} | Protocollo {protocol['id']}"
@@ -101,33 +107,35 @@ def report(test, athlete, protocol, format, language='it'):
             from .store import encoded
             z.writestr('manifest.json',encoded({'test_id':test['id'],'revision':test['revision'],'settings':test['settings'],'analysis':a}))
         return out.getvalue()
-    out = io.BytesIO()
-    doc = SimpleDocTemplate(out, pagesize=(21*cm,29.7*cm), rightMargin=1.6*cm,leftMargin=1.6*cm,topMargin=1.5*cm,bottomMargin=1.7*cm)
-    styles = getSampleStyleSheet()
-    styles['Heading2'].keepWithNext = True
-    def p(s, style="BodyText"):
-        return Paragraph(escape(str(tr(s,language) if isinstance(s,str) else s)), styles[style])
-    story = [Image(str(logo_path()),width=3*cm,height=3*cm*707/1104),p(ATTRIBUTION),p("CICLO TEST / REPORT INCREMENTALE", "Heading2"), p(title, "Title")]
-    table = Table([[p(k), p(v)] for k,v in metrics], colWidths=[10*cm,7.6*cm])
-    table.setStyle(TableStyle([("VALIGN",(0,0),(-1,-1),"TOP"),("ROWBACKGROUNDS",(0,0),(-1,-1),[colors.HexColor("#f2f6f4"),colors.white]),("BOTTOMPADDING",(0,0),(-1,-1),5)]))
-    story += [table, Spacer(1,.3*cm), Image(io.BytesIO(png),width=17.5*cm,height=8.4*cm),p("Step del protocollo", "Heading2")]
-    table = Table([["Step","Target W","Durata s","Media W","FC bpm","Completo"]]+stage_rows, repeatRows=1, colWidths=[1.5*cm,2.7*cm,2.7*cm,3*cm,3*cm,3*cm])
-    table.setStyle(TableStyle([("BACKGROUND",(0,0),(-1,0),colors.HexColor("#247d70")),("TEXTCOLOR",(0,0),(-1,0),colors.white),("ROWBACKGROUNDS",(0,1),(-1,-1),[colors.white,colors.HexColor("#f2f6f4")]),("FONTSIZE",(0,0),(-1,-1),9),("BOTTOMPADDING",(0,0),(-1,-1),7)]))
-    from reportlab.platypus import KeepTogether
-    story += [table,KeepTogether([p("Recupero", "Heading2")] + [p(f"{r['after_s']} s: FC {val(r['hr_bpm'])} bpm; HRR {val(r['hrr_bpm'])} bpm") for r in a["recovery"]])]
-    story += [p("Metodo e qualità", "Heading2"),p(note)] + [p(w) for w in a["warnings"]]
-    story += [p("Note", "Heading2"),p(test.get("notes", "") or "Nessuna nota."),Spacer(1,.3*cm),p(trace)]
+    from .pdf_style import document, styles as report_styles, table as styled_table, footer
+    from reportlab.platypus import PageBreak, KeepTogether
+    out=io.BytesIO();doc=document(out,title);styles=report_styles()
+    def p(text,style='BodyText'):
+        return Paragraph(escape(str(tr(text,language) if isinstance(text,str) else text)),styles[style])
+    story=[p('FUORIGIRI PERFORMANCE LAB','Small'),p(tr('Report test incrementale',language),'Heading2'),p(title,'Title'),
+           p(test['date']+'  |  '+protocol['name']+' - '+protocol['version'],'Small'),Spacer(1,.4*cm)]
+    summary=[['MAP operativa (W)','MAP / peso (W/kg)','FC massima (bpm)'],[val(a['map_w']),val(a['map_wkg']),val(a['fc_max_test_bpm'])]]
+    story.append(styled_table([[p(c) for c in row] for row in summary],[5.9*cm]*3))
+    if test.get('historical'):story.append(p('Risultati dichiarati: tracciato non disponibile.','Small'))
+    if test['samples']:story += [Spacer(1,.4*cm),Image(io.BytesIO(png),width=17.7*cm,height=8.5*cm)]
+    compact=[]
+    for index in range(0,len(metrics),2):
+        pair=metrics[index:index+2]
+        compact.append([p(pair[0][0],'Small'),p(pair[0][1])]+([p(pair[1][0],'Small'),p(pair[1][1])] if len(pair)>1 else ['','']))
+    details=styled_table(compact,[5*cm,3.8*cm,5*cm,3.9*cm],False)
+    details.setStyle(TableStyle([('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]))
+    story += [p('Dati e riferimenti','Heading2'),details]
+    if stage_rows:
+        story += [p('Step del protocollo','Heading2'),styled_table([[p(tr(c,language)) for c in row] for row in [['Step','Target W','Durata s','Media W','FC bpm','Completo']]+stage_rows],[1.5*cm,3*cm,3*cm,3.4*cm,3.4*cm,3.4*cm])]
+    if a['recovery']:
+        story += [p('Recupero','Heading2'),styled_table([[p(c) for c in row] for row in [['Dopo (s)','FC (bpm)','HRR (bpm)']]+[[str(r['after_s']),val(r['hr_bpm']),val(r['hrr_bpm'])] for r in a['recovery']]],[5.9*cm]*3)]
     if zone_rows:
-        story.append(p('Zone', 'Heading2'))
-        table=Table([[p(c) for c in row] for row in [['Riferimento','Zona','Limiti assoluti','Secondi']]+zone_rows],repeatRows=1,colWidths=[6*cm,2*cm,6*cm,3.6*cm])
-        table.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('BOTTOMPADDING',(0,0),(-1,-1),6)]))
-        story.append(table)
-    def footer(canvas, doc):
-        canvas.setFont("Helvetica",8)
-        canvas.drawString(1.6*cm,cm,"Ciclo Test | Analisi descrittiva, non diagnosi")
-        canvas.drawRightString(19.4*cm,cm,str(doc.page))
+        story += [p('Zone','Heading2'),styled_table([[p(c) for c in row] for row in [['Riferimento','Zona','Limiti assoluti','Secondi']]+zone_rows],[7*cm,2*cm,5.7*cm,3*cm])]
+    story += [p('Metodo e qualità','Heading2'),p(note)]+[p(w) for w in a['warnings']]
+    story += [p('Note','Heading2'),p(test.get('notes') or 'Nessuna nota.'),Spacer(1,.4*cm),p(trace,'Small')]
     doc.build(story,onFirstPage=footer,onLaterPages=footer)
     return out.getvalue()
+
 
 
 def export_csv(store, organization_id):
@@ -150,7 +158,7 @@ def export_csv(store, organization_id):
         row=rows['test_aerobico'][-1]
         row.update(t.get('historical_fields',{}))
         row.update(test_id=t['id'],atleta_id=t['athlete_id'])
-        if not t.get('historical'):
+        if not t.get('historical') or t.get('entry_source')=='manuale':
             row.update(soglia_w=a.get('threshold_w'),soglia_origine=a.get('threshold_source'),coeff_soglia=s.get('threshold_coefficient'),fthr_bpm=s.get('fthr_bpm'),peso_fonte=s.get('weight_source'),fc_max_riferimento_bpm=s.get('fc_max_reference_bpm'))
     out = io.BytesIO()
     with zipfile.ZipFile(out,"w",zipfile.ZIP_DEFLATED) as z:

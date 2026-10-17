@@ -10,6 +10,7 @@ __pycache__/
 tmp/
 *.sqlite*
 *.fit
+!examples/synthetic/*.fit
 *.key
 output/
 *.tsbuildinfo

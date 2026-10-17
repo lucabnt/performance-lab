@@ -1,6 +1,12 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
-Versione 0.6 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.2 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+Versione 0.7 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.2 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+
+## Revisione 0.7 / implementazione 0.3
+
+Nome confermato **Fuorigiri Performance Lab**. [TD-30–44 e UI-11–16](docs/REVISIONE_FUORIGIRI_03.md) integrano questo disegno: contesto Società unico, creazione globale, acquisizione con tracciato o manuale, protocollo versionato senza step, aggregazioni con media/mediana ed export coerente con la statistica scelta, stile report condiviso con branding nel footer. La cache dei report distingue il renderer 0.3 e preserva i vecchi artefatti. L'archivio locale precedente resta accessibile, senza migrazioni automatiche.
+
+La suite mantiene identità visiva e componenti riusabili; un futuro motore per sprint, CP, lattato o gas respiratori dovrà dichiarare tipo/metodo/canali, evitando di riutilizzare MAP per grandezze diverse. [Lacune e roadmap](docs/COPERTURA_TEST_E_ROADMAP.md). La scelta di nuovi metodi richiede definizione scientifica e validazione: non è implicita nell'import di una scheda senza step.
 
 ## 1. Obiettivo e decisione proposta
 

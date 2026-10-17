@@ -5,14 +5,24 @@ import hashlib
 from datetime import date
 from uuid import uuid5, NAMESPACE_URL
 
+SCHEMAS = {
+    'atleti': {'required':['atleta_id','cognome','nome'], 'rule':'Nome e cognome obbligatori; gli altri campi sono facoltativi.'},
+    'antropometria': {'required':['atleta_id','data'], 'rule':'Almeno peso_kg oppure statura_cm; peso_fonte facoltativo (dichiarato).'},
+    'test_aerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Risultati facoltativi: i valori assenti restano vuoti, mai zero.'},
+}
+
 
 def read(raw):
     text = raw.decode('utf-8-sig')
+    if not text.strip(): raise ValueError('CSV vuoto.')
     delimiter = ';' if text.splitlines()[0].count(';') > text.splitlines()[0].count(',') else ','
     reader = csv.DictReader(io.StringIO(text), delimiter=delimiter)
     if not reader.fieldnames or len(reader.fieldnames)!=len(set(reader.fieldnames)):
         raise ValueError('Intestazioni CSV mancanti o duplicate.')
-    return list(reader)
+    rows=list(reader)
+    if any(None in row or any(v is None for v in row.values()) for row in rows):
+        raise ValueError('Numero di colonne incoerente: controllare delimitatori e virgolette.')
+    return rows
 
 
 def number(value):
@@ -46,6 +56,10 @@ def plan_import(store, org, profile, raw):
     if profile not in ('atleti','antropometria','test_aerobico'):
         raise ValueError('Profilo CSV non supportato.')
     rows = read(raw)
+    text=raw.decode('utf-8-sig')
+    headers=next(csv.reader(io.StringIO(text),delimiter=';' if text.splitlines()[0].count(';')>text.splitlines()[0].count(',') else ','))
+    missing=set(SCHEMAS[profile]['required'])-set(headers)
+    if missing: raise ValueError('Colonne obbligatorie mancanti: '+', '.join(sorted(missing)))
     if len(rows)>100000:
         raise ValueError('Troppe righe nel lotto.')
     entries, errors, skipped = [], [], 0

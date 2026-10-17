@@ -30,3 +30,4 @@ for name in ('LICENSE','README.md','THIRD_PARTY.md','ARCHITETTURA_PROPOSTA.md','
 (root/'dist/CicloTest/docs').mkdir(exist_ok=True)
 for path in (root/'docs').glob('*.md'):
     shutil.copy2(path,root/'dist/CicloTest/docs'/path.name)
+shutil.copytree(root/'examples',root/'dist/CicloTest/examples',dirs_exist_ok=True)

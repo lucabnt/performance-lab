@@ -13,7 +13,7 @@ from .api import create_app
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Ciclo Test")
+    parser = argparse.ArgumentParser(description="Fuorigiri Performance Lab")
     parser.add_argument("--data",type=Path)
     parser.add_argument("--browser",action="store_true",help="Apri il browser di sistema al posto della finestra Qt")
     parser.add_argument("--port",type=int,default=0)
@@ -61,7 +61,7 @@ def main():
                 time.sleep(.05)
             with urlopen(f'http://127.0.0.1:{port}/health',timeout=5) as response:
                 if response.status!=200:raise RuntimeError('Health check non riuscito.')
-            (root/'smoke-ok.txt').write_text('Ciclo Test 0.2.0: import, logo e backend HTTP verificati.',encoding='utf-8')
+            (root/'smoke-ok.txt').write_text('Fuorigiri Performance Lab 0.3.0: import, logo e backend HTTP verificati.',encoding='utf-8')
         finally:
             server.should_exit=True;thread.join(timeout=5);sock.close();handler.close();logger.removeHandler(handler)
         return
@@ -93,7 +93,7 @@ def main():
         if url.scheme() in ('http','https') and url.host()!='127.0.0.1':
             QDesktopServices.openUrl(url)
     view.page().newWindowRequested.connect(external_window)
-    view.setWindowTitle("Ciclo Test")
+    view.setWindowTitle("Fuorigiri Performance Lab")
     view.resize(1440,960)
     from PySide6.QtWidgets import QFileDialog
     def save_download(item):

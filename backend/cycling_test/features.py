@@ -28,8 +28,38 @@ def install_features(app, store, require, download, preview):
         date: date
         map_w: float | None = Field(default=None,ge=0,le=3000)
         map_alt_w: float | None = Field(default=None,ge=0,le=3000)
+        fc_max_test_bpm: float | None = Field(default=None,gt=0,le=250)
         settings: HistoricalSettings
         notes: str = Field(default='',max_length=10000)
+
+    class ManualTest(Model):
+        athlete_id: str
+        protocol_id: str
+        date: date
+        map_w: float | None = Field(default=None,ge=0,le=3000)
+        map_alt_w: float | None = Field(default=None,ge=0,le=3000)
+        fc_max_test_bpm: float | None = Field(default=None,gt=0,le=250)
+        settings: HistoricalSettings
+        notes: str = Field(default='',max_length=10000)
+
+    @app.post('/api/v1/manual-tests')
+    def manual_test(data: ManualTest):
+        from .observations import enrich
+        athlete=require(data.athlete_id,'athlete'); protocol=require(data.protocol_id,'protocol')
+        if any(r.get('status','active')!='active' for r in (athlete,protocol)):
+            raise ValueError('Ripristinare atleta e protocollo prima di creare nuovi test.')
+        settings=data.settings.model_dump()
+        analysis={'map_w':data.map_w,'map_alt_w':data.map_alt_w,
+                  'map_wkg':round(data.map_w/settings['weight_kg'],3) if data.map_w is not None and settings.get('weight_kg') else None,
+                  'fc_max_test_bpm':data.fc_max_test_bpm,'duration_s':settings['end_s'] or None,
+                  'steps':[],'recovery':[],'power_coverage':None,'engine':'manual-1',
+                  'method':'Risultati dichiarati manualmente, senza verifica del tracciato.',
+                  'warnings':['Campioni assenti: MAP, FC e durata sono dichiarati; nessuna verifica automatica degli step.']}
+        analysis=enrich(analysis,[],settings)
+        memberships=[m['group_id'] for m in store.list('membership') if m['athlete_id']==athlete['id'] and m['start']<=data.date.isoformat() and (not m.get('end') or m['end']>=data.date.isoformat())]
+        return store.save('test',{**data.model_dump(mode='json'),'organization_id':athlete['organization_id'],
+            'athlete_snapshot':athlete,'historical':True,'entry_source':'manuale','trace_hash':None,'samples':[],
+            'objects':[],'group_ids':memberships,'analysis':analysis})
 
     class Segment(Model):
         duration_s: float = Field(gt=0, le=86400)
@@ -43,7 +73,7 @@ def install_features(app, store, require, download, preview):
         version: str = Field(min_length=1,max_length=100)
         parent_id: str | None = None
         reason: str = ''
-        segments: list[Segment] = Field(min_length=1,max_length=1000)
+        segments: list[Segment] = Field(default_factory=list,max_length=1000)
 
     @app.post('/api/v1/records/{id}/status')
     def status(id: str, data: Status):
@@ -81,10 +111,12 @@ def install_features(app, store, require, download, preview):
         if not old.get('historical'):raise ValueError('Usare la revisione del test con tracciato.')
         settings=data.settings.model_dump()
         analysis={**old['analysis'],'map_w':data.map_w,'map_alt_w':data.map_alt_w,'duration_s':settings['end_s'] or None}
+        if 'fc_max_test_bpm' in data.model_fields_set:analysis['fc_max_test_bpm']=data.fc_max_test_bpm
         analysis['map_wkg']=round(data.map_w/settings['weight_kg'],3) if data.map_w is not None and settings.get('weight_kg') else None
         analysis=enrich(analysis,[],settings)
         historic={**old.get('historical_fields',{}),'data':data.date.isoformat(),'map_w':data.map_w,'map_alt_w':data.map_alt_w,'peso_kg':settings.get('weight_kg'),
-                  'soglia_w':analysis.get('threshold_w'),'soglia_origine':analysis.get('threshold_source'),'fthr_bpm':settings.get('fthr_bpm'),'note':data.notes}
+                  'soglia_w':analysis.get('threshold_w'),'soglia_origine':analysis.get('threshold_source'),'fthr_bpm':settings.get('fthr_bpm'),
+                  'fc_max_test_bpm':analysis.get('fc_max_test_bpm'),'durata_s':analysis.get('duration_s'),'note':data.notes}
         return store.save('test',{**old,'settings':settings,'analysis':analysis,'historical_fields':historic,'date':data.date.isoformat(),'notes':data.notes,'reason':data.reason},id,data.base)
 
     class DefaultProfile(Model):
@@ -118,6 +150,12 @@ def install_features(app, store, require, download, preview):
     def import_batches():
         return store.list('import_batch')
 
+    @app.get('/api/v1/import/schemas')
+    def import_schemas():
+        from .csv_import import SCHEMAS
+        from .reports import CSV_HEADERS
+        return {k:{**v,'optional':[h for h in CSV_HEADERS[k].split(',') if h not in v['required']]} for k,v in SCHEMAS.items()}
+
     @app.get('/api/v1/zones/presets')
     def presets():
         from .zones import preset
@@ -139,7 +177,7 @@ def install_features(app, store, require, download, preview):
             points.extend([[time,s.start_w],[time+s.duration_s,s.end_w]])
             segments.append({'start_s':time,'end_s':time+s.duration_s,'start_w':s.start_w,'end_w':s.end_w,'phase':s.phase})
             time+=s.duration_s
-        if not any(s.phase=='increment' for s in data.segments):
+        if data.segments and not any(s.phase=='increment' for s in data.segments):
             raise ValueError('Il protocollo deve contenere una fase incrementale.')
         definition={'points':points,'segments':segments,'duration_s':time,'description':data.name}
         return store.save('protocol',{**data.model_dump(exclude={'segments'}),'definition':definition,'objects':[],'status':'active'})
@@ -192,10 +230,15 @@ def install_features(app, store, require, download, preview):
         return summarize(store,org,group,season,athlete,mode,dimension,protocol)
 
     @app.get('/api/v1/history/{org}/report/{format}')
-    def history_report(org: str, format: Literal['pdf','md'], group: str='', season: str='', athlete: str='', mode: str='athlete', dimension: str='season', protocol: str='', language: Literal['it','en']='it'):
+    def history_report(org: str, format: Literal['pdf','md'], group: str='', season: str='', athlete: str='', mode: str='athlete', dimension: str='season', protocol: str='', language: Literal['it','en']='it', metric: str='map_w', statistic: Literal['mean','median']='median'):
         from .history_report import render
         data=history(org,group,season,athlete,mode,dimension,protocol)
-        body=render(data,format,language)
+        from .history import METRICS
+        if metric not in METRICS: raise ValueError('Metrica non supportata.')
+        data['query'].update(metric=metric,statistic=statistic)
+        labels={p['id']:p['name']+' · '+p['version'] for p in store.list('protocol')}
+        for g in data['groups']: g['protocol_label']=labels.get(g['protocol_id'],g['protocol_id'][:8])
+        body=render(data,format,language,metric,statistic)
         if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
             digest=store.object(body)
             store.save('report',{'organization_id':org,'query':data['query'],'source_revisions':[r['revision'] for r in data['rows']], 'format':format,'language':language,'objects':[digest]})

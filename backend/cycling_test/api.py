@@ -31,7 +31,7 @@ class Organization(Model):
 
 class Group(Model):
     organization_id: str
-    name: Text
+    name: str = Field(default='', max_length=300)
     season: str = ""
     parent_id: str | None = None
 
@@ -151,7 +151,7 @@ def create_app(root=None, token=None, frontend=None):
     workspaces=Workspaces(legacy.root,legacy)
     store=workspaces.proxy
     token = token or os.environ.get("CICLO_TOKEN") or secrets.token_urlsafe(32)
-    app = FastAPI(title="Ciclo Test", version="0.2.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Fuorigiri Performance Lab", version="0.3.0", docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
 
@@ -230,6 +230,11 @@ def create_app(root=None, token=None, frontend=None):
             parent = require(data.parent_id, 'group')
             if parent['organization_id'] != data.organization_id or parent.get('parent_id'):
                 raise ValueError('Categoria padre non valida.')
+            if not data.season.strip():
+                raise ValueError('Indicare la stagione del gruppo figlio.')
+            data.name = data.name.strip() or parent['name']
+        elif not data.name.strip():
+            raise ValueError('Indicare il nome della categoria principale.')
         return store.save("group",data.model_dump())
 
     @app.post("/api/v1/athletes")
@@ -299,6 +304,8 @@ def create_app(root=None, token=None, frontend=None):
     def preview(data: TestInput):
         require(data.athlete_id,"athlete")
         protocol = require(data.protocol_id,"protocol")
+        if not protocol['definition']['segments']:
+            raise ValueError('Protocollo senza step: usare l’inserimento manuale oppure creare una versione con carichi.')
         trace = json.loads(store.read_object(data.trace_hash))
         from .observations import enrich
         settings = data.settings.model_dump()
@@ -324,14 +331,14 @@ def create_app(root=None, token=None, frontend=None):
     def test_report(id: str, format: Literal["pdf","md"], language: Literal['it','en']='it'):
         from .reports import report
         t = require(id,"test")
-        cached=next((r for r in store.list('report') if r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
+        cached=next((r for r in store.list('report') if r.get('renderer_version')=='0.3' and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
         if cached:
             body=store.read_object(cached['objects'][0])
         else:
             body = report(t,t.get('athlete_snapshot') or require(t["athlete_id"],"athlete"),require(t["protocol_id"],"protocol"),format,language)
             if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
                 digest=store.object(body)
-                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
+                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':'0.3','test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
         return download(body,"application/pdf" if format == "pdf" else "application/zip",f"test-{id}." + ("pdf" if format == "pdf" else "zip"))
 
     @app.get("/api/v1/export/{organization_id}")

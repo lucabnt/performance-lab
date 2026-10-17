@@ -2,6 +2,32 @@
 
 Aggiornato il 17 ottobre 2026. I comandi partono dalla cartella del progetto. Le prove usano archivi sintetici separati dai dati operativi. L'interfaccia e il motore funzionano senza collegamenti a servizi esterni.
 
+## Novità della preview 0.3
+
+Nome dell'app **Fuorigiri Performance Lab**; il bundle conserva il nome tecnico CicloTest e legge le directory precedenti. Suite automatica: 32 casi. Per provare la GUI con i nuovi esempi usare un percorso nuovo:
+
+```powershell
+.venv/Scripts/python.exe scripts/demo.py --data .local/demo-fuorigiri
+.venv/Scripts/python.exe scripts/serve.py --data .local/demo-fuorigiri --port 8766
+```
+
+Aprire l'URL completo stampato (con token). Stesso comando `python scripts/demo.py ...` / `python scripts/serve.py ...` nell'ambiente attivo su Fedora. La demo contiene **quattro atleti, due ERG originali, due categorie con stagione e quattro FIT realmente decodificati**. Le esecuzioni sono simulate. Genera PDF di QA in `tmp/qa-fuorigiri/test.pdf` e `storico.pdf`.
+
+Checklist aggiuntiva:
+
+1. Selettore Società unico; Gestisci società apre creazione/associazione, Società e gruppi contiene solo categorie.
+2. Crea gruppo con padre Allievi, stagione 2027 e nome vuoto: deve ereditare Allievi. Categoria principale senza nome deve essere rifiutata.
+3. Protocolli → Crea protocollo manuale → Solo scheda d'archivio, senza step; salvare identità/versione. ERG disabilitato, JSON disponibile.
+4. Nuovo test → Inserisci solo dati manuali: scegliere la scheda, data, MAP 230 e peso 50; risultato dichiarato 4,6 W/kg, nessun FIT obbligatorio. Lasciare FTP/FC vuote: non devono diventare zero. Correggere creando una revisione.
+5. Storici: scegliere categoria/totale, media/mediana, metrica e protocollo; nella demo i due protocolli restano separati e le medie MAP sono 295 e 190 W. I test automatici includono una distribuzione asimmetrica con media 200 e mediana 100.
+6. Esportare PDF e Markdown dello storico: metrica e statistica devono coincidere con la vista. Il PDF ha logo/credito nel footer di ogni pagina; niente sovrapposizioni.
+7. Nel dettaglio di un FIT scorrere fino in fondo e tornare su: la lista sotto non deve muoversi né attraversare la superficie opaca. Chiudendo, lo scroll della pagina deve funzionare di nuovo.
+8. Archivio e scambio: importazione, export/backup e report prima delle sezioni espandibili. I campi CSV richiesti sono indicati per ciascun profilo.
+
+Esempi persistenti in `examples/synthetic/`: quattro `.fit`, manifest e CSV `atleti.csv`, `antropometria.csv`, `test_aerobico.csv`. Per provare il bulk CSV usare **un altro archivio vuoto**, importare prima atleti, poi antropometria e storico, confermando ciascun lotto dopo l'anteprima. I CSV storici rappresentano gli stessi test dei FIT: non importare entrambi nello stesso archivio. Per il percorso FIT usare gli ERG in `examples/protocols/`, riscaldamento 600 s, fine sforzo dal manifest (il file include 180 s di recupero). Peso/FC/RPE sono dati sintetici dichiarati nel manifest.
+
+Le sezioni seguenti spiegano installazione, desktop, Vite e bundle; dove riportano fixture della 0.2 valgono gli aggiornamenti qui sopra.
+
 ## 1. Preparare l'ambiente
 
 Servono Python 3.12 o successivo e Node.js 22 o successivo. Per la finestra desktop installare anche le dipendenze `desktop`; usando il browser è sufficiente il backend. Per lo sviluppo sono necessari entrambi i runtime; il bundle finale include Python e le risorse della GUI.
@@ -55,21 +81,7 @@ Linux: sostituire `.venv/Scripts/python.exe` con `.venv/bin/python`.
 .venv/Scripts/python.exe scripts/demo.py --data .local/ui-test
 ```
 
-Lo script crea quattro atleti sintetici, una categoria con stagione, misure antropometriche, un protocollo e dodici test. Si arresta se l'archivio contiene già una società: per ripetere la prova usare un altro percorso, per esempio `.local/ui-test-2`. Non è necessario cancellare gli archivi precedenti.
-
-Genera anche questi file di prova in `tmp/qa/`:
-
-| File | Uso |
-|---|---|
-| `demo.fit` | Import del test eseguito con potenza, FC e cadenza |
-| `demo.erg` | Definizione del protocollo sintetico |
-| `demo-trace.csv` | Stesso tipo di serie temporale, colonne t/power/hr/cadence |
-| `demo-atleti.csv` | Anagrafica con ID esterno `CSV-DEMO` |
-| `demo-antropometria.csv` | Misura collegata all'anagrafica importata |
-| `demo-storico.csv` | Risultato storico dichiarato, senza campioni |
-| `report-demo.pdf` | Esempio di report del singolo test |
-
-Sono esclusi dalla repository i dati runtime e gli artefatti di prova. Il PDF storico reale fornito dall'utente non viene usato come fixture.
+Lo script corrente crea quattro atleti e quattro test basati sugli ERG originali. Si arresta su archivi già popolati. Esempi FIT/CSV in `examples/synthetic`, PDF di QA in `tmp/qa-fuorigiri`; vedere la checklist 0.3 sopra. Gli allegati personali originali non vengono copiati nelle fixture.
 
 ## 4. Aprire l'interfaccia
 
@@ -128,8 +140,8 @@ Linux: `CICLO_API_URL=http://127.0.0.1:8767 npm run dev`. Non basta aprire `fron
 | Ultima misura/default | Premere Proponi ultima antropometria; usare una data precedente a tutte le misure per verificare l'assenza di storico. | Proposta datata esplicita; nessuna misura futura presa automaticamente. Un preset configurato appare come stima. |
 | Numero di zone | Aggiungere due zone nell'editor, controllare ordine e limiti, calcolare l'anteprima. | Anche sette zone funzionano. Limiti duplicati o decrescenti sono rifiutati. FC e potenza possono avere numeri diversi di zone. |
 | Revisioni | Aprire un test → Correggi input e fine sforzo → cambiare RPE/fine sforzo, indicare motivo, ricalcolare e salvare. | Nuova revisione, risultati ricalcolati. I report precedentemente conservati restano scaricabili da Archivio e scambio. |
-| CSV storico | Archivio e scambio → importare prima `demo-atleti.csv`, poi antropometria e storico; verificare anteprima prima della conferma. | Riconciliazione tramite ID; import ripetuto senza duplicati. Una riga errata blocca il lotto. |
-| Aggregazioni | Storici e confronti → cambiare vista, stagione, categoria, atleta, metrica e modalità. | Mediane e conteggi aggiornati. Per la demo 12 test totali diventano 4 selezionati nel default per atleta; modalità Tutti i test ne usa 12. |
+| CSV storico | Archivio e scambio → importare prima `xamples/synthetic/atleti.csv`, poi antropometria e storico; verificare anteprima prima della conferma. | Riconciliazione tramite ID; import ripetuto senza duplicati. Una riga errata blocca il lotto. |
+| Aggregazioni | Storici e confronti → cambiare vista, stagione, categoria, atleta, metrica e modalità. | Media, mediana e conteggi aggiornati. La demo iniziale contiene un test per ciascuno dei quattro atleti: le due modalità hanno perciò lo stesso conteggio; aggiungere un secondo test dello stesso atleta/protocollo per verificarne la differenza. |
 | Crescita/confronti | Consultare Variazioni antropometriche; scegliere due stagioni in Confronto sugli stessi atleti. | Delta e intervallo dichiarati; nessuna coppia inventata se manca una stagione. Per provare una coppia aggiungere un test con lo stesso protocollo in un'altra stagione. |
 | Report | Scaricare PDF/Markdown di test e storico, poi CSV. | File leggibili; logo e credito fissi; zone dinamiche nei report; ZIP Markdown con immagini e manifest. CSV compatibili e dati estesi separati. |
 | Ciclo di vita | Archiviare un atleta, controllare gli storici; eliminarlo e poi ripristinarlo dal filtro Eliminati. | Archiviato conservato negli storici; eliminato escluso dai nuovi calcoli; ripristino possibile. |
@@ -140,9 +152,9 @@ Linux: `CICLO_API_URL=http://127.0.0.1:8767 npm run dev`. Non basta aprire `fron
 
 Usare due directory di avvio diverse e due sessioni browser separate. Per evitare contaminazioni del token utilizzare profili/browser distinti oppure una sessione privata. Prima istanza `.local/pc-a` sulla porta 8766, seconda `.local/pc-b` sulla porta 8767. Basta una cartella locale vuota esterna a entrambe, per esempio `.local/scambio-test`, per simulare il trasporto; non serve un account cloud per questa prova.
 
-1. Dal primo dispositivo creare una società separata nel pannello Workspace e collaboratori e selezionarla dal menu Workspace. Il dispositivo diventa fondatore.
+1. Dal primo dispositivo creare una società separata in Gestisci società e selezionarla dal menu Società. Il dispositivo diventa fondatore.
 2. Creare dati sintetici nella società. Specificare nome del collaboratore, ruolo e password di almeno 12 caratteri; scaricare l'invito cifrato.
-3. Nel secondo dispositivo associare il file d'invito con la password e selezionare il workspace ricevuto. Inizialmente può essere vuoto: i dati arrivano con lo scambio.
+3. Nel secondo dispositivo associare il file d'invito con la password e selezionare la società ricevuta. Inizialmente può essere vuoto: i dati arrivano con lo scambio.
 4. Indicare in entrambi la stessa cartella di scambio, esterna ai database. Scambiare prima dal fondatore e poi dal ricevente. Verificare arrivo di società, atleta e protocollo.
 5. Con un visualizzatore verificare consultazione ed export; tentativi di modifica devono essere rifiutati dal backend. Per il conflitto usare invece un invito Admin dati in un terzo archivio/profilo separato.
 6. Per un conflitto, sincronizzare due admin, modificare offline lo stesso campo dello stesso atleta in entrambi, poi scambiare. In Archivio e scambio confrontare il record ricevuto e scegliere Mantieni locale o Accetta ricevuto. Scambiare di nuovo su entrambi: verificare convergenza.

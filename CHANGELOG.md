@@ -1,5 +1,17 @@
 # Changelog
 
+## Software 0.3.0 / architettura 0.7 — 17 ottobre 2026
+
+- Nome Fuorigiri Performance Lab in UI, finestra e report; dati e identificatori tecnici compatibili.
+- Selettore Società unico, gestione società globale e pagine archivio/storici riordinate; dialoghi opachi con blocco dello scorrimento sottostante.
+- Nomi delle metriche leggibili, unità e aggregati con media/mediana; report storico sulla metrica/statistica selezionata.
+- Protocollo d'archivio senza step, test manuale senza FIT, nome figlio ereditato dalla categoria.
+- Contratto CSV con campi richiesti/facoltativi e controlli su intestazioni, righe e valori mancanti; import a lotti con anteprima e commit atomico.
+- PDF uniformati con blu societario, tabelle compatte, logo e attribuzione fissa nel footer di tutte le pagine; nuova versione della cache report.
+- Quattro FIT simulati riproducibili dagli ERG originali, CSV sintetici e demo costruita dai medesimi file; sei nuovi casi automatici.
+- Registro TD-30–44, scelte UI-11–16, lacune del motore incrementale e roadmap di sprint/CP/FTP/lattato/VO2 con fonti primarie.
+
+
 Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce deve indicare data, natura della modifica, motivo e identificatori di requisiti/decisioni. Una modifica documentale non certifica l'implementazione della funzione.
 
 ## Software 0.2.0 / Architettura 0.6 — 2026-10-17

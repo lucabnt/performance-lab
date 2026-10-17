@@ -1,5 +1,10 @@
 # Requisiti e to-do
 
+## Stato corrente 0.3 — Fuorigiri Performance Lab
+
+Nuovi requisiti **TD-30–44** implementati/documentati nel [registro della revisione 0.3](REVISIONE_FUORIGIRI_03.md), con scelte **UI-11–16**, contratto CSV e criteri di accettazione. [Copertura e mancanze del motore](COPERTURA_TEST_E_ROADMAP.md) distingue le priorità incrementali dai test futuri. Le sezioni 0.2 sottostanti restano storico del progetto; il nome prodotto è ora confermato.
+
+
 ## Stato del codice 0.2 — 17 ottobre 2026
 
 Aggiornamento successivo all'implementazione e alla ripresa del lavoro. La tabella descrive ora il codice 0.2; le note di disegno 0.5 sottostanti restano contesto storico. [Guida di prova con GUI](TESTARE_IL_PROGETTO.md) e [verifiche](VERIFICA.md) distinguono test eseguiti e collaudi ancora necessari.

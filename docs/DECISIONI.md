@@ -1,5 +1,9 @@
 # Decisioni e stato dell'implementazione
 
+## Stato corrente software 0.3 / architettura 0.7
+
+Nome confermato **Fuorigiri Performance Lab**. Adottate e implementate le scelte TD-30–44 e UI-11–16 del [registro 0.3](REVISIONE_FUORIGIRI_03.md), incluse acquisizione manuale, protocolli senza step, nome figlio ereditato, media/mediana e footer PDF. Gli identificatori tecnici precedenti restano compatibili. Le [mancanze e priorità dei test](COPERTURA_TEST_E_ROADMAP.md) separano capacità attuali e motori futuri. Le sezioni sottostanti conservano la cronologia 0.2.
+
 ## Stato software 0.2 / architettura 0.6
 
 Il 17 ottobre 2026 è stata implementata la parte locale dei nuovi requisiti: revisioni, osservazioni, protocolli editabili/versionati, CSV, statistiche e report storici, workspace/ruoli e firme di scambio. Stato per ID in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), prove e limiti nel [README](../README.md).

@@ -51,7 +51,7 @@ def classify(value, reference, scheme):
 def calculate(scheme, reference, samples, start, end):
     validate(scheme)
     if reference is None or reference <= 0:
-        return {'scheme': scheme, 'reference_value': None, 'zones': [], 'unclassified_s': end-start}
+        return {'scheme': scheme, 'reference_value': None, 'zones': [], 'unclassified_s': end-start if samples or end>start else None}
     rows = []
     lower, lower_inclusive = 0, True
     for z in scheme['zones']:
@@ -67,5 +67,8 @@ def calculate(scheme, reference, samples, start, end):
         i = classify(row.get(field), reference, scheme)
         if i is not None:
             rows[i]['seconds'] += width
+    unclassified=max(0, end-start-sum(z['seconds'] for z in rows))
+    if not samples:
+        for zone in rows:zone['seconds']=None
     return {'scheme': scheme, 'reference_value': reference, 'zones': rows,
-            'unclassified_s': max(0, end-start-sum(z['seconds'] for z in rows))}
+            'unclassified_s': unclassified if samples or end>start else None}

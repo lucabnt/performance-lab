@@ -1,84 +1,78 @@
-# Ciclo Test
+# Ciclo Test · Performance Lab
 
-Applicazione desktop **Python + React/TypeScript**, archivio locale SQLite e shell PySide6/Qt WebEngine. Licenza **GPL-3.0-or-later**.
+Applicazione desktop open source per analisi e archivio di test incrementali nel ciclismo. **Python + React/TypeScript**, SQLite locale, shell PySide6/Qt WebEngine. Licenza del codice **GPL-3.0-or-later**. Nome della suite ancora provvisorio.
 
-## Stato: anteprima di sviluppo 0.1
+**Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.** Logo originale incluso in `frontend/public/branding/` e nel bundle finale. Logo, collegamenti e attribuzione sono fissi; le anagrafiche delle società non modificano il branding del prodotto.
 
-Prima implementazione eseguibile del percorso locale, non rilascio validato per uso operativo. Nessun dato personale degli allegati è incluso. Il nome Ciclo Test è provvisorio.
+## Stato: anteprima di sviluppo 0.2
+
+Implementazione locale con dati sintetici e prove automatiche; richiede collaudo su PC puliti, Fedora, FIT reali e client cloud reali prima del rilascio operativo. Nessun dato personale degli allegati è incluso.
 
 Disponibile:
 
-- società, atleti, gruppi e appartenenze datate;
-- rilevazioni di peso/statura;
-- import ERG in catalogo, versioni immutabili e relazione con il protocollo precedente;
-- import FIT tramite `fitdecode` (MIT), controllo CRC, potenza/FC/cadenza e pause;
-- offset e termine sforzo manuali, anteprima e archiviazione;
-- MAP operativa da ultimo step completo, interpolazione separata, W/kg, FC osservata e recupero;
-- grafici interattivi del test e progressione separata per versione di protocollo;
-- PDF, pacchetto Markdown con grafico, tre CSV con intestazioni concordate;
-- backup consistente tramite SQLite backup API;
-- trasporto sperimentale cifrato tramite cartella, con riconoscimento duplicati e conservazione dei conflitti.
+- società, categorie con stagioni figlie, appartenenze datate e anno di categoria;
+- modifica profilo, nascita completa/solo anno/ignota, antropometria manuale e grafici peso/statura;
+- archiviazione, eliminazione reversibile e ripristino di atleti/protocolli, conservando i riferimenti storici;
+- import ERG, editor di fasi costanti/rampe, versioni immutabili ed export ERG/JSON;
+- import FIT o CSV temporale, anteprima del tracciato, offset e fine sforzo correggibili dopo il salvataggio tramite revisione;
+- RPE 1–10, FC a riposo con durata, recupero manuale a tempi personalizzati, lattato con istante e coefficienti/riferimenti espliciti;
+- proposta dell'ultima antropometria precedente e preset facoltativi con fonte/popolazione di riferimento, conservati come stime;
+- MAP dall'ultimo step completo, interpolazione distinta, soglia da coefficiente dichiarato; FTP solo se fornita esplicitamente;
+- zone FC/potenza con riferimenti selezionabili e numero configurabile oltre cinque; tempo valido in zona e mancanti distinti;
+- import CSV di anagrafiche, antropometria e risultati storici con anteprima, errori per riga, ID esterni e commit transazionale;
+- storici per atleta, categoria, anno di categoria, stagione e coorte; statistiche con modalità per atleta o tutti i test;
+- variazioni antropometriche descrittive e confronti fra stagioni sugli stessi atleti e protocollo;
+- report PDF e ZIP Markdown con grafici, logo, riferimenti e revisioni; conservazione degli artefatti;
+- export dei tre CSV concordati e formato esteso separato per zone/relazioni;
+- workspace separati per società, inviti cifrati per operatore/dispositivo, admin e visualizzatore, pacchetti cifrati/firmati e risoluzione conflitti;
+- interfaccia IT/EN, tabelle ordinabili e backup dati consistente.
 
-Limitazioni esplicite:
+Limiti ancora presenti:
 
-- Nessun FIT reale degli esportatori è stato fornito: verificato con FIT sintetico e CRC, non certificato su GoldenCheetah/MyWhoosh/Zwift.
-- La validità dello step usa durata e copertura potenza del 95%; non verifica aderenza al target. La convenzione va validata prima di usare i risultati operativamente.
-- Protocollo a rampa leggibile/graficabile, ma MAP per step non calcolata. Più sessioni FIT e timestamp duplicati vengono rifiutati con messaggio.
-- Ancora da implementare: editor manuale protocolli, confronto differenze, revisione di un test, formule configurabili e campi avanzati storici, recupero manuale, gruppi annidati, filtri storici completi, modifiche UI delle anagrafiche, cancellazioni reversibili.
-- Sync sperimentale: scambio manuale dell'intero archivio locale con chiave condivisa, non selezione per società; conflitti conservati ma senza risolutore. Non usarlo per dati reali. Nessun portachiavi, rotazione chiavi, tombstone, snapshot/compattazione o revoca ancora implementati.
-- Backup esportabile; ripristino guidato non ancora implementato. Backup e database locali non cifrati.
-- Report generati su richiesta, non ancora conservati come artefatti immutabili. Analisi e protocollo associati al test restano salvati.
-- Pacchetto Windows di prova senza firma/installazione; packaging Fedora/Flatpak e verifica su macchina Linux ancora da completare.
+- Step valido: durata prevista e copertura potenza ≥95%, senza verifica dell'aderenza al target. Convenzione da validare con il referente del metodo.
+- Rampe leggibili/graficabili, ma MAP per step costanti non applicabile. FIT multisessione e timestamp duplicati rifiutati esplicitamente.
+- Formule per soglie da lattato, maturazione/PHV e benchmark esterni non definite; il programma non ne inventa i risultati. Anaerobico resta un'estensione candidata.
+- IT/EN copre navigazione, form e titoli principali dei report. Alcune diagnostiche, descrizioni dei metodi, controlli Plotly e testi secondari restano italiani/inglesi; localizzazione integrale da completare.
+- Scambio manuale. Revoca delle scritture recepita al prossimo scambio, senza cancellazione delle copie o rotazione automatica delle chiavi di lettura. Segreti locali protetti dall'account/filesystem; portachiavi e recupero guidato ancora da completare.
+- Archivio precedente accessibile, senza migrazione automatica nei workspace. Per nuove condivisioni creare un workspace separato.
+- Backup dati scaricabile, ripristino guidato non disponibile. Conservare separatamente le credenziali del fondatore; DB e backup standard non cifrati.
+- Bundle Windows di sviluppo, senza installer/firma. Fedora/Flatpak e prove su macchine pulite ancora da eseguire.
 
-## Avvio da sorgente
+## Avvio e test della GUI
 
-Python 3.12+ e Node.js 22+ durante lo sviluppo. Utenti del pacchetto non necessitano di Python/Node installati.
+La [guida completa al collaudo](docs/TESTARE_IL_PROGETTO.md) contiene installazione Windows/Fedora, test automatici, desktop/browser, Vite, fixture sintetiche e checklist per due dispositivi e ruoli.
 
-```powershell
-python -m venv .venv
-.venv/Scripts/python.exe -m pip install -e ".[desktop,dev]"
-cd frontend
-npm ci
-npm run build
-cd ..
-.venv/Scripts/python.exe -m cycling_test.desktop
-```
-
-Linux: usare `.venv/bin/python` al posto del percorso Windows. L'archivio predefinito è `%LOCALAPPDATA%/CicloTest` su Windows e `~/.local/share/CicloTest` su Linux. `--data PERCORSO` sceglie un archivio diverso. `--browser` usa il browser di sistema al posto della finestra Qt.
+Da un ambiente già preparato, dopo `npm run build` in `frontend/`:
 
 ```powershell
-.venv/Scripts/python.exe scripts/demo.py
-.venv/Scripts/python.exe -m cycling_test.desktop --data .local/demo
+.venv/Scripts/python.exe scripts/demo.py --data .local/ui-test
+.venv/Scripts/python.exe -m cycling_test.desktop --data .local/ui-test
 ```
 
-La demo usa **solo dati sintetici**, genera un archivio separato e non sovrascrive archivi esistenti. I file di prova vengono scritti in `tmp/qa/`.
+Server browser senza finestra Qt:
 
-I due ERG forniti sono disponibili in `examples/protocols/`, per l'importazione dal catalogo Protocolli. Non contengono dati personali. Indicare 600 secondi come fine del riscaldamento e confermare le convenzioni prima dell'uso.
+```powershell
+.venv/Scripts/python.exe scripts/serve.py --data .local/ui-test --port 8766
+```
 
-## Verifiche e build
+Aprire l'URL completo stampato, incluso il token. Su Linux usare `.venv/bin/python`. La demo rifiuta un archivio già popolato: riutilizzarlo per l'avvio o scegliere un nuovo percorso per rigenerarla.
 
 ```powershell
 .venv/Scripts/python.exe -m pytest -q
-cd frontend
-npm run build
-cd ..
-.venv/Scripts/python.exe scripts/build.py
 ```
 
-Il bundle è in `dist/CicloTest/`: distribuire tutta la cartella, non solo l'eseguibile. PyInstaller va eseguito separatamente su ciascun sistema operativo. L'opzione `--smoke-test --data PERCORSO_TEMP` verifica import e risorse e scrive `smoke-ok.txt`, senza aprire finestre.
+Backend su loopback con token di sessione; asset UI locali. CSV temporali in secondi/W/bpm/rpm, colonne `t,power,hr,cadence`. Lo storico privo di campioni resta dichiarato.
 
-Il backend è limitato a loopback e richiede una credenziale effimera generata dalla shell. Nessuna esposizione in LAN. Nessuna risorsa UI caricata da CDN.
+## Distribuzione e documenti
 
-## Dati ed esportazioni
+Dopo la build frontend eseguire `.venv/Scripts/python.exe scripts/build.py`. Distribuire tutta `dist/CicloTest/`, non il solo EXE. PyInstaller va eseguito sul sistema destinatario. La guida descrive `--smoke-test` e verifica su PC pulito.
 
-Il database è il modello operativo; i CSV non ne replicano tutte le relazioni. Le intestazioni compatibili sono in `backend/cycling_test/reports.py`. `manifest.json` collega test e versioni esatte; i soli CSV non costituiscono un backup. Il CSV è un export dati grezzi: trattare come testo le note importate in fogli di calcolo. Campi non disponibili restano vuoti. La colonna `map_alt_w` contiene l'interpolazione dichiarata dal nuovo metodo, senza equivalenza automatica ai metodi storici.
+- [Architettura](ARCHITETTURA_PROPOSTA.md)
+- [Requisiti e stato](docs/REQUISITI_E_TODO.md)
+- [Guida di test, inclusa la GUI](docs/TESTARE_IL_PROGETTO.md)
+- [Verifiche effettuate](docs/VERIFICA.md)
+- [Decisioni](docs/DECISIONI.md)
+- [Changelog](CHANGELOG.md)
+- [Licenze delle dipendenze](THIRD_PARTY.md)
 
-I dispositivi scambiano pacchetti cifrati, non il database SQLite aperto. Nella versione sperimentale il canale include tutto l'archivio selezionato all'avvio. Il programma può confermare la scrittura nella cartella, non l'upload del client cloud. Google Drive non ha client desktop ufficiale per Linux: serve una soluzione esterna verificata.
-
-## Documenti
-
-- `ARCHITETTURA_PROPOSTA.md`: architettura obiettivo; non tutto è implementato.
-- `docs/DECISIONI.md`: decisioni confermate e scostamenti della prima implementazione.
-- `THIRD_PARTY.md`: dipendenze e avvisi per la distribuzione.
-
-Non pubblicare `.local/`, FIT reali, backup, token o chiavi. I file esclusi in `.gitignore` contengono dati runtime o build.
+Non pubblicare `.local/`, FIT reali, backup, inviti, token o chiavi. Dati runtime e build sono esclusi da `.gitignore`. Il marchio della società è distinto dalla licenza GPL del codice.

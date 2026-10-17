@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
-KINDS = {"organization", "group", "athlete", "membership", "measurement", "protocol", "test", "report", "import_batch", "zone_scheme"}
+KINDS = {"organization", "group", "athlete", "membership", "measurement", "protocol", "test", "report", "import_batch", "zone_scheme", "default_profile"}
 
 
 def encoded(value):
@@ -62,6 +62,20 @@ class Store:
                 db.execute('INSERT INTO changes VALUES(?,?)',(revision,encoded(change)))
                 result.append(data)
             return result
+
+    def revise_batch(self, records, reason):
+        with self.connect() as db:
+            device=db.execute("SELECT value FROM config WHERE key='device'").fetchone()[0]
+            for old in records:
+                current=db.execute('SELECT revision FROM records WHERE id=?',(old['id'],)).fetchone()
+                if not current or current[0]!=old['revision']:
+                    raise ConflictError('Record modificato durante l’annullamento. Ricaricare.')
+                revision=str(uuid4())
+                record={**old,'status':'deleted','reason':reason,'revision':revision}
+                change={'schema':1,'id':revision,'device':device,'base':old['revision'],'created_at':datetime.now(timezone.utc).isoformat(),'record':record}
+                if hasattr(self,'sign_change'):change=self.sign_change(change)
+                db.execute('UPDATE records SET revision=?,data=? WHERE id=?',(revision,encoded(record),record['id']))
+                db.execute('INSERT INTO changes VALUES(?,?)',(revision,encoded(change)))
 
     @contextmanager
     def connect(self):

@@ -30,7 +30,7 @@ def validate(scheme):
         if i == len(zones)-1:
             if upper is not None:
                 raise ValueError('L’ultima zona deve avere limite superiore aperto.')
-        elif not isinstance(upper, (float, int)) or not math.isfinite(upper) or upper <= last:
+        elif isinstance(upper,bool) or not isinstance(upper, (float, int)) or not math.isfinite(upper) or upper <= last:
             raise ValueError('Limiti percentuali positivi e strettamente crescenti richiesti.')
         else:
             last = upper

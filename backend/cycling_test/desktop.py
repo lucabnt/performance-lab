@@ -4,6 +4,8 @@ import secrets
 import socket
 import sys
 import threading
+import logging
+import time
 from pathlib import Path
 
 import uvicorn
@@ -25,16 +27,44 @@ def main():
         raise SystemExit("Interfaccia non compilata. Eseguire npm run build nella cartella frontend.")
     app = create_app(root,token,dist)
     if args.smoke_test:
+        (root/'smoke-ok.txt').unlink(missing_ok=True)
         from .reports import report
         from .fit import decode_fit
         from PySide6.QtWebEngineWidgets import QWebEngineView
-        (root/'smoke-ok.txt').write_text('Ciclo Test 0.1.0: import e risorse disponibili.',encoding='utf-8')
-        return
+        from .branding import logo_path
+        if not logo_path().read_bytes().startswith(b'\x89PNG'):
+            raise SystemExit('Logo del prodotto mancante nel bundle.')
     sock = socket.socket()
     sock.bind(("127.0.0.1",args.port))
     port = sock.getsockname()[1]
-    config = uvicorn.Config(app,host="127.0.0.1",port=port,log_level="warning")
+    # Windowed executables have no stdout/stderr. Keep diagnostics in a local
+    # file and use explicit built-in protocols for predictable frozen imports.
+    handler=logging.FileHandler(root/'server.log',encoding='utf-8')
+    handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    logger=logging.getLogger('uvicorn');logger.addHandler(handler)
+    config = uvicorn.Config(app,host="127.0.0.1",port=port,log_level="warning",log_config=None,
+                            access_log=False,loop='asyncio',http='h11',ws='none')
     server = uvicorn.Server(config)
+    failed=threading.Event()
+    def serve():
+        try:server.run(sockets=[sock])
+        except BaseException:
+            logger.exception('Avvio backend non riuscito');failed.set()
+    if args.smoke_test:
+        from urllib.request import urlopen
+        thread=threading.Thread(target=serve,daemon=True);thread.start()
+        deadline=time.monotonic()+15
+        try:
+            while not server.started:
+                if failed.is_set() or not thread.is_alive() or time.monotonic()>deadline:
+                    raise RuntimeError('Backend non avviato: consultare server.log.')
+                time.sleep(.05)
+            with urlopen(f'http://127.0.0.1:{port}/health',timeout=5) as response:
+                if response.status!=200:raise RuntimeError('Health check non riuscito.')
+            (root/'smoke-ok.txt').write_text('Ciclo Test 0.2.0: import, logo e backend HTTP verificati.',encoding='utf-8')
+        finally:
+            server.should_exit=True;thread.join(timeout=5);sock.close();handler.close();logger.removeHandler(handler)
+        return
     url = f"http://127.0.0.1:{port}/#token={token}"
     if args.browser:
         import webbrowser
@@ -45,7 +75,7 @@ def main():
     from PySide6.QtWidgets import QApplication
     from PySide6.QtWebEngineWidgets import QWebEngineView
     from PySide6.QtWebEngineCore import QWebEnginePage
-    thread = threading.Thread(target=lambda:server.run(sockets=[sock]),daemon=True)
+    thread = threading.Thread(target=serve,daemon=True)
     thread.start()
     qt = QApplication(sys.argv[:1])
     class LocalPage(QWebEnginePage):
@@ -57,6 +87,12 @@ def main():
             return url.scheme() in ("blob", "data") or (url.host() == "127.0.0.1" and url.port() == port)
     view = QWebEngineView()
     view.setPage(LocalPage(view))
+    def external_window(request):
+        from PySide6.QtGui import QDesktopServices
+        url=request.requestedUrl()
+        if url.scheme() in ('http','https') and url.host()!='127.0.0.1':
+            QDesktopServices.openUrl(url)
+    view.page().newWindowRequested.connect(external_window)
     view.setWindowTitle("Ciclo Test")
     view.resize(1440,960)
     from PySide6.QtWidgets import QFileDialog
@@ -75,12 +111,18 @@ def main():
             timer.stop()
             view.load(QUrl(url))
             view.show()
+        elif failed.is_set() or not thread.is_alive():
+            timer.stop()
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.critical(view,'Avvio non riuscito',f'Consultare il file {root / "server.log"}')
+            qt.quit()
     timer.timeout.connect(ready)
     timer.start(100)
     qt.exec()
     server.should_exit = True
     thread.join(timeout=5)
     sock.close()
+    handler.close();logger.removeHandler(handler)
 
 
 if __name__ == "__main__":

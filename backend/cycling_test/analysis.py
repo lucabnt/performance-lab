@@ -1,7 +1,7 @@
 """Pure analysis: elapsed-time windows, no implicit gap filling or threshold estimates."""
 import math
 
-ENGINE_VERSION = "0.1.0"
+ENGINE_VERSION = "0.2.0"
 MAX_GAP_S = 5.0
 
 
@@ -90,4 +90,5 @@ def analyze(samples: list, protocol: dict, settings: dict) -> dict:
             "fc_max_test_bpm": max(hrs) if hrs else None, "duration_s": end-offset,
             "power_mean_w": power["mean"], "work_kj": round(power["integral"]/1000, 2),
             "power_coverage": power["coverage"], "recovery": recovery,
+            "recovery_reference_hr_bpm": reference['mean'] if reference['coverage']>=.8 else None,
             "warnings": warnings, "method": "Ultimo step incrementale costante completo; copertura potenza ≥95%. Nessuna verifica automatica di aderenza al target."}

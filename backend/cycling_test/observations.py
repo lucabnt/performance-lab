@@ -22,7 +22,8 @@ def enrich(analysis, samples, settings):
     recovery = {r['after_s']: {**r, 'source': 'sensore'} for r in a['recovery']}
     for r in settings.get('recovery_manual', []):
         previous = recovery.get(r['after_s'])
-        recovery[r['after_s']] = {**r, 'hrr_bpm': None, 'source': 'manuale', 'sensor': previous}
+        reference=a.get('recovery_reference_hr_bpm')
+        recovery[r['after_s']] = {**r, 'hrr_bpm': round(reference-r['hr_bpm'],1) if reference is not None else None, 'source': 'manuale', 'sensor': previous}
     a['recovery'] = sorted(recovery.values(), key=lambda r: r['after_s'])
     references = {**a, **{k:v for k,v in settings.items() if v is not None}}
     references['threshold_w'] = a['threshold_w']

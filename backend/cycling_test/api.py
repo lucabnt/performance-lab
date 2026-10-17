@@ -151,7 +151,7 @@ def create_app(root=None, token=None, frontend=None):
     workspaces=Workspaces(legacy.root,legacy)
     store=workspaces.proxy
     token = token or os.environ.get("CICLO_TOKEN") or secrets.token_urlsafe(32)
-    app = FastAPI(title="Ciclo Test", version="0.1.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Ciclo Test", version="0.2.0", docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
 
@@ -211,6 +211,8 @@ def create_app(root=None, token=None, frontend=None):
     @app.get("/api/v1/state")
     def state():
         result = {kind:store.list(kind) for kind in ("organization","group","athlete","membership","measurement","protocol")}
+        for kind in ('membership','measurement'):
+            result[kind]=[r for r in result[kind] if r.get('status')!='deleted']
         result["test"] = [{k:v for k,v in t.items() if k != "samples"} for t in store.list("test")]
         result['operator']={k:store.identity['certificate'][k] for k in ('name','role','id')} if hasattr(store,'identity') else {'name':'Locale','role':'admin'}
         return result
@@ -312,24 +314,24 @@ def create_app(root=None, token=None, frontend=None):
             raise ValueError("Tracciato già associato a questo atleta.")
         a = require(data.athlete_id,"athlete")
         memberships = [m["group_id"] for m in store.list("membership") if m["athlete_id"] == a["id"] and m["start"] <= data.date.isoformat() and (not m.get("end") or m["end"] >= data.date.isoformat())]
-        return store.save("test",{**data.model_dump(mode="json"),"organization_id":a["organization_id"],"group_ids":memberships,"samples":trace["samples"],"analysis":analysis,"objects":[data.trace_hash,trace["original_hash"]]})
+        return store.save("test",{**data.model_dump(mode="json"),"organization_id":a["organization_id"],"athlete_snapshot":a,"group_ids":memberships,"samples":trace["samples"],"analysis":analysis,"objects":[data.trace_hash,trace["original_hash"]]})
 
     @app.get("/api/v1/tests/{id}")
     def test(id: str):
         return require(id,"test")
 
     @app.get("/api/v1/tests/{id}/report/{format}")
-    def test_report(id: str, format: Literal["pdf","md"]):
+    def test_report(id: str, format: Literal["pdf","md"], language: Literal['it','en']='it'):
         from .reports import report
         t = require(id,"test")
-        cached=next((r for r in store.list('report') if r.get('test_revision')==t['revision'] and r.get('format')==format),None)
+        cached=next((r for r in store.list('report') if r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
         if cached:
             body=store.read_object(cached['objects'][0])
         else:
-            body = report(t,require(t["athlete_id"],"athlete"),require(t["protocol_id"],"protocol"),format)
+            body = report(t,t.get('athlete_snapshot') or require(t["athlete_id"],"athlete"),require(t["protocol_id"],"protocol"),format,language)
             if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
                 digest=store.object(body)
-                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'test_revision':t['revision'],'format':format,'objects':[digest]})
+                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
         return download(body,"application/pdf" if format == "pdf" else "application/zip",f"test-{id}." + ("pdf" if format == "pdf" else "zip"))
 
     @app.get("/api/v1/export/{organization_id}")

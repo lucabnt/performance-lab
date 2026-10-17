@@ -2,6 +2,24 @@
 
 Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce deve indicare data, natura della modifica, motivo e identificatori di requisiti/decisioni. Una modifica documentale non certifica l'implementazione della funzione.
 
+## Software 0.2.0 / Architettura 0.6 — 2026-10-17
+
+**Tipo: implementazione e collaudo locale**, dopo approvazione delle scelte e ripresa del lavoro interrotto.
+
+- Logo originale aggiunto in `frontend/public/branding/`, incluso nel bundle Vite/PyInstaller e nei report. Branding reso fisso su richiesta successiva: «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.» (TD-02/03/26; UI-02/03). Le società non possono personalizzarlo.
+- Implementati modifica profilo, nascita completa facoltativa, categorie/stagioni e anno di categoria, ciclo di vita reversibile di atleti/protocolli e filtri storici (TD-09/10/13/14/24).
+- Aggiunti editor protocolli con fasi e versioni, export ERG/JSON e tabelle ordinabili (TD-08/11/12). Confronto grafico delle differenze ancora futuro.
+- Import FIT/CSV temporale, lattato/RPE/recupero manuale, coefficienti e riferimenti, proposta ultima antropometria e preset stimati con fonte; revisioni successive di test con campioni e risultati storici (TD-15/21/22/23/29).
+- Zone a numero variabile per FC/potenza, confini concordati senza arrotondamento preventivo, tempi validi in zona, report dinamici ed export lungo separato (TD-28; ZONE-01).
+- Import CSV dei tre profili con anteprima, riconciliazione ID, errori per riga, commit atomico e riconoscimento duplicati (TD-07). Adapter di colonne arbitrarie ancora futuro.
+- Storici per atleta/categoria/anno/stagione/coorte, statistiche per metrica, modalità ultimo test per atleta o tutti i test, variazioni antropometriche e confronto appaiato (TD-04/05/17/18).
+- Report MD/PDF di storico con manifest, branding e revisioni; conservazione degli artefatti e download delle versioni precedenti; CSV compatibili più formato esteso (TD-16).
+- Workspace separati, inviti cifrati per operatore/dispositivo, ruoli admin/visualizzatore, firma delle operazioni e risoluzione conflitti. Revoca delle scritture propagata allo scambio; limiti di lettura e credenziali locali documentati (TD-19/20).
+- Aggiunta infrastruttura IT/EN, selettore GUI e titoli dei report; localizzazione completa delle diagnostiche ancora parziale (TD-06).
+- Aggiunta [guida per testare anche la GUI](docs/TESTARE_IL_PROGETTO.md), script server locale, fixture sintetiche FIT/ERG/CSV e istruzioni Vite. Aggiornati README, registro requisiti, decisioni e verifiche.
+- Nessuna formula scientifica non concordata introdotta. Nome suite, modelli avanzati di maturazione, modulo anaerobico, portachiavi/recupero, rilascio Fedora e verifiche cloud reali restano esplicitamente aperti.
+- Nel collaudo del bundle Windows individuata una DLL ICU di Poppler raccolta dal PATH, incompatibile con Qt. Isolato il PATH del sottoprocesso di build; il PATH del sistema non viene modificato. La verifica del bundle comprende caricamento Qt WebEngine, presenza del logo e avvio/health del backend HTTP. Logging desktop reso indipendente dalla console, con errore di avvio esplicito e test senza stdout/stderr.
+
 ## Architettura 0.5 — 2026-10-17
 
 **Tipo: conferme, valutazione allegati e specifica; nessuna modifica funzionale al software.**

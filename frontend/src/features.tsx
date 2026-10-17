@@ -1,6 +1,29 @@
 import {tr} from './i18n';
 import React,{useState,useEffect} from 'react';
 type Row=Record<string,any>;
+function cellText(node:any):string{
+ if(node==null||typeof node==='boolean')return '';
+ if(typeof node==='string'||typeof node==='number')return String(node);
+ if(Array.isArray(node))return node.map(cellText).join(' ');
+ return cellText(node.props?.children);
+}
+export function SortableTable({children}:{children:React.ReactNode}){
+ const [sort,setSort]=useState(-1),[ascending,setAscending]=useState(true);
+ const sections=React.Children.toArray(children) as React.ReactElement<any>[];
+ const compare=(a:any,b:any)=>{
+  const x=cellText(React.Children.toArray(a.props.children)[sort]).trim(),y=cellText(React.Children.toArray(b.props.children)[sort]).trim();
+  const missing=(s:string)=>!s||s==='—'||s==='n.d.';
+  if(missing(x))return missing(y)?0:1;if(missing(y))return -1;
+  const numeric=(s:string)=>/^[-+]?\d+(?:[.,]\d+)?(?:\s*(?:W|kg|cm|bpm|W\/kg))?$/.test(s)?parseFloat(s.replace(',','.')):null;
+  const nx=numeric(x),ny=numeric(y),c=nx!==null&&ny!==null?nx-ny:x.localeCompare(y,undefined,{numeric:true});
+  return ascending?c:-c;
+ };
+ return <div className="table-scroll"><table>{sections.map(section=>{
+  if(section.type==='thead')return React.cloneElement(section,{children:React.Children.map(section.props.children,(row:any)=>React.cloneElement(row,{children:React.Children.map(row.props.children,(cell:any,i)=>cellText(cell).trim()?React.cloneElement(cell,{'aria-sort':sort===i?(ascending?'ascending':'descending'):'none',children:<button onClick={()=>{setAscending(sort===i?!ascending:true);setSort(i)}}>{cell.props.children}{sort===i?(ascending?' ↑':' ↓'):''}</button>}):cell)}))});
+  if(section.type==='tbody'&&sort>=0)return React.cloneElement(section,{children:(React.Children.toArray(section.props.children) as any[]).sort(compare)});
+  return section;
+ })}</table></div>
+}
 export function DataTable({rows,columns}:{rows:Row[],columns:{key:string,label:string,render?:(r:Row)=>React.ReactNode}[]}){
  const [sort,setSort]=useState(''),[ascending,setAscending]=useState(true);
  const ordered=[...rows].sort((a,b)=>{const x=a[sort],y=b[sort];if(x==null)return y==null?0:1;if(y==null)return -1;const c=typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y),undefined,{numeric:true});return ascending?c:-c});
@@ -31,4 +54,26 @@ export function ProtocolEditor({original,api,run,done}:{original?:Row,api:any,ru
  const [segments,setSegments]=useState<Row[]>(original?.definition.segments.map((s:Row)=>({duration_s:s.end_s-s.start_s,start_w:s.start_w,end_w:s.end_w,phase:s.phase}))||[{duration_s:600,start_w:60,end_w:60,phase:'warmup'},{duration_s:240,start_w:80,end_w:80,phase:'increment'}]);
  const edit=(i:number,k:string,v:any)=>setSegments(s=>s.map((r,j)=>j===i?{...r,[k]:v}:r));
  return <><h2>{original?tr("Nuova versione"):tr("Crea protocollo")}</h2><div className="form-grid">{[[tr("Nome"),name,setName],[tr("Codice"),family,setFamily],[tr("Versione"),version,setVersion],[tr("Motivo"),reason,setReason]].map(([label,value,set]:any)=><label key={label}>{label}<input value={value} onChange={e=>set(e.target.value)}/></label>)}</div><table><thead><tr><th>{tr("Durata s")}</th><th>{tr("W iniziali")}</th><th>{tr("W finali")}</th><th>{tr("Fase")}</th><th/></tr></thead><tbody>{segments.map((s,i)=><tr key={i}>{['duration_s','start_w','end_w'].map(k=><td key={k}><input aria-label={k} type="number" value={s[k]} onChange={e=>edit(i,k,Number(e.target.value))}/></td>)}<td><select value={s.phase} onChange={e=>edit(i,'phase',e.target.value)}>{['warmup','increment','recovery','cooldown'].map(p=><option key={p}>{p}</option>)}</select></td><td><button onClick={()=>setSegments(s=>s.filter((_,j)=>j!==i))}>{tr("Rimuovi")}</button></td></tr>)}</tbody></table><button onClick={()=>setSegments(s=>[...s,{duration_s:240,start_w:(s.at(-1)?.end_w||0)+20,end_w:(s.at(-1)?.end_w||0)+20,phase:'increment'}])}>{tr("Aggiungi fase")}</button><p className="hint">{tr("L’export ERG conserva il carico. Esporta anche la definizione JSON per fasi semantiche e versionamento.")}</p><button className="primary" onClick={()=>run(async()=>{await api('protocols/manual',{name,family,version,parent_id:original?.id||null,reason,segments});await done()})}>{tr("Pubblica versione")}</button></>
+}
+
+export function GrowthPanel({org,api,run,Plot}:{org:string,api:any,run:any,Plot:any}){
+ const [growth,setGrowth]=useState<Row[]>([]),[first,setFirst]=useState(String(new Date().getFullYear()-1)),[second,setSecond]=useState(String(new Date().getFullYear())),[pairs,setPairs]=useState<Row|null>(null),[metric,setMetric]=useState('map_w');
+ useEffect(()=>{run(async()=>setGrowth(await api(`history/${org}/growth`)))},[org]);
+ return <><section className="panel protocol"><h2>{tr('Variazioni antropometriche')}</h2><p>{tr('Variazioni descrittive fra rilevazioni. La velocità annualizzata non è una previsione di crescita.')}</p><DataTable rows={growth.map(r=>({...r,delta:Number(r.delta.toFixed(3)),annualized:r.annualized==null?null:Number(r.annualized.toFixed(3))}))} columns={[{key:'athlete',label:tr('Atleta')},{key:'metric',label:tr('Metrica')},{key:'previous_date',label:tr('Dal')},{key:'date',label:tr('Data')},{key:'days',label:tr('Giorni')},{key:'delta',label:'Delta'},{key:'annualized',label:tr('Per anno')}]}/></section><section className="panel protocol"><h2>{tr('Confronto sugli stessi atleti')}</h2><div className="form-grid"><label>{tr('Prima stagione')}<input value={first} onChange={e=>setFirst(e.target.value)}/></label><label>{tr('Seconda stagione')}<input value={second} onChange={e=>setSecond(e.target.value)}/></label><label>{tr('Metrica')}<select value={metric} onChange={e=>setMetric(e.target.value)}>{['map_w','map_wkg','threshold_w','threshold_wkg','weight_kg'].map(m=><option key={m}>{m}</option>)}</select></label></div><button onClick={()=>run(async()=>setPairs(await api(`history/${org}/compare?first=${encodeURIComponent(first)}&second=${encodeURIComponent(second)}`)))}>{tr('Confronta')}</button>{pairs&&<><p>{pairs.n_pairs} {tr('coppie comparabili')} · {pairs.unpaired_first} / {pairs.unpaired_second} {tr('risultati senza coppia')}</p><Plot data={[{x:pairs.pairs.map((r:Row)=>r.athlete),y:pairs.pairs.map((r:Row)=>r[metric+'_delta']),type:'bar',name:'Delta '+metric}]}/><DataTable rows={pairs.pairs.map((r:Row)=>({...r,delta:r[metric+'_delta'],percent:r[metric+'_pct']==null?null:Number(r[metric+'_pct'].toFixed(2))}))} columns={[{key:'athlete',label:tr('Atleta')},{key:'from',label:tr('Dal')},{key:'to',label:tr('Data')},{key:'delta',label:'Delta'},{key:'percent',label:'%'}]}/></>}</section></>
+}
+
+export function DefaultsPanel({org,api,run}:{org:string,api:any,run:any}){
+ const [source,setSource]=useState(''),[population,setPopulation]=useState(''),[weight,setWeight]=useState(''),[height,setHeight]=useState(''),[saved,setSaved]=useState(false);
+ return <section className="panel protocol"><h2>{tr('Suggerimenti in assenza di misure')}</h2><p>{tr('Valori facoltativi con fonte e popolazione. Il test li userà soltanto dopo una scelta esplicita, come stime.')}</p><div className="form-grid"><label>{tr('Fonte')}<input value={source} onChange={e=>setSource(e.target.value)}/></label><label>{tr('Popolazione')}<input value={population} onChange={e=>setPopulation(e.target.value)}/></label><label>{tr('Peso · kg')}<input type="number" value={weight} onChange={e=>setWeight(e.target.value)}/></label><label>{tr('Statura · cm')}<input type="number" value={height} onChange={e=>setHeight(e.target.value)}/></label></div><button onClick={()=>run(async()=>{await api('default-profiles',{organization_id:org,source,population,weight_kg:weight?Number(weight):null,height_cm:height?Number(height):null});setSaved(true)})}>{tr('Salva suggerimenti')}</button>{saved&&<p role="status">{tr('Salvato nell’archivio locale.')}</p>}</section>
+}
+
+export function HistoricalEditor({test,api,run,done}:{test:Row,api:any,run:any,done:(r:Row)=>void}){
+ const [open,setOpen]=useState(false),[draft,setDraft]=useState<Row>({...test.settings,map_w:test.analysis.map_w,map_alt_w:test.analysis.map_alt_w,threshold_w:test.analysis.threshold_w,fthr_bpm:test.analysis.fthr_bpm,date:test.date,notes:test.notes,reason:''});
+ const change=(key:string,value:string)=>setDraft(d=>({...d,[key]:value}));
+ return <section><button onClick={()=>setOpen(!open)}>{tr('Correggi risultato storico')}</button>{open&&<><div className="form-grid"><label>{tr('Data')}<input type="date" value={draft.date} onChange={e=>change('date',e.target.value)}/></label>{['map_w','map_alt_w','weight_kg','height_cm','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe','rest_hr','rest_after_s'].map(k=><label key={k}>{k}<input type="number" step="any" value={draft[k]??''} onChange={e=>change(k,e.target.value)}/></label>)}</div><label>{tr('Note')}<textarea value={draft.notes||''} onChange={e=>change('notes',e.target.value)}/></label><label>{tr('Motivo della revisione')}<input value={draft.reason} onChange={e=>change('reason',e.target.value)}/></label><button onClick={()=>run(async()=>{const settings={...Object.fromEntries(['weight_kg','height_cm','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe','rest_hr','rest_after_s'].map(k=>[k,draft[k]==null||draft[k]===''?null:Number(draft[k])])),end_s:test.settings.end_s||0,weight_source:test.settings.weight_source||'dichiarato',threshold_source:'dichiarato'};const saved=await api(`tests/${test.id}/historical`,{base:test.revision,reason:draft.reason,date:draft.date,map_w:draft.map_w==null||draft.map_w===''?null:Number(draft.map_w),map_alt_w:draft.map_alt_w==null||draft.map_alt_w===''?null:Number(draft.map_alt_w),settings,notes:draft.notes||''},'PUT');done(saved);setOpen(false)})}>{tr('Salva nuova revisione')}</button></>}</section>
+}
+
+export function GroupTree({groups,memberships,onSelect}:{groups:Row[],memberships:Row[],onSelect:(id:string)=>void}){
+ const current=(id:string)=>new Set(memberships.filter(m=>(m.group_id===id||groups.find(g=>g.id===m.group_id)?.parent_id===id)&&m.start<=new Date().toLocaleDateString('en-CA')&&(!m.end||m.end>=new Date().toLocaleDateString('en-CA'))).map(m=>m.athlete_id)).size;
+ return <>{groups.filter(g=>!g.parent_id).map(parent=><section className="panel protocol" key={parent.id}><h2>{parent.name}</h2>{parent.season&&<p>{tr('Stagione')} {parent.season}</p>}<button onClick={()=>onSelect(parent.id)}>{tr('Mostra gli atleti')} ({current(parent.id)})</button><div className="cards">{groups.filter(g=>g.parent_id===parent.id).sort((a,b)=>String(a.season).localeCompare(String(b.season))).map(child=><div className="zone-editor" key={child.id}><h3>{tr('Stagione')} {child.season||child.name}</h3><p>{current(child.id)} {tr('atleti attuali')}</p><button onClick={()=>onSelect(child.id)}>{tr('Mostra gli atleti')}</button></div>)}</div></section>)}</>
 }

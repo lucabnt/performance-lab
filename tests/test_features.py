@@ -82,8 +82,36 @@ def test_csv_preview_atomic_duplicate_history(tmp_path):
     assert result['groups'][0]['metrics']['map_w']['median']==210
     assert c.get(f"/api/v1/history/{org['id']}/report/pdf").content.startswith(b'%PDF')
     assert c.get(f"/api/v1/export/{org['id']}").status_code==200
+    historical=c.get('/api/v1/state').json()['test'][0]
+    revised=c.put(f"/api/v1/tests/{historical['id']}/historical",json={'base':historical['revision'],'reason':'Correzione del referto','date':historical['date'],
+                  'map_w':230,'map_alt_w':None,'settings':{'weight_kg':50,'threshold_w':184,'fthr_bpm':180,'rpe':8},'notes':'Aggiornato'})
+    assert revised.status_code==200,revised.text
+    assert revised.json()['analysis']['map_wkg']==4.6
+    md=c.get(f"/api/v1/tests/{historical['id']}/report/md?language=en")
+    with zipfile.ZipFile(io.BytesIO(md.content)) as z:
+        text=z.read('report.md').decode()
+        assert 'Incremental test report' in text and 'Sviluppato da Luca Bontempi' in text
+        assert 'assets/logo.png' in z.namelist()
 
 
 def test_trace_csv_units_and_timestamps():
     assert decode_trace_csv(b't,power,hr\n0,100,120\n1,110,121\n')['samples'][1]['power']==110
     with pytest.raises(ValueError):decode_trace_csv(b't,power\n0,100\n0,120\n')
+
+
+def test_growth_paired_and_fixed_branding(tmp_path):
+    from cycling_test.store import Store
+    from cycling_test.history import growth,paired_comparison
+    from cycling_test.branding import ATTRIBUTION,logo_path
+    s=Store(tmp_path);org=s.save('organization',{'name':'Generic Club'})
+    a=s.save('athlete',{'organization_id':org['id'],'name':'A','surname':'Demo','birth_year':2011})
+    for day,weight,height in [('2025-01-01',50,160),('2026-01-01',55,165)]:
+        s.save('measurement',{'athlete_id':a['id'],'date':day,'weight_kg':weight,'height_cm':height,'source':'misurato'})
+        s.save('test',{'organization_id':org['id'],'athlete_id':a['id'],'protocol_id':'same','date':day,'analysis':{'map_w':weight*4,'threshold_source':'stimata_da_map'},'settings':{'weight_kg':weight},'group_ids':[]})
+    g=growth(s,org['id']);assert g[0]['days']==365;assert g[0]['delta']==5
+    comparison=paired_comparison(s,org['id'],'2025','2026')
+    assert comparison['n_pairs']==1 and comparison['pairs'][0]['map_w_delta']==20
+    c=client(tmp_path)
+    assert c.post('/api/v1/organizations',json={'name':'X','logo':'other.png'}).status_code==422
+    assert logo_path().read_bytes().startswith(b'\x89PNG')
+    assert ATTRIBUTION=='Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.'

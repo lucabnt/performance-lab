@@ -28,6 +28,15 @@ def test_separate_archives_viewer_and_forgery(tmp_path):
     assert c.get('/api/v1/state').json()['operator']['role']=='viewer'
     identity=viewer.identity
     assert identity['private_key'] is None and 'authority_private' not in identity
+    from cryptography.fernet import Fernet
+    cipher=Fernet(store.identity['sync_key'].encode())
+    shared=next(folder.iterdir());packet=next(shared.glob('*.ctsync'))
+    forged=json.loads(cipher.decrypt(packet.read_bytes()))
+    forged['change']['record']['name']='Tampered with shared read key'
+    (shared/'forged.ctsync').write_bytes(cipher.encrypt(json.dumps(forged).encode()))
+    result=exchange(viewer,folder,viewer.identity['sync_key'])
+    assert result['errors']
+    assert viewer.list('organization')[0]['name']=='Club'
 
 
 def test_signed_concurrent_resolution_converges(tmp_path):

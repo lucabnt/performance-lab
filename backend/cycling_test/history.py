@@ -16,7 +16,7 @@ def summarize(store, org, group='', season='', athlete='', mode='athlete', dimen
         if t['athlete_id'] not in athletes or t.get('status')=='deleted' or athlete and t['athlete_id']!=athlete or protocol and t['protocol_id']!=protocol:
             continue
         a = athletes[t['athlete_id']]
-        members = [m for m in store.list('membership') if m['athlete_id']==a['id'] and m['start']<=t['date'] and (not m.get('end') or m['end']>=t['date'])]
+        members = [m for m in store.list('membership') if m.get('status')!='deleted' and m['athlete_id']==a['id'] and m['start']<=t['date'] and (not m.get('end') or m['end']>=t['date'])]
         memberships = [(groups[m['group_id']], m.get('category_year')) for m in members if m['group_id'] in groups]
         if not memberships:
             memberships = [({'id':'','name':'Senza categoria','season':t['date'][:4]}, None)]
@@ -63,6 +63,58 @@ def summarize(store, org, group='', season='', athlete='', mode='athlete', dimen
                        'tests_selected':len(rows),'athletes':len({r['athlete_id'] for r in rows}),'metrics':metrics,
                        'revisions':[r['revision'] for r in rows]})
     unique = {r['id']:r for r in observations}
+    previous={}
+    changes=[]
+    for r in sorted(unique.values(),key=lambda r:(r['date'],r['id'])):
+        key=(r['athlete_id'],r['protocol_id'],r['threshold_source'])
+        last=previous.get(key)
+        change={'id':r['id'],'athlete':r['athlete'],'date':r['date'],'previous_date':last['date'] if last else None,'protocol_id':r['protocol_id']}
+        for metric in METRICS:
+            old=last.get(metric) if last else None;new=r.get(metric)
+            change[metric+'_delta']=new-old if new is not None and old is not None else None
+            change[metric+'_pct']=100*(new-old)/old if new is not None and old is not None and old!=0 else None
+        changes.append(change);previous[key]=r
     return {'schema':1,'query':dict(organization_id=org,group=group,season=season,athlete=athlete,mode=mode,dimension=dimension,protocol=protocol),
             'groups':result,'rows':sorted(unique.values(),key=lambda r:r['date']),
+            'changes':changes,
             'coverage':{m:{'valid':sum(r.get(m) is not None for r in unique.values()),'total':len(unique)} for m in METRICS}}
+
+
+def growth(store, org, athlete=''):
+    from datetime import date
+    athletes={a['id']:a for a in store.list('athlete') if a['organization_id']==org and a.get('status')!='deleted' and (not athlete or a['id']==athlete)}
+    rows=[]
+    for id,a in athletes.items():
+        previous={}
+        for m in sorted([r for r in store.list('measurement') if r['athlete_id']==id and r.get('status')!='deleted'],key=lambda r:(r['date'],r['id'])):
+            for metric in ('weight_kg','height_cm'):
+                if m.get(metric) is None:continue
+                last=previous.get(metric)
+                if last:
+                    days=(date.fromisoformat(m['date'])-date.fromisoformat(last['date'])).days
+                    delta=m[metric]-last[metric]
+                    rows.append({'id':m['id']+metric,'athlete':a['surname']+' '+a['name'],'metric':metric,'date':m['date'],'previous_date':last['date'],
+                                 'days':days,'delta':delta,'annualized':delta*365.25/days if days>0 else None,'source':m.get('source','dichiarato')})
+                previous[metric]=m
+    return rows
+
+
+def paired_comparison(store,org,first,second,group=''):
+    if first==second:raise ValueError('Selezionare due stagioni diverse.')
+    left=summarize(store,org,group,first,mode='athlete',dimension='all')
+    right=summarize(store,org,group,second,mode='athlete',dimension='all')
+    def select(data):
+        rows={}
+        for r in sorted(data['rows'],key=lambda r:(r['date'],r['id'])):
+            rows[(r['athlete_id'],r['protocol_id'],r['threshold_source'])]=r
+        return rows
+    a,b=select(left),select(right);rows=[]
+    for key in sorted(a.keys() & b.keys()):
+        before,after=a[key],b[key]
+        row={'id':after['id'],'athlete':after['athlete'],'protocol_id':after['protocol_id'],'from':before['date'],'to':after['date'],'source':key[2]}
+        for m in METRICS:
+            x,y=before.get(m),after.get(m)
+            row[m+'_delta']=y-x if x is not None and y is not None else None
+            row[m+'_pct']=100*(y-x)/x if x is not None and x!=0 and y is not None else None
+        rows.append(row)
+    return {'first':first,'second':second,'pairs':rows,'n_pairs':len(rows),'unpaired_first':len(a.keys()-b.keys()),'unpaired_second':len(b.keys()-a.keys())}

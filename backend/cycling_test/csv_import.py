@@ -77,8 +77,13 @@ def plan_import(store, org, profile, raw):
                                         source=r.get('peso_fonte') if r.get('peso_fonte') in ('misurato','arrotondato','dichiarato') else 'dichiarato').model_dump(mode='json')
                     if payload['weight_kg'] is None and payload['height_cm'] is None:
                         raise ValueError('Rilevazione priva di misure.')
+                    if any(m['athlete_id']==athlete_id and m['date']==payload['date'] and m.get('weight_kg')==payload['weight_kg'] and m.get('height_cm')==payload['height_cm'] and m.get('source')==payload['source'] for m in store.list('measurement')):
+                        skipped+=1;continue
                     kind='measurement';identity=external+'|'+r['data']+'|'+str(r)
                 else:
+                    source_id=r.get('test_id','')
+                    if any(t['athlete_id']==athlete_id and (t['id']==source_id or t.get('external_id')==source_id) for t in store.list('test')):
+                        skipped+=1;continue
                     family=r.get('protocollo_id','').strip()
                     if not family: raise ValueError('Codice protocollo obbligatorio.')
                     if family not in protocols:
@@ -90,6 +95,8 @@ def plan_import(store, org, profile, raw):
                     weight=number(r.get('peso_kg'))
                     if weight is not None and weight<=0: raise ValueError('Peso deve essere positivo.')
                     a={k:number(r.get(k)) for k in ('map_w','map_alt_w','fc_max_test_bpm','fthr_bpm')}
+                    if any(v is not None and v<0 for v in a.values()):raise ValueError('Valori prestativi negativi non validi.')
+                    if any(a.get(k) is not None and not 0<a[k]<=250 for k in ('fc_max_test_bpm','fthr_bpm')):raise ValueError('FC fuori intervallo.')
                     a.update(threshold_w=number(r.get('soglia_w')),threshold_source=r.get('soglia_origine') or 'dichiarato',duration_s=number(r.get('durata_s')),
                              steps=[],recovery=[],zones=[],warnings=['Risultati storici dichiarati: campioni non disponibili.'],method='Import CSV storico',engine='historical-1',power_coverage=None)
                     for m in ('map','threshold'): a[m+'_wkg']=round(a[m+'_w']/weight,3) if weight and a.get(m+'_w') is not None else None

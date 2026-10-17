@@ -7,7 +7,7 @@ from .store import encoded
 
 
 def install_features(app, store, require, download, preview):
-    from .api import Model, TestInput
+    from .api import Model, TestInput, Settings
     from pydantic import Field
 
     class Status(Model):
@@ -18,6 +18,18 @@ def install_features(app, store, require, download, preview):
         base: str
         reason: str = Field(min_length=1, max_length=1000)
         test: TestInput
+
+    class HistoricalSettings(Settings):
+        end_s: float = Field(default=0,ge=0)
+
+    class HistoricalRevision(Model):
+        base: str
+        reason: str = Field(min_length=1,max_length=1000)
+        date: date
+        map_w: float | None = Field(default=None,ge=0,le=3000)
+        map_alt_w: float | None = Field(default=None,ge=0,le=3000)
+        settings: HistoricalSettings
+        notes: str = Field(default='',max_length=10000)
 
     class Segment(Model):
         duration_s: float = Field(gt=0, le=86400)
@@ -57,9 +69,54 @@ def install_features(app, store, require, download, preview):
 
     @app.get('/api/v1/athletes/{id}/defaults')
     def defaults(id: str, on: date):
-        require(id,'athlete')
-        values=sorted([m for m in store.list('measurement') if m['athlete_id']==id and m['date']<=on.isoformat()],key=lambda m:(m['date'],m['id']))
-        return {'measurement':values[-1] if values else None}
+        athlete=require(id,'athlete')
+        values=sorted([m for m in store.list('measurement') if m['athlete_id']==id and m.get('status')!='deleted' and m['date']<=on.isoformat()],key=lambda m:(m['date'],m['id']))
+        profiles=[p for p in store.list('default_profile') if p['organization_id']==athlete['organization_id']]
+        return {'measurement':values[-1] if values else None,'suggestion':profiles[0] if profiles and not values else None}
+
+    @app.put('/api/v1/tests/{id}/historical')
+    def revise_historical(id: str,data: HistoricalRevision):
+        from .observations import enrich
+        old=require(id,'test')
+        if not old.get('historical'):raise ValueError('Usare la revisione del test con tracciato.')
+        settings=data.settings.model_dump()
+        analysis={**old['analysis'],'map_w':data.map_w,'map_alt_w':data.map_alt_w,'duration_s':settings['end_s'] or None}
+        analysis['map_wkg']=round(data.map_w/settings['weight_kg'],3) if data.map_w is not None and settings.get('weight_kg') else None
+        analysis=enrich(analysis,[],settings)
+        historic={**old.get('historical_fields',{}),'data':data.date.isoformat(),'map_w':data.map_w,'map_alt_w':data.map_alt_w,'peso_kg':settings.get('weight_kg'),
+                  'soglia_w':analysis.get('threshold_w'),'soglia_origine':analysis.get('threshold_source'),'fthr_bpm':settings.get('fthr_bpm'),'note':data.notes}
+        return store.save('test',{**old,'settings':settings,'analysis':analysis,'historical_fields':historic,'date':data.date.isoformat(),'notes':data.notes,'reason':data.reason},id,data.base)
+
+    class DefaultProfile(Model):
+        organization_id: str
+        source: str = Field(min_length=1,max_length=1000)
+        population: str = Field(min_length=1,max_length=1000)
+        weight_kg: float | None = Field(default=None,gt=0,le=400)
+        height_cm: float | None = Field(default=None,gt=0,le=260)
+
+    @app.post('/api/v1/default-profiles')
+    def default_profile(data: DefaultProfile):
+        require(data.organization_id,'organization')
+        if data.weight_kg is None and data.height_cm is None:raise ValueError('Inserire almeno un valore suggerito.')
+        return store.save('default_profile',data.model_dump())
+
+    class UndoImport(Model):
+        reason: str = Field(min_length=1,max_length=1000)
+
+    @app.post('/api/v1/import/{id}/undo')
+    def undo_import(id: str,data: UndoImport):
+        batch=require(id,'import_batch')
+        records=[store.get(record_id) for record_id in batch['record_ids']]
+        if any(len(store.history(r['id']))!=1 for r in records):raise ValueError('Il lotto contiene record modificati successivamente: riconciliare manualmente prima dell’annullamento.')
+        removed_ids={r['id'] for r in records}
+        if any(t['athlete_id'] in removed_ids and t['id'] not in removed_ids for t in store.list('test')):
+            raise ValueError('Atleti del lotto hanno test successivi: annullare prima i lotti dipendenti.')
+        store.revise_batch(records,data.reason)
+        return {'undone':len(records)}
+
+    @app.get('/api/v1/import/batches')
+    def import_batches():
+        return store.list('import_batch')
 
     @app.get('/api/v1/zones/presets')
     def presets():
@@ -135,11 +192,23 @@ def install_features(app, store, require, download, preview):
         return summarize(store,org,group,season,athlete,mode,dimension,protocol)
 
     @app.get('/api/v1/history/{org}/report/{format}')
-    def history_report(org: str, format: Literal['pdf','md'], group: str='', season: str='', athlete: str='', mode: str='athlete', dimension: str='season', protocol: str=''):
+    def history_report(org: str, format: Literal['pdf','md'], group: str='', season: str='', athlete: str='', mode: str='athlete', dimension: str='season', protocol: str='', language: Literal['it','en']='it'):
         from .history_report import render
         data=history(org,group,season,athlete,mode,dimension,protocol)
-        body=render(data,format)
+        body=render(data,format,language)
         if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
             digest=store.object(body)
-            store.save('report',{'organization_id':org,'query':data['query'],'source_revisions':[r['revision'] for r in data['rows']], 'format':format,'objects':[digest]})
+            store.save('report',{'organization_id':org,'query':data['query'],'source_revisions':[r['revision'] for r in data['rows']], 'format':format,'language':language,'objects':[digest]})
         return download(body,'application/pdf' if format=='pdf' else 'application/zip','storico.'+('pdf' if format=='pdf' else 'zip'))
+
+    @app.get('/api/v1/history/{org}/growth')
+    def growth(org: str, athlete: str=''):
+        from .history import growth
+        require(org,'organization')
+        return growth(store,org,athlete)
+
+    @app.get('/api/v1/history/{org}/compare')
+    def compare(org: str,first: str,second: str,group: str=''):
+        from .history import paired_comparison
+        require(org,'organization')
+        return paired_comparison(store,org,first,second,group)

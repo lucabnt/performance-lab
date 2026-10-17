@@ -14,3 +14,7 @@ tmp/
 output/
 *.tsbuildinfo
 CicloTest.spec
+identity.json
+workspaces.json
+invito-*.json
+*.ctsync

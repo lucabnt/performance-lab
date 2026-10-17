@@ -1,6 +1,6 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
-Versione 0.5 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Prima implementazione locale 0.1 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+Versione 0.6 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.2 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
 
 ## 1. Obiettivo e decisione proposta
 
@@ -10,7 +10,7 @@ Scelta confermata: **Python per backend e analisi; React/TypeScript per l'interf
 
 Decisioni confermate: Python + React/TypeScript; PC Windows/Linux prima, smartphone/tablet successivamente; sincronizzazione mediante cartella locale gestita da un client cloud esterno; ultimo step completato come metrica primaria del preset e interpolazione separata; licenza GPL. Gli ERG servono a definire rapidamente protocolli da archiviare e versionare; i CSV forniti definiscono dati da gestire e contratto di esportazione, non una richiesta di importare adesso dati personali.
 
-Il prodotto nasce per Progetto Ciclismo – Rodengo Saiano, ma nome società, logo, protocolli, categorie e regole devono essere configurazione. Il motore non deve contenere regole legate al nome della società.
+Il prodotto è sviluppato per Progetto Ciclismo – Rodengo Saiano. **Branding fisso richiesto:** logo incluso e dicitura «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.», non modificabili da interfaccia, società o workspace. Anagrafiche, protocolli, categorie e regole restano dati configurabili; il motore non contiene formule dipendenti dal nome della società.
 
 ## 2. Che cosa dicono gli allegati
 
@@ -121,7 +121,7 @@ Grafico del test: potenza target ed effettiva, FC e cadenza in pannelli con asse
 
 Storico: MAP operativa, potenza dell'ultimo step, W/kg, FC osservata, recupero, peso/statura e soglie quando disponibili. Filtri per metodo, protocollo, strumento e qualità; misure e stime rappresentate diversamente. Un cambiamento di metodo viene marcato sulla serie, non disegnato come continuità incontestata.
 
-Italiano e inglese richiesti per la versione completa; tema chiaro iniziale e scuro successivo, tastiera, contrasto e colori non usati come unico indicatore. Marca e logo della società nei template configurabili.
+Italiano e inglese richiesti per la versione completa; tema chiaro iniziale e scuro successivo, tastiera, contrasto e colori non usati come unico indicatore. Logo e attribuzione fissi anche nei report, indipendenti dalla società selezionata.
 
 ### 5.1 Registro delle scelte UI della suite
 
@@ -130,17 +130,17 @@ Le scelte seguenti sono parte dell'architettura, non modifiche già eseguite all
 | ID | Scelta e motivazione | Stato / riuso |
 |---|---|---|
 | UI-01 | Shell con navigazione laterale, selettore società, breadcrumb e area di lavoro a schede; distinguere sempre società e applicazione attive. | Base già presente; shell condivisa fra Test e Allenamenti, voci specifiche per app. |
-| UI-02 | Tema neutro con blu come accento principale e giallo contenuto, coerenti con il logo individuato di Progetto Ciclismo; evitare grandi superfici sature. Token semantici per sfondo, testo, azione, bordo, focus e stati. | Logo allegato selezionato: blu #1A62B7 e giallo #FFF100 rilevati nel file; superfici attenuate derivate. Verde attuale provvisorio; contrasto UI da verificare. Vedi specifica branding. |
-| UI-03 | Logo discreto nella parte bassa e link [Progetto Ciclismo – Rodengo Saiano](https://www.asdprogettociclismorodengosaiano.it/); credito [Luca Bontempi](https://lucabontempi.com/). Testo: **Strumenti aperti a supporto del ciclismo giovanile**. | Richiesto; credito autore distinto dal branding configurabile della società. Link aperti nel browser esterno, mai necessari al funzionamento offline. |
+| UI-02 | Tema neutro con blu come accento principale e giallo contenuto, coerenti con il logo individuato di Progetto Ciclismo; evitare grandi superfici sature. Token semantici per sfondo, testo, azione, bordo, focus e stati. | Logo allegato selezionato: blu #1A62B7 e giallo #FFF100 rilevati nel file; superfici attenuate derivate. Tema blu implementato nella preview 0.2; contrasto e accessibilità da consolidare. Vedi specifica branding. |
+| UI-03 | Logo discreto nella parte bassa e link [Progetto Ciclismo – Rodengo Saiano](https://www.asdprogettociclismorodengosaiano.it/); credito [Luca Bontempi](https://lucabontempi.com/). Testo: **Strumenti aperti a supporto del ciclismo giovanile**. | Implementato in branding.tsx/branding.py. Logo e attribuzione fissi: «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.». Link aperti nel browser esterno, mai necessari al funzionamento offline. |
 | UI-04 | Scheda atleta con tab Profilo, Antropometria, Test e Storico. Selettore MAP/FTP e W/W/kg; peso e statura in pannelli con tempo comune e unità visibili. | Proposta di layout. Se manca FTP mostrare dato non disponibile; non ribattezzare una soglia generica come FTP. |
 | UI-05 | Cataloghi di traduzione IT/EN condivisi e specifici per app; identificatori stabili, formattazione locale per date/numeri, lingua report selezionabile. | Da sviluppare; CSV canonico indipendente dalla lingua, tradurre anche grafici, errori e accessibilità. |
 | UI-06 | Tabella comune con ordinamento tipizzato per ogni colonna di dati, ricerca, filtri persistenti per vista e paginazione. Valori mancanti in fondo; azioni non ordinabili. | Da sviluppare; lo stesso insieme filtrato alimenta grafici e report, non soltanto la pagina visibile. |
 | UI-07 | Componenti comuni per campi con unità, provenienza, dato mancante/stimato, dialoghi, stati vuoti, avvisi e revisioni prima/dopo. | Da estrarre dalla UI monolitica; errori associati ai campi, operazioni lunghe con stato e annullamento. |
 | UI-08 | Grafici Plotly interattivi con preset condivisi: cursori, legenda, unità, marcatori di cambio metodo e palette accessibile. Linee/stili distinguono anche senza colore. | Plotly presente; preset suite da sviluppare. Figure PDF da Matplotlib con stessi significati, non necessariamente stesso renderer. |
 | UI-09 | Tipografia e spaziature centralizzate, icone Lucide con etichette, focus visibile, uso da tastiera e layout adattabile. Asset e font locali. | Conservare sobrietà della preview; testare contrasto e zoom. La dichiarazione CSS di Inter non equivale a includerne il font. |
-| UI-10 | Identità di suite costante, nome e icona specifici per Test/Allenamenti; branding della società come livello separato. | Disegno per SUITE-01. Nessuna duplicazione dei fogli di stile fra le due app; tema scuro e mobile non dichiarati già disponibili. |
+| UI-10 | Identità di suite costante, nome e icona specifici per Test/Allenamenti; attribuzione della società fondatrice come livello fisso separato dai dati del workspace. | Disegno per SUITE-01. Nessuna duplicazione dei fogli di stile fra le due app; tema scuro e mobile non dichiarati già disponibili. |
 
-Configurazione: token di base → tema della suite → branding della società entro vincoli di contrasto. Preferenze locali (lingua, tema, filtri) separate dai dati condivisi. Un catalogo di componenti con esempi IT/EN, errori, dati mancanti e larghezze diverse documenta l'aspetto comune prima della seconda app.
+Configurazione di sviluppo: token di base → tema della suite; **nessun override del branding per società**. Logo e credito sono risorse fisse incluse nel prodotto. Preferenze locali (lingua, tema, filtri) separate dai dati condivisi. Un catalogo di componenti con esempi IT/EN, errori, dati mancanti e larghezze diverse documenta l'aspetto comune prima della seconda app.
 
 ## 6. Modello dati
 
@@ -149,7 +149,7 @@ ID UUID generati offline; ID storici conservati come identificatori esterni. Dat
 | Entità | Contenuto |
 |---|---|
 | Workspace | Confine di archivio, condivisione e sincronizzazione; proposta predefinita: uno per società |
-| Organization | Società e branding; più società consultabili dall'app come workspace separati |
+| Organization | Dati della società senza override di logo/credito; più società consultabili come workspace separati |
 | Category + SeasonGroup | Categoria stabile nella società e sue edizioni annuali/stagionali; altri gruppi trasversali separati |
 | AthleteMembership | Atleta, società/gruppo, inizio/fine validità e stagione; appartenenza molti-a-molti |
 | Operator + WorkspaceRole | Identità dell'operatore, dispositivi e ruolo admin/visualizzatore nel workspace, distinta dall'atleta |
@@ -289,7 +289,7 @@ Un backup completo contiene DB consistente, originali, allegati, manifest e chec
 
 TD-16/28: oltre al test singolo, template MD/PDF per atleta, categoria, categoria/stagione e confronti. Il report del test include zone FC/potenza con riferimento, percentuali, limiti assoluti, metodo e indisponibilità motivate. I report storici includono grafici, filtri, numerosità, dati esclusi, regola di selezione dei test e distinzione fra misure e stime.
 
-Ogni report aggregato conserva query, elenco delle revisioni sorgente, risultato congelato, lingua e versioni di motore/template. UI ed export usano lo stesso servizio di aggregazione. L'esportazione riguarda tutti i risultati filtrati, non solo la pagina visibile. Nome suite, nome app e branding società sono livelli separati del template. Correzioni successive richiedono un nuovo report, senza cambiare gli artefatti già consegnati.
+Ogni report aggregato conserva query, elenco delle revisioni sorgente, risultato congelato, lingua e versioni di motore/template. UI ed export usano lo stesso servizio di aggregazione. L'esportazione riguarda tutti i risultati filtrati, non solo la pagina visibile. Nome suite/app e attribuzione fissa della società fondatrice sono livelli separati del template; il workspace non li sovrascrive. Correzioni successive richiedono un nuovo report, senza cambiare gli artefatti già consegnati.
 
 ## 10. Sincronizzazione senza server applicativo
 
@@ -459,3 +459,7 @@ Integrazione proposta: Test pubblica un risultato validato con atleta, data, met
 Pacchetti di scambio con namespace per dominio/app, schema e dipendenze; un client che non comprende un dominio lo conserva senza applicarlo e non lo elimina. Migrazioni e compatibilità sono dichiarate, con prove fra versioni diverse. Condividere i metadati necessari e artefatti autorizzati, non copie indiscriminate di ogni file. Riutilizzare il trasporto cloud per workspace mantenendo separazione logica e permessi.
 
 TD-25, proposta di nome: **Scia Performance Lab**, con **Scia Test** e **Scia Allenamenti**. Alternative: **Gregario Performance Lab** (supporto al lavoro del tecnico) e **Palmarès Performance Lab** (richiamo alla storia sportiva). Sono proposte linguistiche, non nomi approvati né verificati per disponibilità o marchi. Fino alla scelta, CicloTest resta il nome della preview. Il motto richiesto e il credito a Progetto Ciclismo/Luca Bontempi sono indipendenti dal nome scelto.
+
+## 16. Implementazione 0.2 e collaudo
+
+Il codice implementa i flussi locali, le zone dinamiche, gli storici e i workspace descritti nel [README](README.md). Stato per requisito nel [registro](docs/REQUISITI_E_TODO.md); istruzioni per desktop, browser, Vite e collaborazione in [Testare il progetto](docs/TESTARE_IL_PROGETTO.md). Restano espliciti i limiti scientifici, la localizzazione parziale delle diagnostiche, il recupero delle chiavi, il collaudo cloud reale e il rilascio Fedora. Il branding fisso prevale sulle precedenti ipotesi di personalizzazione.

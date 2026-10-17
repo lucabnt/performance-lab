@@ -10,6 +10,8 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from .branding import ATTRIBUTION, logo_path
+from .locales import tr
 
 CSV_HEADERS = {
     "atleti": "atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note",
@@ -18,24 +20,24 @@ CSV_HEADERS = {
 }
 
 
-def chart(test, protocol):
+def chart(test, protocol, language='it'):
     fig = Figure(figsize=(10, 4.8), layout="constrained")
     axes = fig.subplots(3, 1, sharex=True)
     samples = test["samples"]
     if not samples:
-        axes[0].text(.5,.5,'Risultato storico: tracciato non disponibile',ha='center',transform=axes[0].transAxes)
+        axes[0].text(.5,.5,tr('Risultato storico: tracciato non disponibile',language),ha='center',transform=axes[0].transAxes)
         out=io.BytesIO();fig.savefig(out,format='png',dpi=160)
         return out.getvalue()
     for ax, field, label, color in zip(axes, ("power", "hr", "cadence"), ("Potenza (W)", "FC (bpm)", "Cadenza (rpm)"), ("#247d70", "#b85850", "#637caa")):
         ax.plot([r["t"]/60 for r in samples], [r.get(field) for r in samples], color=color, linewidth=1)
-        ax.set_ylabel(label, fontsize=8)
+        ax.set_ylabel(tr(label,language), fontsize=8)
         ax.grid(alpha=.15)
         ax.tick_params(labelsize=8)
         ax.axvline(test["settings"]["end_s"]/60, color="#555555", linestyle="--", linewidth=.8)
     offset = test["settings"]["offset_s"]
     axes[0].plot([(p[0]+offset)/60 for p in protocol["definition"]["points"]], [p[1] for p in protocol["definition"]["points"]], color="#abb2af", linewidth=1, label="Target")
     axes[0].set_xlim(0, samples[-1]["t"]/60)
-    axes[-1].set_xlabel("Tempo trascorso (min)", fontsize=8)
+    axes[-1].set_xlabel(tr("Tempo trascorso (min)",language), fontsize=8)
     out = io.BytesIO()
     fig.savefig(out, format="png", dpi=160)
     return out.getvalue()
@@ -45,7 +47,7 @@ def val(value):
     return "n.d." if value is None else str(value)
 
 
-def report(test, athlete, protocol, format):
+def report(test, athlete, protocol, format, language='it'):
     a = test["analysis"]
     title = f"{athlete['surname']} {athlete['name']}"
     metrics = [("Data", test["date"]), ("Protocollo", f"{protocol['name']} - {protocol['version']}"),
@@ -72,25 +74,30 @@ def report(test, athlete, protocol, format):
             if z['upper_value'] is not None:interval+=' / '+('<=' if z['inclusive'] else '<')+str(round(z['upper_value'],2))
             zone_rows.append([label,z['name'],interval,str(round(z['seconds'],2))])
     stage_rows = [[str(r["number"]), str(r["end_w"]), str(round(r["actual_s"],1)), val(r["power"]["mean"]), val(r["hr"]["mean"]), "Si" if r["complete"] else "No"] for r in a["steps"]]
-    png = chart(test, protocol)
+    metrics=[(tr(k,language),tr(v,language) if isinstance(v,str) and k=='Stato nascita' else v) for k,v in metrics]
+    png = chart(test, protocol,language)
     note = "Convenzione provvisoria: " + a["method"] + " FC fine step: media ultimi 30 s. Recupero: finestra da t-2 a t+3 s; riferimento media ultimi 5 s di sforzo."
+    if language=='en':
+        note='Provisional convention: last completed constant incremental stage; power coverage at least 95%, without target-adherence validation. Stage HR: last 30 seconds. Recovery: window t-2 to t+3 seconds, reference: last 5 seconds of effort.' if not test.get('historical') else 'Imported declared historical results; original samples unavailable.'
     trace = f"Motore {a['engine']} | Test {test['id']} | Revisione {test['revision']} | Protocollo {protocol['id']}"
     if format == "md":
         def md(s):
             return str(s).replace("|", "\\|").replace("\n", " ").replace("<", "&lt;")
-        text = f"# Report test incrementale\n\n**{md(title)}**\n\n"
+        text = f"# {tr('Report test incrementale',language)}\n\n**{md(title)}**\n\n"
         text += "\n".join(f"- {label}: {md(value)}" for label,value in metrics)
-        text += "\n\n![Tracciato del test](assets/test.png)\n\n| Step | Target W | Durata s | Media W | FC bpm | Completo |\n|---|---|---|---|---|---|\n"
+        text += '\n\n!['+tr('Tracciato del test',language)+'](assets/test.png)\n\n| '+' | '.join(tr(h,language) for h in ['Step','Target W','Durata s','Media W','FC bpm','Completo'])+' |\n|---|---|---|---|---|---|\n'
         text += "\n".join("| " + " | ".join(row) + " |" for row in stage_rows)
-        text += "\n\n## Recupero\n\n" + "\n".join(f"- {r['after_s']} s: FC {val(r['hr_bpm'])}; HRR {val(r['hrr_bpm'])} bpm" for r in a["recovery"])
-        text += "\n\n## Metodo e qualità\n\n" + note + "\n\n" + "\n".join("- " + w for w in a["warnings"])
-        text += "\n\n## Note\n\n" + md(test.get("notes", "")) + "\n\n" + trace
-        text += '\n\n## Zone\n\n| Riferimento | Zona | Limiti assoluti | Secondi |\n|---|---|---|---|\n'
+        text += '\n\n## '+tr('Recupero',language)+'\n\n' + "\n".join(f"- {r['after_s']} s: HR {val(r['hr_bpm'])}; HRR {val(r['hrr_bpm'])} bpm" for r in a["recovery"])
+        text += '\n\n## '+tr('Metodo e qualità',language)+'\n\n' + note + "\n\n" + "\n".join("- " + w for w in a["warnings"])
+        text += '\n\n## '+tr('Note',language)+'\n\n' + md(test.get("notes", "")) + "\n\n" + trace
+        text += '\n\n## '+tr('Zone',language)+'\n\n| '+' | '.join(tr(h,language) for h in ['Riferimento','Zona','Limiti assoluti','Secondi'])+' |\n|---|---|---|---|\n'
         text += '\n'.join('| '+' | '.join(md(c) for c in row)+' |' for row in zone_rows)
+        text += '\n\n![Progetto Ciclismo - Rodengo Saiano A.S.D.](assets/logo.png)\n\n'+ATTRIBUTION+'\n'
         out = io.BytesIO()
         with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
             z.writestr("report.md", text)
             z.writestr("assets/test.png", png)
+            z.write(logo_path(),'assets/logo.png')
             from .store import encoded
             z.writestr('manifest.json',encoded({'test_id':test['id'],'revision':test['revision'],'settings':test['settings'],'analysis':a}))
         return out.getvalue()
@@ -99,8 +106,8 @@ def report(test, athlete, protocol, format):
     styles = getSampleStyleSheet()
     styles['Heading2'].keepWithNext = True
     def p(s, style="BodyText"):
-        return Paragraph(escape(str(s)), styles[style])
-    story = [p("CICLO TEST / REPORT INCREMENTALE", "Heading2"), p(title, "Title")]
+        return Paragraph(escape(str(tr(s,language) if isinstance(s,str) else s)), styles[style])
+    story = [Image(str(logo_path()),width=3*cm,height=3*cm*707/1104),p(ATTRIBUTION),p("CICLO TEST / REPORT INCREMENTALE", "Heading2"), p(title, "Title")]
     table = Table([[p(k), p(v)] for k,v in metrics], colWidths=[10*cm,7.6*cm])
     table.setStyle(TableStyle([("VALIGN",(0,0),(-1,-1),"TOP"),("ROWBACKGROUNDS",(0,0),(-1,-1),[colors.HexColor("#f2f6f4"),colors.white]),("BOTTOMPADDING",(0,0),(-1,-1),5)]))
     story += [table, Spacer(1,.3*cm), Image(io.BytesIO(png),width=17.5*cm,height=8.4*cm),p("Step del protocollo", "Heading2")]
@@ -151,8 +158,25 @@ def export_csv(store, organization_id):
             text = io.StringIO(newline="")
             writer = csv.DictWriter(text,fieldnames=header.split(","))
             writer.writeheader()
-            writer.writerows(rows[name])
+            writer.writerows({k:v for k,v in row.items() if k in header.split(',')} for row in rows[name])
             z.writestr(name+".csv",text.getvalue())
         from .store import encoded
         z.writestr("manifest.json",encoded({"schema":1,"protocol_versions":versions,"note":"CSV dati grezzi: i campi testuali non sono neutralizzati per fogli di calcolo. Campi non misurati vuoti; map_alt_w è interpolazione fra step, non equivalente a metodi storici non documentati."}))
+        extended=io.StringIO(newline='')
+        writer=csv.DictWriter(extended,fieldnames=['test_id','test_revision','channel','schema_name','schema_version','reference','reference_value','zone','lower_value','lower_inclusive','upper_value','upper_inclusive','seconds'])
+        writer.writeheader()
+        for t in store.list('test'):
+            if t['athlete_id'] not in ids or t.get('status')=='deleted':continue
+            for scheme in t['analysis'].get('zones',[]):
+                for zone in scheme['zones']:
+                    writer.writerow({'test_id':t['id'],'test_revision':t['revision'],'channel':scheme['scheme']['channel'],'schema_name':scheme['scheme']['name'],
+                                     'schema_version':scheme['scheme'].get('version',''),'reference':scheme['scheme']['reference'],'reference_value':scheme['reference_value'],
+                                     'zone':zone['name'],'lower_value':zone['lower_value'],'lower_inclusive':zone['lower_inclusive'],'upper_value':zone['upper_value'],
+                                     'upper_inclusive':zone['inclusive'],'seconds':zone['seconds']})
+        z.writestr('extended/zones.csv',extended.getvalue())
+        referenced_protocols={t['protocol_id'] for t in store.list('test') if t['athlete_id'] in ids and t.get('status')!='deleted'}
+        extended_records={kind:[r for r in store.list(kind) if r.get('athlete_id') in ids and r.get('status')!='deleted'] for kind in ('membership','measurement','test')}
+        extended_records['group']=[g for g in store.list('group') if g['organization_id']==organization_id]
+        extended_records['protocol']=[p for p in store.list('protocol') if p['id'] in referenced_protocols or p.get('organization_id')==organization_id and p.get('status')!='deleted']
+        z.writestr('extended/archive.json',encoded(extended_records))
     return out.getvalue()

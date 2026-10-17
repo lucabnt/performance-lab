@@ -1,5 +1,8 @@
 # Prossimi passi — architettura 1.2
 
+**Stato dopo la 0.5:** sviluppati i blocchi autorizzati di preset/migrazione, motore, interfaccia/report, import e metodi specialistici; vedere [implementazione e limiti](IMPLEMENTAZIONE_INCREMENTALE_05.md). La lista sottostante conserva il piano precedente: il lavoro non riparte da zero. Restano corpus reale/validazione esterna, consolidamento operativo e WebDAV, poi Android e nuovi motori nell’ordine confermato.
+
+
 17 ottobre 2026. Software attuale 0.4.1. Passi già svolti: prima iterazione società/ripristino/accessi (con lacune operative ancora aperte), definizione dei metodi incrementali costanti e ricerca delle API cloud. WebDAV confermato per Windows/Fedora e Android. Il piano seguente ordina il lavoro ancora da eseguire; non dichiara completate le funzioni pianificate.
 
 ## Prossima iterazione: metodi versionati e motore costante

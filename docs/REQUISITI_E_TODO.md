@@ -1,5 +1,20 @@
 # Requisiti e to-do
 
+## Software 0.5 / architettura 1.3 — incrementale e report gerarchici
+
+Autorizzati gli step 1–4 della lista operativa nel messaggio: preset/migrazioni, motore, GUI/FIT/report e metodi specialistici, scegliendo i metodi con riferimento scientifico quando l’utente non ne dispone. [Implementazione, formule, fonti e limiti](IMPLEMENTAZIONE_INCREMENTALE_05.md).
+
+| ID | Requisito | Stato |
+|---|---|---|
+| TD-60 / SCI-01 | Scegliere metodi incrementali basati su fonti scientifiche, senza attendere formule proprie dell’utente e senza inventare un consenso unico. | **Implementato**: step costanti, finestre versionate, rampe/discontinui descrittivi, lattato lineare/Dmax/Dmax modificato, VO2peak, grafici gas e marker ventilatori, ripetibilità. Stime esplorative/valori dichiarati distinti; validazione fisiologica esterna non dichiarata. |
+| TD-61 / UI-20 | Report completo di società ispirato all’allegato, con aggregazioni e grafici; gruppo, gruppo per anno/stagione e atleta con storico come viste dello stesso modello. | **Implementato**: PDF/MD, copertura, aggregazioni, schede e misure, fonti, viste equivalenti e avvertenze accorpate, logo/credito fissi. Nessuna importazione dei dati personali allegati. Motori anaerobici restano nella fase prevista. |
+| TD-62 / UI-21 | Rendere operativi i preset e le correzioni riproducibili nell’interfaccia e nei report. | **Implementato**: schema 3 con copia pre-migrazione, preset immutabili, metadati/hash, nessun ricalcolo legacy, selezione sessione FIT, correzione duplicati con motivo, marker/esclusioni, condizioni, import gas e report specialistici. |
+
+Stato INC aggiornato: INC-02/03/06/07 attuati nella versione locale; INC-01 ha nuove funzioni di import ma richiede ancora corpus reale degli esportatori. INC-04 ha un metodo descrittivo esplicito, non conversione fisiologica automatica. INC-05/08/09 hanno algoritmi e UI/report, con i limiti scientifici e di validazione documentati; gas in CSV canonico e suggerimenti ventilatori da revisione esperta, non una certificazione del laboratorio. INC-10 mantiene originali/provenienza e confronti separati, ma la riconciliazione di ogni archivio reale richiede collaudo. INC-11, WebDAV e Android non sono chiusi da questa iterazione.
+
+Le sezioni precedenti sotto conservano la cronologia e sono superate dove descrivono funzioni ora sviluppate. [Guida di prova](TESTARE_IL_PROGETTO.md).
+
+
 ## Architettura 1.2 — WebDAV confermato e passi successivi
 
 **TD-59 / CLOUD-02:** supportare **WebDAV su Windows, Fedora e Android**, con la stessa semantica di pacchetti cifrati/firmati, uso offline, ruoli e conflitti. **Requisito confermato, non implementato.** Comprende configurazione URL/cartella, credenziali protette, verifica accessi, ripresa e diagnostica, migrazione dal trasporto cartella e collaudo multipiattaforma. Nextcloud proposto come primo server di riferimento, senza promettere compatibilità con qualsiasi server WebDAV. AND-04 e INC-11 includono questa accettazione.

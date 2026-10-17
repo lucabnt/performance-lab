@@ -1,6 +1,9 @@
 # Fuorigiri Performance Lab
 
-[API cloud: verifica e disegno](docs/SINCRONIZZAZIONE_CLOUD_API.md), architettura 1.1: proposta di scambio diretto Drive/Dropbox su desktop e Android; ancora da implementare e collaudare con account reali.
+**Versione 0.5.0:** preset e migrazione schema 3, motore incrementale aggiornato, allineamento/qualità, lattato/gas/ripetibilità e report completi di società, gruppo, stagione e atleta. [Funzioni, fonti scientifiche e limiti](docs/IMPLEMENTAZIONE_INCREMENTALE_05.md), [prova con dati sintetici e GUI](docs/TESTARE_IL_PROGETTO.md). Nessun ricalcolo automatico degli storici e nessuna importazione dei dati personali allegati.
+
+
+[API cloud: verifica e disegno](docs/SINCRONIZZAZIONE_CLOUD_API.md), architettura 1.3: proposta di scambio diretto Drive/Dropbox su desktop e Android; ancora da implementare e collaudare con account reali.
 
 Aggiornamento **0.4.1**: eseguibile `Fuorigiri.exe`, bundle `dist/Fuorigiri/`; rinomina tecnica con riconoscimento degli archivi precedenti. [Metodi incrementali, specifica 1.0](docs/METODI_INCREMENTALE.md) distingue convenzioni confermate e lavori ancora necessari. [Android](docs/ANDROID.md) è richiesto e pianificato dopo il consolidamento dell’incrementale desktop, prima dei test Sprint/Wingate; non ancora disponibile.
 
@@ -9,9 +12,9 @@ Applicazione desktop open source per analisi e archivio di test incrementali nel
 
 **Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.** Logo originale incluso in `frontend/public/branding/` e nel bundle finale. Logo, collegamenti e attribuzione sono fissi; le anagrafiche delle società non modificano il branding del prodotto.
 
-## Stato: anteprima di sviluppo 0.4
+## Stato: anteprima di sviluppo 0.5
 
-Piano successivo confermato: completare tutte le lacune della copertura incrementale, inclusi ripristino/accessi e consolidamento operativo; poi Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (già usato dalla società). [Requisiti TD-45–54](docs/REQUISITI_E_TODO.md) e [roadmap INC-01–11](docs/COPERTURA_TEST_E_ROADMAP.md). La 0.4 completa il primo intervento su società, ripristino e accessi; analisi incrementale avanzata e nuovi test rimangono da sviluppare.
+Piano successivo confermato: completare tutte le lacune della copertura incrementale, inclusi ripristino/accessi e consolidamento operativo; poi Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (già usato dalla società). [Requisiti TD-45–54](docs/REQUISITI_E_TODO.md) e [roadmap INC-01–11](docs/COPERTURA_TEST_E_ROADMAP.md). La 0.5 sviluppa l’analisi incrementale avanzata e i report gerarchici; collaudo esterno, consolidamento operativo, Android e nuovi test rimangono nelle fasi indicate.
 
 Implementazione locale con dati sintetici e prove automatiche; richiede collaudo su PC puliti, Fedora, FIT reali e client cloud reali prima del rilascio operativo. Nessun dato personale degli allegati è incluso.
 
@@ -45,7 +48,7 @@ Limiti ancora presenti:
 
 - Step valido: durata prevista e copertura potenza ≥95%, senza verifica dell'aderenza al target. Convenzione da validare con il referente del metodo.
 - Rampe leggibili/graficabili, ma MAP per step costanti non applicabile. FIT multisessione e timestamp duplicati rifiutati esplicitamente.
-- Formule per soglie da lattato, maturazione/PHV e benchmark esterni non definite; il programma non ne inventa i risultati. Anaerobico resta un'estensione candidata.
+- Metodi lattato espliciti disponibili nella 0.5; maturazione/PHV e benchmark esterni non definiti. Sprint breve, Wingate 30 s e 15 s restano sviluppi confermati successivi ad Android.
 - IT/EN copre navigazione, form e titoli principali dei report. Alcune diagnostiche, descrizioni dei metodi, controlli Plotly e testi secondari restano italiani/inglesi; localizzazione integrale da completare.
 - Scambio manuale. Revoca delle scritture recepita al prossimo scambio, senza cancellazione delle copie o rotazione automatica delle chiavi di lettura. Segreti locali protetti dall'account/filesystem; portachiavi, trasferimento esclusivo dell’autorità e rotazione completa ancora da completare. Recupero guidato dati/accessi disponibile.
 - Archivio precedente accessibile, senza migrazione automatica nei workspace. Per nuove condivisioni creare un workspace separato.

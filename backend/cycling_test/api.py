@@ -90,6 +90,30 @@ class LactateObservation(Model):
     at_s: float = Field(ge=0)
     mmol_l: float = Field(gt=0, le=40)
     note: str = ''
+    step_number: int | None = Field(default=None, ge=1, le=1000)
+    power_w: float | None = Field(default=None, ge=0, le=3000)
+    delay_s: float = Field(default=0,ge=0,le=600)
+
+
+class Exclusion(Model):
+    start_s: float = Field(ge=0)
+    end_s: float = Field(gt=0)
+    reason: str = Field(min_length=1,max_length=1000)
+
+
+class Alignment(Model):
+    number: int = Field(ge=1,le=1000)
+    at_s: float = Field(ge=0)
+
+
+class VentilatoryMarker(Model):
+    at_s: float = Field(ge=0)
+    evidence: str = Field(min_length=1,max_length=3000)
+
+
+class MaximumVerification(Model):
+    confirmed: bool = False
+    evidence: str = Field(default='',max_length=3000)
 
 
 class Settings(Model):
@@ -99,7 +123,7 @@ class Settings(Model):
     height_cm: float | None = Field(default=None, gt=0, le=260)
     rest_hr: int | None = Field(default=None, gt=0, le=250)
     rest_after_s: int | None = Field(default=None, ge=0, le=86400)
-    rpe: int | None = Field(default=None, ge=1, le=10)
+    rpe: float | None = Field(default=None, ge=0, le=20)
     rpe_scale: str = 'CR10 dichiarata'
     weight_source: Literal['misurato', 'arrotondato', 'dichiarato', 'stimato'] = 'dichiarato'
     measurement_id: str | None = None
@@ -112,6 +136,15 @@ class Settings(Model):
     recovery_manual: list[RecoveryObservation] = Field(default_factory=list, max_length=100)
     lactate: list[LactateObservation] = Field(default_factory=list, max_length=100)
     zone_schemes: list[dict] | None = None
+    preset_id: str | None = None
+    excluded_intervals: list[Exclusion] = Field(default_factory=list,max_length=100)
+    alignment_markers: list[Alignment] = Field(default_factory=list,max_length=1000)
+    conditions: dict[str,str] = Field(default_factory=dict,max_length=30)
+    gas_hash: str | None = None
+    gas_offset_s: float = Field(default=0,ge=-86400,le=86400)
+    ventilatory_markers: dict[Literal['vt1','vt2'],VentilatoryMarker] = Field(default_factory=dict)
+    vo2max_verification: MaximumVerification = Field(default_factory=MaximumVerification)
+    threshold_calibration: dict[str,str] = Field(default_factory=dict,max_length=20)
 
     @model_validator(mode='after')
     def validate_observations(self):
@@ -128,6 +161,10 @@ class Settings(Model):
         times = [r.after_s for r in self.recovery_manual]
         if len(times) != len(set(times)):
             raise ValueError('Tempi di recupero duplicati.')
+        if self.rpe is not None:
+            if self.rpe_scale=='CR10 dichiarata' and self.rpe>10 or self.rpe_scale=='Borg 6-20' and not 6<=self.rpe<=20:
+                raise ValueError('RPE incompatibile con la scala selezionata.')
+        if any(len(v)>3000 for v in self.conditions.values()):raise ValueError('Condizioni: testo troppo lungo.')
         return self
 
 
@@ -151,7 +188,7 @@ def create_app(root=None, token=None, frontend=None):
     workspaces=Workspaces(legacy.root,legacy)
     store=workspaces.proxy
     token = token or os.environ.get("FUORIGIRI_TOKEN") or secrets.token_urlsafe(32)
-    app = FastAPI(title="Fuorigiri Performance Lab", version="0.4.1", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Fuorigiri Performance Lab", version="0.5.0", docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
 
@@ -172,6 +209,7 @@ def create_app(root=None, token=None, frontend=None):
             read_only=identity['certificate']['role']=='viewer' or identity['certificate']['id'] in selected.revocations()
             allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync',
                 '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore')
+            allowed=allowed or request.url.path=='/api/v1/repeatability' or request.url.path.startswith('/api/v1/repeatability/report/')
             if read_only and not allowed:
                 store.selected.reset(marker)
                 return JSONResponse({'detail':'Visualizzatore: operazione di modifica non consentita.'},status_code=403)
@@ -291,7 +329,7 @@ def create_app(root=None, token=None, frontend=None):
         return store.save("protocol",{"name":name.strip(),"family":family.strip(),"version":version.strip(),"parent_id":parent_id or None,"reason":reason,"definition":definition,"objects":[digest]})
 
     @app.post("/api/v1/traces")
-    def trace(file: UploadFile):
+    def trace(file: UploadFile, session_index: Annotated[int | None,Form()]=None, duplicate_policy: Annotated[str,Form()]='reject', correction_reason: Annotated[str,Form()]=''):
         raw = file.file.read(30_000_001)
         if len(raw)>30_000_000:
             raise ValueError("FIT oltre il limite di 30 MB.")
@@ -299,10 +337,16 @@ def create_app(root=None, token=None, frontend=None):
             from .csv_import import decode_trace_csv
             decoded = decode_trace_csv(raw)
         else:
-            decoded = decode_fit(raw)
+            decoded = decode_fit(raw,session_index=session_index,duplicate_policy=duplicate_policy,correction_reason=correction_reason)
         original = store.object(raw)
         normalized = store.object(json.dumps({**decoded,"original_hash":original},allow_nan=False).encode())
         return {**decoded,"hash":normalized}
+
+    @app.post('/api/v1/traces/inspect')
+    def inspect_trace(file: UploadFile):
+        raw=file.file.read(30_000_001)
+        if len(raw)>30_000_000:raise ValueError('FIT oltre 30 MB.')
+        return decode_fit(raw,overview=True)
 
     @app.post("/api/v1/tests/preview")
     def preview(data: TestInput):
@@ -313,7 +357,19 @@ def create_app(root=None, token=None, frontend=None):
         trace = json.loads(store.read_object(data.trace_hash))
         from .observations import enrich
         settings = data.settings.model_dump()
-        return enrich(analyze(trace['samples'],protocol['definition'],settings),trace['samples'],settings)
+        from .methods import resolve
+        from .store import encoded
+        import hashlib
+        analysis=analyze(trace['samples'],protocol['definition'],settings,resolve(store,settings.get('preset_id')))
+        analysis['protocol_snapshot']={'id':protocol['id'],'version':protocol['version'],'hash':hashlib.sha256(encoded(protocol['definition']).encode()).hexdigest()}
+        analysis['input_provenance']={'trace_hash':data.trace_hash,'original_hash':trace.get('original_hash'),'decoder':trace.get('decoder','legacy_unknown'),
+                                     'session':trace.get('session_index',0),'exclusions':settings['excluded_intervals'],'alignment':settings['alignment_markers']}
+        if settings.get('gas_hash'):
+            from .specialist import gas_analysis
+            gas=json.loads(store.read_object(settings['gas_hash']))
+            if gas.get('kind')!='gas':raise ValueError('Allegato gas non valido.')
+            analysis['gas']=gas_analysis(gas['samples'],settings,analysis)
+        return enrich(analysis,trace['samples'],settings)
 
     @app.post("/api/v1/tests")
     def save_test(data: TestInput):
@@ -324,8 +380,11 @@ def create_app(root=None, token=None, frontend=None):
         if any(t["trace_hash"] == data.trace_hash and t["athlete_id"] == data.athlete_id for t in store.list("test")):
             raise ValueError("Tracciato già associato a questo atleta.")
         a = require(data.athlete_id,"athlete")
+        objects=[data.trace_hash,trace['original_hash']]
+        if data.settings.gas_hash:
+            gas=json.loads(store.read_object(data.settings.gas_hash));objects += [data.settings.gas_hash,gas['original_hash']]
         memberships = [m["group_id"] for m in store.list("membership") if m["athlete_id"] == a["id"] and m["start"] <= data.date.isoformat() and (not m.get("end") or m["end"] >= data.date.isoformat())]
-        return store.save("test",{**data.model_dump(mode="json"),"organization_id":a["organization_id"],"athlete_snapshot":a,"group_ids":memberships,"samples":trace["samples"],"analysis":analysis,"objects":[data.trace_hash,trace["original_hash"]]})
+        return store.save("test",{**data.model_dump(mode="json"),"organization_id":a["organization_id"],"athlete_snapshot":a,"group_ids":memberships,"samples":trace["samples"],"analysis":analysis,"objects":objects})
 
     @app.get("/api/v1/tests/{id}")
     def test(id: str):
@@ -335,14 +394,14 @@ def create_app(root=None, token=None, frontend=None):
     def test_report(id: str, format: Literal["pdf","md"], language: Literal['it','en']='it'):
         from .reports import report
         t = require(id,"test")
-        cached=next((r for r in store.list('report') if r.get('renderer_version')=='0.3' and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
+        cached=next((r for r in store.list('report') if r.get('renderer_version')=='0.5' and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
         if cached:
             body=store.read_object(cached['objects'][0])
         else:
             body = report(t,t.get('athlete_snapshot') or require(t["athlete_id"],"athlete"),require(t["protocol_id"],"protocol"),format,language)
             if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
                 digest=store.object(body)
-                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':'0.3','test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
+                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':'0.5','test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
         return download(body,"application/pdf" if format == "pdf" else "application/zip",f"test-{id}." + ("pdf" if format == "pdf" else "zip"))
 
     @app.get("/api/v1/export/{organization_id}")
@@ -384,6 +443,10 @@ def create_app(root=None, token=None, frontend=None):
 
     from .features import install_features
     install_features(app, store, require, download, preview)
+    from .analysis_api import install_analysis
+    install_analysis(app,store,require,download)
+    from .archive_report import install_archive_reports
+    install_archive_reports(app,store,require,download)
     from .workspace_api import install_workspaces
     install_workspaces(app,workspaces,store,download)
     dist = Path(frontend) if frontend else Path(__file__).resolve().parents[2]/"frontend"/"dist"

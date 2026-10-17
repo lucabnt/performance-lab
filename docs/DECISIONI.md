@@ -1,5 +1,14 @@
 # Decisioni e stato dell'implementazione
 
+## Architettura 1.3 / software 0.5 — SCI-01, UI-20 e UI-21
+
+**SCI-01:** l’utente autorizza la scelta dei metodi sulla base scientifica disponibile. Adottati metodi espliciti e versionati, non una soglia universale: [formule, fonti e limiti](IMPLEMENTAZIONE_INCREMENTALE_05.md). VO2peak separato da massimo verificato; breakpoint ventilatori esplorativi separati dai marker del valutatore; lattato separato da FTP/MLSS e soglia dichiarata.
+
+**UI-20:** report società completo e report gruppo/anno/atleta sono viste del medesimo albero di dati. Accorpamento solo di viste con identiche revisioni selezionate, statistiche e numerosità, schede individuali non duplicate, grafici utili e branding fisso nel footer. Allegato letto come riferimento, non importato in automatico.
+
+**UI-21 / DATA-03:** preset immutabili e risolti nel test, migrazione schema 3 con copia precedente e record storici invariati; pubblicazione di una nuova analisi mediante revisione motivata. Sessione FIT, correzioni, marker/esclusioni e condizioni sono espliciti. Il nuovo software non certifica esportatori/laboratori non collaudati. WebDAV desktop/mobile rimane confermato nella fase di consolidamento.
+
+
 ## Architettura 1.2 — CLOUD-02 / TD-59
 
 L’utente conferma **WebDAV per desktop e mobile Android**. Superata la classificazione come candidato nella revisione 1.1. Il contratto di scambio rimane comune ai trasporti e indipendente dai provider proprietari. Proposto WebDAV come primo adapter remoto dopo il refactoring della cartella locale; Nextcloud come server iniziale di collaudo, senza presumerne adozione o disponibilità di credenziali. Riferimenti: [specifica cloud](SINCRONIZZAZIONE_CLOUD_API.md), [prossimi passi](PROSSIMI_PASSI.md). Requisito acquisito, sviluppo non ancora eseguito.

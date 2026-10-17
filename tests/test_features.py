@@ -54,7 +54,7 @@ def test_revision_manual_report_and_lifecycle(tmp_path):
     assert len(c.get(f"/api/v1/records/{t['id']}/revisions").json())==2
     assert c.put(f"/api/v1/tests/{t['id']}",json={'base':t['revision'],'reason':'Stale','test':body}).status_code==409
     with zipfile.ZipFile(io.BytesIO(first)) as z:
-        assert 'RPE (1-10): 7' in z.read('report.md').decode()
+        assert 'RPE (CR10 dichiarata): 7' in z.read('report.md').decode()
     post(c,f"records/{a['id']}/status",{'base':a['revision'],'status':'deleted'})
     assert not c.get(f"/api/v1/history/{org['id']}").json()['rows']
 

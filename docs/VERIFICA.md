@@ -1,5 +1,14 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Software 0.5 / architettura 1.3 — 17 ottobre 2026
+
+- **59 test passati** su Windows: dodici nuovi casi per copertura 95% senza arrotondamento, aderenza distinta, interpolazione, esclusioni sovrapposte, marker/FC al termine, canali mancanti, rampa, copia schema 2 e migrazione 3 senza riscrittura, versioni immutabili, lattato/Dmax, unità/finestre gas, ripetibilità e incertezza, sessioni FIT/duplicati, ambiti dei report e API con allegati/revisioni gas conservati.
+- TypeScript e Vite compilati; persiste l’avviso sul bundle Plotly grande. Audit nomi e collegamenti locali riuscito; nessun nome di prodotto precedente reintrodotto.
+- Verifica conclusiva del bundle Windows il 18 ottobre 2026: build finale riuscita; `dist/Fuorigiri/Fuorigiri.exe --smoke-test --data .local/smoke-fuorigiri-05-final` concluso con codice 0. Import, logo e backend HTTP verificati; marker con versione 0.5.0 presente nell’archivio isolato. La GUI 0.5 è stata verificata nel browser come descritto sotto; non è stato ripetuto il collaudo completo della finestra Qt.
+- GUI browser su archivi sintetici isolati: anteprima società 4 atleti/8 test/8 misure; filtro Allievi/2026 2 atleti/2 test/2 misure; dettaglio con aderenza, curve lattato, gas ed etichette. Pubblicazione di preset FC 20 s, calcolo anteprima e archiviazione di una revisione motivata confermati nel dettaglio. Nessun dato reale importato.
+- Cinque PDF sintetici prodotti e renderizzati: società 15 pagine, gruppo 8, gruppo/2026 5, atleta 3, test specialistico 5. Controllati tavole di tutte le pagine, pagine rappresentative a maggiore risoluzione, footer/attribuzione, grafici e testi. Quattro ZIP Markdown con immagini e manifest. Compattati i dettagli e accorpate le avvertenze comuni.
+- Collaudi non eseguiti: Fedora/PC pulito, corpus FIT reali autorizzati per tutte le versioni degli esportatori, formati gas proprietari e validazione fisiologica/laboratoristica dei risultati. I breakpoint ventilatori sono suggerimenti da revisione, VO2max è una verifica dichiarata con evidenze; nessuna certificazione clinica implicita.
+
 ## Software 0.4.1 / specifica 1.0 — 17 ottobre 2026
 
 - **47 test passati** su Windows: inclusi riconoscimento della directory dati precedente senza spostamenti e scambio nel canale cifrato preesistente con gli stessi eventi/chiavi; due canali per la stessa chiave producono errore esplicito.

@@ -2,12 +2,13 @@
 from collections import defaultdict
 from statistics import median, mean, stdev
 import numpy as np
+from .methods import comparison_key
 
-METRICS = ['map_w','map_wkg','threshold_w','threshold_wkg','ftp_w','ftp_wkg','weight_kg','height_cm','fthr_bpm','fc_max_test_bpm']
+METRICS = ['map_w','map_wkg','threshold_w','threshold_wkg','ftp_w','ftp_wkg','weight_kg','height_cm','fthr_bpm','fc_max_test_bpm','lactate_2_w','lactate_4_w','vo2peak_l_min','vo2peak_ml_kg_min']
 
 
 def summarize(store, org, group='', season='', athlete='', mode='athlete', dimension='season', protocol=''):
-    if mode not in ('athlete','tests') or dimension not in ('season','category','category_season','category_year','category_year_season','cohort','cohort_season','athlete','all'):
+    if mode not in ('athlete','tests') or dimension not in ('season','category','category_season','category_year','category_year_season','cohort','cohort_season','age','age_season','athlete','all'):
         raise ValueError('Modalità di aggregazione non valida.')
     athletes = {a['id']:a for a in store.list('athlete') if a['organization_id']==org and a.get('status')!='deleted'}
     groups = {g['id']:g for g in store.list('group') if g['organization_id']==org}
@@ -27,18 +28,21 @@ def summarize(store, org, group='', season='', athlete='', mode='athlete', dimen
             if group and group not in (g['id'],category['id']) or season and year!=season:
                 continue
             cohort = str(a.get('birth_year') or 'Nascita ignota')
+            age=str(int(t['date'][:4])-a['birth_year']) if a.get('birth_year') else 'Età ignota'
             keys = {'season':year,'category':category['name'],'category_season':category['name']+' / '+year,
                     'category_year':category['name']+' / '+str(category_year or '?'),
                     'category_year_season':category['name']+' / '+str(category_year or '?')+' / '+year,
-                    'cohort':cohort,'cohort_season':cohort+' / '+year,'athlete':a['surname']+' '+a['name'],'all':'Totale'}
+                    'cohort':cohort,'cohort_season':cohort+' / '+year,'age':age,'age_season':age+' / '+year,'athlete':a['surname']+' '+a['name'],'all':'Totale'}
             # Never silently pool distinct protocol versions or threshold methods.
             label = keys[dimension]
-            key = (label,t['protocol_id'],t['analysis'].get('threshold_source') or 'n.d.')
+            key = (label,t['protocol_id'],t['analysis'].get('threshold_source') or 'n.d.',comparison_key(t))
             if key in seen:
                 continue
             seen.add(key)
             row = {'id':t['id'],'revision':t['revision'],'athlete_id':a['id'],'athlete':a['surname']+' '+a['name'],
                    'date':t['date'],'protocol_id':t['protocol_id'],'group':label,
+                   'method_key':comparison_key(t),'method_label':t['analysis'].get('preset',{}).get('name','Legacy / '+t['analysis'].get('engine','ignoto')),
+                   'conditions':t['settings'].get('conditions',{}),'birth_confirmed':a.get('birth_confirmed',False),
                    **{m:t['analysis'].get(m) for m in METRICS},
                    **{m:t['settings'].get(m) for m in ('weight_kg','height_cm')},
                    'threshold_source':t['analysis'].get('threshold_source'),'weight_source':t['settings'].get('weight_source','dichiarato')}
@@ -59,14 +63,14 @@ def summarize(store, org, group='', season='', athlete='', mode='athlete', dimen
                                'mean':mean(values) if values else None,'min':min(values) if values else None,'max':max(values) if values else None,
                                'q1':float(np.quantile(values,.25)) if values else None,'q3':float(np.quantile(values,.75)) if values else None,
                                'sd':stdev(values) if len(values)>1 else None}
-        result.append({'label':key[0],'protocol_id':key[1],'threshold_source':key[2], 'tests_available':all_count,
+        result.append({'label':key[0],'protocol_id':key[1],'threshold_source':key[2],'method_key':key[3],'method_label':rows[0]['method_label'], 'tests_available':all_count,
                        'tests_selected':len(rows),'athletes':len({r['athlete_id'] for r in rows}),'metrics':metrics,
                        'revisions':[r['revision'] for r in rows]})
     unique = {r['id']:r for r in observations}
     previous={}
     changes=[]
     for r in sorted(unique.values(),key=lambda r:(r['date'],r['id'])):
-        key=(r['athlete_id'],r['protocol_id'],r['threshold_source'])
+        key=(r['athlete_id'],r['protocol_id'],r['threshold_source'],r['method_key'])
         last=previous.get(key)
         change={'id':r['id'],'athlete':r['athlete'],'date':r['date'],'previous_date':last['date'] if last else None,'protocol_id':r['protocol_id']}
         for metric in METRICS:
@@ -106,7 +110,7 @@ def paired_comparison(store,org,first,second,group=''):
     def select(data):
         rows={}
         for r in sorted(data['rows'],key=lambda r:(r['date'],r['id'])):
-            rows[(r['athlete_id'],r['protocol_id'],r['threshold_source'])]=r
+            rows[(r['athlete_id'],r['protocol_id'],r['threshold_source'],r['method_key'])]=r
         return rows
     a,b=select(left),select(right);rows=[]
     for key in sorted(a.keys() & b.keys()):

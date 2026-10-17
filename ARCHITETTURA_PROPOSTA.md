@@ -1,6 +1,10 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
-Versione 1.2 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.4.1 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+Versione 1.3 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.5 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+
+## Revisione 1.3 / software 0.5 — incrementale e report
+
+Implementati gli step 1–4 autorizzati: preset/migrazione, motore, GUI/import/report e metodi specialistici. SCI-01, DATA-03, UI-20/21 nel §21; [capacità, fonti e limiti](docs/IMPLEMENTAZIONE_INCREMENTALE_05.md). Report società/gruppo/stagione/atleta da modello comune; storico non ricalcolato. Corpus reale e validazione esterna restano distinti dalle prove software; WebDAV/Android mantengono il perimetro confermato.
 
 ## Revisione 1.1 / software invariato 0.4.1 — API cloud
 
@@ -517,3 +521,11 @@ Drive `drive.file` è per-file e non va assunto come accesso ricorsivo universal
 ## 20. WebDAV multipiattaforma — revisione 1.2
 
 **CLOUD-02 / TD-59:** confermato dall’utente il supporto WebDAV per Windows, Fedora e Android; sostituisce la classificazione come candidato della 1.1. Stesso contratto di trasporto, pacchetti cifrati/firmati, outbox locale, ruoli e conflitti. Configurazione URL/cartella e credenziali protette, diagnostica, ripresa e collaudo sulle piattaforme; nessun server Fuorigiri obbligatorio. Proposta: WebDAV primo adapter remoto dopo l’astrazione della cartella, Nextcloud come server di riferimento iniziale; Drive mantiene uno spike separato. Supporto richiesto, non implementato. [Specifiche](docs/SINCRONIZZAZIONE_CLOUD_API.md) e [sequenza operativa](docs/PROSSIMI_PASSI.md).
+
+## 21. Incrementale e report gerarchici — revisione 1.3
+
+**SCI-01 / DATA-03:** scelta dei metodi scientifici autorizzata dall’utente; [attuazione 0.5 e fonti](docs/IMPLEMENTAZIONE_INCREMENTALE_05.md). Preset immutabili, schema 3 con backup precedente e risultati storici invariati, motore versionato, confronto separato per provenienza. Lattato, gas e ripetibilità hanno metodi distinti e limiti espliciti; non esiste una conversione universale fra MAP, FTP e soglie.
+
+**UI-20:** società completa, gruppo, gruppo/stagione e atleta sono viste filtrate dello stesso report. Aggregati con n/assenti/media/mediana, copertura, grafici, schede individuali e antropometria; viste equivalenti e avvertenze comuni accorpate, nessuna duplicazione dello storico grezzo in più capitoli. PDF/MD con branding fisso e manifest di provenienza; API e GUI condividono la selezione dei dati.
+
+**UI-21:** sessioni FIT, correzioni, selezione temporale, marker/esclusioni con motivo, condizioni, preset e osservazioni specialistiche espliciti. Risultati calcolati, dichiarati, stimati o da rivedere distinguibili; gli identificatori tecnici restano nel manifest, con etichette leggibili nella presentazione. Import gas canonico e revisione ventilatoria non equivalgono a certificazione clinica. TD-60–62 nel registro; WebDAV/Android e i test successivi mantengono la sequenza confermata.

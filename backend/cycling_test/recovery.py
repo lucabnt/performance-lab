@@ -75,7 +75,7 @@ def _inspect(raw):
         try:
             db.execute('PRAGMA trusted_schema=OFF')
             if db.execute('PRAGMA quick_check').fetchone()[0]!='ok':raise ValueError('Database danneggiato.')
-            if db.execute('PRAGMA user_version').fetchone()[0]>2:raise ValueError('Database di una versione più recente.')
+            if db.execute('PRAGMA user_version').fetchone()[0]>3:raise ValueError('Database di una versione più recente.')
             schema=db.execute("SELECT name,type,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'").fetchall()
             if any(kind not in ('table','index') or kind=='table' and (name not in TABLES or not sql.upper().startswith('CREATE TABLE')) for name,kind,sql in schema):
                 raise ValueError('Schema del database non consentito.')

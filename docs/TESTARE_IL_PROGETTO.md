@@ -1,5 +1,16 @@
 # Come testare il progetto, inclusa l'interfaccia
 
+## Versione 0.5 — preset, metodi e report completi
+
+`.venv/Scripts/python.exe -m pytest -q` verifica il nucleo e le API. Compilare TypeScript/Vite con i comandi sotto. Schema 3: alla prima apertura di un database precedente viene salvata `migrations/before-v3.sqlite`; la storia delle analisi resta invariata. Dettagli e limiti in [IMPLEMENTAZIONE_INCREMENTALE_05.md](IMPLEMENTAZIONE_INCREMENTALE_05.md).
+
+Per una prova isolata completa: `.venv/Scripts/python.exe scripts/qa_incremental.py --data .local/qa-incrementale-05-nuova`, poi `.venv/Scripts/python.exe scripts/serve.py --data .local/qa-incrementale-05-nuova --port 8766`; aprire l’URL con token stampato. Solo quattro atleti/otto test sintetici, due stagioni. Non usare un archivio reale per questi comandi; lo script rifiuta destinazioni già popolate.
+
+Checklist GUI: «Archivio e scambio → Report completo dell’archivio», anteprima società, gruppo, stagione e atleta; controllare i conteggi e scaricare PDF/MD. «Test e analisi»: dettaglio dei metodi/aderenza, curve lattato e gas del primo atleta 2026. Per un nuovo import scegliere file e sessione, quindi «Importa sessione selezionata»; calcolare anteprima dopo aver impostato fine sforzo. Nel form creare un preset nuovo, aggiungere marker/esclusioni con motivo, condizioni e gas CSV quando disponibili. In «Storici e confronti», la ripetibilità richiede coppie confrontabili e conferma esplicita di condizioni stabili, con export PDF/MD+CSV.
+
+Cinque esempi PDF e quattro ZIP generati in `output/pdf/`: società, gruppo, gruppo/2026, atleta e singolo test specialistico. Sono dimostrazioni sintetiche, non referti degli atleti dell’allegato. Il bundle Windows rimane `dist/Fuorigiri/Fuorigiri.exe`; va distribuita tutta la directory. Fedora e corpus FIT reali richiedono prove dedicate.
+
+
 ## Rinomina 0.4.1 e specifica dei metodi
 
 Avvio da sorgenti e procedura GUI restano quelli sotto. Distribuzione aggiornata: `dist/Fuorigiri/Fuorigiri.exe` su Windows, `dist/Fuorigiri/Fuorigiri` su Linux dopo build nativa. Comandi installati `fuorigiri` e `fuorigiri-performance-lab`; variabili `FUORIGIRI_DATA`, `FUORIGIRI_TOKEN`, `FUORIGIRI_API_URL`. Header interni `X-Fuorigiri-Token` e `X-Fuorigiri-Workspace`: frontend e backend devono essere aggiornati insieme. Riaprire l’app dopo l’aggiornamento per ottenere una nuova sessione; impostazione lingua e selezione società nel browser usano nuove chiavi.

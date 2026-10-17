@@ -13,6 +13,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from .branding import ATTRIBUTION, logo_path
 from .locales import tr
 from .report_labels import metric_label
+from .scientific_labels import reason as scientific_reason, METHODS
 
 CSV_HEADERS = {
     "atleti": "atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note",
@@ -36,11 +37,16 @@ def chart(test, protocol, language='it'):
         ax.tick_params(labelsize=8)
         ax.axvline(test["settings"]["end_s"]/60, color="#555555", linestyle="--", linewidth=.8)
     offset = test["settings"]["offset_s"]
-    stop=samples[-1]['t']-offset
-    points=[p for p in protocol['definition']['points'] if p[0]<=stop]
-    segment=next((s for s in protocol['definition']['segments'] if s['start_s']<=stop<s['end_s']),None)
-    if segment:points.append([stop,segment['start_w']+(segment['end_w']-segment['start_w'])*(stop-segment['start_s'])/(segment['end_s']-segment['start_s'])])
-    axes[0].plot([(p[0]+offset)/60 for p in points], [p[1] for p in points], color="#abb2af", linewidth=1, label="Target")
+    stop=min(samples[-1]['t'],test['settings']['end_s']);shift=offset
+    markers={m['number']:m['at_s'] for m in test['settings'].get('alignment_markers',[])}
+    for index,segment in enumerate(protocol['definition']['segments']):
+        if index+1 in markers:shift=markers[index+1]-segment['start_s']
+        a=shift+segment['start_s'];b=min(stop,shift+segment['end_s'])
+        if a>=stop:break
+        end_w=segment['start_w']+(segment['end_w']-segment['start_w'])*(b-a)/(segment['end_s']-segment['start_s'])
+        axes[0].plot([a/60,b/60],[segment['start_w'],end_w],color='#abb2af',linewidth=1)
+    for interval in test['settings'].get('excluded_intervals',[]):
+        for ax in axes:ax.axvspan(interval['start_s']/60,interval['end_s']/60,color='#b85850',alpha=.12)
     axes[0].set_xlim(0, samples[-1]["t"]/60)
     axes[-1].set_xlabel(tr("Tempo trascorso (min)",language), fontsize=8)
     out = io.BytesIO()
@@ -49,7 +55,31 @@ def chart(test, protocol, language='it'):
 
 
 def val(value):
-    return "n.d." if value is None else str(value)
+    return "n.d." if value is None else f'{value:.2f}'.rstrip('0').rstrip('.') if isinstance(value,float) else str(value)
+
+
+def specialist_charts(analysis):
+    images=[];lactate=analysis.get('lactate_analysis',{})
+    if lactate.get('points'):
+        fig=Figure(figsize=(9,4),layout='constrained');ax=fig.subplots();points=lactate['points'];curve=lactate['curve']
+        ax.plot([p['power_w'] for p in points],[p['mmol_l'] for p in points],'o-',label='Misure',color='#1a62b7')
+        if curve:ax.plot([p['power_w'] for p in curve],[p['mmol_l'] for p in curve],':',label='Fit cubico',color='#61738a')
+        ax.set_xlabel('Carico (W)');ax.set_ylabel('Lattato (mmol/L)');ax.grid(alpha=.15);ax.legend(fontsize=8)
+        out=io.BytesIO();fig.savefig(out,format='png',dpi=150);images.append(('lactate.png','Lattato - curva e misure',out.getvalue(),7.87))
+    gas=analysis.get('gas')
+    if gas:
+        fig=Figure(figsize=(9,6.3),layout='constrained');axes=fig.subplots(2,2);bins=gas['bins'];times=[r['t']/60 for r in bins]
+        axes[0,0].plot(times,[r['vo2'] for r in bins],label='VO2');axes[0,0].plot(times,[r['vco2'] for r in bins],label='VCO2');axes[0,0].set(xlabel='Tempo FIT (min)',ylabel='L/min')
+        axes[0,1].scatter([r['vo2'] for r in bins],[r['vco2'] for r in bins],s=10);axes[0,1].set(xlabel='VO2 (L/min)',ylabel='VCO2 (L/min) - V-slope')
+        for k in ('ve_vo2','ve_vco2'):axes[1,0].plot(times,[r.get(k) for r in bins],label=k.replace('_','/').upper())
+        axes[1,0].set(xlabel='Tempo FIT (min)',ylabel='Equivalenti ventilatori')
+        for k in ('peto2','petco2'):axes[1,1].plot(times,[r.get(k) for r in bins],label=k.upper())
+        axes[1,1].set(xlabel='Tempo FIT (min)',ylabel='Gas end-tidal (mmHg)')
+        for ax in axes.flat:
+            ax.grid(alpha=.15)
+            if ax.get_legend_handles_labels()[0]:ax.legend(fontsize=7)
+        out=io.BytesIO();fig.savefig(out,format='png',dpi=150);images.append(('gas.png','Gas - segnali e supporto alla revisione',out.getvalue(),12.39))
+    return images
 
 
 def report(test, athlete, protocol, format, language='it'):
@@ -66,10 +96,23 @@ def report(test, athlete, protocol, format, language='it'):
                ("Durata sforzo (s)", val(a["duration_s"])), ("Copertura potenza", f"{a['power_coverage']*100:.1f}%" if a.get('power_coverage') is not None else 'n.d.')]
     metrics += [('Nascita',athlete.get('birth_date') or val(athlete.get('birth_year'))),('Stato nascita','confermato' if athlete.get('birth_confirmed') else 'da confermare'),
                 ('Watt Soglia',val(a.get('threshold_w'))),('Origine soglia',metric_label(a.get('threshold_source') or 'n.d.',language)),('Coefficiente MAP',val(test['settings'].get('threshold_coefficient'))),
-                ('FTP dichiarata (W)',val(a.get('ftp_w'))),('FTHR (bpm)',val(a.get('fthr_bpm'))),('RPE (1-10)',val(test['settings'].get('rpe'))),
+                ('FTP dichiarata (W)',val(a.get('ftp_w'))),('FTHR (bpm)',val(a.get('fthr_bpm'))),('RPE ('+test['settings'].get('rpe_scale','CR10 dichiarata')+')',val(test['settings'].get('rpe'))),
                 ('Fonte peso',test['settings'].get('weight_source','dichiarato'))]
     for l in test['settings'].get('lactate',[]):
         metrics.append((f"Lattato a {l['at_s']} s (mmol/L)",l['mmol_l']))
+    if a.get('preset'):
+        metrics += [('Preset analisi',a['preset']['name']+' / '+a['preset']['version']),('Identità preset',a['preset']['hash'][:16])]
+        metrics += [('Durata fase incrementale (s)',val(a.get('duration_incremental_s'))),('Potenza media osservata (W)',val(a.get('power_mean_w'))),('Lavoro osservato (kJ)',val(a.get('work_kj'))),('Secondi validi potenza',val(a.get('valid_power_s')))]
+        if a.get('terminal_target_w') is not None:metrics += [('Carico terminale nominale (W)',val(a['terminal_target_w'])),('Media ultimi 30 s (W)',val(a.get('terminal_mean_w')))]
+        for key,result in a.get('lactate_analysis',{}).get('results',{}).items():
+            metrics.append(('Lattato - '+METHODS.get(key,key)+' (W)',val(result['value'])+(' / '+scientific_reason(result['reason']) if result.get('reason') else '')))
+        if a.get('gas'):
+            g=a['gas'];metrics += [('VO2peak (L/min)',val(g['vo2peak']['value'])),('VO2peak (mL/kg/min)',val(g['vo2peak']['ml_kg_min'])),('VO2peak - finestra (s)',g['vo2peak']['window_s']),('VO2max verificato (L/min)',val(g['vo2max']['value']))]
+            for key in ('vt1','vt2'):
+                metrics.append((key.upper()+' - marker confermato (s)',val(g['markers'].get(key,{}).get('at_s'))))
+                metrics.append((key.upper()+' - suggerimento da rivedere (s)',val(g['suggestions'][key]['value'])))
+    for key,value in test['settings'].get('conditions',{}).items():
+        if value:metrics.append(('Condizioni - '+key.replace('_',' '),value))
     zone_rows=[]
     for scheme in a.get('zones',[]):
         label=('FC' if scheme['scheme']['channel']=='hr' else tr('Potenza',language))+' / '+metric_label(scheme['scheme']['reference'],language)+' = '+val(scheme['reference_value'])
@@ -81,10 +124,13 @@ def report(test, athlete, protocol, format, language='it'):
     stage_rows = [[str(r["number"]), str(r["end_w"]), str(round(r["actual_s"],1)), val(r["power"]["mean"]), val(r["hr"]["mean"]), "Si" if r["complete"] else "No"] for r in a["steps"]]
     metrics=[(tr(k,language),tr(v,language) if isinstance(v,str) and k=='Stato nascita' else v) for k,v in metrics]
     png = chart(test, protocol,language)
+    specialist_images=specialist_charts(a)
     note = "Convenzione provvisoria: " + a["method"] + " FC fine step: media ultimi 30 s. Recupero: finestra da t-2 a t+3 s; riferimento media ultimi 5 s di sforzo."
     if test.get('historical'):note=a['method']+' I valori sono dichiarati; nessuna verifica sui campioni.'
     if language=='en':
         note='Provisional convention: last completed constant incremental stage; power coverage at least 95%, without target-adherence validation. Stage HR: last 30 seconds. Recovery: window t-2 to t+3 seconds, reference: last 5 seconds of effort.' if not test.get('historical') else 'Imported declared historical results; original samples unavailable.'
+    if a.get('preset'):
+        note=a['method']+' Parametri risolti: '+str(a['preset']['parameters'])
     trace = f"Motore {a['engine']} | Test {test['id']} | Revisione {test['revision']} | Protocollo {protocol['id']}"
     if format == "md":
         def md(s):
@@ -99,10 +145,12 @@ def report(test, athlete, protocol, format, language='it'):
         text += '\n\n## '+tr('Zone',language)+'\n\n| '+' | '.join(tr(h,language) for h in ['Riferimento','Zona','Limiti assoluti','Secondi'])+' |\n|---|---|---|---|\n'
         text += '\n'.join('| '+' | '.join(md(c) for c in row)+' |' for row in zone_rows)
         text += '\n\n![Progetto Ciclismo - Rodengo Saiano A.S.D.](assets/logo.png)\n\n'+ATTRIBUTION+'\n'
+        for filename,label,_,_ in specialist_images:text+='\n\n## '+label+'\n\n!['+label+'](assets/'+filename+')\n'
         out = io.BytesIO()
         with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
             z.writestr("report.md", text)
             z.writestr("assets/test.png", png)
+            for filename,_,body,_ in specialist_images:z.writestr('assets/'+filename,body)
             z.write(logo_path(),'assets/logo.png')
             from .store import encoded
             z.writestr('manifest.json',encoded({'test_id':test['id'],'revision':test['revision'],'settings':test['settings'],'analysis':a}))
@@ -125,6 +173,12 @@ def report(test, athlete, protocol, format, language='it'):
     details=styled_table(compact,[5*cm,3.8*cm,5*cm,3.9*cm],False)
     details.setStyle(TableStyle([('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]))
     story += [p('Dati e riferimenti','Heading2'),details]
+    if a.get('preset') and stage_rows:
+        quality=[['Step','Copertura W','Errore W','MAE W','RMSE W','Banda']]
+        for step in a['steps']:
+            adherence=step.get('adherence',{})
+            quality.append([str(step['number']),val(step['power']['coverage']*100)+'%',val(adherence.get('mean_error_w')),val(adherence.get('mae_w')),val(adherence.get('rmse_w')),'Non valutata' if adherence.get('within_band_fraction') is None else val(adherence['within_band_fraction']*100)+'%'])
+        story += [p('Aderenza separata dalla completezza','Heading2'),styled_table([[p(c) for c in row] for row in quality],[2.95*cm]*6)]
     if stage_rows:
         story += [p('Step del protocollo','Heading2'),styled_table([[p(tr(c,language)) for c in row] for row in [['Step','Target W','Durata s','Media W','FC bpm','Completo']]+stage_rows],[1.5*cm,3*cm,3*cm,3.4*cm,3.4*cm,3.4*cm])]
     if a['recovery']:
@@ -132,6 +186,7 @@ def report(test, athlete, protocol, format, language='it'):
     if zone_rows:
         story += [p('Zone','Heading2'),styled_table([[p(c) for c in row] for row in [['Riferimento','Zona','Limiti assoluti','Secondi']]+zone_rows],[7*cm,2*cm,5.7*cm,3*cm])]
     story += [p('Metodo e qualità','Heading2'),p(note)]+[p(w) for w in a['warnings']]
+    for _,label,body,height in specialist_images:story += [p(label,'Heading2'),Image(io.BytesIO(body),width=17.7*cm,height=height*cm)]
     story += [p('Note','Heading2'),p(test.get('notes') or 'Nessuna nota.'),Spacer(1,.4*cm),p(trace,'Small')]
     doc.build(story,onFirstPage=footer,onLaterPages=footer)
     return out.getvalue()

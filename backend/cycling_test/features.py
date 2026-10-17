@@ -95,7 +95,11 @@ def install_features(app, store, require, download, preview):
         if old['athlete_id']!=data.test.athlete_id or old['trace_hash']!=data.test.trace_hash:
             raise ValueError('La revisione non cambia atleta o file originale.')
         a=preview(data.test)
-        return store.save('test',{**old,**data.test.model_dump(mode='json'),'analysis':a,'reason':data.reason},id,data.base)
+        objects=[data.test.trace_hash]
+        trace=json.loads(store.read_object(data.test.trace_hash));objects.append(trace['original_hash'])
+        if data.test.settings.gas_hash:
+            gas=json.loads(store.read_object(data.test.settings.gas_hash));objects += [data.test.settings.gas_hash,gas['original_hash']]
+        return store.save('test',{**old,**data.test.model_dump(mode='json'),'analysis':a,'objects':objects,'reason':data.reason},id,data.base)
 
     @app.get('/api/v1/athletes/{id}/defaults')
     def defaults(id: str, on: date):

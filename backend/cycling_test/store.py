@@ -2,12 +2,12 @@
 import hashlib
 import json
 import sqlite3
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
-KINDS = {"organization", "group", "athlete", "membership", "measurement", "protocol", "test", "report", "import_batch", "zone_scheme", "default_profile"}
+KINDS = {"organization", "group", "athlete", "membership", "measurement", "protocol", "test", "report", "import_batch", "zone_scheme", "default_profile", "analysis_preset"}
 
 
 def encoded(value):
@@ -23,6 +23,16 @@ class Store:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         (self.root / "objects").mkdir(exist_ok=True)
+        database=self.root/'archive.sqlite'
+        if database.exists():
+            with closing(sqlite3.connect(database)) as source:
+                version=source.execute('PRAGMA user_version').fetchone()[0]
+                if version>3:raise ValueError('Archivio creato con una versione più recente.')
+                if version<3:
+                    backup=self.root/'migrations'/'before-v3.sqlite'
+                    backup.parent.mkdir(exist_ok=True)
+                    if not backup.exists():
+                        with closing(sqlite3.connect(backup)) as dest:source.backup(dest)
         with self.connect() as db:
             db.executescript("""
                 CREATE TABLE IF NOT EXISTS records(id TEXT PRIMARY KEY, kind TEXT NOT NULL, revision TEXT NOT NULL, data TEXT NOT NULL);
@@ -32,11 +42,12 @@ class Store:
             """)
             db.execute("INSERT OR IGNORE INTO config VALUES('device',?)", (str(uuid4()),))
             schema = db.execute("PRAGMA user_version").fetchone()[0]
-            if schema > 2:
+            if schema > 3:
                 raise ValueError('Archivio creato con una versione più recente.')
             # Additive migration: preserve all existing records and immutable changes.
             db.execute('CREATE INDEX IF NOT EXISTS records_kind ON records(kind)')
-            db.execute('PRAGMA user_version=2')
+            db.execute("INSERT OR IGNORE INTO config VALUES('migration_v3',?)",(encoded({'from':schema,'legacy_method':'legacy_unknown','records_rewritten':False}),))
+            db.execute('PRAGMA user_version=3')
 
     def history(self, id):
         with self.connect() as db:

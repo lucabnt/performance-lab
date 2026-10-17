@@ -1,5 +1,10 @@
 # Copertura dei test e sviluppi futuri
 
+## Aggiornamento software 0.5
+
+Nuove funzioni sviluppate per INC-01–10: preset/migrazioni, motore costante, correzioni e allineamento, metodi lattato/gas/ripetibilità, report completi gerarchici e grafici. La tabella sottostante conserva le lacune della 0.4: gli stati attuali e le distinzioni fra implementazione e collaudo sono nel [registro requisiti](REQUISITI_E_TODO.md) e nel [dettaglio 0.5](IMPLEMENTAZIONE_INCREMENTALE_05.md). Corpus FIT reali, validazione specialistica esterna e consolidamento INC-11 non sono dichiarati completati.
+
+
 Stato della preview Fuorigiri Performance Lab 0.4, aggiornamento del 17 ottobre 2026. L'utente ha confermato che **tutte le lacune dell'incrementale elencate sotto sono da implementare**, comprese quelle di priorità P2. Successivamente si procederà con Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Questa pianificazione non prescrive protocolli di esercizio e non dichiara validazione fisiologica. Nessuna lacuna INC è completata nel suo insieme: la 0.4 realizza il primo sottoinsieme operativo di INC-11 (TD-45–49 e parte di TD-50), come descritto nella [guida società/accessi](SOCIETA_BACKUP_E_ACCESSI.md).
 
 ## Sequenza di sviluppo confermata

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 — 17 ottobre 2026 / architettura 1.3
+
+- Schema 3 con copia del database pre-migrazione, preset immutabili e identità dell’analisi salvata, risultati legacy invariati e separati nei confronti.
+- Motore incrementale versionato: coperture senza arrotondamento, aderenza separata, finestre FC/recupero, marker/esclusioni, rampe/discontinui descrittivi, condizioni e RPE per scala.
+- Import FIT con scelta sessione, correzioni esplicite e timer; import gas CSV; lattato a 2/4 mmol, Dmax cubico/modificato, VO2peak, grafici e suggerimenti ventilatori da revisione, ripetibilità con incertezza descrittiva ed export.
+- Report società/gruppo/stagione/atleta da modello comune, PDF e Markdown con grafici, copertura, aggregati, schede e provenienza; qualità e analisi specialistiche anche nel singolo test.
+- Fixture sintetiche e verifiche aggiunte; fonti scientifiche e limiti documentati. Nessuna importazione dei dati personali del PDF, validazione clinica o certificazione generale degli esportatori dichiarata.
+
+
 ## Architettura 1.2 — 17 ottobre 2026 / software invariato 0.4.1
 
 - WebDAV confermato per Windows/Fedora e Android: TD-59/CLOUD-02, non più candidato.

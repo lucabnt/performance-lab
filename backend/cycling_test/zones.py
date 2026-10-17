@@ -48,7 +48,7 @@ def classify(value, reference, scheme):
             return i
 
 
-def calculate(scheme, reference, samples, start, end):
+def calculate(scheme, reference, samples, start, end, max_gap=5., excluded=()):
     validate(scheme)
     if reference is None or reference <= 0:
         return {'scheme': scheme, 'reference_value': None, 'zones': [], 'unclassified_s': end-start if samples or end>start else None}
@@ -60,11 +60,9 @@ def calculate(scheme, reference, samples, start, end):
                      'upper_value': upper, 'seconds': 0.0})
         lower, lower_inclusive = upper, not z['inclusive']
     field = 'hr' if scheme['channel'] == 'hr' else 'power'
-    for row, nxt in zip(samples, samples[1:]):
-        width = max(0, min(end, nxt['t'])-max(start, row['t']))
-        if width == 0 or row.get('paused') or not 0 < nxt['t']-row['t'] <= 5:
-            continue
-        i = classify(row.get(field), reference, scheme)
+    from .analysis import intervals
+    for value,width,_,_ in intervals(samples,field,start,end,max_gap,excluded):
+        i = classify(value, reference, scheme)
         if i is not None:
             rows[i]['seconds'] += width
     unclassified=max(0, end-start-sum(z['seconds'] for z in rows))

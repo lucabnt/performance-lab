@@ -6,6 +6,12 @@ from .methods import comparison_key
 
 METRICS = ['map_w','map_wkg','threshold_w','threshold_wkg','ftp_w','ftp_wkg','weight_kg','height_cm','fthr_bpm','fc_max_test_bpm','lactate_2_w','lactate_4_w','vo2peak_l_min','vo2peak_ml_kg_min']
 
+from .anaerobic import METRICS as ANAEROBIC_METRICS
+METRICS=list(dict.fromkeys(METRICS+ANAEROBIC_METRICS))
+
+def metric_applicable(record,metric):
+    from .anaerobic import is_anaerobic
+    return metric in ('weight_kg','height_cm','fc_max_test_bpm','work_kj') or is_anaerobic(record)==(metric in ANAEROBIC_METRICS)
 
 def summarize(store, org, group='', season='', athlete='', mode='athlete', dimension='season', protocol=''):
     if mode not in ('athlete','tests') or dimension not in ('season','category','category_season','category_year','category_year_season','cohort','cohort_season','age','age_season','athlete','all'):
@@ -39,9 +45,9 @@ def summarize(store, org, group='', season='', athlete='', mode='athlete', dimen
             if key in seen:
                 continue
             seen.add(key)
-            row = {'id':t['id'],'revision':t['revision'],'athlete_id':a['id'],'athlete':a['surname']+' '+a['name'],
+            row = {'id':t['id'],'revision':t['revision'],'test_type':t.get('test_type'),'athlete_id':a['id'],'athlete':a['surname']+' '+a['name'],
                    'date':t['date'],'protocol_id':t['protocol_id'],'group':label,
-                   'method_key':comparison_key(t),'method_label':t['analysis'].get('preset',{}).get('name','Legacy / '+t['analysis'].get('engine','ignoto')),
+                   'method_key':comparison_key(t),'method_label':t['analysis'].get('preset',{}).get('name',t['analysis'].get('source','Legacy')+' / '+t['analysis'].get('engine','ignoto')),
                    'conditions':t['settings'].get('conditions',{}),'birth_confirmed':a.get('birth_confirmed',False),
                    **{m:t['analysis'].get(m) for m in METRICS},
                    **{m:t['settings'].get(m) for m in ('weight_kg','height_cm')},
@@ -58,8 +64,9 @@ def summarize(store, org, group='', season='', athlete='', mode='athlete', dimen
             rows = list(chosen.values())
         metrics = {}
         for metric in METRICS:
-            values = [r[metric] for r in rows if r.get(metric) is not None and not (metric.endswith('wkg') and r['weight_source']=='stimato')]
-            metrics[metric] = {'n':len(values),'missing':len(rows)-len(values),'median':median(values) if values else None,
+            eligible=[r for r in rows if metric_applicable(r,metric)]
+            values = [r[metric] for r in eligible if r.get(metric) is not None and not (metric.endswith('wkg') and r['weight_source']=='stimato')]
+            metrics[metric] = {'n':len(values),'missing':len(eligible)-len(values),'median':median(values) if values else None,
                                'mean':mean(values) if values else None,'min':min(values) if values else None,'max':max(values) if values else None,
                                'q1':float(np.quantile(values,.25)) if values else None,'q3':float(np.quantile(values,.75)) if values else None,
                                'sd':stdev(values) if len(values)>1 else None}
@@ -81,7 +88,7 @@ def summarize(store, org, group='', season='', athlete='', mode='athlete', dimen
     return {'schema':1,'query':dict(organization_id=org,group=group,season=season,athlete=athlete,mode=mode,dimension=dimension,protocol=protocol),
             'groups':result,'rows':sorted(unique.values(),key=lambda r:r['date']),
             'changes':changes,
-            'coverage':{m:{'valid':sum(r.get(m) is not None for r in unique.values()),'total':len(unique)} for m in METRICS}}
+            'coverage':{m:{'valid':sum(r.get(m) is not None for r in unique.values() if metric_applicable(r,m)),'total':sum(metric_applicable(r,m) for r in unique.values())} for m in METRICS}}
 
 
 def growth(store, org, athlete=''):

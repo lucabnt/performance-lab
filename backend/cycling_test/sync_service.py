@@ -37,6 +37,20 @@ def configure(store,data):
             if data.get('password'):credentials.save(store.root,data['password'])
             else:credentials.read(store.root)
             value={'transport':'webdav','url':url,'username':username}
+        elif data['transport'] in ('drive','dropbox','onedrive','service'):
+            from .cloud import load_secret,save_secret
+            import re
+            kind=data['transport']
+            value={k:data.get(k,'') for k in ('transport','client_id','root_id','root_path','drive_id','drive_scope','url')}
+            if kind=='service':
+                value['url']=validate_url(value['url'])
+            elif not value['client_id'].strip():raise ValueError('Client ID OAuth obbligatorio.')
+            if kind in ('drive','onedrive') and not re.fullmatch(r'[A-Za-z0-9_!.-]{1,300}',value['root_id']):raise ValueError('Indicare l’ID della cartella condivisa.')
+            if kind=='dropbox' and value['root_path'] and not value['root_path'].startswith('/'):raise ValueError('Percorso Dropbox deve iniziare con /.')
+            if data.get('password'):
+                secret=load_secret(store.root,kind,value['client_id'])
+                secret['token' if kind=='service' else 'client_secret']=data['password']
+                save_secret(store.root,kind,secret,value['client_id'])
         else:value={'transport':'folder','folder':data.get('folder','')}
         write_json(store.root/'sync-connection.json',value)
     return value
@@ -46,6 +60,9 @@ def transport(store,config):
     key=store.identity['sync_key'];channel=hashlib.sha256(key.encode()).hexdigest()[:24]
     if config['transport']=='webdav':
         return WebDAVTransport(config['url'],config['username'],credentials.read(store.root),channel)
+    if config['transport'] in ('drive','dropbox','onedrive','service'):
+        from .cloud import DriveTransport,DropboxTransport,OneDriveTransport,DedicatedTransport
+        return {'drive':DriveTransport,'dropbox':DropboxTransport,'onedrive':OneDriveTransport,'service':DedicatedTransport}[config['transport']](store.root,config,channel)
     from .transports import FolderTransport
     return FolderTransport(config['folder'],channel,store.root)
 
@@ -113,7 +130,12 @@ def install_sync_api(app,store):
     from typing import Literal
     class Connection(BaseModel):
         model_config=ConfigDict(extra='forbid')
-        transport: Literal['folder','webdav']
+        transport: Literal['folder','webdav','drive','dropbox','onedrive','service']
+        client_id: str=Field(default='',max_length=500)
+        root_id: str=Field(default='',max_length=300)
+        root_path: str=Field(default='',max_length=2000)
+        drive_id: str=Field(default='',max_length=300)
+        drive_scope: Literal['','file','full']='file'
         folder: str=Field(default='',max_length=2000)
         url: str=Field(default='',max_length=2000)
         username: str=Field(default='',max_length=300)
@@ -123,10 +145,52 @@ def install_sync_api(app,store):
     def connection():
         require_managed(store)
         last=store.root/'last-sync.json'
-        return {'connection':configuration(store),'last_sync':json.loads(last.read_text(encoding='utf-8')) if last.exists() else None}
+        config=configuration(store);account_status=None
+        if config['transport'] in ('drive','dropbox','onedrive','service'):
+            from .cloud import load_secret
+            try:
+                value=load_secret(store.root,config['transport'],config.get('client_id',''))
+                account_status='connected' if value.get('access_token') or value.get('token') else 'disconnected'
+            except ValueError:account_status='vault_unavailable'
+        return {'connection':config,'account_status':account_status,'last_sync':json.loads(last.read_text(encoding='utf-8')) if last.exists() else None}
 
     @app.post('/api/v1/sync/connection')
     def save_connection(data:Connection):return configure(store,data.model_dump())
+
+    class OAuthRequest(BaseModel):
+        mobile: bool=False
+    @app.post('/api/v1/sync/oauth/start')
+    def oauth_start(data:OAuthRequest):
+        require_managed(store)
+        from .cloud import begin_oauth
+        return begin_oauth(store,configuration(store),data.mobile)
+
+    @app.get('/api/v1/sync/oauth/status/{session}')
+    def oauth_state(session:str):
+        from .cloud import oauth_status
+        return oauth_status(store,session)
+
+    class OAuthCallback(BaseModel):
+        url: str=Field(max_length=8000)
+    @app.post('/api/v1/sync/oauth/callback')
+    def oauth_callback(data:OAuthCallback):
+        from .cloud import oauth_status,finish_oauth
+        from urllib.parse import urlsplit,parse_qs
+        state=parse_qs(urlsplit(data.url).query).get('state',[''])[0]
+        oauth_status(store,state)
+        return finish_oauth(data.url)
+
+    @app.post('/api/v1/sync/oauth/disconnect')
+    def oauth_disconnect():
+        from .cloud import save_secret
+        config=configuration(store)
+        if config['transport'] not in ('drive','dropbox','onedrive','service'):raise ValueError('Nessun account OAuth selezionato.')
+        from .cloud import _guard,_sessions
+        with lock(store.root),_guard:
+            for session in _sessions.values():
+                if session['root'].resolve()==store.root.resolve() and session['config']['transport']==config['transport'] and session['status'] in ('pending','exchanging'):session['status']='cancelled'
+            save_secret(store.root,config['transport'],{},config.get('client_id',''))
+        return {'disconnected':True}
 
     @app.post('/api/v1/sync/run')
     def sync():return run_sync(store)

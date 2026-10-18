@@ -1,5 +1,13 @@
 # Android — requisito e architettura proposta
 
+## Sorgenti 0.7 - quattro provider diretti
+
+WebDAV e adapter API Drive/Dropbox/OneDrive riusati dal backend in-process. Dropbox/OneDrive: consenso nel browser di sistema, deep link fuorigiri://oauth/callback e stato PKCE monouso. Drive: AuthorizationClient Google Play services (dipendenza play-services-auth), consenso nativo e rinnovo silenzioso quando già autorizzato; eventuale consenso aggiuntivo richiede primo piano. Token nel Keystore, WorkManager esteso ai trasporti remoti. Manifest con deep link, listener limitato all’origine interna e apertura esterna limitata ai provider previsti. [Registrazioni e limiti](CLOUD_CONFIGURAZIONE_07.md).
+
+Questi sono sorgenti: nessuna build APK né verifica del nuovo codice Kotlin/Google Play services su dispositivo è stata eseguita. Il rinvio della toolchain Linux/Android rimane valido. Non sono inclusi client ID registrati o certificati di firma. Per la sincronizzazione Google occorrono package/SHA registrati e Play services; gli altri provider restano alternative su dispositivi senza questi servizi.
+
+**Chiarimento CLOUD-03, 18 ottobre 2026:** la versione Android deve poter sincronizzare direttamente tramite WebDAV, Google Drive, Dropbox e OneDrive. Tutti e quattro sono ora requisiti; OneDrive non è più soltanto candidato. La 0.6 contiene il trasporto WebDAV condiviso, non gli adapter delle tre API proprietarie né un APK collaudato. Questo chiarimento non riattiva le build rimandate. Prevale sulle indicazioni storiche sottostanti; vedere [TD-67](REQUISITI_E_TODO.md).
+
 **Consegna concordata il 18 ottobre 2026:** Windows e sorgenti; l’utente ha rimandato le build Linux/Android. I gate e i collaudi sotto restano documentati, senza avviare CI o pubblicazioni.
 
 ## Stato 0.6 — sorgente della shell e contratto, APK ancora da costruire

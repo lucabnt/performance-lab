@@ -21,3 +21,5 @@ Keyring 25.7.0 e relative dipendenze: conservare licenze/metadati delle wheel ne
 Inno Setup è uno strumento di build con propria licenza, non una dipendenza da installare sul PC destinatario. Flatpak e i runtime mantengono le proprie licenze. Le pipeline e i checksum non costituiscono una firma del prodotto o un audit legale completo.
 
 La nuova icona Fuorigiri (`fuorigiri.svg` e derivate) è opera del progetto e segue GPL-3.0-or-later. Il logo societario originale e la sua attribuzione rimangono invariati.
+
+Android 0.7: Google Play services Auth 22.0.0 dichiarato come dipendenza Gradle, soggetto alle condizioni Google Play services; non incluso nei sorgenti e non redistribuito in un APK in questa consegna. Le API cloud sono chiamate HTTP, senza SDK proprietari aggiunti al runtime Python.

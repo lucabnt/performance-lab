@@ -21,3 +21,7 @@ LABELS={
  'rapporto_trasm_m':('Sviluppo metrico (m)','Rollout (m)'), 'pedivella_m':('Lunghezza pedivella (m)','Crank length (m)')}
 def metric_label(key,language='it'):
     return LABELS.get(key,(str(key).replace('_',' '),)*2)[language=='en']
+
+from .anaerobic import LABELS as ANAEROBIC_LABELS,METRIC_MAP
+LABELS.update({key:(value,value) for key,value in ANAEROBIC_LABELS.items()})
+LABELS.update({key:(ANAEROBIC_LABELS.get(value,LABELS.get(value,(key,key))[0]),ANAEROBIC_LABELS.get(value,LABELS.get(value,(key,key))[1])) for key,value in METRIC_MAP.items()})

@@ -11,9 +11,17 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 /** The AES key stays in Android Keystore. Only ciphertext enters preferences. */
-class NativeSecrets(context: Context) {
+class NativeSecrets(private val context: Context) {
     private val preferences = context.getSharedPreferences("webdav-secrets", Context.MODE_PRIVATE)
     private val alias = "Fuorigiri.WebDAV.AES.v1"
+    fun googleToken(scope: String): String? {
+        val request = com.google.android.gms.auth.api.identity.AuthorizationRequest.builder()
+            .setRequestedScopes(listOf(com.google.android.gms.common.api.Scope(scope))).build()
+        val result = com.google.android.gms.tasks.Tasks.await(
+            com.google.android.gms.auth.api.identity.Identity.getAuthorizationClient(context).authorize(request),
+            30, java.util.concurrent.TimeUnit.SECONDS)
+        return if (result.hasResolution()) null else result.accessToken
+    }
     @Synchronized private fun key(): SecretKey {
         val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
         (store.getKey(alias, null) as? SecretKey)?.let { return it }

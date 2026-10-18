@@ -209,7 +209,7 @@ def create_app(root=None, token=None, frontend=None):
             read_only=identity['certificate']['role']=='viewer' or identity['certificate']['id'] in selected.revocations()
             allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync',
                 '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore',
-                '/api/v1/sync/connection','/api/v1/sync/run')
+                '/api/v1/sync/connection','/api/v1/sync/run','/api/v1/sync/oauth/start','/api/v1/sync/oauth/callback','/api/v1/sync/oauth/disconnect','/api/v1/anaerobic/preview')
             allowed=allowed or request.url.path=='/api/v1/repeatability' or request.url.path.startswith('/api/v1/repeatability/report/')
             if read_only and not allowed:
                 store.selected.reset(marker)
@@ -395,14 +395,14 @@ def create_app(root=None, token=None, frontend=None):
     def test_report(id: str, format: Literal["pdf","md"], language: Literal['it','en']='it'):
         from .reports import report
         t = require(id,"test")
-        cached=next((r for r in store.list('report') if r.get('renderer_version')=='0.5' and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
+        cached=next((r for r in store.list('report') if r.get('renderer_version')=='0.7' and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
         if cached:
             body=store.read_object(cached['objects'][0])
         else:
             body = report(t,t.get('athlete_snapshot') or require(t["athlete_id"],"athlete"),require(t["protocol_id"],"protocol"),format,language)
             if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
                 digest=store.object(body)
-                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':'0.5','test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
+                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':'0.7','test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
         return download(body,"application/pdf" if format == "pdf" else "application/zip",f"test-{id}." + ("pdf" if format == "pdf" else "zip"))
 
     @app.get("/api/v1/export/{organization_id}")
@@ -444,6 +444,8 @@ def create_app(root=None, token=None, frontend=None):
             return [json.loads(r[0]) for r in db.execute("SELECT body FROM conflicts")]
 
     from .features import install_features
+    from .anaerobic import install_api as install_anaerobic_api
+    install_anaerobic_api(app,store)
     from .sync_service import install_sync_api
     install_sync_api(app,store)
     install_features(app, store, require, download, preview)

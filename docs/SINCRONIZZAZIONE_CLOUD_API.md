@@ -1,5 +1,13 @@
 # Sincronizzazione con API cloud — verifica e disegno
 
+## Stato 0.7 - aggiornamento che supera le note implementative precedenti
+
+Adapter diretti Drive/Dropbox/OneDrive ora implementati insieme a WebDAV, UI OAuth e predisposizione per relay dedicato. Android: flussi nativi nei sorgenti, build ancora rimandata. Test automatici dei contratti disponibili; nessun account reale collegato. [Istruzioni operative, permessi e verifiche ancora necessarie](CLOUD_CONFIGURAZIONE_07.md). La ricerca e gli stati 0.4-0.6 sotto sono mantenuti come cronologia: non descrivono il perimetro del codice 0.7.
+
+## Chiarimento CLOUD-03 — quattro trasporti richiesti anche su Android
+
+18 ottobre 2026: WebDAV, Google Drive, Dropbox e OneDrive sono requisiti della versione Android; OneDrive passa da candidato a requisito. È necessario l’accesso diretto dal programma, distinto dall’uso dei client cartella su PC. Il codice 0.6 offre cartella/WebDAV; le tre API proprietarie non sono implementate. Le qualifiche storiche “OneDrive candidato” sotto sono superate come priorità di prodotto, non come stato di sviluppo. Build Linux/Android rimangono rimandate.
+
 ## Aggiornamento implementativo 0.6 — WebDAV presente, verifica reale aperta
 
 Il trasporto cartella è stato estratto e WebDAV HTTPS è ora nel codice desktop e riusato dal backend Android. Configurazione nella società, portachiavi, oggetti immutabili, retry/rilettura, accessi firmati versionati e rotazione del canale: [contratto e limiti effettivi](CONSOLIDAMENTO_DISTRIBUZIONE_06.md). Test con server fixture passati; Nextcloud/account reali/Fedora/Android non ancora collaudati. Android ha sorgenti della shell/bridge, non APK disponibile. Le API Drive/Dropbox e i relativi spike con due account rimangono aperti; non compaiono come connessioni funzionanti. La ricerca sottostante conserva le decisioni e non equivale a implementazione di quei provider.

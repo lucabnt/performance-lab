@@ -8,8 +8,8 @@ android {
         applicationId = "org.fuorigiri.performancelab"
         minSdk = 26
         targetSdk = 35
-        versionCode = 600
-        versionName = "0.6.0"
+        versionCode = 700
+        versionName = "0.7.0"
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -32,6 +32,7 @@ chaquopy {
     sourceSets { getByName("main") { srcDir("../../backend") } }
 }
 dependencies {
+    implementation("com.google.android.gms:play-services-auth:22.0.0")
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("androidx.webkit:webkit:1.13.0")
     implementation("androidx.work:work-runtime-ktx:2.10.1")

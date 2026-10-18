@@ -1,5 +1,11 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Verifica 0.7
+
+Suite completa: **102 test passati**; TypeScript e build Vite completati. Eseguibile Windows ricompilato e smoke test locale completato con exit code 0 (import, branding e backend HTTP); non è una prova su PC pulito.
+
+Aggiunti test per Sprint/Wingate, integrali, finestre, lacune/offset/esclusioni, provenienza, storico ed export/reimport esteso, revisioni e report. Adapter cloud verificati con risposte API simulate: PKCE, stato monouso, rinnovo, ruoli, duplicati, download senza Bearer e contratto relay. Il CSV privato fornito supera la validazione (38 prove, 0 errori) in archivio temporaneo rimosso; non è incluso nella distribuzione. GUI verificata con dati sintetici; report sintetici renderizzati e ispezionati. Registrazioni e account reali, Kotlin/APK, Fedora e PC Windows pulito restano da collaudare.
+
 ## Software 0.6 / architettura 1.4 — 18 ottobre 2026
 
 - Bundle finale `dist/Fuorigiri/Fuorigiri.exe` compilato; smoke test con PATH limitato a Windows/System32 riuscito (codice 0, versione 0.6.0). Import, logo, icona, backend HTTP e portachiavi importabile verificati. Risorse PE: sette immagini icona e un gruppo icone.

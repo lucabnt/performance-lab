@@ -1,0 +1,26 @@
+[
+  {
+    "file": "SIM-ANA-sprint.fit",
+    "test_type": "sprint",
+    "duration_s": 6,
+    "offset_s": 60,
+    "weight_kg": 60,
+    "synthetic": true
+  },
+  {
+    "file": "SIM-ANA-wingate30.fit",
+    "test_type": "wingate30",
+    "duration_s": 30,
+    "offset_s": 60,
+    "weight_kg": 60,
+    "synthetic": true
+  },
+  {
+    "file": "SIM-ANA-wingate15.fit",
+    "test_type": "wingate15",
+    "duration_s": 15,
+    "offset_s": 60,
+    "weight_kg": 60,
+    "synthetic": true
+  }
+]

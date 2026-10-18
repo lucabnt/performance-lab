@@ -20,6 +20,30 @@ import androidx.core.view.WindowInsetsCompat
 import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
+    private var googleSession: String? = null
+    private val googleResolution = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        try {
+            val data = result.data ?: error("Consenso annullato")
+            completeGoogle(com.google.android.gms.auth.api.identity.Identity.getAuthorizationClient(this).getAuthorizationResultFromIntent(data).accessToken)
+        } catch (_: Exception) { Toast.makeText(this,"Autorizzazione Google non completata",Toast.LENGTH_LONG).show() }
+    }
+    private fun completeGoogle(token: String?) {
+        val state=googleSession ?: return
+        if(token==null)return
+        Runtime.executor.execute {
+            try { synchronized(Runtime.lock) { Runtime.get(applicationContext).callAttr("google_authorized",state,token) } }
+            catch (_: Exception) { runOnUiThread { Toast.makeText(this,"Collegamento Google non completato",Toast.LENGTH_LONG).show() } }
+        }
+    }
+    override fun onNewIntent(intent: Intent) { super.onNewIntent(intent);setIntent(intent);handleOAuth(intent) }
+    private fun handleOAuth(intent: Intent) {
+        val uri=intent.data ?: return
+        if(uri.scheme!="fuorigiri" || uri.host!="oauth" || uri.path!="/callback")return
+        Runtime.executor.execute {
+            try { synchronized(Runtime.lock) { Runtime.get(applicationContext).callAttr("finish_cloud_oauth",uri.toString()) } }
+            catch (_: Exception) { runOnUiThread { Toast.makeText(this,"Sessione OAuth scaduta o non valida: riprovare",Toast.LENGTH_LONG).show() } }
+        }
+    }
     private lateinit var web: WebView
     private var pickerCallback: ValueCallback<Array<Uri>>? = null
     private var exportBytes: ByteArray? = null
@@ -48,7 +72,7 @@ class MainActivity : ComponentActivity() {
         Runtime.executor.execute {
             try {
                 Runtime.get(applicationContext)
-                runOnUiThread { setupWebView() }
+                runOnUiThread { setupWebView();handleOAuth(intent) }
             } catch (_: Exception) {
                 runOnUiThread { setContentView(TextView(this).apply { text = "Avvio non riuscito. L’archivio è conservato. Questa build richiede la verifica delle dipendenze native Android."; setPadding(32,64,32,32) }) }
             }
@@ -116,6 +140,24 @@ class MainActivity : ComponentActivity() {
                         val name=command.optString("name","fuorigiri-export").replace(Regex("[/\\\\\u0000-\u001f]"),"_").take(180)
                         exporter.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply { addCategory(Intent.CATEGORY_OPENABLE); type=command.optString("mime","application/octet-stream").ifBlank {"application/octet-stream"}; putExtra(Intent.EXTRA_TITLE,name) })
                     } catch (_: Exception) { exportBytes=null;Toast.makeText(this,"Esportazione non riuscita",Toast.LENGTH_LONG).show() }
+                }
+                "oauth" -> {
+                    val uri=Uri.parse(command.optString("url"))
+                    if(uri.scheme=="https" && uri.host in listOf("www.dropbox.com","login.microsoftonline.com"))
+                        startActivity(Intent(Intent.ACTION_VIEW,uri))
+                }
+                "googleAuth" -> {
+                    googleSession=command.optString("session")
+                    val scope=command.optString("scope")
+                    if(scope in listOf("https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive")) {
+                        val request=com.google.android.gms.auth.api.identity.AuthorizationRequest.builder()
+                            .setRequestedScopes(listOf(com.google.android.gms.common.api.Scope(scope))).build()
+                        com.google.android.gms.auth.api.identity.Identity.getAuthorizationClient(this).authorize(request)
+                            .addOnSuccessListener { result ->
+                                if(result.hasResolution())googleResolution.launch(androidx.activity.result.IntentSenderRequest.Builder(result.pendingIntent!!.intentSender).build())
+                                else completeGoogle(result.accessToken)
+                            }.addOnFailureListener { Toast.makeText(this,"Autorizzazione Google non completata",Toast.LENGTH_LONG).show() }
+                    }
                 }
                 "background" -> {
                     val enabled=command.optBoolean("enabled")

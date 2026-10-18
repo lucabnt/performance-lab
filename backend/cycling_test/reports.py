@@ -15,7 +15,9 @@ from .locales import tr
 from .report_labels import metric_label
 from .scientific_labels import reason as scientific_reason, METHODS
 
+from .anaerobic import CSV_HEADER as ANAEROBIC_HEADER
 CSV_HEADERS = {
+    'test_anaerobico': ANAEROBIC_HEADER,
     "atleti": "atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note",
     "antropometria": "atleta_id,data,peso_kg,statura_cm,peso_fonte,origine",
     "test_aerobico": "test_id,atleta_id,data,protocollo_id,durata_s,map_w,map_alt_w,peso_kg,peso_fonte,soglia_w,coeff_soglia,soglia_origine,lattato_2mmol_w,lattato_4mmol_w,fc_max_test_bpm,fc_max_riferimento_bpm,fthr_bpm,fthr_pct_fcmax,lavoro_battito_j,lavoro_battito_max_j,cadenza_media_rpm,cadenza_max_rpm,rapporto_trasm_m,pedivella_m,segnale_fc_interrotto,referto_leggibile,tracciato_parziale,note",
@@ -83,6 +85,10 @@ def specialist_charts(analysis):
 
 
 def report(test, athlete, protocol, format, language='it'):
+    from .anaerobic import is_anaerobic
+    if is_anaerobic(test):
+        from .anaerobic_report import render
+        return render(test,athlete,protocol,format,language)
     a = test["analysis"]
     title = f"{athlete['surname']} {athlete['name']}"
     metrics = [("Data", test["date"]), ("Protocollo", f"{protocol['name']} - {protocol['version']}"),
@@ -196,18 +202,25 @@ def report(test, athlete, protocol, format, language='it'):
 def export_csv(store, organization_id):
     athletes = [a for a in store.list("athlete") if a["organization_id"] == organization_id and a.get('status')!='deleted']
     ids = {a["id"] for a in athletes}
-    rows = {"atleti": [], "antropometria": [], "test_aerobico": []}
+    rows = {name:[] for name in CSV_HEADERS}
     for a in athletes:
         rows["atleti"].append({"atleta_id":a["id"],"cognome":a["surname"],"nome":a["name"],"anno_nascita":a.get("birth_year"),"anno_nascita_confermato":"si" if a.get("birth_confirmed") else "no","origine_anno_nascita":a.get("birth_source", ""),"sesso":a.get("sex", ""),"attivo":"si" if a.get("status","active")=="active" else "no","note":a.get("notes", "")})
     for m in store.list("measurement"):
         if m["athlete_id"] in ids:
             rows["antropometria"].append({"atleta_id":m["athlete_id"],"data":m["date"],"peso_kg":m.get("weight_kg"),"statura_cm":m.get("height_cm"),"peso_fonte":m.get("source", ""),"origine":"inserimento manuale"})
-    versions = []
+    versions = [];anaerobic_rows=[]
     for t in store.list("test"):
         if t["athlete_id"] not in ids or t.get('status')=='deleted':
             continue
         a,s = t["analysis"],t["settings"]
         protocol = store.get(t["protocol_id"])
+        from .anaerobic import is_anaerobic,csv_row
+        if is_anaerobic(t):
+            rows['test_anaerobico'].append(csv_row(t,protocol))
+            from .anaerobic import extended_row
+            anaerobic_rows.append(extended_row(t,protocol))
+            versions.append({'test_id':t['id'],'protocol_version_id':protocol['id'],'version':protocol['version']})
+            continue
         rows["test_aerobico"].append({"test_id":t["id"],"atleta_id":t["athlete_id"],"data":t["date"],"protocollo_id":protocol["family"],"durata_s":a["duration_s"],"map_w":a["map_w"],"map_alt_w":a["map_alt_w"],"peso_kg":s.get("weight_kg"),"peso_fonte":"manuale","fc_max_test_bpm":a["fc_max_test_bpm"],"tracciato_parziale":"si" if a.get("power_coverage") is not None and a["power_coverage"] < .95 else "no","note":t.get("notes", "")})
         versions.append({"test_id":t["id"],"protocol_version_id":protocol["id"],"version":protocol["version"]})
         row=rows['test_aerobico'][-1]
@@ -223,6 +236,9 @@ def export_csv(store, organization_id):
             writer.writeheader()
             writer.writerows({k:v for k,v in row.items() if k in header.split(',')} for row in rows[name])
             z.writestr(name+".csv",text.getvalue())
+        from .anaerobic import EXTENDED_HEADER
+        extended_ana=io.StringIO(newline='');ana_writer=csv.DictWriter(extended_ana,fieldnames=EXTENDED_HEADER.split(','));ana_writer.writeheader();ana_writer.writerows({k:row.get(k) for k in EXTENDED_HEADER.split(',')} for row in anaerobic_rows)
+        z.writestr('extended/test_anaerobico.csv',extended_ana.getvalue())
         from .store import encoded
         z.writestr("manifest.json",encoded({"schema":1,"protocol_versions":versions,"note":"CSV dati grezzi: i campi testuali non sono neutralizzati per fogli di calcolo. Campi non misurati vuoti; map_alt_w è interpolazione fra step, non equivalente a metodi storici non documentati."}))
         extended=io.StringIO(newline='')

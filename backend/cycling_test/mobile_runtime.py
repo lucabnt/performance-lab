@@ -23,6 +23,7 @@ class MobileRuntime:
         if secret_store is not None:
             from . import credentials
             class Keystore:
+                def refresh_google_token(self,scope):return secret_store.googleToken(scope)
                 def set_password(self,service,account,password):secret_store.put(service+':'+account,password)
                 def get_password(self,service,account):return secret_store.get(service+':'+account)
             credentials._mobile=Keystore()
@@ -57,6 +58,14 @@ class MobileRuntime:
             if len(content)>MAX_BODY:raise ValueError('Risposta mobile troppo grande.')
             return {'status':response.status_code,'headers':dict(response.headers),'body':base64.b64encode(content).decode()}
 
+    def finish_cloud_oauth(self,url):
+        from .cloud import finish_oauth
+        return finish_oauth(url)
+
+    def google_authorized(self,state,token):
+        from .cloud import finish_google
+        return finish_google(state,token)
+
     def sync_all(self):
         """WorkManager entry. No UI, no automatic configuration or new access."""
         from .workspaces import Workspaces
@@ -65,7 +74,7 @@ class MobileRuntime:
         manager=Workspaces(self.root,Store(self.root));failed=0
         for entry in manager.entries():
             store=manager.get(entry['id'])
-            if entry.get('mode')=='snapshot' or configuration(store)['transport']!='webdav':continue
+            if entry.get('mode')=='snapshot' or configuration(store)['transport'] not in ('webdav','drive','dropbox','onedrive','service'):continue
             try:
                 result=run_sync(store)
                 failed+=int(bool(result['errors'] or result['pending']))

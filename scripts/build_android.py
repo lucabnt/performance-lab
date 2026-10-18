@@ -49,7 +49,7 @@ def main():
     candidates=list((root/f'android/app/build/outputs/apk/{mode}').glob('*.apk'))
     if not candidates:raise SystemExit('Gradle non ha prodotto un APK.')
     release=root/'dist/release';release.mkdir(parents=True,exist_ok=True)
-    for apk in candidates:shutil.copy2(apk,release/f'Fuorigiri-0.6.0-android-{mode}.apk')
+    for apk in candidates:shutil.copy2(apk,release/f'Fuorigiri-0.7.0-android-{mode}.apk')
     print('APK copiato in dist/release. Debug non è un rilascio operativo; release richiede firma e collaudo.')
 
 

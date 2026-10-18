@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 - 18 ottobre 2026
+
+- Adapter diretti Google Drive, Dropbox e OneDrive oltre a WebDAV/cartella; OAuth PKCE desktop, token nel portachiavi, rinnovo e stato account, caricamenti immutabili con rilettura e gestione di eventi cifrati concorrenti equivalenti. Test dei contratti simulati; account reali non collegati.
+- Predisposizione client e contratto v1 per futuro servizio dedicato, senza server ospitato.
+- Sorgenti Android con callback Dropbox/OneDrive, autorizzazione nativa Google e background condiviso; build Linux/Android restano rimandate.
+- Sprint breve, Wingate 30 s e Wingate 15 s: protocolli versionati, FIT/CSV temporale o risultati manuali, finestre e formule esplicite, copertura, provenienza e comparabilità conservativa.
+- Importazione storico Wingate 15 s ANA-15-070 (coppia frenante 0,70 N·m/kg confermata dall’utente), campi mancanti/fonti originali e indice W/s non convertiti; CSV base/esteso, report PDF/MD e storici/aggregazioni anaerobiche.
+- Esempi FIT sintetici, nuovi test e documentazione operativa/scientifica. Nessun dato personale del CSV allegato distribuito; motore incrementale e schema SQLite invariati.
+
 ## 0.6.0 — 18 ottobre 2026
 
 - Trasporto WebDAV HTTPS e cartella dietro il medesimo contratto, credenziali protette, retry/pubblicazione condizionale/rilettura e nuovo pannello connessione/stato/audit.

@@ -1,5 +1,15 @@
 # Come testare il progetto, inclusa l'interfaccia
 
+## Novità 0.7: test anaerobici e cloud diretti
+
+- Preparare il frontend come descritto sotto, poi `python scripts/generate_anaerobic_examples.py` e `python scripts/qa_anaerobic.py`. Avviare `python scripts/serve.py --data .local/qa-07 --port 8769` e usare l’URL completo con token stampato dal comando. Il primo comando genera solo esempi sintetici; il secondo si ferma se l’archivio ha già test.
+- Test e analisi: aprire un Wingate e verificare metriche, copertura, metodo e PDF; aprire Nuova prova / protocollo per registrare una prova manuale o caricare uno dei tre FIT, con offset 60 s. Protocolli storici e nuove prove restano distinti. Per le correzioni compilare il motivo; due salvataggi dalla stessa revisione devono produrre un conflitto, senza sovrascrittura.
+- Archivio e scambio: importare prima atleti_anaerobico.csv, poi test_anaerobico.csv con il nuovo profilo; ripetere l’importazione deve saltare i test già presenti. Il CSV esteso nello ZIP esportato permette l’importazione dei nuovi protocolli con durata esplicita. Backup e CSV hanno scopi diversi.
+- Storici e confronti: scegliere picco, media, lavoro o calo; ogni insieme conserva famiglia, durata, finestre e provenienza. Un campo non applicabile a una famiglia non viene contato come misura mancante di quella prova.
+- I quattro connettori sono disponibili per una società con accesso personale in Condivisione e collaboratori. Usare un archivio dimostrativo e cartella remota dedicata per il collaudo. Non usare dati personali per lo spike. [Configurazione OAuth e checklist inter-account](CLOUD_CONFIGURAZIONE_07.md).
+- Test software: `python -m pytest -q`; test mirati in tests/test_anaerobic.py e tests/test_cloud.py. Nuovi sorgenti Kotlin non compilati: non interpretare i test Python/ASGI su PC come test Android.
+
+
 ## Verifica 0.6: WebDAV, distribuzione e Android
 
 Eseguire prima `python -m pytest -q`, quindi `npm run build` in frontend. I test WebDAV avviano un server di fixture locale con rete loopback; la configurazione di produzione ammette solo HTTPS. Il test di Credential Manager reale richiede la sessione utente Windows; la sandbox di sviluppo può non avere un logon utilizzabile. La suite non legge password reali.

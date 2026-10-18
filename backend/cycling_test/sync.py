@@ -131,5 +131,5 @@ def exchange(store, folder, key, transport=None):
     with store.connect() as db:
         conflicts = db.execute("SELECT count(*) FROM conflicts").fetchone()[0]
     return {"written_to_folder":sent,"published":sent,"received":received,"pending":pending,"conflicts":conflicts,"errors":errors,
-            "transport":"webdav" if transport.remote else "folder","remote_verified":transport.remote,
-            "status":"Pubblicazioni WebDAV rilette e verificate." if transport.remote else "Scambio locale eseguito. Upload cloud non verificabile dall'app."}
+            "transport":getattr(transport,"kind","webdav" if transport.remote else "folder"),"remote_verified":transport.remote,
+            "status":"Pubblicazioni Servizio remoto rilette e verificate." if transport.remote else "Scambio locale eseguito. Upload cloud non verificabile dall'app."}

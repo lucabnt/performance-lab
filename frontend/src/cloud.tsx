@@ -1,0 +1,22 @@
+import {useEffect,useState} from 'react';
+type Row=Record<string,any>;
+export function CloudConnection({connection,change,password,setPassword,api,run,load,working}:{connection:Row,change:any,password:string,setPassword:any,api:any,run:any,load:any,working:boolean}){
+ const [session,setSession]=useState(''),[status,setStatus]=useState(''),[authorization,setAuthorization]=useState('');
+ const mobile=!!(window as any).FuorigiriNative;
+ useEffect(()=>{if(!session)return;let stopped=false;const timer=setInterval(()=>{api('sync/oauth/status/'+session).then((r:Row)=>{if(stopped)return;setStatus(r.status);if(r.status!=='pending'){clearInterval(timer);setSession('');load()}}).catch(()=>{clearInterval(timer);setStatus('Sessione non disponibile');setSession('')})},1500);return()=>{stopped=true;clearInterval(timer)}},[session]);
+ const provider=connection.transport;
+ useEffect(()=>{run(async()=>{const r=await api('sync/connection');setStatus(r.account_status||'')})},[provider]);
+ return <><p className="hint">Accesso diretto alle API: non serve il client del cloud. La cartella deve esistere ed essere condivisa con ciascun collaboratore. Token e segreti rimangono nel portachiavi del dispositivo.</p><div className="form-grid">
+ {provider==='service'?<label>URL servizio HTTPS<input required type="url" value={connection.url||''} onChange={e=>change('url',e.target.value)}/></label>:<label>Client ID / App key OAuth<input required value={connection.client_id||''} onChange={e=>change('client_id',e.target.value)}/></label>}
+ {['drive','onedrive'].includes(provider)&&<label>ID cartella condivisa<input required value={connection.root_id||''} onChange={e=>change('root_id',e.target.value)}/></label>}
+ {provider==='onedrive'&&<label>ID drive (facoltativo, per raccolta condivisa)<input value={connection.drive_id||''} onChange={e=>change('drive_id',e.target.value)}/></label>}
+ {provider==='dropbox'&&<label>Percorso cartella Dropbox<input placeholder="/Fuorigiri" value={connection.root_path||''} onChange={e=>change('root_path',e.target.value)}/></label>}
+ {provider==='drive'&&<label>Autorizzazione Google Drive<select value={connection.drive_scope||'file'} onChange={e=>change('drive_scope',e.target.value)}><option value="file">File autorizzati all’app (drive.file)</option><option value="full">Drive completo (richiede consenso esteso)</option></select></label>}
+ {['drive','service'].includes(provider)&&<label>{provider==='service'?'Token del servizio':'Client secret della registrazione desktop Google'}<input type="password" autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)}/></label>}</div>
+ {provider==='drive'&&<p className="hint">drive.file non dà accesso automatico a una cartella condivisa già esistente. Per quella cartella può servire il consenso Drive completo. Google Android richiede la registrazione nativa dedicata.</p>}
+ {provider==='dropbox'&&<p className="hint">Per collaborare usare una registrazione Full Dropbox e una cartella condivisa accessibile all’account, non App Folder.</p>}
+ {provider!=='service'&&<div className="actions"><button type="button" disabled={working||!!session} onClick={()=>run(async()=>{await api('sync/connection',{...connection,password});setPassword('');const r=await api('sync/oauth/start',{mobile});setSession(r.session_id);setStatus('pending');setAuthorization(r.authorization_url||'');if(mobile)(window as any).FuorigiriNative.postMessage(JSON.stringify(r.native==='google'?{type:'googleAuth',session:r.session_id,scope:r.scope}:{type:'oauth',url:r.authorization_url}));else window.open(r.authorization_url,'_blank','noopener');await load()})}>Collega account {({drive:'Google Drive',dropbox:'Dropbox',onedrive:'OneDrive'} as Row)[provider]||provider}</button><button type="button" disabled={working} onClick={()=>run(async()=>{await api('sync/oauth/disconnect',{});setStatus('Account scollegato')})}>Scollega account</button></div>}
+ {authorization&&session&&<a href={authorization} target="_blank" rel="noopener noreferrer">Apri pagina di autorizzazione nel browser</a>}{status&&<p role="status">{({pending:'In attesa del consenso nel browser…',connected:'Account collegato',disconnected:'Account da collegare',vault_unavailable:'Portachiavi non disponibile',failed:'Collegamento fallito',expired:'Sessione scaduta'} as Row)[status]||status}</p>}
+ {provider==='service'&&<p className="hint">Predisposizione: richiede un server che implementi il contratto Fuorigiri v1. Non viene fornito un servizio ospitato.</p>}
+ </>;
+}

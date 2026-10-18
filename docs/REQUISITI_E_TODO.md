@@ -1,5 +1,24 @@
 # Requisiti e to-do
 
+## 0.7 / architettura 1.5 - implementazione richiesta il 18 ottobre 2026
+
+- **TD-68 / CLOUD-04:** implementati i tre adapter API Drive/Dropbox/OneDrive oltre a WebDAV, UI avanzata con destinazione, registrazione OAuth, stato/collegamento/scollegamento, token OS e callback desktop. Shared backend e sorgenti native Android: PKCE per Dropbox/OneDrive, autorizzazione Google Play services per Drive, rinnovo e background sui trasporti diretti. Test simulati presenti; APK e collaudo Android non eseguiti. Restano registrazioni OAuth della distribuzione, consenso/verifica provider e test reali con due account. [Guida e contratto](CLOUD_CONFIGURAZIONE_07.md).
+- **TD-69 / SYNC-02:** predisposizione servizio dedicato implementata come adapter/client HTTPS v1, selezionabile nella UI. Server, hosting, account del relay, amministrazione e deployment rimangono successivi; nessun obbligo di backend Fuorigiri per usare i quattro provider.
+- **TD-70 / ANA-01:** Sprint breve (default 6 s), Wingate 30 s, Wingate 15 s implementati in protocolli versionati e flussi manuale/tracciato. Carico, dispositivo, partenza, posizione, riscaldamento e finestre espliciti. Nessuna equivalenza universale fra famiglie, finestre, strumenti o risultati dichiarati/calcolati.
+- **TD-71 / ANA-02:** import test_anaerobico con schema storico, preview/commit atomico e annullamento lotto; ANA-15-070 confermato dall’utente come 15 s e 0,70 N·m/kg. Dati mancanti e peso derivato conservati; lavoro/media incoerenti segnalati. Formula indice W/s, dispositivo/partenza/finestre storici non verificati. Nessun CSV privato distribuito.
+- **TD-72 / ANA-03:** integrali temporali, picco con finestra, migliori 1/5 s, media completa, lavoro osservato, potenza finale, calo percentuale e pendenza separati, FC/cadenza, W/kg e qualità. Snapshot di metodo e chiave comparabilità conservativa. Revisione delle prove nuove con motivo e controllo concorrenza.
+- **TD-73 / UI-24 / REPORT-04:** sezione anaerobici, grafico del singolo test, metriche negli storici e nel profilo atleta, aggregazioni/medie/mediane separate, CSV base/esteso, PDF/Markdown e report società/gruppo/anno/atleta con sezioni proprie. Tre FIT sintetici e documentazione di prova inclusi. [Metodi e limiti](TEST_ANAEROBICI.md).
+
+I precedenti step di validazione/distribuzione 1-6 non vengono considerati completati da queste funzionalità. Restano da affrontare quando l’utente dispone di ambienti e corpus: collaudo scientifico esterno, provider reali, PC pulito, Fedora e Android. Per l’anaerobico: verificare le formule/dispositivo dello storico, corpus reale e ripetibilità; acquisizione/controllo ergometro e modelli fra protocolli restano sviluppi ulteriori, senza inferenze automatiche.
+
+## Chiarimento cloud Android — 18 ottobre 2026
+
+**TD-67 / CLOUD-03:** Android deve supportare sincronizzazione diretta tramite **WebDAV, Google Drive, Dropbox e OneDrive**. OneDrive passa da candidato a requisito del prodotto; Drive/Dropbox restano requisiti da implementare. La sincronizzazione cartella dei client desktop non soddisfa da sola il requisito Android. Stato reale 0.6: cartella/WebDAV nel codice, nessun adapter API Drive/Dropbox/OneDrive; nessun APK collaudato. Le build Linux/Android rimangono rimandate come richiesto, non riattivate da questo chiarimento.
+
+Mantenere un solo protocollo di scambio/revisioni/conflitti, con adapter distinti per provider e autenticazione nativa. Ogni società sceglie una destinazione condivisa; non promettere replica simultanea fra provider diversi. Accettazione per ciascun provider: due account distinti sulla stessa società, due dispositivi, permessi effettivi, rinnovo/revoca token, coda offline, allegati, duplicati e conflitti. Un test con un solo account non dimostra collaborazione fra operatori.
+
+Per una prima sincronizzazione desktop/mobile contenendo il lavoro di integrazione, privilegiare il collaudo WebDAV già presente con un servizio Nextcloud gestito; un server remoto è compatibile con il lavoro locale offline. Un futuro servizio di sincronizzazione dedicato è un’alternativa architetturale da valutare, non una sostituzione già approvata dell’archivio locale o delle integrazioni richieste.
+
 ## Software 0.6 / architettura 1.4 — sincronizzazione, distribuzione e avvio Android
 
 Consegna concordata: Windows e sorgenti; build Linux/Android rimandate dall’utente il 18 ottobre 2026. Nessuna pipeline remota avviata o release pubblicata.

@@ -46,6 +46,8 @@ def install_features(app, store, require, download, preview):
     def manual_test(data: ManualTest):
         from .observations import enrich
         athlete=require(data.athlete_id,'athlete'); protocol=require(data.protocol_id,'protocol')
+        from .anaerobic import is_anaerobic
+        if is_anaerobic(protocol):raise ValueError('Usare la registrazione test anaerobici.')
         if any(r.get('status','active')!='active' for r in (athlete,protocol)):
             raise ValueError('Ripristinare atleta e protocollo prima di creare nuovi test.')
         settings=data.settings.model_dump()
@@ -90,6 +92,8 @@ def install_features(app, store, require, download, preview):
     @app.put('/api/v1/tests/{id}')
     def revise(id: str, data: Revision):
         old=require(id,'test')
+        from .anaerobic import is_anaerobic
+        if is_anaerobic(old):raise ValueError('Usare la revisione specifica per test anaerobici.')
         if old.get('historical'):
             raise ValueError('Test storico senza campioni: correggere tramite il profilo storico.')
         if old['athlete_id']!=data.test.athlete_id or old['trace_hash']!=data.test.trace_hash:
@@ -112,6 +116,8 @@ def install_features(app, store, require, download, preview):
     def revise_historical(id: str,data: HistoricalRevision):
         from .observations import enrich
         old=require(id,'test')
+        from .anaerobic import is_anaerobic
+        if is_anaerobic(old):raise ValueError('Usare la revisione specifica per test anaerobici.')
         if not old.get('historical'):raise ValueError('Usare la revisione del test con tracciato.')
         settings=data.settings.model_dump()
         analysis={**old['analysis'],'map_w':data.map_w,'map_alt_w':data.map_alt_w,'duration_s':settings['end_s'] or None}
@@ -158,7 +164,8 @@ def install_features(app, store, require, download, preview):
     def import_schemas():
         from .csv_import import SCHEMAS
         from .reports import CSV_HEADERS
-        return {k:{**v,'optional':[h for h in CSV_HEADERS[k].split(',') if h not in v['required']]} for k,v in SCHEMAS.items()}
+        from .anaerobic import EXTENDED_HEADER
+        return {k:{**v,'optional':[h for h in (EXTENDED_HEADER if k=='test_anaerobico' else CSV_HEADERS[k]).split(',') if h not in v['required']]} for k,v in SCHEMAS.items()}
 
     @app.get('/api/v1/zones/presets')
     def presets():

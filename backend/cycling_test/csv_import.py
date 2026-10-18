@@ -6,6 +6,7 @@ from datetime import date
 from uuid import uuid5, NAMESPACE_URL
 
 SCHEMAS = {
+    'test_anaerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Wingate storico ANA-15-070: 15 s e coppia 0,70 N·m/kg; risultati facoltativi, formula fatica non verificata.'},
     'atleti': {'required':['atleta_id','cognome','nome'], 'rule':'Nome e cognome obbligatori; gli altri campi sono facoltativi.'},
     'antropometria': {'required':['atleta_id','data'], 'rule':'Almeno peso_kg oppure statura_cm; peso_fonte facoltativo (dichiarato).'},
     'test_aerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Risultati facoltativi: i valori assenti restano vuoti, mai zero.'},
@@ -52,6 +53,9 @@ def decode_trace_csv(raw):
 
 
 def plan_import(store, org, profile, raw):
+    if profile=='test_anaerobico':
+        from .anaerobic import historical_plan
+        return historical_plan(store,org,raw)
     from .api import Athlete, Measurement
     if profile not in ('atleti','antropometria','test_aerobico'):
         raise ValueError('Profilo CSV non supportato.')

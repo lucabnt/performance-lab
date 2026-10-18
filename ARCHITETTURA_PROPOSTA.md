@@ -1,5 +1,11 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## Revisione 1.5 / software 0.7 - cloud diretti e test all-out
+
+Implementati adapter WebDAV/Drive/Dropbox/OneDrive, OAuth e credenziali locali; predisposizione client per servizio dedicato con contratto HTTP versionato. Archivio SQLite e protocollo degli eventi restano comuni. [Configurazione, permessi, fonti e limiti](docs/CLOUD_CONFIGURAZIONE_07.md). Connettività con account reali non collaudata; build Linux/Android restano rimandate. Le descrizioni storiche sotto di API proprietarie “non implementate” sono superate per il codice, non per la qualificazione inter-account.
+
+Tre famiglie anaerobiche, snapshot di metodo, versioni immutabili, import/export CSV, FIT/manuale, report e storici. [Formule e comparabilità](docs/TEST_ANAEROBICI.md). UI: ingresso dedicato in Test e analisi, dettaglio separato dagli incrementali, protocollo con condizioni esplicite, medie/mediane senza pooling fra famiglie/provenienze. Report con metriche proprie e footer societario fisso; stessa suite e stessi componenti archivio/accessi/sync riusabili dall’app allenamenti. Nessuna conversione dei dati incrementali esistenti.
+
 ## Revisione 1.4 / software 0.6 — distribuzione e scambio, Android avviato
 
 18 ottobre 2026. Implementati trasporti cartella/WebDAV comuni, controlli firmati versionati, credenziali OS, rotazione recuperabile della chiave del canale e UI dedicata. Installer Windows con dipendenze incluse; configurazione Flatpak e pipeline per Fedora, ancora da compilare/collaudare su Linux. Nuova icona applicativa distinta dal logo fisso della società. [Scelte, UI, distribuzione e limiti 0.6](docs/CONSOLIDAMENTO_DISTRIBUZIONE_06.md).

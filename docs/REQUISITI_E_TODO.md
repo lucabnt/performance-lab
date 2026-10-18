@@ -1,5 +1,12 @@
 # Requisiti e to-do
 
+## Suite comune — prima estrazione, 18 ottobre 2026
+
+- **TD-79 / SUITE-02 — implementato:** repository autonoma `cycling-suite-common`, ramo main, tag UI 0.1.0, GPL-3.0-or-later. Le app conservano repository/build/versioni proprie; nessuna pubblicazione GitHub/npm eseguita.
+- **TD-80 / UI-26 — implementato iniziale:** pacchetto React tema/Field/DataTable/SortableTable/branding fisso, catalogo e test; Fuorigiri lo utilizza tramite artefatto versionato, con sorgenti/licenza/logo e provenienza verificati. Sidebar, shell e modali ancora da estrarre.
+- **TD-81 / SUITE-03 — da sviluppare:** integrazione e collaudo in Ammiraglia, catalogo completo e verifiche tastiera/focus/mobile; versioni comuni aggiornate esplicitamente dalle singole app.
+- **TD-82 / SUITE-04 — da progettare/estrarre:** client, contratti dati, servizi Python condivisi e interoperabilità degli archivi. Nessun SQLite/credenziale condiviso automaticamente; motori dei test e pianificazione distinti. [Guida](SUITE_CONDIVISA.md).
+
 ## 0.8 / architettura 1.6 - richiesta corpus e flussi di creazione
 
 - **TD-74 / UI-25:** creazione e versionamento di tutte le famiglie in Protocolli; incrementali manuali senza ERG o solo catalogo, Sprint/Wingate e custom. Filtri nome/famiglia/stato. Nuovo test sceglie protocollo/versione e modalità manuale/FIT/CSV; rimossa la creazione dei protocolli da Test e analisi.

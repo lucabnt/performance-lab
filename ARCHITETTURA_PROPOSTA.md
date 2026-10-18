@@ -1,5 +1,11 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## Decisione suite — repository autonome, UI comune 0.1
+
+Fuorigiri e Ammiraglia rimangono in repository separate. Creata la repository autonoma `cycling-suite-common`, che ospita librerie/esempi e non le applicazioni. Prima estrazione effettiva: `@cycling-suite/ui` 0.1.0 (tema, campi, tabelle, branding fisso), consumata da Fuorigiri tramite tarball versionato con sorgenti/licenza/provenienza. Nessuna dipendenza da percorsi locali di un clone fratello. [Decisioni, integrazione e perimetro](docs/SUITE_CONDIVISA.md).
+
+Shell/modali, client, contratti dati e servizi Python restano successive estrazioni; non sono già una libreria comune. I motori scientifici restano nel prodotto e gli archivi delle app rimangono separati. Condividere codice non implica condividere SQLite, chiavi o autorizzazioni.
+
 ## Revisione 1.6 / software 0.8 - catalogo metodi e schemi estensibili
 
 Separata la definizione dei protocolli dalla registrazione delle esecuzioni: Protocolli è l’unico catalogo di creazione/versionamento (incrementale manuale/ERG, Sprint, Wingate, Custom), con filtri; Nuovo test sceglie versione e modalità manuale/file e apre il modulo coerente. Importatore FIT comune con sessioni/duplicati, selezione grafica e zoom del tratto anaerobico. [UI e contratto dei campi](docs/PROTOCOLLI_E_CAMPI_CUSTOM.md).

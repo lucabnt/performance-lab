@@ -1,3 +1,4 @@
+import {Field} from '@cycling-suite/ui';
 import {ProtocolDesigner,NewTestChoice,CustomTestEditor,protocolType} from './protocols';
 import {TestExtensions,CustomValuesDisplay} from './customFields';
 import {AnaerobicEditor,AnaerobicResults,anaerobicTypes,anaerobicMetrics} from './anaerobic';
@@ -10,6 +11,8 @@ import {createRoot} from 'react-dom/client';
 import {Activity, Users, Layers, ArrowUpRight, Plus, Upload, Download, FolderSync, Building2, ChevronRight, Search, X, Check, AlertTriangle, Bike, HardDrive} from 'lucide-react';
 import Plotly from 'plotly.js-dist-min';
 import './style.css';
+import '@cycling-suite/ui/theme.css';
+import '@cycling-suite/ui/components.css';
 import {TraceImporter,AnalysisInput,AnalysisResults,ArchiveReports,RepeatabilityPanel} from './analysis';
 import {WorkspacePanel} from './workspaces';
 import {ManualTestEditor, GroupTree, HistoricalEditor, DefaultsPanel, GrowthPanel, SortableTable, ZoneEditor, Zones, HistoryPanel, ImportPanel} from './features';
@@ -34,7 +37,6 @@ async function download(path:string,name:string,data?:unknown){
 }
 const today=()=>new Date().toLocaleDateString('en-CA');
 const n=(v:any,suffix='')=>v===null||v===undefined?'—':`${typeof v==='number'?Number(v.toFixed(2)):v}${suffix}`;
-function Field({label,children}: {label:string,children:React.ReactNode}){return <label className="field"><span>{label}</span>{children}</label>}
 function Plot({data,layout={},onPick}:{data:any[],layout?:Row,onPick?:(t:number)=>void}){
  const callback=useRef(onPick);callback.current=onPick;
  const ref=useRef<HTMLDivElement>(null);

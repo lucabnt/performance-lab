@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
+subprocess.run([sys.executable,str(root/'scripts/verify_suite_ui.py')],check=True)
 if not (root/'frontend/dist/index.html').exists():
     raise SystemExit('Compilare prima frontend: npm ci && npm run build')
 command=[sys.executable,'-m','PyInstaller','--noconfirm','--clean','--name','Fuorigiri',

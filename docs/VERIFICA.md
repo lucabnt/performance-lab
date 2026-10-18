@@ -1,5 +1,9 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Estrazione UI comune — sorgenti successivi alla 0.8
+
+Repository autonoma UI 0.1.0 installata e compilata da sola, 4 test Node passati; catalogo browser verificato con nome Ammiraglia e logo societario fisso. Fuorigiri usa l’artefatto in vendor: TypeScript/Vite riusciti e 117 test backend passati. GUI Fuorigiri verificata per ordinamento MAP e apertura modulo atleta su corpus fittizio, senza salvataggi. Checksum, sorgenti/licenza e immagine originale verificati da scripts/verify_suite_ui.py. Non ricompilati gli installer; nessuna CI remota o build Linux/Android. [Dettagli](SUITE_CONDIVISA.md).
+
 ## Verifica 0.8 — 18 ottobre 2026
 
 - **117 test passati** su Windows, inclusi protocollo custom, tipi/limiti, null/zero/false, revisioni e conflitto 409, confronti, PDF/MD/CSV, corpus ridotto con due società/repliche, casi FIT invalidi, oracoli numerici indipendenti e ripristino di backup con campi custom. Rimane il warning preesistente Starlette/httpx.

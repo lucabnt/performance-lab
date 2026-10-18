@@ -23,3 +23,7 @@ Inno Setup è uno strumento di build con propria licenza, non una dipendenza da 
 La nuova icona Fuorigiri (`fuorigiri.svg` e derivate) è opera del progetto e segue GPL-3.0-or-later. Il logo societario originale e la sua attribuzione rimangono invariati.
 
 Android 0.7: Google Play services Auth 22.0.0 dichiarato come dipendenza Gradle, soggetto alle condizioni Google Play services; non incluso nei sorgenti e non redistribuito in un APK in questa consegna. Le API cloud sono chiamate HTTP, senza SDK proprietari aggiunti al runtime Python.
+
+## Libreria UI della suite
+
+`@cycling-suite/ui` 0.1.0: codice GPL-3.0-or-later estratto dalla repository autonoma cycling-suite-common. Artefatto versionato, sorgenti TypeScript e script di build, licenza e NOTICE inclusi in frontend/vendor; commit/tag e checksum in suite-ui-provenance.json. React rimane una peer dependency fornita da Fuorigiri. Il logo societario è identico all’originale e mantiene le condizioni del marchio sopra indicate.

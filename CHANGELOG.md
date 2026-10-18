@@ -1,5 +1,11 @@
 # Changelog
 
+## Non rilasciato — estrazione UI della suite
+
+- Prima libreria condivisa nella repository autonoma cycling-suite-common, UI 0.1.0. Fuorigiri usa tema/campi/tabelle/footer comuni tramite tarball locale versionato, senza dipendenza da una repository sorella durante la build.
+- Sorgenti/licenza inclusi nel pacchetto; provenienza, checksum, lockfile e logo originale verificati prima del packaging. Nuovo catalogo e guida per Ammiraglia nella repository comune.
+- Repository applicative e archivi separati; backend scientifico invariato. Nessun nuovo installer o pubblicazione remota in questo passaggio.
+
 ## 0.8.0 - 18 ottobre 2026
 
 - Catalogo Protocolli unificato: creazione manuale o ERG, incrementali anche senza step, Sprint/Wingate e protocolli custom, versionamento da scheda e filtri.

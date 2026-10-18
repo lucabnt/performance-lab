@@ -1,5 +1,9 @@
 # Come testare il progetto, inclusa l'interfaccia
 
+## Verifica UI condivisa con Ammiraglia
+
+La build frontend usa il pacchetto versionato in frontend/vendor: non richiede il clone della repository comune. Dalla radice eseguire `python scripts/verify_suite_ui.py`, poi la normale build frontend e il server locale sotto. Controllare tabelle/ordinamento, moduli e footer. Per il catalogo autonomo e la procedura Ammiraglia vedere [Suite condivisa](SUITE_CONDIVISA.md). Gli installer 0.8 già presenti precedono questa estrazione e non sono stati ricompilati in questo passaggio.
+
 ## Percorso consigliato 0.8: corpus completo
 
 Per le prove complete usare il [nuovo corpus sintetico](CORPUS_SINTETICO_08.md), non le demo minime storiche riportate più sotto. Già generato in `.local/demo-fuorigiri-completo`: 2 società, 24 profili, 192 prove su tre stagioni (2 eliminate logicamente), 216 rilevazioni e 12 protocolli per società, oltre a fixture valide/errate, repliche Admin/Viewer e backup SOLO DEMO.

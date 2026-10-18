@@ -1,3 +1,5 @@
+import {DataTable,SortableTable} from '@cycling-suite/ui';
+export {DataTable,SortableTable};
 import {FieldSchemaEditor,FieldValues,TestExtensions} from './customFields';
 import {anaerobicMetrics} from './anaerobic';
 import {metricLabel,numberText} from './metrics';
@@ -10,34 +12,6 @@ export function ManualTestEditor({athletes,protocols,selected,api,run,done,initi
  const change=(k:string,v:string)=>setDraft(d=>({...d,[k]:v}));
  const fields=['map_w','map_alt_w','fc_max_test_bpm','end_s','weight_kg','height_cm','rest_hr','rest_after_s','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe'];
  return <form onSubmit={e=>{e.preventDefault();run(async()=>{const values=Object.fromEntries(fields.map(k=>[k,draft[k]==null||draft[k]===''?null:Number(draft[k])])),{map_w,map_alt_w,fc_max_test_bpm,...settings}=values;await done(await api('manual-tests',{athlete_id:draft.athlete_id,protocol_id:draft.protocol_id,date:draft.date,map_w,map_alt_w,fc_max_test_bpm,settings:{...settings,end_s:settings.end_s||0,weight_source:draft.weight_source,custom_values:draft.custom_values||{},extra_fields:draft.extra_fields||[],threshold_source:'dichiarato',recovery_manual:Object.entries(recovery).filter(([,v])=>v!=='').map(([after_s,hr_bpm])=>({after_s:Number(after_s),hr_bpm:Number(hr_bpm)}))},notes:draft.notes}))})}}><h2>{tr('Test con dati manuali')}</h2><p className="hint">{tr('Non richiede FIT né step del protocollo. I risultati rimangono dichiarati e non verificati sul tracciato. Lascia vuoti i valori non disponibili.')}</p><div className="form-grid"><label>{tr('Atleta')}<select required value={draft.athlete_id} onChange={e=>change('athlete_id',e.target.value)}>{athletes.map(a=><option key={a.id} value={a.id}>{a.surname} {a.name}</option>)}</select></label><label>{tr('Protocollo e versione')}<select required value={draft.protocol_id} onChange={e=>change('protocol_id',e.target.value)}>{protocols.map(p=><option key={p.id} value={p.id}>{p.name} · {p.version}</option>)}</select></label><label>{tr('Data')}<input required type="date" value={draft.date} onChange={e=>change('date',e.target.value)}/></label>{fields.map(k=><label key={k}>{metricLabel(k)}<input type="number" step="any" min="0" value={draft[k]??''} onChange={e=>change(k,e.target.value)}/></label>)}</div><label>{tr('Fonte del peso')}<select value={draft.weight_source} onChange={e=>change('weight_source',e.target.value)}>{['dichiarato','misurato','arrotondato','stimato'].map(v=><option key={v}>{v}</option>)}</select></label><h3>{tr('FC di recupero manuale')}</h3><div className="form-grid">{[60,90,120].map(t=><label key={t}>{tr('Dopo s')} {t} · bpm<input type="number" min="1" max="250" value={recovery[t]??''} onChange={e=>setRecovery(r=>({...r,[t]:e.target.value}))}/></label>)}</div><TestExtensions protocol={protocols.find(p=>p.id===draft.protocol_id)} values={draft.custom_values||{}} onChange={(v:Row)=>setDraft(d=>({...d,custom_values:v}))} extraFields={draft.extra_fields||[]} onFieldsChange={(v:Row[])=>setDraft(d=>({...d,extra_fields:v}))}/><label>{tr('Note e condizioni')}<textarea value={draft.notes} onChange={e=>change('notes',e.target.value)}/></label><button className="primary" type="submit">{tr('Conferma e archivia')}</button></form>
-}
-function cellText(node:any):string{
- if(node==null||typeof node==='boolean')return '';
- if(typeof node==='string'||typeof node==='number')return String(node);
- if(Array.isArray(node))return node.map(cellText).join(' ');
- return cellText(node.props?.children);
-}
-export function SortableTable({children}:{children:React.ReactNode}){
- const [sort,setSort]=useState(-1),[ascending,setAscending]=useState(true);
- const sections=React.Children.toArray(children) as React.ReactElement<any>[];
- const compare=(a:any,b:any)=>{
-  const x=cellText(React.Children.toArray(a.props.children)[sort]).trim(),y=cellText(React.Children.toArray(b.props.children)[sort]).trim();
-  const missing=(s:string)=>!s||s==='—'||s==='n.d.';
-  if(missing(x))return missing(y)?0:1;if(missing(y))return -1;
-  const numeric=(s:string)=>/^[-+]?\d+(?:[.,]\d+)?(?:\s*(?:W|kg|cm|bpm|W\/kg))?$/.test(s)?parseFloat(s.replace(',','.')):null;
-  const nx=numeric(x),ny=numeric(y),c=nx!==null&&ny!==null?nx-ny:x.localeCompare(y,undefined,{numeric:true});
-  return ascending?c:-c;
- };
- return <div className="table-scroll"><table>{sections.map(section=>{
-  if(section.type==='thead')return React.cloneElement(section,{children:React.Children.map(section.props.children,(row:any)=>React.cloneElement(row,{children:React.Children.map(row.props.children,(cell:any,i)=>cellText(cell).trim()?React.cloneElement(cell,{'aria-sort':sort===i?(ascending?'ascending':'descending'):'none',children:<button onClick={()=>{setAscending(sort===i?!ascending:true);setSort(i)}}>{cell.props.children}{sort===i?(ascending?' ↑':' ↓'):''}</button>}):cell)}))});
-  if(section.type==='tbody'&&sort>=0)return React.cloneElement(section,{children:(React.Children.toArray(section.props.children) as any[]).sort(compare)});
-  return section;
- })}</table></div>
-}
-export function DataTable({rows,columns}:{rows:Row[],columns:{key:string,label:string,render?:(r:Row)=>React.ReactNode}[]}){
- const [sort,setSort]=useState(''),[ascending,setAscending]=useState(true);
- const ordered=[...rows].sort((a,b)=>{const x=a[sort],y=b[sort];if(x==null)return y==null?0:1;if(y==null)return -1;const c=typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y),undefined,{numeric:true});return ascending?c:-c});
- return <div className="table-scroll"><table><thead><tr>{columns.map(c=><th key={c.key} aria-sort={sort===c.key?(ascending?'ascending':'descending'):'none'}><button onClick={()=>{setAscending(sort===c.key?!ascending:true);setSort(c.key)}}>{c.label}{sort===c.key?(ascending?' ↑':' ↓'):''}</button></th>)}</tr></thead><tbody>{ordered.map((r,i)=><tr key={r.id||i}>{columns.map(c=><td key={c.key}>{c.render?c.render(r):r[c.key]??'—'}</td>)}</tr>)}</tbody></table></div>
 }
 export function ZoneEditor({value,onChange}:{value:Row[],onChange:(v:Row[])=>void}){
  const update=(i:number,s:Row)=>onChange(value.map((v,j)=>i===j?s:v));

@@ -1,5 +1,16 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Verifica 0.8 — 18 ottobre 2026
+
+- **117 test passati** su Windows, inclusi protocollo custom, tipi/limiti, null/zero/false, revisioni e conflitto 409, confronti, PDF/MD/CSV, corpus ridotto con due società/repliche, casi FIT invalidi, oracoli numerici indipendenti e ripristino di backup con campi custom. Rimane il warning preesistente Starlette/httpx.
+- TypeScript e build Vite riusciti; rimane l’avviso sulle dimensioni del chunk Plotly.
+- Corpus completo generato in `.local/demo-fuorigiri-completo`: 24 atleti, 216 misure, 192 test (190 non eliminati), 12 versioni di protocollo per ciascuna delle due società. Distribuzione portabile separata con due backup e fixture, senza identità private né configurazione di percorsi assoluti. [Matrice e istruzioni](CORPUS_SINTETICO_08.md).
+- GUI browser verificata sul corpus sintetico: catalogo e creazione custom con campi tipizzati; nuova prova manuale custom con anteprima 900 W, zero e No distinti dai mancanti; FIT Wingate con scelta sessione, offset 60 s, zoom e calcolo; storico custom con etichette, medie e mediane. Anteprime non archiviate per mantenere i conteggi del corpus.
+- Due PDF sintetici (custom: 1 pagina; Wingate: 2 pagine) generati, renderizzati e ispezionati, incluse tabelle, grafico e footer con logo/attribuzione; ZIP Markdown corrispondenti generati. Nessuna analisi di persone reali.
+- Corretto un difetto scoperto dal corpus: i backup prodotti dopo sincronizzazione contengono `sync_audit`; il validatore ora ne ammette soltanto la struttura nota. Il ripristino ricostruisce l’archivio e avvia un nuovo registro locale del dispositivo. Verificati sia ripristino valido sia rifiuto di una struttura audit estranea.
+- Bundle Windows 0.8 ricompilato; smoke test finale con exit code 0 (import, logo, backend HTTP). Verificata la presenza del codice finale per le anteprime di revisione e l’identità SHA256 delle risorse frontend incluse rispetto alla build GUI verificata. Non è una prova su PC pulito.
+- Restano distinti: qualificazione scientifica esterna, device reali e provider/account cloud reali, Windows pulito, Fedora e APK Android. Le nuove funzioni non costituiscono quei collaudi.
+
 ## Verifica 0.7
 
 Suite completa: **102 test passati**; TypeScript e build Vite completati. Eseguibile Windows ricompilato e smoke test locale completato con exit code 0 (import, branding e backend HTTP); non è una prova su PC pulito.

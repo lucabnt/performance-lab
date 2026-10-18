@@ -4,6 +4,7 @@ from datetime import date
 from typing import Literal
 from fastapi import UploadFile, Form
 from .store import encoded
+from .custom_fields import FieldDefinition,protocol_metadata,attach
 
 
 def install_features(app, store, require, download, preview):
@@ -46,8 +47,9 @@ def install_features(app, store, require, download, preview):
     def manual_test(data: ManualTest):
         from .observations import enrich
         athlete=require(data.athlete_id,'athlete'); protocol=require(data.protocol_id,'protocol')
+        if protocol.get('organization_id') and protocol['organization_id']!=athlete['organization_id']:raise ValueError('Protocollo esterno alla società.')
         from .anaerobic import is_anaerobic
-        if is_anaerobic(protocol):raise ValueError('Usare la registrazione test anaerobici.')
+        if is_anaerobic(protocol) or protocol.get('test_type')=='custom':raise ValueError('Usare la registrazione test anaerobici.')
         if any(r.get('status','active')!='active' for r in (athlete,protocol)):
             raise ValueError('Ripristinare atleta e protocollo prima di creare nuovi test.')
         settings=data.settings.model_dump()
@@ -57,7 +59,7 @@ def install_features(app, store, require, download, preview):
                   'steps':[],'recovery':[],'power_coverage':None,'engine':'manual-1',
                   'method':'Risultati dichiarati manualmente, senza verifica del tracciato.',
                   'warnings':['Campioni assenti: MAP, FC e durata sono dichiarati; nessuna verifica automatica degli step.']}
-        analysis=enrich(analysis,[],settings)
+        analysis=attach(enrich(analysis,[],settings),protocol,settings)
         memberships=[m['group_id'] for m in store.list('membership') if m['athlete_id']==athlete['id'] and m['start']<=data.date.isoformat() and (not m.get('end') or m['end']>=data.date.isoformat())]
         return store.save('test',{**data.model_dump(mode='json'),'organization_id':athlete['organization_id'],
             'athlete_snapshot':athlete,'historical':True,'entry_source':'manuale','trace_hash':None,'samples':[],
@@ -70,6 +72,9 @@ def install_features(app, store, require, download, preview):
         phase: Literal['warmup','increment','recovery','cooldown'] = 'increment'
 
     class Protocol(Model):
+        organization_id: str | None = None
+        custom_fields: list[FieldDefinition] = Field(default_factory=list,max_length=50)
+        custom_values: dict = Field(default_factory=dict,max_length=50)
         name: str = Field(min_length=1,max_length=300)
         family: str = Field(min_length=1,max_length=100)
         version: str = Field(min_length=1,max_length=100)
@@ -93,7 +98,7 @@ def install_features(app, store, require, download, preview):
     def revise(id: str, data: Revision):
         old=require(id,'test')
         from .anaerobic import is_anaerobic
-        if is_anaerobic(old):raise ValueError('Usare la revisione specifica per test anaerobici.')
+        if is_anaerobic(old) or old.get('test_type')=='custom':raise ValueError('Usare la revisione specifica per test anaerobici.')
         if old.get('historical'):
             raise ValueError('Test storico senza campioni: correggere tramite il profilo storico.')
         if old['athlete_id']!=data.test.athlete_id or old['trace_hash']!=data.test.trace_hash:
@@ -117,13 +122,13 @@ def install_features(app, store, require, download, preview):
         from .observations import enrich
         old=require(id,'test')
         from .anaerobic import is_anaerobic
-        if is_anaerobic(old):raise ValueError('Usare la revisione specifica per test anaerobici.')
+        if is_anaerobic(old) or old.get('test_type')=='custom':raise ValueError('Usare la revisione specifica per test anaerobici.')
         if not old.get('historical'):raise ValueError('Usare la revisione del test con tracciato.')
         settings=data.settings.model_dump()
         analysis={**old['analysis'],'map_w':data.map_w,'map_alt_w':data.map_alt_w,'duration_s':settings['end_s'] or None}
         if 'fc_max_test_bpm' in data.model_fields_set:analysis['fc_max_test_bpm']=data.fc_max_test_bpm
         analysis['map_wkg']=round(data.map_w/settings['weight_kg'],3) if data.map_w is not None and settings.get('weight_kg') else None
-        analysis=enrich(analysis,[],settings)
+        analysis=attach(enrich(analysis,[],settings),store.get(old['protocol_id']),settings)
         historic={**old.get('historical_fields',{}),'data':data.date.isoformat(),'map_w':data.map_w,'map_alt_w':data.map_alt_w,'peso_kg':settings.get('weight_kg'),
                   'soglia_w':analysis.get('threshold_w'),'soglia_origine':analysis.get('threshold_source'),'fthr_bpm':settings.get('fthr_bpm'),
                   'fc_max_test_bpm':analysis.get('fc_max_test_bpm'),'durata_s':analysis.get('duration_s'),'note':data.notes}
@@ -174,14 +179,16 @@ def install_features(app, store, require, download, preview):
 
     @app.post('/api/v1/protocols/manual')
     def manual(data: Protocol):
-        siblings=[p for p in store.list('protocol') if p['family']==data.family]
+        if data.organization_id:require(data.organization_id,'organization')
+        metadata=protocol_metadata(data.model_dump())
+        siblings=[p for p in store.list('protocol') if p['family']==data.family and p.get('organization_id')==data.organization_id]
         if any(p['version']==data.version for p in siblings):
             raise ValueError('Versione già esistente.')
         if siblings and not data.parent_id:
             raise ValueError('Selezionare la versione precedente.')
         if data.parent_id:
             parent=require(data.parent_id,'protocol')
-            if parent['family']!=data.family or not data.reason.strip():
+            if parent['family']!=data.family or parent.get('organization_id')!=data.organization_id or parent.get('test_type') not in (None,'incremental') or not data.reason.strip():
                 raise ValueError('Famiglia precedente incoerente o motivo mancante.')
         time=0;points=[];segments=[]
         for s in data.segments:
@@ -191,7 +198,7 @@ def install_features(app, store, require, download, preview):
         if data.segments and not any(s.phase=='increment' for s in data.segments):
             raise ValueError('Il protocollo deve contenere una fase incrementale.')
         definition={'points':points,'segments':segments,'duration_s':time,'description':data.name}
-        return store.save('protocol',{**data.model_dump(exclude={'segments'}),'definition':definition,'objects':[],'status':'active'})
+        return store.save('protocol',{**data.model_dump(exclude={'segments'}),**metadata,'definition':definition,'objects':[],'status':'active'})
 
     @app.get('/api/v1/protocols/{id}/erg')
     def erg(id: str):
@@ -244,8 +251,8 @@ def install_features(app, store, require, download, preview):
     def history_report(org: str, format: Literal['pdf','md'], group: str='', season: str='', athlete: str='', mode: str='athlete', dimension: str='season', protocol: str='', language: Literal['it','en']='it', metric: str='map_w', statistic: Literal['mean','median']='median'):
         from .history_report import render
         data=history(org,group,season,athlete,mode,dimension,protocol)
-        from .history import METRICS
-        if metric not in METRICS: raise ValueError('Metrica non supportata.')
+        from .history import metrics_for
+        if metric not in metrics_for(store): raise ValueError('Metrica non supportata.')
         data['query'].update(metric=metric,statistic=statistic)
         labels={p['id']:p['name']+' · '+p['version'] for p in store.list('protocol')}
         for g in data['groups']: g['protocol_label']=labels.get(g['protocol_id'],g['protocol_id'][:8])

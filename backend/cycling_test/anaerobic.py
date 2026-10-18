@@ -7,6 +7,7 @@ from uuid import uuid5,NAMESPACE_URL
 from pydantic import BaseModel,ConfigDict,Field,model_validator
 from typing import Literal
 from .store import encoded
+from .custom_fields import FieldDefinition,protocol_metadata,attach
 
 FAMILIES={'sprint':'Sprint breve','wingate30':'Wingate 30 s','wingate15':'Wingate 15 s'}
 CSV_HEADER='test_id,atleta_id,data,protocollo_id,peso_kg,peso_fonte,picco_w,tempo_picco_s,media_w,indice_fatica_ws,end_power_w,rpm_max,rpm_medio,fc_max_test_bpm,lavoro_kj,segnale_fc_interrotto,referto_leggibile,note'
@@ -19,6 +20,8 @@ class Model(BaseModel):
     model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
 
 class Protocol(Model):
+    custom_fields: list[FieldDefinition]=Field(default_factory=list,max_length=50)
+    custom_values: dict=Field(default_factory=dict,max_length=50)
     organization_id: str
     name: str=Field(min_length=1,max_length=300)
     family: Literal['sprint','wingate30','wingate15']
@@ -45,6 +48,8 @@ class Protocol(Model):
         return self
 
 class Settings(Model):
+    custom_values: dict=Field(default_factory=dict,max_length=50)
+    extra_fields: list[FieldDefinition]=Field(default_factory=list,max_length=50)
     offset_s: float=Field(default=0,ge=0,le=86400)
     weight_kg: float|None=Field(default=None,gt=0,le=400)
     weight_source: Literal['misurato','arrotondato','dichiarato','derivato','stimato']='dichiarato'
@@ -81,7 +86,7 @@ def specification(protocol):return protocol['anaerobic_spec']
 def signature(test):
     # Conservative whole-method grouping; separate windows, durations, hardware,
     # declared/computed provenance, body position, load and environmental metadata.
-    return 'anaerobic:'+hashlib.sha256(encoded({'spec':test['analysis']['protocol_snapshot'],'source':test['analysis']['source'],'engine':test['analysis']['engine'],'conditions':test.get('settings',{}).get('conditions',{})}).encode()).hexdigest()
+    return 'anaerobic:'+hashlib.sha256(encoded({'spec':test['analysis']['protocol_snapshot'],'source':test['analysis']['source'],'schema':test['analysis'].get('custom_fields',[]),'engine':test['analysis']['engine'],'conditions':test.get('settings',{}).get('conditions',{})}).encode()).hexdigest()
 
 def analyze(samples,spec,settings):
     duration=spec['duration_s'];start=settings['offset_s'];end=start+duration
@@ -208,21 +213,23 @@ def install_api(app,store):
             if p.get('organization_id')!=data.organization_id or not is_anaerobic(p):raise ValueError('Protocollo padre non valido.')
             if not data.reason.strip():raise ValueError('Motivare la nuova versione.')
         if any(p.get('organization_id')==data.organization_id and p.get('test_type')==data.family and p.get('name')==data.name and p.get('version')==data.version for p in store.list('protocol')):raise ValueError('Nome e versione del protocollo già presenti.')
-        return store.save('protocol',{'organization_id':data.organization_id,'name':data.name,'family':data.family,'test_type':data.family,'version':data.version,'parent_id':data.parent_id,'reason':data.reason,'status':'active','anaerobic_spec':data.model_dump(),'definition':{'points':[],'segments':[],'duration_s':data.duration_s},'objects':[]})
-    def prepare(data):
+        metadata=protocol_metadata(data.model_dump())
+        return store.save('protocol',{**metadata,'organization_id':data.organization_id,'name':data.name,'family':data.family,'test_type':data.family,'version':data.version,'parent_id':data.parent_id,'reason':data.reason,'status':'active','anaerobic_spec':data.model_dump(),'definition':{'points':[],'segments':[],'duration_s':data.duration_s},'objects':[]})
+    def prepare(data,editing=False):
         athlete=require(data.athlete_id,'athlete');p=require(data.protocol_id,'protocol')
         if not is_anaerobic(p) or p.get('historical'):raise ValueError('Selezionare un protocollo anaerobico attivo con metodo esplicito.')
         if p.get('organization_id')!=athlete['organization_id']:raise ValueError('Atleta e protocollo appartengono a società diverse.')
-        if p.get('status')!='active' or athlete.get('status','active')!='active':raise ValueError('Atleta o protocollo archiviato.')
+        if not editing and (p.get('status')!='active' or athlete.get('status','active')!='active'):raise ValueError('Atleta o protocollo archiviato.')
         settings=data.settings.model_dump();trace={'samples':[]};objects=[]
         if data.trace_hash:
             trace=json.loads(store.read_object(data.trace_hash));objects=[data.trace_hash]
             if trace.get('original_hash'):objects.append(trace['original_hash'])
             analysis=analyze(trace['samples'],specification(p),settings)
         else:analysis=finish(data.manual,specification(p),settings,'manual')
+        analysis=attach(analysis,p,settings)
         return {'organization_id':athlete['organization_id'],'athlete_id':athlete['id'],'athlete_snapshot':athlete,'protocol_id':p['id'],'test_type':p['test_type'],'date':data.date.isoformat(),'historical':not bool(data.trace_hash),'entry_source':'trace' if data.trace_hash else 'manuale','trace_hash':data.trace_hash,'samples':trace['samples'],'settings':settings,'analysis':analysis,'notes':data.notes,'reason':data.reason,'objects':objects,'group_ids':[]}
     @app.post('/api/v1/anaerobic/preview')
-    def preview(data:TestInput):return prepare(data)['analysis']
+    def preview(data:TestInput):return prepare(data,editing=bool(data.revision))['analysis']
     @app.post('/api/v1/anaerobic/tests')
     def save(data:TestInput):return store.save('test',prepare(data))
     @app.put('/api/v1/anaerobic/tests/{id}')
@@ -230,14 +237,15 @@ def install_api(app,store):
         old=require(id,'test')
         if not is_anaerobic(old) or old.get('entry_source')=='csv':raise ValueError('Revisione non disponibile per questo tipo di record.')
         if not data.reason.strip():raise ValueError('Motivare la correzione.')
-        if data.athlete_id!=old['athlete_id']:raise ValueError('Non cambiare atleta durante una revisione.')
-        return store.save('test',prepare(data),id=id,base=data.revision)
+        if data.athlete_id!=old['athlete_id'] or data.protocol_id!=old['protocol_id']:raise ValueError('Non cambiare atleta o protocollo durante una revisione.')
+        return store.save('test',prepare(data,True),id=id,base=data.revision)
     def historical_data(id,data):
         old=require(id,'test')
         if not is_anaerobic(old) or old.get('entry_source')!='csv' or data.trace_hash:raise ValueError('Questa correzione richiede un riepilogo CSV senza tracciato.')
         if data.athlete_id!=old['athlete_id'] or data.protocol_id!=old['protocol_id']:raise ValueError('Non cambiare atleta o protocollo durante la correzione storica.')
         if not data.reason.strip():raise ValueError('Motivare la correzione.')
         settings=data.settings.model_dump();a=finish(data.manual,old['analysis']['protocol_snapshot'],settings,'legacy-csv')
+        a=attach(a,require(old['protocol_id'],'protocol'),settings)
         fields={**old['historical_fields'],**{column:a.get(key) for column,key in METRIC_MAP.items()},'data':data.date.isoformat(),'peso_kg':settings.get('weight_kg'),'peso_fonte':settings['weight_source'],'note':data.notes}
         return {**old,'settings':settings,'analysis':a,'date':data.date.isoformat(),'notes':data.notes,'historical_fields':fields,'reason':data.reason}
     @app.post('/api/v1/anaerobic/historical/{id}/preview')

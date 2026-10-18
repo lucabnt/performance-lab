@@ -1,4 +1,5 @@
 import csv
+import json
 import io
 import zipfile
 from xml.sax.saxutils import escape
@@ -85,6 +86,9 @@ def specialist_charts(analysis):
 
 
 def report(test, athlete, protocol, format, language='it'):
+    if test.get('test_type')=='custom':
+        from .custom_report import render
+        return render(test,athlete,protocol,format,language)
     from .anaerobic import is_anaerobic
     if is_anaerobic(test):
         from .anaerobic_report import render
@@ -127,6 +131,8 @@ def report(test, athlete, protocol, format, language='it'):
             interval=('>=' if z['lower_inclusive'] else '>')+str(round(z['lower_value'],2))
             if z['upper_value'] is not None:interval+=' / '+('<=' if z['inclusive'] else '<')+str(round(z['upper_value'],2))
             zone_rows.append([label,z['name'],interval,'n.d.' if z['seconds'] is None else str(round(z['seconds'],2))])
+    from .custom_fields import display_rows
+    metrics += display_rows(test)
     stage_rows = [[str(r["number"]), str(r["end_w"]), str(round(r["actual_s"],1)), val(r["power"]["mean"]), val(r["hr"]["mean"]), "Si" if r["complete"] else "No"] for r in a["steps"]]
     metrics=[(tr(k,language),tr(v,language) if isinstance(v,str) and k=='Stato nascita' else v) for k,v in metrics]
     png = chart(test, protocol,language)
@@ -214,6 +220,9 @@ def export_csv(store, organization_id):
             continue
         a,s = t["analysis"],t["settings"]
         protocol = store.get(t["protocol_id"])
+        if t.get('test_type')=='custom':
+            versions.append({'test_id':t['id'],'protocol_version_id':protocol['id'],'version':protocol['version']})
+            continue
         from .anaerobic import is_anaerobic,csv_row
         if is_anaerobic(t):
             rows['test_anaerobico'].append(csv_row(t,protocol))
@@ -236,6 +245,14 @@ def export_csv(store, organization_id):
             writer.writeheader()
             writer.writerows({k:v for k,v in row.items() if k in header.split(',')} for row in rows[name])
             z.writestr(name+".csv",text.getvalue())
+        from .custom_fields import display_rows
+        custom_csv=io.StringIO(newline='');cw=csv.writer(custom_csv);cw.writerow(['test_id','protocol_id','scope','field_key','label','type','unit','value_json'])
+        for t in store.list('test'):
+            if t['athlete_id'] not in ids or t.get('status')=='deleted':continue
+            for f in t['analysis'].get('custom_fields',[]):
+                data=t['analysis'].get('protocol_custom_values',{}) if f['scope']=='protocol' else t['analysis'].get('custom_values',{})
+                cw.writerow([t['id'],t['protocol_id'],f['scope'],f['key'],f['label'],f['type'],f.get('unit',''),json.dumps(data.get(f['key']),ensure_ascii=False)])
+        z.writestr('extended/campi_personalizzati.csv',custom_csv.getvalue())
         from .anaerobic import EXTENDED_HEADER
         extended_ana=io.StringIO(newline='');ana_writer=csv.DictWriter(extended_ana,fieldnames=EXTENDED_HEADER.split(','));ana_writer.writeheader();ana_writer.writerows({k:row.get(k) for k in EXTENDED_HEADER.split(',')} for row in anaerobic_rows)
         z.writestr('extended/test_anaerobico.csv',extended_ana.getvalue())

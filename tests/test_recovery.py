@@ -188,3 +188,13 @@ def test_older_recovery_uses_newer_signed_access_directory(tmp_path):
     assert member['id'] in recovered.revocations()
     directory=json.loads((recovered.root/'members.json').read_text(encoding='utf-8'))
     assert any(m['id']==member['id'] for m in directory)
+
+
+def test_optional_local_audit_shape_remains_bounded(tmp_path):
+    _,_,store,_=club(tmp_path/'source')
+    with store.connect() as db:db.execute('CREATE TABLE sync_audit (seq INTEGER PRIMARY KEY, body TEXT NOT NULL, digest TEXT NOT NULL)')
+    assert inspect_backup(backup_bytes(store))
+    with store.connect() as db:
+        db.execute('DROP TABLE sync_audit')
+        db.execute('CREATE TABLE sync_audit (body TEXT)')
+    with pytest.raises(ValueError,match='Schema registro locale'):inspect_backup(backup_bytes(store))

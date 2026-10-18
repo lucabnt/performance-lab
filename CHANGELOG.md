@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0 - 18 ottobre 2026
+
+- Catalogo Protocolli unificato: creazione manuale o ERG, incrementali anche senza step, Sprint/Wingate e protocolli custom, versionamento da scheda e filtri.
+- Nuovo test sceglie protocollo/versione e modalità manuale o file; rimossa la definizione dei protocolli dal modulo anaerobico.
+- Campi facoltativi tipizzati per protocollo/prova e per singola esecuzione; snapshot, validazione, revisioni, export e report. Metriche numeriche custom aggregate senza unire definizioni/unità diverse; nessuna formula fisiologica implicita.
+- Anaerobici: scelta sessione FIT, gestione duplicati, inizio su grafico, zoom e esclusioni motivate; correzioni con riferimenti archiviati mantenuti.
+- Corpus sintetico ampliato a due società e tre stagioni, con scenari realistici, errori controllati, repliche/ruoli/conflitto, backup e oracoli indipendenti. Guida di test aggiornata.
+- Ripristino dei backup successivi alla sincronizzazione: ammesso il registro locale con schema verificato; nuovo registro sul dispositivo ripristinato. MAP in elenco atleti ricavata dall’ultima prova incrementale con risultato disponibile.
+- Versione dello smoke test ricavata dal modulo del prodotto, anziché testo fisso. Motori fisiologici e schema SQLite invariati; build Android/Linux ancora rimandate.
+
 ## 0.7.0 - 18 ottobre 2026
 
 - Adapter diretti Google Drive, Dropbox e OneDrive oltre a WebDAV/cartella; OAuth PKCE desktop, token nel portachiavi, rinnovo e stato account, caricamenti immutabili con rilettura e gestione di eventi cifrati concorrenti equivalenti. Test dei contratti simulati; account reali non collegati.

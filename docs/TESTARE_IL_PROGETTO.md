@@ -1,5 +1,23 @@
 # Come testare il progetto, inclusa l'interfaccia
 
+## Percorso consigliato 0.8: corpus completo
+
+Per le prove complete usare il [nuovo corpus sintetico](CORPUS_SINTETICO_08.md), non le demo minime storiche riportate più sotto. Già generato in `.local/demo-fuorigiri-completo`: 2 società, 24 profili, 192 prove su tre stagioni (2 eliminate logicamente), 216 rilevazioni e 12 protocolli per società, oltre a fixture valide/errate, repliche Admin/Viewer e backup SOLO DEMO.
+
+```powershell
+.venv/Scripts/python.exe scripts/serve.py --data .local/demo-fuorigiri-completo --port 8771
+```
+
+Per rigenerarlo: `python scripts/demo_suite.py --data .local/demo-fuorigiri-completo-nuovo`, poi avviare serve.py sulla stessa destinazione. La cartella deve essere nuova; attendere manifest e riepilogo finale. Aprire il link completo con token stampato dal server e scegliere una delle due società.
+
+Flusso aggiornato: **Protocolli → Crea protocollo** (incrementale manuale, Sprint, Wingate o Personalizzato, con campi facoltativi); **Test e analisi → Nuovo test** per scegliere protocollo/versione e inserimento manuale o da FIT/CSV. La definizione non è più nel modulo anaerobico. [Guida a versioni e campi custom](PROTOCOLLI_E_CAMPI_CUSTOM.md).
+
+Includere nella prova: creazione senza ERG, clone/versione, numeri con unità, testo/scelta/data/booleano, valori mancanti/zero/No, campi aggiunti alla sola prova, sessione FIT, inizio sul grafico, zoom, esclusioni motivate, revisioni, medie/mediane custom, PDF/Markdown/CSV esteso. La matrice del corpus descrive file, percorsi ed esiti attesi; oracoli-numerici.json offre controlli indipendenti su MAP, picco/media/lavoro e media/mediana.
+
+I backup dello ZIP demo si aprono come **copia indipendente**, separatamente per società. Le repliche già collegate si usano dall’archivio locale o si rigenerano da sorgenti. Gli account cloud reali, Fedora, Android e il PC Windows pulito restano verifiche esterne: nessun corpus fittizio può certificarli.
+
+Le sezioni 0.3-0.7 sotto sono cronologia e fixture di regressione, non la procedura principale corrente.
+
 ## Novità 0.7: test anaerobici e cloud diretti
 
 - Preparare il frontend come descritto sotto, poi `python scripts/generate_anaerobic_examples.py` e `python scripts/qa_anaerobic.py`. Avviare `python scripts/serve.py --data .local/qa-07 --port 8769` e usare l’URL completo con token stampato dal comando. Il primo comando genera solo esempi sintetici; il secondo si ferma se l’archivio ha già test.

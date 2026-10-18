@@ -56,17 +56,19 @@ def build(store,org,group='',season='',athlete=''):
             section={'id':dimension,'title':title,'equivalent_views':[],'groups':data['groups']}
             signatures[signature]=section;sections.append(section)
     from .history import metric_applicable
-    coverage={m:{'valid':sum(t['analysis'].get(m) is not None if m not in ('weight_kg','height_cm') else t['settings'].get(m) is not None for t in tests if metric_applicable(t,m)),'total':sum(metric_applicable(t,m) for t in tests)} for m in METRICS}
+    from .history import metrics_for,custom_labels
+    available_metrics=metrics_for(store)
+    coverage={m:{'valid':sum(t['analysis'].get(m) is not None if m not in ('weight_kg','height_cm') else t['settings'].get(m) is not None for t in tests if metric_applicable(t,m)),'total':sum(metric_applicable(t,m) for t in tests)} for m in available_metrics}
     entries=[]
     for a in sorted(athletes.values(),key=lambda a:(a['surname'],a['name'],a['id'])):
         entries.append({'athlete':a,'tests':[t for t in tests if t['athlete_id']==a['id']],
                         'measurements':[m for m in measures if m['athlete_id']==a['id']]})
     group_label=store.get(group)['name'] if group else ''
-    return {'schema':2,'renderer':'archive-2','generated_at':datetime.now(timezone.utc).isoformat(),
+    return {'schema':2,'renderer':'archive-3','generated_at':datetime.now(timezone.utc).isoformat(),
         'scope':{'organization_id':org,'group':group,'season':season,'athlete':athlete},'organization':organization,
         'scope_label':' / '.join(filter(None,[group_label,season,(athletes[athlete]['surname']+' '+athletes[athlete]['name']) if athlete in athletes else ''])),
         'counts':{'athletes':len(athletes),'athletes_with_tests':len({t['athlete_id'] for t in tests}),'tests':len(tests),'measurements':len(measures),'protocols':len(protocols)},
-        'coverage':coverage,'sections':sections,'athletes':entries,'protocols':list(protocols.values()),
+        'coverage':coverage,'metric_labels':custom_labels(store),'sections':sections,'athletes':entries,'protocols':list(protocols.values()),
         'common_warnings':sorted(set.intersection(*(set(t['analysis'].get('warnings',[])) for t in tests))) if tests else [],
         'source_revisions':[t['revision'] for t in tests]+[m['revision'] for m in measures]+[a['revision'] for a in athletes.values()]+[p['revision'] for p in protocols.values()]+[m['revision'] for m in store.list('membership') if m['athlete_id'] in athlete_ids]}
 
@@ -96,6 +98,9 @@ def plot(rows,kind,label,metric="map_wkg"):
 
 
 def render(data,format='pdf'):
+    from .report_labels import metric_label as base_label
+    metric_label=lambda key:data.get('metric_labels',{}).get(key) or base_label(key)
+    available_metrics=list(data['coverage'])
     ss=styles();story=[];markdown=[];assets={};title='Archivio dei test - '+data['organization']['name']
     def p(value,style='BodyText'):return Paragraph(escape(str(value)),ss[style])
     def text(value,style='BodyText'):
@@ -137,11 +142,11 @@ def render(data,format='pdf'):
             if protocol.get('test_type'):
                 compact=[]
                 for g in groups:
-                    for m in METRICS:
+                    for m in available_metrics:
                         v=g['metrics'][m]
                         if v['n']:compact.append([g['label'],metric_label(m),f"{v['n']} / {v['missing']}",v['mean'],v['median'],fmt(v['min'])+' - '+fmt(v['max'])])
                 grid(['Insieme','Metrica','n / assenti','Media','Mediana','Min - max'],compact,[2.2*cm,6*cm,2.1*cm,2.1*cm,2.1*cm,3.2*cm])
-            for metric in ([] if protocol.get('test_type') else METRICS):
+            for metric in ([] if protocol.get('test_type') else available_metrics):
                 if not any(g['metrics'][metric]['n'] for g in groups):continue
                 text(metric_label(metric),'Small')
                 grid(['Insieme','Atleti / test','n / assenti','Media','Mediana','Min - max'],[
@@ -160,7 +165,12 @@ def render(data,format='pdf'):
         grid(['Data','Protocollo','MAP W','W/kg','Soglia W','FC max'],[[t['date'],protocols[t['protocol_id']]['family']+' / '+protocols[t['protocol_id']]['version'],
             t['analysis'].get('map_w'),t['analysis'].get('map_wkg'),t['analysis'].get('threshold_w'),t['analysis'].get('fc_max_test_bpm')] for t in tests if not t.get('test_type')],
             [2.4*cm,5.3*cm,2.5*cm,2.5*cm,2.5*cm,2.5*cm])
-        grid(['Data','Protocollo','Picco W','Media W','Lavoro kJ','FC max'],[[t['date'],protocols[t['protocol_id']]['name'],t['analysis'].get('peak_w'),t['analysis'].get('mean_w'),t['analysis'].get('work_kj'),t['analysis'].get('fc_max_test_bpm')] for t in tests if t.get('test_type')],[2.4*cm,5.3*cm,2.5*cm,2.5*cm,2.5*cm,2.5*cm])
+        custom_tests=[t for t in tests if t.get('test_type')=='custom']
+        for t in custom_tests:
+            from .custom_fields import display_rows
+            text(t['date']+' - '+protocols[t['protocol_id']]['name'],'Small')
+            grid(['Campo personalizzato','Valore'],display_rows(t),[10*cm,7.7*cm])
+        grid(['Data','Protocollo','Picco W','Media W','Lavoro kJ','FC max'],[[t['date'],protocols[t['protocol_id']]['name'],t['analysis'].get('peak_w'),t['analysis'].get('mean_w'),t['analysis'].get('work_kj'),t['analysis'].get('fc_max_test_bpm')] for t in tests if t.get('test_type') in ('sprint','wingate15','wingate30')],[2.4*cm,5.3*cm,2.5*cm,2.5*cm,2.5*cm,2.5*cm])
         for t in tests:
             values={**t.get('historical_fields',{}),**{k:v for k,v in t['settings'].items() if k in ('weight_kg','height_cm','rest_hr','rest_after_s','rpe','rpe_scale','ftp_w','fthr_bpm','threshold_coefficient')}}
             for key in ('peak_w','peak_wkg','mean_w','mean_wkg','best_1s_w','best_5s_w','time_to_peak_s','end_power_w','fatigue_pct','decline_ws','declared_fatigue_ws','cadence_max_rpm','cadence_mean_rpm','map_alt_w','duration_s','duration_incremental_s','power_mean_w','work_kj','power_coverage','lactate_2_w','lactate_4_w','vo2peak_l_min','vo2peak_ml_kg_min','terminal_target_w','terminal_mean_w'):
@@ -177,6 +187,9 @@ def render(data,format='pdf'):
                 grid(['Dato aggiuntivo','Valore','Dato aggiuntivo','Valore'],compact,[5.8*cm,3.05*cm,5.8*cm,3.05*cm])
             if t['analysis'].get('recovery'):grid(['Recupero dopo s','FC bpm','HRR bpm','Origine'],[[r['after_s'],r.get('hr_bpm'),r.get('hrr_bpm'),r.get('source','sensore')] for r in t['analysis']['recovery']])
             if t['settings'].get('conditions'):text('Condizioni: '+'; '.join(k.replace('_',' ')+': '+v for k,v in t['settings']['conditions'].items() if v),'Small')
+            if t.get('test_type')!='custom':
+                from .custom_fields import display_rows
+                grid(['Campo aggiuntivo','Valore'],display_rows(t),[10*cm,7.7*cm])
             if t.get('notes'):text(t['notes'],'Small')
             warnings=[w for w in t['analysis'].get('warnings',[]) if w not in data.get('common_warnings',[])]
             if warnings:text('Qualità: '+'; '.join(warnings),'Small')
@@ -214,6 +227,6 @@ def install_archive_reports(app,store,require,download):
         data=report_data(org,group,season,athlete);body=render(data,format)
         if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
             digest=store.object(body)
-            store.save('report',{'organization_id':org,'renderer_version':'archive-2','query':data['scope'],'source_revisions':data['source_revisions'],
+            store.save('report',{'organization_id':org,'renderer_version':'archive-3','query':data['scope'],'source_revisions':data['source_revisions'],
                                 'format':format,'language':'it','objects':[digest]})
         return download(body,'application/pdf' if format=='pdf' else 'application/zip','fuorigiri-archivio.'+('pdf' if format=='pdf' else 'zip'))

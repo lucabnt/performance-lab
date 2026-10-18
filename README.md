@@ -1,6 +1,8 @@
 # Fuorigiri Performance Lab
 
-**Versione 0.7.0:** test Sprint/Wingate, importazione CSV storico, confronti separati e report; sincronizzazione diretta WebDAV/Google Drive/Dropbox/OneDrive e predisposizione servizio dedicato. [Uso e metodi anaerobici](docs/TEST_ANAEROBICI.md) · [Configurazione cloud e verifiche necessarie](docs/CLOUD_CONFIGURAZIONE_07.md). Le API cloud richiedono registrazione OAuth e collaudo con account reali. Windows e sorgenti; build Linux/Android ancora rimandate.
+**Versione 0.8.0:** protocolli manuali/ERG e custom nel catalogo Protocolli; Nuovo test manuale o da file; campi facoltativi tipizzati con report e storici. [Guida aggiornata](docs/TESTARE_IL_PROGETTO.md) · [Corpus realistico completo](docs/CORPUS_SINTETICO_08.md) · [Campi custom](docs/PROTOCOLLI_E_CAMPI_CUSTOM.md).
+
+**Funzioni introdotte in 0.7.0:** test Sprint/Wingate, importazione CSV storico, confronti separati e report; sincronizzazione diretta WebDAV/Google Drive/Dropbox/OneDrive e predisposizione servizio dedicato. [Uso e metodi anaerobici](docs/TEST_ANAEROBICI.md) · [Configurazione cloud e verifiche necessarie](docs/CLOUD_CONFIGURAZIONE_07.md). Le API cloud richiedono registrazione OAuth e collaudo con account reali. Windows e sorgenti; build Linux/Android ancora rimandate.
 
 **Funzioni introdotte in 0.6.0:** sincronizzazione cifrata via WebDAV o cartella, credenziali nel portachiavi, accessi firmati versionati e rotazione recuperabile del canale. Icona Fuorigiri e installer Windows con dipendenze incluse; build Flatpak predisposta per Fedora. [Distribuzione, uso e limiti](docs/CONSOLIDAMENTO_DISTRIBUZIONE_06.md).
 

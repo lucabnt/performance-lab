@@ -1,5 +1,9 @@
 # Sprint breve e Wingate - metodo 1, software 0.7
 
+## Aggiornamento UI 0.8
+
+Definire Sprint/Wingate in **Protocolli → Crea protocollo**; nuove versioni dalla scheda corrispondente. Registrare esecuzioni in **Test e analisi → Nuovo test**, scegliendo protocollo e modalità. Importatore con sessioni/duplicati, click sul grafico per l’inizio, zoom ed esclusioni motivate. Campi facoltativi disponibili anche sui protocolli supportati. [Flusso e campi custom](PROTOCOLLI_E_CAMPI_CUSTOM.md); [corpus completo per il collaudo](CORPUS_SINTETICO_08.md). Le indicazioni UI 0.7 successive sono superate da questo flusso; le formule rimangono quelle del metodo 1.
+
 ## Scelta proposta e implementata
 
 Tre famiglie distinte: Sprint breve (durata configurabile 3-10 s, default 6 s), Wingate 30 s e Wingate 15 s. Lo storico incrementale conserva il proprio motore e le proprie metriche; un picco anaerobico non diventa MAP, FTP o soglia. Nessuna conversione automatica fra durate, formule di previsione della prova da 30 s o classificazione normativa per età.

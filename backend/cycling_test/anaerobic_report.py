@@ -14,6 +14,8 @@ def render(test,athlete,protocol,format,language='it'):
     if a.get('fc_max_test_bpm') is not None:metrics.append(('FC massima osservata (bpm)',a['fc_max_test_bpm']))
     values=[(label,f'{value:.2f}') for label,value in metrics]
     conditions=[('Tipo',FAMILIES[test['test_type']]),('Durata nominale (s)',spec['duration_s']),('Coppia frenante (N.m/kg)',spec.get('torque_nm_kg') or 'non documentata'),('Dispositivo',spec.get('device') or 'non documentato'),('Partenza',{'unknown':'non documentata','stationary':'da fermo','flying':'lanciata'}.get(spec.get('start'),'non documentata')),('Finestra picco (s)',spec.get('peak_window_s') or 'non documentata'),('Finestra finale (s)',spec.get('end_window_s') or 'non documentata'),('Origine',{'computed':'Calcolato dal tracciato','manual':'Dichiarato manualmente','legacy-csv':'Storico CSV dichiarato'}.get(a['source'],a['source'])),('Peso (kg)',test['settings'].get('weight_kg') or 'non disponibile'),('Fonte peso',test['settings'].get('weight_source','non documentata'))]
+    from .custom_fields import display_rows
+    conditions+=display_rows(test)
     samples=test.get('samples',[]);png=None
     if samples:
         fig=Figure(figsize=(8,3.4),layout='constrained');ax=fig.subplots()

@@ -1,5 +1,13 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## Revisione 1.6 / software 0.8 - catalogo metodi e schemi estensibili
+
+Separata la definizione dei protocolli dalla registrazione delle esecuzioni: Protocolli è l’unico catalogo di creazione/versionamento (incrementale manuale/ERG, Sprint, Wingate, Custom), con filtri; Nuovo test sceglie versione e modalità manuale/file e apre il modulo coerente. Importatore FIT comune con sessioni/duplicati, selezione grafica e zoom del tratto anaerobico. [UI e contratto dei campi](docs/PROTOCOLLI_E_CAMPI_CUSTOM.md).
+
+Schemi opzionali tipizzati e versionati in JSON: valori di protocollo, valori di prova, estensioni per singola esecuzione. Nessuna formula eseguibile o conversione di un custom in un metodo validato. Snapshot/revisioni/firme/scambio restano comuni alla suite. Chiavi delle metriche custom distinguono protocollo, tipo e unità; aggregazioni e report riusano il modello condiviso. Estensione additiva senza migrazione distruttiva del database. Nucleo riusabile dall’app allenamenti, branding societario invariato.
+
+Corpus riproducibile ampliato: [composizione, scenari, oracoli e repliche](docs/CORPUS_SINTETICO_08.md). Non si confondono verifiche offline con qualificazione scientifica, cloud autenticato o build Android/Linux.
+
 ## Revisione 1.5 / software 0.7 - cloud diretti e test all-out
 
 Implementati adapter WebDAV/Drive/Dropbox/OneDrive, OAuth e credenziali locali; predisposizione client per servizio dedicato con contratto HTTP versionato. Archivio SQLite e protocollo degli eventi restano comuni. [Configurazione, permessi, fonti e limiti](docs/CLOUD_CONFIGURAZIONE_07.md). Connettività con account reali non collaudata; build Linux/Android restano rimandate. Le descrizioni storiche sotto di API proprietarie “non implementate” sono superate per il codice, non per la qualificazione inter-account.

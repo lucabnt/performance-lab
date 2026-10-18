@@ -14,7 +14,7 @@ from .pdf_style import document, styles, table, footer
 def render(data,format,language='it',metric='map_w',statistic='median'):
     title=tr('Storico dei test',language)
     stat_name=('Mean' if statistic=='mean' else 'Median') if language=='en' else ('Media' if statistic=='mean' else 'Mediana')
-    label=metric_label(metric,language)
+    label=data.get('metric_labels',{}).get(metric) or metric_label(metric,language)
     groups=data['groups'];fig=Figure(figsize=(10,4.4),layout='constrained');ax=fig.subplots()
     for i,g in enumerate(groups):
         value=g['metrics'][metric][statistic]

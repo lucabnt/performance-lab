@@ -17,6 +17,7 @@ from .analysis import analyze
 from .erg import parse_erg
 from .fit import decode_fit
 from .store import Store, ConflictError
+from .custom_fields import FieldDefinition
 
 Text = Annotated[str, Field(min_length=1, max_length=300)]
 
@@ -117,6 +118,8 @@ class MaximumVerification(Model):
 
 
 class Settings(Model):
+    custom_values: dict = Field(default_factory=dict,max_length=50)
+    extra_fields: list[FieldDefinition] = Field(default_factory=list,max_length=50)
     offset_s: float = Field(default=0, ge=0)
     end_s: float = Field(gt=0)
     weight_kg: float | None = Field(default=None, gt=0, le=400)
@@ -188,7 +191,7 @@ def create_app(root=None, token=None, frontend=None):
     workspaces=Workspaces(legacy.root,legacy)
     store=workspaces.proxy
     token = token or os.environ.get("FUORIGIRI_TOKEN") or secrets.token_urlsafe(32)
-    app = FastAPI(title="Fuorigiri Performance Lab", version="0.6.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Fuorigiri Performance Lab", version="0.8.0", docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
 
@@ -209,7 +212,7 @@ def create_app(root=None, token=None, frontend=None):
             read_only=identity['certificate']['role']=='viewer' or identity['certificate']['id'] in selected.revocations()
             allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync',
                 '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore',
-                '/api/v1/sync/connection','/api/v1/sync/run','/api/v1/sync/oauth/start','/api/v1/sync/oauth/callback','/api/v1/sync/oauth/disconnect','/api/v1/anaerobic/preview')
+                '/api/v1/sync/connection','/api/v1/sync/run','/api/v1/sync/oauth/start','/api/v1/sync/oauth/callback','/api/v1/sync/oauth/disconnect','/api/v1/anaerobic/preview','/api/v1/custom/preview')
             allowed=allowed or request.url.path=='/api/v1/repeatability' or request.url.path.startswith('/api/v1/repeatability/report/')
             if read_only and not allowed:
                 store.selected.reset(marker)
@@ -307,7 +310,8 @@ def create_app(root=None, token=None, frontend=None):
         return store.save("measurement",data.model_dump(mode="json"))
 
     @app.post("/api/v1/protocols")
-    def protocol(file: UploadFile, name: Annotated[str,Form()], family: Annotated[str,Form()], version: Annotated[str,Form()], warmup_s: Annotated[float,Form()] = 600, parent_id: Annotated[str,Form()] = "", reason: Annotated[str,Form()] = ""):
+    def protocol(file: UploadFile, name: Annotated[str,Form()], family: Annotated[str,Form()], version: Annotated[str,Form()], warmup_s: Annotated[float,Form()] = 600, parent_id: Annotated[str,Form()] = "", reason: Annotated[str,Form()] = "", organization_id: Annotated[str | None,Form()] = None):
+        if organization_id:require(organization_id,'organization')
         raw = file.file.read(2_000_001)
         if len(raw)>2_000_000:
             raise ValueError("ERG troppo grande.")
@@ -319,7 +323,7 @@ def create_app(root=None, token=None, frontend=None):
             raise ValueError("Il termine del riscaldamento deve coincidere con un confine degli step e lasciare almeno uno step incrementale.")
         for s in definition["segments"]:
             s["phase"] = "warmup" if s["end_s"] <= warmup_s else "increment"
-        siblings = [p for p in store.list("protocol") if p["family"] == family.strip()]
+        siblings = [p for p in store.list("protocol") if p["family"] == family.strip() and p.get("organization_id")==organization_id]
         if any(p["version"] == version.strip() for p in siblings):
             raise ValueError("Questa versione esiste già. Scegliere un nuovo identificatore.")
         if siblings and not parent_id:
@@ -327,7 +331,7 @@ def create_app(root=None, token=None, frontend=None):
         if parent_id and require(parent_id,"protocol")["family"] != family:
             raise ValueError("La versione precedente appartiene a un'altra famiglia.")
         digest = store.object(raw)
-        return store.save("protocol",{"name":name.strip(),"family":family.strip(),"version":version.strip(),"parent_id":parent_id or None,"reason":reason,"definition":definition,"objects":[digest]})
+        return store.save("protocol",{"organization_id":organization_id,"name":name.strip(),"family":family.strip(),"version":version.strip(),"parent_id":parent_id or None,"reason":reason,"definition":definition,"objects":[digest]})
 
     @app.post("/api/v1/traces")
     def trace(file: UploadFile, session_index: Annotated[int | None,Form()]=None, duplicate_policy: Annotated[str,Form()]='reject', correction_reason: Annotated[str,Form()]=''):
@@ -351,8 +355,10 @@ def create_app(root=None, token=None, frontend=None):
 
     @app.post("/api/v1/tests/preview")
     def preview(data: TestInput):
-        require(data.athlete_id,"athlete")
+        athlete=require(data.athlete_id,"athlete")
         protocol = require(data.protocol_id,"protocol")
+        if protocol.get("organization_id") and protocol["organization_id"]!=athlete["organization_id"]:raise ValueError("Protocollo esterno alla società.")
+        if protocol.get('test_type') in ('custom','sprint','wingate15','wingate30'):raise ValueError('Usare il modulo della famiglia di test selezionata.')
         if not protocol['definition']['segments']:
             raise ValueError('Protocollo senza step: usare l’inserimento manuale oppure creare una versione con carichi.')
         trace = json.loads(store.read_object(data.trace_hash))
@@ -370,7 +376,8 @@ def create_app(root=None, token=None, frontend=None):
             gas=json.loads(store.read_object(settings['gas_hash']))
             if gas.get('kind')!='gas':raise ValueError('Allegato gas non valido.')
             analysis['gas']=gas_analysis(gas['samples'],settings,analysis)
-        return enrich(analysis,trace['samples'],settings)
+        from .custom_fields import attach
+        return attach(enrich(analysis,trace['samples'],settings),protocol,settings)
 
     @app.post("/api/v1/tests")
     def save_test(data: TestInput):
@@ -395,14 +402,14 @@ def create_app(root=None, token=None, frontend=None):
     def test_report(id: str, format: Literal["pdf","md"], language: Literal['it','en']='it'):
         from .reports import report
         t = require(id,"test")
-        cached=next((r for r in store.list('report') if r.get('renderer_version')=='0.7' and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
+        cached=next((r for r in store.list('report') if r.get('renderer_version')=='0.8' and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
         if cached:
             body=store.read_object(cached['objects'][0])
         else:
             body = report(t,t.get('athlete_snapshot') or require(t["athlete_id"],"athlete"),require(t["protocol_id"],"protocol"),format,language)
             if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
                 digest=store.object(body)
-                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':'0.7','test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
+                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':'0.8','test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
         return download(body,"application/pdf" if format == "pdf" else "application/zip",f"test-{id}." + ("pdf" if format == "pdf" else "zip"))
 
     @app.get("/api/v1/export/{organization_id}")
@@ -444,6 +451,8 @@ def create_app(root=None, token=None, frontend=None):
             return [json.loads(r[0]) for r in db.execute("SELECT body FROM conflicts")]
 
     from .features import install_features
+    from .custom_tests import install_api as install_custom_api
+    install_custom_api(app,store)
     from .anaerobic import install_api as install_anaerobic_api
     install_anaerobic_api(app,store)
     from .sync_service import install_sync_api

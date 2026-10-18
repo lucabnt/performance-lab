@@ -1,5 +1,15 @@
 # Requisiti e to-do
 
+## 0.8 / architettura 1.6 - richiesta corpus e flussi di creazione
+
+- **TD-74 / UI-25:** creazione e versionamento di tutte le famiglie in Protocolli; incrementali manuali senza ERG o solo catalogo, Sprint/Wingate e custom. Filtri nome/famiglia/stato. Nuovo test sceglie protocollo/versione e modalità manuale/FIT/CSV; rimossa la creazione dei protocolli da Test e analisi.
+- **TD-75 / DATA-04:** campi opzionali definiti dall’utente, tipizzati, con unità/limiti/scelte e scheda protocollo oppure prova. Aggiunta di campi alla sola esecuzione, senza mutazione del protocollo; snapshot, revisioni e validazione backend. Null/zero/false distinti. Nessuna formula arbitraria, nessuna equivalenza fisiologica implicita.
+- **TD-76 / ANA-04:** importatore FIT comune con scelta sessione e gestione esplicita duplicati; inizio su grafico, zoom sullo sforzo, riepilogo protocollo e esclusioni motivate. Nuova versione parte dal metodo precedente in Protocolli. Revisione conserva atleta/protocollo e può correggere un record riferito ad archivio storico.
+- **TD-77 / REPORT-05:** campi custom nei PDF/Markdown del singolo e dell’archivio, CSV esteso long-form tipizzato e backup; metriche numeriche custom in grafici/medie/mediane, separate per protocollo e identità del campo.
+- **TD-78 / QA-04:** corpus sintetico completo su due società, 24 profili, tre stagioni, 192 record test, gruppi/anni, antropometria, FIT/CSV, gas/lattato/recupero, zone a 7, metodi distinti, revisioni e dati mancanti. Fixture errate separate, oracoli numerici indipendenti, repliche Admin/Viewer, revoca, backup/recupero SOLO DEMO e conflitto offline da esercitare. [Matrice dei casi](CORPUS_SINTETICO_08.md).
+
+Non inclusi: codice/formule caricate dall’utente, import generico di schemi da CSV long-form, certificazione scientifica dei metodi custom, provider reali o nuova build Android/Linux. Per ripristino fedele dei protocolli custom usare il backup. La qualifica scientifica e la verifica dei dispositivi rimangono distinte dai test del software.
+
 ## 0.7 / architettura 1.5 - implementazione richiesta il 18 ottobre 2026
 
 - **TD-68 / CLOUD-04:** implementati i tre adapter API Drive/Dropbox/OneDrive oltre a WebDAV, UI avanzata con destinazione, registrazione OAuth, stato/collegamento/scollegamento, token OS e callback desktop. Shared backend e sorgenti native Android: PKCE per Dropbox/OneDrive, autorizzazione Google Play services per Drive, rinnovo e background sui trasporti diretti. Test simulati presenti; APK e collaudo Android non eseguiti. Restano registrazioni OAuth della distribuzione, consenso/verifica provider e test reali con due account. [Guida e contratto](CLOUD_CONFIGURAZIONE_07.md).

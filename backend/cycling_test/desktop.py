@@ -74,7 +74,7 @@ def main():
                 time.sleep(.05)
             with urlopen(f'http://127.0.0.1:{port}/health',timeout=5) as response:
                 if response.status!=200:raise RuntimeError('Health check non riuscito.')
-            (root/'smoke-ok.txt').write_text('Fuorigiri Performance Lab 0.6.0: import, logo e backend HTTP verificati.',encoding='utf-8')
+            (root/'smoke-ok.txt').write_text('Fuorigiri Performance Lab '+__import__('cycling_test').__version__+': import, logo e backend HTTP verificati.',encoding='utf-8')
         finally:
             server.should_exit=True;thread.join(timeout=5);sock.close();handler.close();logger.removeHandler(handler);instance.close()
         return

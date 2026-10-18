@@ -1,5 +1,9 @@
 # Android — requisito e architettura proposta
 
+## Sorgenti 0.8 — protocolli e schede condivise
+
+Catalogo, flussi manuale/file e campi opzionali tipizzati sono condivisi con la UI React e l’API Python. Nessun modulo di calcolo custom viene eseguito sul telefono: le osservazioni conservano schema, unità e snapshot come sul desktop. I contratti sono verificati su PC; la nuova UI non è stata collaudata su dispositivo Android. Build APK ancora rimandata secondo la consegna concordata.
+
 ## Sorgenti 0.7 - quattro provider diretti
 
 WebDAV e adapter API Drive/Dropbox/OneDrive riusati dal backend in-process. Dropbox/OneDrive: consenso nel browser di sistema, deep link fuorigiri://oauth/callback e stato PKCE monouso. Drive: AuthorizationClient Google Play services (dipendenza play-services-auth), consenso nativo e rinnovo silenzioso quando già autorizzato; eventuale consenso aggiuntivo richiede primo piano. Token nel Keystore, WorkManager esteso ai trasporti remoti. Manifest con deep link, listener limitato all’origine interna e apertura esterna limitata ai provider previsti. [Registrazioni e limiti](CLOUD_CONFIGURAZIONE_07.md).

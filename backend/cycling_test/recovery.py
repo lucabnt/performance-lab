@@ -20,6 +20,7 @@ from .workspaces import ArchiveStore,fresh_identity,validate_identity,seal,unsea
 
 MAX_UPLOAD=100_000_000
 MAX_EXPANDED=1_000_000_000
+OPTIONAL_TABLES={'sync_audit':('seq','body','digest')}
 TABLES={'records':('id','kind','revision','data'),'changes':('id','body'),'conflicts':('id','body'),'config':('key','value')}
 
 
@@ -77,9 +78,13 @@ def _inspect(raw):
             if db.execute('PRAGMA quick_check').fetchone()[0]!='ok':raise ValueError('Database danneggiato.')
             if db.execute('PRAGMA user_version').fetchone()[0]>3:raise ValueError('Database di una versione più recente.')
             schema=db.execute("SELECT name,type,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'").fetchall()
-            if any(kind not in ('table','index') or kind=='table' and (name not in TABLES or not sql.upper().startswith('CREATE TABLE')) for name,kind,sql in schema):
+            if any(kind not in ('table','index') or kind=='table' and (name not in TABLES and name not in OPTIONAL_TABLES or not sql.upper().startswith('CREATE TABLE')) for name,kind,sql in schema):
                 raise ValueError('Schema del database non consentito.')
-            if {n for n,k,_ in schema if k=='table'}!=set(TABLES):raise ValueError('Tabelle obbligatorie mancanti.')
+            if not set(TABLES)<={n for n,k,_ in schema if k=='table'}:raise ValueError('Tabelle obbligatorie mancanti.')
+            # The audit is local transport state, not archive content. Validate its
+            # shape when present; restored devices start their own audit chain.
+            for name,columns in OPTIONAL_TABLES.items():
+                if any(n==name for n,k,_ in schema) and tuple(r[1] for r in db.execute(f'PRAGMA table_info({name})'))!=columns:raise ValueError('Schema registro locale non supportato.')
             rows={}
             for name,columns in TABLES.items():
                 if tuple(r[1] for r in db.execute(f'PRAGMA table_info({name})'))!=columns:raise ValueError('Schema colonne non supportato.')

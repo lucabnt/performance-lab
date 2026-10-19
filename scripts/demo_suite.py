@@ -171,6 +171,9 @@ def generate(destination,small=False):
     from datetime import datetime,timezone
     epoch=int((datetime(2026,10,1,10,tzinfo=timezone.utc)-datetime(1989,12,31,tzinfo=timezone.utc)).total_seconds());body+=session_definition+bytes([3])+struct.pack('<IIIIBB',epoch+180,epoch+60,120000,120000,2,6);header=struct.pack('<BBHI4s',14,0x20,2180,len(body),b'.FIT');header+=struct.pack('<H',crc(header));packet=header+body;write('fit-due-sessioni.fit',packet+struct.pack('<H',crc(packet)))
     write('tracciato-pausa.csv',b't,power,hr,cadence,paused\n0,100,100,80,false\n1,105,101,81,false\n2,0,100,0,true\n3,0,99,0,true\n4,500,130,120,false\n5,700,135,130,false\n6,600,140,125,false\n')
+    # Include growth snapshots before invitations, exchange and backups.
+    from demo_growth import add_growth
+    add_growth(destination,manifest)
     # Real per-device identities; only local encrypted folder exchange. No cloud
     # credentials, real OAuth registrations or plaintext production identity.
     main=stores[0];channel=destination/'scambio';channel.mkdir();configure(main,{'transport':'folder','folder':str(channel)})
@@ -230,7 +233,7 @@ def export_portable(root,output):
         if (root/'oracoli-numerici.json').exists():z.write(root/'oracoli-numerici.json','oracoli-numerici.json')
         for path in (ROOT/'examples/protocols').glob('*.erg'):z.write(path,'protocolli/'+path.name)
         z.writestr('LEGGIMI.md','# Dati interamente sintetici\n\n'+MARKER+'\n\nNell’app: Gestisci società → Apri backup → Copia indipendente. Importare separatamente i due ZIP in backups e assegnare un fondatore dimostrativo. Non usare recupero originale né collegare cloud operativi. I file in fixtures includono casi validi e casi deliberatamente errati; non sono tutti importabili. Per le repliche Admin/Viewer e il conflitto offline rigenerare il corpus da sorgenti con scripts/demo_suite.py.\n')
-        safe={'synthetic':True,'seed':manifest['seed'],'organizations':[{k:v for k,v in org.items() if k not in ('id','organization_id')} for org in manifest['organizations']], 'cases':manifest['cases']}
+        safe={'synthetic':True,'seed':manifest['seed'],'organizations':[{k:v for k,v in org.items() if k not in ('id','organization_id')} for org in manifest['organizations']], 'cases':manifest['cases'],'growth_cases':[{k:v for k,v in case.items() if k not in ('athlete_id','workspace_id','snapshot')} for case in manifest.get('growth_cases',[])]}
         z.writestr('manifest.json',json.dumps(safe,ensure_ascii=False,indent=2))
     return output
 

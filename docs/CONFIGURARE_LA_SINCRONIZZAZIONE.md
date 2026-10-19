@@ -1,4 +1,6 @@
-# Connessioni dirette e servizio dedicato - software 0.7
+# Configurare la sincronizzazione
+
+Guida corrente ai trasporti. Per il formato e i limiti di spazio vedere [scalabilità](SYNC_DIMENSIONI_E_SCALABILITA.md); per account e ruoli vedere [società e accessi](SOCIETA_BACKUP_E_ACCESSI.md). Configurazione locale, account collegato e accesso alla destinazione verificato all’ultimo scambio sono stati distinti. Registrazioni OAuth e collaudi reali rimangono necessari.
 
 Implementati adapter WebDAV, Google Drive API v3, Dropbox API v2, Microsoft Graph OneDrive e client di predisposizione a un relay dedicato. Lo stesso database SQLite resta locale; sul cloud transitano pacchetti cifrati e controlli firmati, non il database aperto. Una destinazione per società su ciascun dispositivo: scegliere lo stesso provider/cartella fra collaboratori. Non è implementato il mirroring automatico fra cloud differenti.
 

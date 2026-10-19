@@ -79,4 +79,4 @@ Per un corpus GUI nuovo:
 .venv/Scripts/python.exe scripts/serve.py --data .local/demo-crescita-nuovo
 ```
 
-Il generatore rifiuta destinazioni non vuote, aggiunge casi di picco, dati insufficienti e adulto a due società sintetiche e registra `growth_cases` nel manifest. Non rigenera la demo dell'utente. Le repliche preparate dal corpus base acquisiscono i nuovi casi al successivo scambio locale; non usare inviti/chiavi SOLO DEMO con dati operativi.
+Il corpus standard `demo_suite.py`, anche `--small`, include quattro casi per società: picco maschile (circa 8,96 cm/anno), crescita femminile (circa 7,96), dati insufficienti e adulto. Sono presenti misure avanzate e snapshot; il manifest `growth_cases` contiene i risultati attesi. Repliche e backup includono questi dati fin dalla creazione. `demo_maturation.py` è un alias della demo ridotta. Gli archivi esistenti non sono aggiornati automaticamente: usare una destinazione nuova o il reset conservativo del generatore standard descritto nella guida. Non usare inviti/chiavi SOLO DEMO con dati operativi.

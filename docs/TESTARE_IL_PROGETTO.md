@@ -10,17 +10,19 @@ npm --prefix frontend run build
 .venv/Scripts/python.exe scripts/serve.py --data .local/demo-crescita-nuovo
 ```
 
-Aprire l'URL completo con token stampato dal server. Questo corpus deriva dalla demo ridotta e aggiunge, in entrambe le società, tre profili «Crescita DEMO»: picco noto, dati insufficienti e adulto. Manifest `growth_cases`, misure avanzate e analisi conservate; backup principali aggiornati dopo l'aggiunta. Non usare `--reset` con questo generatore: rifiuta archivi non vuoti. Usare un altro nome oppure le procedure conservative già documentate per le demo base.
+Aprire l'URL completo con token stampato dal server. **Anche `demo_suite.py`, completo o `--small`, ora include la maturazione**; `demo_maturation.py` rimane un alias della versione ridotta. In entrambe le società sono presenti quattro profili «Crescita DEMO»: picco maschile, crescita femminile, dati insufficienti e adulto. I primi due includono peso variabile, statura seduta, apertura delle braccia, arti inferiori, stature genitoriali e previsione adulta esterna esplicitamente fittizia. Manifest `growth_cases`, misure avanzate e analisi conservate sono inclusi fin dall'inizio nelle repliche admin/visualizzatore, backup e ZIP portabili.
+
+Gli archivi già generati non vengono aggiornati automaticamente. Per rigenerare la demo standard chiudere app/server e usare `.venv/Scripts/python.exe scripts/demo_suite.py --data .local/ui-test --reset`: la vecchia cartella viene conservata. Per non toccare alcun archivio esistente usare un percorso nuovo. L'alias `demo_maturation.py` rifiuta destinazioni esistenti e non offre `--reset`.
 
 Checklist funzionale:
 
-1. Aprire un incrementale con tracciato: MAP, potenza di soglia e FTHR insieme alle zone; fonte e coefficiente realmente applicato leggibili. Selezionare un livello lattato e verificare guide/punto/riga W–FC. Non aspettarsi FC se non disponibile.
+1. Dal dettaglio di qualsiasi test usare «Apri profilo atleta»: si chiude la finestra e si apre il profilo corretto, anche per un visualizzatore. Aprire un incrementale con tracciato: MAP, potenza di soglia e FTHR insieme alle zone; fonte e coefficiente realmente applicato leggibili. Selezionare un livello lattato e verificare guide/punto/riga W–FC. Non aspettarsi FC se non disponibile.
 2. Scorrere fino in fondo al dettaglio: X rimane visibile. «Correggi test» apre l'editor dedicato; verificare anche Sprint/Wingate, custom e storico manuale. Cambiare un dato e chiudere: deve chiedere se continuare o scartare, senza modificare il test salvato.
 3. Nell'editor digitare `23:45` come fine dal file: il campo secondi deve diventare `1425`. Provare `23:60`: deve essere segnalato, non salvato come il vecchio valore. Il grafico indica l'origine dal file; il recupero rimane relativo alla fine sforzo. Verificare input da tastiera e selezione di un campione.
 4. Controllare campi personalizzati finali e glossario contestuale in ogni pagina. Verificare anche IT/EN per i nuovi componenti; restano testi legacy da completare.
 5. Dal footer aprire «Licenza, limiti e backup»: leggere GPL originale, avvisi delle dipendenze, assenza di garanzia e limiti backup. Nessuna EULA bloccante aggiunta. La build copia automaticamente i testi legali negli asset, senza modificarne gli originali.
 6. In Archivio e scambio → Condivisione selezionare un provider senza registrazione OAuth: comando non avviabile e spiegazione dei prerequisiti. Account collegato non significa cartella verificata; l'evidenza di accesso precedente non vale per una nuova destinazione. Non inserire credenziali reali nel corpus SOLO DEMO.
-7. Nel profilo «Crescita DEMO peak» verificare circa `8,96 cm/anno` al `01/01/2024`. Selezionare l'analisi conservata; poi una diversa data di anteprima. Nelle misure facoltative verificare statura seduta e indici avanzati senza campi obbligatori aggiuntivi. Il caso «missing» spiega le assenze; «adult» non applica i modelli adolescenti fuori dominio.
+7. Nel profilo «Crescita DEMO peak» verificare circa `8,96 cm/anno` al `01/01/2024`. Selezionare l'analisi conservata; poi una diversa data di anteprima. Nelle misure facoltative verificare statura seduta e indici avanzati senza campi obbligatori aggiuntivi. Nel profilo «female» verificare circa `7,96 cm/anno` al `01/01/2024`, Moore/Mirwald nelle date ammesse e indici opzionali. Il caso «missing» spiega le assenze; «adult» non applica i modelli adolescenti fuori dominio.
 8. Conservare una nuova analisi con motivo su una copia QA; correggere una rilevazione con motivo. La nuova anteprima può cambiare, l'analisi precedente deve rimanere identica. Verificare CSV estesi, PDF/MD atleta/società e vero ripristino del backup.
 
 Metodi e gate: [MATURAZIONE.md](MATURAZIONE.md). %PAH/residuo richiedono una previsione adulta esterna con fonte/metodo; non è presente un calcolatore automatico Khamis–Roche. I test con curve sintetiche non certificano accuratezza biologica.
@@ -31,11 +33,11 @@ Per provare tutte le funzionalità usare **`scripts/demo_suite.py`**, il generat
 
 | Comando | Contenuto | Uso |
 |---|---|---|
-| `scripts/demo_suite.py --data <cartella>` | 2 società, 24 atleti, 216 rilevazioni, 192 test su 2024–2026 (190 non eliminati), 12 versioni di protocollo per società; FIT/CSV, Sprint/Wingate/custom, gas/lattato/recupero, gruppi/anni, ruoli e conflitti | Scelta consigliata per il collaudo completo |
+| `scripts/demo_suite.py --data <cartella>` | 2 società, 32 atleti, 264 rilevazioni, 192 test su 2024–2026 (190 non eliminati), 12 versioni di protocollo per società; 8 profili crescita con snapshot e dati avanzati; FIT/CSV, Sprint/Wingate/custom, gas/lattato/recupero, gruppi/anni, ruoli e conflitti | Scelta consigliata per il collaudo completo, inclusa maturazione |
 | `scripts/demo_suite.py --small --data <cartella>` | Stessi tipi di scenari, meno atleti e prove | Verifiche rapide e test automatici |
 | `scripts/demo.py --data <cartella>` | 4 atleti e 4 test incrementali da FIT, 2 ERG originali | Demo minima storica |
 
-Tutte le persone, misure e prove generate sono fittizie. Il generatore completo non importa i CSV personali allegati. [Composizione e matrice dei casi](CORPUS_SINTETICO_08.md).
+Tutte le persone, misure e prove generate sono fittizie. Il generatore completo non importa i CSV personali allegati. [Composizione e matrice dei casi](DATI_SINTETICI.md).
 
 ## Usare il corpus già presente
 
@@ -204,7 +206,7 @@ Le sezioni 0.3–0.7 seguenti sono cronologia e fixture minime di regressione, n
 - Test e analisi: aprire un Wingate e verificare metriche, copertura, metodo e PDF; aprire Nuova prova / protocollo per registrare una prova manuale o caricare uno dei tre FIT, con offset 60 s. Protocolli storici e nuove prove restano distinti. Per le correzioni compilare il motivo; due salvataggi dalla stessa revisione devono produrre un conflitto, senza sovrascrittura.
 - Archivio e scambio: importare prima atleti_anaerobico.csv, poi test_anaerobico.csv con il nuovo profilo; ripetere l’importazione deve saltare i test già presenti. Il CSV esteso nello ZIP esportato permette l’importazione dei nuovi protocolli con durata esplicita. Backup e CSV hanno scopi diversi.
 - Storici e confronti: scegliere picco, media, lavoro o calo; ogni insieme conserva famiglia, durata, finestre e provenienza. Un campo non applicabile a una famiglia non viene contato come misura mancante di quella prova.
-- I quattro connettori sono disponibili per una società con accesso personale in Condivisione e collaboratori. Usare un archivio dimostrativo e cartella remota dedicata per il collaudo. Non usare dati personali per lo spike. [Configurazione OAuth e checklist inter-account](CLOUD_CONFIGURAZIONE_07.md).
+- I quattro connettori sono disponibili per una società con accesso personale in Condivisione e collaboratori. Usare un archivio dimostrativo e cartella remota dedicata per il collaudo. Non usare dati personali per lo spike. [Configurazione OAuth e checklist inter-account](CONFIGURARE_LA_SINCRONIZZAZIONE.md).
 - Test software: `python -m pytest -q`; test mirati in tests/test_anaerobic.py e tests/test_cloud.py. Nuovi sorgenti Kotlin non compilati: non interpretare i test Python/ASGI su PC come test Android.
 
 
@@ -218,13 +220,13 @@ Prova WebDAV reale: due account sulla stessa cartella Nextcloud, due archivi/ide
 
 Windows: `python scripts/build.py`, compilare `packaging/windows/Fuorigiri.iss`, installare su un PC/VM senza strumenti di sviluppo, avviare offline, creare test e produrre PDF, aggiornare, riaprire l’archivio e disinstallare verificando che il backup/dati restino. Il bundle completo deve avviarsi anche con PATH privo di Python/Node; `Fuorigiri.exe --smoke-test --data <cartella-di-prova>` verifica import, logo, icona, portachiavi importabile e backend. Provare due avvii sullo stesso archivio: il secondo deve essere respinto.
 
-Fedora: seguire [la build Flatpak](CONSOLIDAMENTO_DISTRIBUZIONE_06.md), installare su Fedora pulita, provare Wayland e fallback X11, Secret Service, picker, report, WebDAV e cartella client cloud. Testare anche installazione offline con runtime disponibili sul supporto; la sola `.flatpak` non basta.
+Fedora: seguire [la build Flatpak](DISTRIBUZIONE.md), installare su Fedora pulita, provare Wayland e fallback X11, Secret Service, picker, report, WebDAV e cartella client cloud. Testare anche installazione offline con runtime disponibili sul supporto; la sola `.flatpak` non basta.
 
 Android: `python scripts/build_android.py --check` elenca i gate reali; non scarica librerie né produce un APK fittizio. Dopo compilazione su builder adatto: `gradle -p android connectedDebugAndroidTest`, modalità aereo dopo installazione, riavvio/processo terminato, import ERG/FIT/CSV e report PDF/MD/CSV, invito viewer/admin, Keystore e scambio WebDAV con desktop. Controllare tutte le wheel native, ABI/16 KB, memoria su file grandi, tastiera/grafici/touch, WorkManager con rete/batteria e recupero da errori. I quattro test `test_mobile_runtime.py` verificano il contratto sul PC, non sostituiscono questi casi.
 
 ## Versione 0.5 — preset, metodi e report completi
 
-`.venv/Scripts/python.exe -m pytest -q` verifica il nucleo e le API. Compilare TypeScript/Vite con i comandi sotto. Schema 3: alla prima apertura di un database precedente viene salvata `migrations/before-v3.sqlite`; la storia delle analisi resta invariata. Dettagli e limiti in [IMPLEMENTAZIONE_INCREMENTALE_05.md](IMPLEMENTAZIONE_INCREMENTALE_05.md).
+`.venv/Scripts/python.exe -m pytest -q` verifica il nucleo e le API. Compilare TypeScript/Vite con i comandi sotto. Schema 3: alla prima apertura di un database precedente viene salvata `migrations/before-v3.sqlite`; la storia delle analisi resta invariata. Dettagli e limiti in [IMPLEMENTAZIONE_INCREMENTALE_05.md](archivio/IMPLEMENTAZIONE_INCREMENTALE_05.md).
 
 Per una prova isolata completa: `.venv/Scripts/python.exe scripts/qa_incremental.py --data .local/qa-incrementale-05-nuova`, poi `.venv/Scripts/python.exe scripts/serve.py --data .local/qa-incrementale-05-nuova --port 8766`; aprire l’URL con token stampato. Solo quattro atleti/otto test sintetici, due stagioni. Non usare un archivio reale per questi comandi; lo script rifiuta destinazioni già popolate.
 
@@ -438,7 +440,7 @@ Usare lo script di build del progetto: su Windows isola il PATH del sottoprocess
 
 ## 8. Registrare l'esito
 
-Per le verifiche della revisione del 19 ottobre vedere anche la sezione seguente e [la relazione completa](REVISIONE_GENERALE_2026-10-19.md).
+Per le verifiche della revisione del 19 ottobre vedere anche la sezione seguente e [la relazione completa](archivio/REVISIONE_GENERALE_2026-10-19.md).
 
 Annotare versione app, sistema operativo, versioni Python/Node, percorso dell'archivio di prova, risultato dei comandi e checklist eseguita. Per anomalie riportare passaggi minimi, risultato atteso/ottenuto e messaggio; usare screenshot privi di dati reali. Lo stato delle verifiche effettuate è in [VERIFICA.md](VERIFICA.md); requisiti e scelte ancora aperte in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md).
 

@@ -1,10 +1,12 @@
-# Corpus sintetico completo 0.8
+# Dati sintetici e scenari di collaudo
+
+Corpus standard aggiornato con crescita/maturazione; i vecchi archivi generati non si aggiornano automaticamente. [Avvio e rigenerazione conservativa](TESTARE_IL_PROGETTO.md).
 
 Persone, società, misure, risultati e condizioni sono **interamente fittizi**. I nomi possono coincidere casualmente con persone reali. Il corpus non legge CSV privati, non contiene token cloud e non rappresenta una validazione clinica o un modello di allenamento.
 
 ## Avvio immediato e rigenerazione
 
-Archivio già generato in questa sessione: `.local/demo-fuorigiri-completo`. Per avviarlo da sorgenti:
+Archivio di una generazione precedente (per i nuovi casi maturativi rigenerarlo esplicitamente o usare una cartella nuova): `.local/demo-fuorigiri-completo`. Per avviarlo da sorgenti:
 
 ```powershell
 .venv/Scripts/python.exe scripts/serve.py --data .local/demo-fuorigiri-completo --port 8771
@@ -35,10 +37,11 @@ Il set ridotto `--small` serve ai test automatici, non sostituisce il corpus com
 
 | Dati | Contenuto |
 |---|---|
-| Società | 2 archivi indipendenti, 18 + 6 atleti |
-| Persone | 24 profili, M/F, anni di nascita diversi e uno ignoto, omonimi con ID distinti, attivi/archiviati/eliminati |
-| Periodi | 2024, 2025, 2026; misure a febbraio, giugno e ottobre |
-| Antropometria | 216 rilevazioni; pesi/stature mancanti in casi selezionati, crescita plausibile, masse misurate/arrotondate/dichiarate/stimate |
+| Società | 2 archivi indipendenti, 22 + 10 atleti |
+| Persone | 32 profili, M/F, anni di nascita diversi e uno ignoto, omonimi con ID distinti, attivi/archiviati/eliminati |
+| Periodi | Test 2024–2026; misure ordinarie a febbraio, giugno e ottobre e serie maturative dal 2022 |
+| Antropometria | 264 rilevazioni; pesi/stature mancanti in casi selezionati, crescita plausibile, masse misurate/arrotondate/dichiarate/stimate |
+| Maturazione | 4 casi per società: picco maschile/femminile, dati insufficienti, adulto; 48 misure aggiuntive totali, antropometria avanzata e 8 snapshot; repliche e backup inclusi |
 | Gruppi | Categorie con sottogruppi annuali, appartenenze datate e passaggi di categoria |
 | Prove | 192 record: 150 + 42, inclusi 2 eliminati logicamente; 190 visibili nella lista ordinaria |
 | Protocolli | 12 versioni per società: ERG originali, scheda manuale senza step, Sprint, Wingate 15/30, Wingate 15 con finestra diversa, custom, rampa, discontinuo e versioni archiviate |

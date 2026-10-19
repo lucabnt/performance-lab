@@ -132,26 +132,24 @@ def test_folder_verified_state_is_bound_to_destination(tmp_path):
         assert client.get(path).json()['folder_access']=='not_verified'
 
 
-def test_growth_corpus_backups_and_manifest_include_added_cases(tmp_path,monkeypatch):
+def test_growth_cases_have_numerical_references_and_advanced_fields(tmp_path):
     import sys
     from pathlib import Path
     from cycling_test.store import Store
     from cycling_test.workspaces import Workspaces
-    from cycling_test.recovery import inspect_backup
     sys.path.insert(0,str(Path(__file__).parents[1]/'scripts'))
-    import demo_maturation
-    def minimal_base(destination,small=True):
-        destination=Path(destination);destination.mkdir()
-        manager=Workspaces(destination,Store(destination));entry=manager.create('Club sintetico','Fondatore DEMO')
-        return {'organizations':[entry],'synthetic':True}
-    monkeypatch.setattr(demo_maturation,'generate',minimal_base)
-    root=tmp_path/'new';cases=demo_maturation.generate_growth(root)
-    assert {r['case'] for r in cases}=={'peak','missing','adult'}
-    manifest=json.loads((root/'manifest-demo.json').read_text(encoding='utf-8'))
-    assert manifest['organizations'][0]['athletes']==3
-    assert manifest['organizations'][0]['measurements']==15
-    backup=inspect_backup((root/'backup-SOLO-DEMO.zip').read_bytes())
-    assert len([r for r in backup['records'] if r.get('analysis_type')=='maturation'])==3
+    from demo_growth import add_growth
+    root=tmp_path/'new';manager=Workspaces(root,Store(root));entry=manager.create('Club sintetico','Fondatore DEMO')
+    manifest={'organizations':[entry],'synthetic':True}
+    cases=add_growth(root,manifest);store=manager.get(entry['id'])
+    assert {r['case'] for r in cases}=={'peak','female','missing','adult'}
+    assert entry['athletes']==4 and entry['measurements']==24
+    for case,expected in [('peak',8.9595),('female',7.9595)]:
+        item=next(r for r in cases if r['case']==case)
+        analysis=store.get(item['snapshot'])['analysis']
+        assert analysis['phv']['value']==pytest.approx(expected,abs=.001)
+        assert any(s['models']['moore']['value'] is not None and s['models']['mirwald']['value'] is not None for s in analysis['series'])
+        assert any(s['optional']['pah']['value'] is not None and s['optional']['arm_span_pct']['value'] is not None and s['optional']['limb_velocity']['value'] is not None for s in analysis['series'])
 
 
 def test_snapshots_revisions_exports_backup_reports(tmp_path):

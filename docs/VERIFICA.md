@@ -1,5 +1,16 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Riordino documentazione — 19 ottobre 2026
+
+- Verificati 280 collegamenti locali in 33 documenti (README, AGENTS, architettura, changelog e documentazione): nessuna destinazione mancante prima delle sole aggiunte a questo registro e ai requisiti. Nessun riferimento Markdown ai nomi delle tre guide rinominate rimasto. `git diff --check` riuscito.
+- Modifica documentale: non ripetute build o prove applicative; valgono le verifiche dei sorgenti riportate sotto.
+
+## Profilo da test e corpus maturazione — 19 ottobre 2026
+
+- 25 test mirati passati (`test_maturation.py`, `test_demo_suite.py`): riferimenti numerici maschili/femminili, indici opzionali, inclusione degli snapshot nel visualizzatore e nei backup, manifest e ripristino.
+- 19 test frontend passati; build TypeScript/Vite riuscita. Rimane il noto avviso sulle dimensioni Plotly.
+- GUI verificata su archivio QA nuovo: dettaglio Wingate → «Apri profilo atleta» → Elena Moretti, anche se archiviata. Corpus ridotto generato fino al riepilogo finale in `.local/qa-profile-maturity-20261019`: 14 atleti, 102 rilevazioni, 36 test e 8 snapshot maturativi. Nessun archivio demo dell’utente rigenerato; nessun installer aggiornato.
+
 ## Attuazione TD-83–97 — 19 ottobre 2026
 
 - **180 test backend passati, 1 saltato** (permessi symlink Windows), warning Starlette/httpx preesistente. Nuovi 24 casi maturazione: oracoli Moore/Mirwald, null/zero/domini/qualità, HV e picco cubico noto, stabilità adulta, API e revisione concorrente, snapshot conservati, CSV/MD/PDF, sync firmata verso visualizzatore e ripristino indipendente effettivo. Verifica dell'accesso cartella vincolata alla destinazione.
@@ -14,7 +25,7 @@
 - **18 test Node passati**, TypeScript/Vite e verifica dell'artefatto UI comune riusciti. Rimane il chunk Plotly di circa 5,3 MB minificati. `pip check`, compilazione sintattica e smoke desktop dai sorgenti riusciti.
 - Verificati isolamento di due società, rifiuto di archivi multi-società prima dell'accesso al trasporto, firme/record estranei, download incrementale e verifica completa, simmetria dei limiti ZIP. Non provati account cloud reali o installer aggiornati su PC pulito.
 - Misure sintetiche: archivio Aurora 150 test, circa 6,9 MB locali e 7,9 MB di pacchetti v1; registrazione di 63 minuti a 1 Hz circa 0,81 MB per revisione nel canale. Modelli a 5 Hz e revisioni ripetute inclusi nella [valutazione dimensionale](SYNC_DIMENSIONI_E_SCALABILITA.md).
-- Correzioni, prove UI, limiti residui e sequenza del lavoro nella [revisione completa](REVISIONE_GENERALE_2026-10-19.md).
+- Correzioni, prove UI, limiti residui e sequenza del lavoro nella [revisione completa](archivio/REVISIONE_GENERALE_2026-10-19.md).
 
 ## Interpolazione lattato v2 — 18 ottobre 2026
 
@@ -52,7 +63,7 @@ Repository autonoma UI 0.1.0 installata e compilata da sola, 4 test Node passati
 
 - **117 test passati** su Windows, inclusi protocollo custom, tipi/limiti, null/zero/false, revisioni e conflitto 409, confronti, PDF/MD/CSV, corpus ridotto con due società/repliche, casi FIT invalidi, oracoli numerici indipendenti e ripristino di backup con campi custom. Rimane il warning preesistente Starlette/httpx.
 - TypeScript e build Vite riusciti; rimane l’avviso sulle dimensioni del chunk Plotly.
-- Corpus completo generato in `.local/demo-fuorigiri-completo`: 24 atleti, 216 misure, 192 test (190 non eliminati), 12 versioni di protocollo per ciascuna delle due società. Distribuzione portabile separata con due backup e fixture, senza identità private né configurazione di percorsi assoluti. [Matrice e istruzioni](CORPUS_SINTETICO_08.md).
+- Corpus completo generato in `.local/demo-fuorigiri-completo`: 24 atleti, 216 misure, 192 test (190 non eliminati), 12 versioni di protocollo per ciascuna delle due società. Distribuzione portabile separata con due backup e fixture, senza identità private né configurazione di percorsi assoluti. [Matrice e istruzioni](DATI_SINTETICI.md).
 - GUI browser verificata sul corpus sintetico: catalogo e creazione custom con campi tipizzati; nuova prova manuale custom con anteprima 900 W, zero e No distinti dai mancanti; FIT Wingate con scelta sessione, offset 60 s, zoom e calcolo; storico custom con etichette, medie e mediane. Anteprime non archiviate per mantenere i conteggi del corpus.
 - Due PDF sintetici (custom: 1 pagina; Wingate: 2 pagine) generati, renderizzati e ispezionati, incluse tabelle, grafico e footer con logo/attribuzione; ZIP Markdown corrispondenti generati. Nessuna analisi di persone reali.
 - Corretto un difetto scoperto dal corpus: i backup prodotti dopo sincronizzazione contengono `sync_audit`; il validatore ora ne ammette soltanto la struttura nota. Il ripristino ricostruisce l’archivio e avvia un nuovo registro locale del dispositivo. Verificati sia ripristino valido sia rifiuto di una struttura audit estranea.

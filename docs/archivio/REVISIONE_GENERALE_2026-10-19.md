@@ -1,5 +1,7 @@
 # Revisione generale e prossimi passi — 19 ottobre 2026
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 ## Esito e perimetro
 
 Revisione dei sorgenti, regressioni numeriche e funzionali, flussi UI sul corpus sintetico, avvio desktop dai sorgenti, coerenza dipendenze/libreria comune, separazione e costi della sync. Non è una certificazione di assenza di errori: non comprende un audit di sicurezza indipendente, una scansione CVE completa, test cloud con account reali né esecuzione su un PC privo di dipendenze. Build/VM Linux e Android restano rinviate.
@@ -30,7 +32,7 @@ R08 e R10 sono protezioni, non migrazioni automatiche: gli archivi multi-societ�
 - `pip check`: nessuna dipendenza incoerente. `verify_suite_ui.py`: artefatto UI comune, lockfile, licenza e branding coerenti.
 - Smoke desktop dai sorgenti riuscito, compilazione sintattica backend/scripts riuscita. Non equivale a provare l'installer su macchina pulita.
 - UI: spazi nei protocolli, durate senza ERG, profilo con serie selezionabili, ritorno in cima dopo navigazione e società conservata al ricaricamento. Screenshot locali sotto `output/`.
-- Misure riproducibili della società sintetica e modelli di registrazione 1 h + 3 min di recupero, a 1/5 Hz. Risultati e limiti in [SYNC_DIMENSIONI_E_SCALABILITA.md](SYNC_DIMENSIONI_E_SCALABILITA.md).
+- Misure riproducibili della società sintetica e modelli di registrazione 1 h + 3 min di recupero, a 1/5 Hz. Risultati e limiti in [SYNC_DIMENSIONI_E_SCALABILITA.md](../SYNC_DIMENSIONI_E_SCALABILITA.md).
 
 ## Rischi e limiti ancora aperti
 

@@ -1,8 +1,10 @@
 # Sincronizzazione con API cloud — verifica e disegno
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 ## Stato 0.7 - aggiornamento che supera le note implementative precedenti
 
-Adapter diretti Drive/Dropbox/OneDrive ora implementati insieme a WebDAV, UI OAuth e predisposizione per relay dedicato. Android: flussi nativi nei sorgenti, build ancora rimandata. Test automatici dei contratti disponibili; nessun account reale collegato. [Istruzioni operative, permessi e verifiche ancora necessarie](CLOUD_CONFIGURAZIONE_07.md). La ricerca e gli stati 0.4-0.6 sotto sono mantenuti come cronologia: non descrivono il perimetro del codice 0.7.
+Adapter diretti Drive/Dropbox/OneDrive ora implementati insieme a WebDAV, UI OAuth e predisposizione per relay dedicato. Android: flussi nativi nei sorgenti, build ancora rimandata. Test automatici dei contratti disponibili; nessun account reale collegato. [Istruzioni operative, permessi e verifiche ancora necessarie](../CONFIGURARE_LA_SINCRONIZZAZIONE.md). La ricerca e gli stati 0.4-0.6 sotto sono mantenuti come cronologia: non descrivono il perimetro del codice 0.7.
 
 ## Chiarimento CLOUD-03 — quattro trasporti richiesti anche su Android
 
@@ -10,7 +12,7 @@ Adapter diretti Drive/Dropbox/OneDrive ora implementati insieme a WebDAV, UI OAu
 
 ## Aggiornamento implementativo 0.6 — WebDAV presente, verifica reale aperta
 
-Il trasporto cartella è stato estratto e WebDAV HTTPS è ora nel codice desktop e riusato dal backend Android. Configurazione nella società, portachiavi, oggetti immutabili, retry/rilettura, accessi firmati versionati e rotazione del canale: [contratto e limiti effettivi](CONSOLIDAMENTO_DISTRIBUZIONE_06.md). Test con server fixture passati; Nextcloud/account reali/Fedora/Android non ancora collaudati. Android ha sorgenti della shell/bridge, non APK disponibile. Le API Drive/Dropbox e i relativi spike con due account rimangono aperti; non compaiono come connessioni funzionanti. La ricerca sottostante conserva le decisioni e non equivale a implementazione di quei provider.
+Il trasporto cartella è stato estratto e WebDAV HTTPS è ora nel codice desktop e riusato dal backend Android. Configurazione nella società, portachiavi, oggetti immutabili, retry/rilettura, accessi firmati versionati e rotazione del canale: [contratto e limiti effettivi](../DISTRIBUZIONE.md). Test con server fixture passati; Nextcloud/account reali/Fedora/Android non ancora collaudati. Android ha sorgenti della shell/bridge, non APK disponibile. Le API Drive/Dropbox e i relativi spike con due account rimangono aperti; non compaiono come connessioni funzionanti. La ricerca sottostante conserva le decisioni e non equivale a implementazione di quei provider.
 
 Verifica documentale del **17 ottobre 2026**, architettura 1.2; software invariato 0.4.1. Esaminate le API ufficiali, senza collegare account, creare progetti OAuth o effettuare prove autenticate. Le capacità documentate sono distinte dalle verifiche di interoperabilità ancora necessarie.
 

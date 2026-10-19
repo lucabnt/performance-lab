@@ -1,8 +1,10 @@
 # Analisi delle osservazioni manuali — 19 ottobre 2026
 
-**Attuazione successiva alla presente analisi:** i requisiti sono stati sviluppati nei sorgenti; vedere lo stato aggiornato in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), le prove in [VERIFICA.md](VERIFICA.md) e i metodi effettivamente adottati in [MATURAZIONE.md](MATURAZIONE.md). Le proposte sotto restano la traccia della fase di analisi, non sostituiscono la specifica implementata.
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
 
-Acquisite le **11 osservazioni** inserite dall'utente in coda a REQUISITI_E_TODO.md; testo intatto in [COMMENTI_ORIGINALI_2026-10-19.md](COMMENTI_ORIGINALI_2026-10-19.md). Sono state scomposte in **15 requisiti TD-83–97**, con stato, priorità e accettazione nel [registro](REQUISITI_E_TODO.md#osservazioni-manuali-acquisite--19-ottobre-2026).
+**Attuazione successiva alla presente analisi:** i requisiti sono stati sviluppati nei sorgenti; vedere lo stato aggiornato in [REQUISITI_E_TODO.md](../REQUISITI_E_TODO.md), le prove in [VERIFICA.md](../VERIFICA.md) e i metodi effettivamente adottati in [MATURAZIONE.md](../MATURAZIONE.md). Le proposte sotto restano la traccia della fase di analisi, non sostituiscono la specifica implementata.
+
+Acquisite le **11 osservazioni** inserite dall'utente in coda a REQUISITI_E_TODO.md; testo intatto in [COMMENTI_ORIGINALI_2026-10-19.md](COMMENTI_ORIGINALI_2026-10-19.md). Sono state scomposte in **15 requisiti TD-83–97**, con stato, priorità e accettazione nel [registro](../REQUISITI_E_TODO.md#osservazioni-manuali-acquisite--19-ottobre-2026).
 
 Questa revisione modifica soltanto i documenti. Il riscontro funzionale deriva dalla lettura del codice attuale; non sono stati ripetuti collaudi UI, collegamenti cloud o test scientifici. Richieste dell'utente, riscontri e proposte tecniche sono distinti sotto. Non viene assunto come già approvato un particolare modello di maturazione.
 
@@ -56,11 +58,11 @@ Conservare le salvaguardie del metodo corrente: FC dalla finestra dello step ass
 
 Registrare uno stato comprensibile prima del click: «Integrazione da configurare» con azione di configurazione, «Account da collegare», «Account collegato», «Cartella non accessibile», «Sincronizzazione riuscita/da completare». Se non si può avviare il consenso, spiegare il motivo accanto al comando; su errore mostrare come recuperare. Rilevare il browser di autorizzazione non aperto e offrire un collegamento alternativo. Non inserire segreti distribuiti universalmente per mascherare il problema.
 
-L'accettazione richiede configurazione del distributore, due account sulla stessa società, verifica effettiva della cartella, rinnovo/revoca e comportamento offline. Usare il test locale simulato come prova del contratto, non come prova della collaborazione reale. Rimangono validi [CLOUD_CONFIGURAZIONE_07.md](CLOUD_CONFIGURAZIONE_07.md) e l'isolamento per società; nessuna nuova autorizzazione cloud eseguita in questa revisione.
+L'accettazione richiede configurazione del distributore, due account sulla stessa società, verifica effettiva della cartella, rinnovo/revoca e comportamento offline. Usare il test locale simulato come prova del contratto, non come prova della collaborazione reale. Rimangono validi [CLOUD_CONFIGURAZIONE_07.md](../CONFIGURARE_LA_SINCRONIZZAZIONE.md) e l'isolamento per società; nessuna nuova autorizzazione cloud eseguita in questa revisione.
 
 ## Licenza, garanzia e conservazione dei dati
 
-Il file [LICENSE](../LICENSE) contiene già GPLv3, §§15–17: assenza di garanzia, limitazione di responsabilità e interpretazione secondo legge applicabile. Va resa raggiungibile dalla GUI insieme a copyright, versione e avvisi delle dipendenze. La [GPL ufficiale](https://www.gnu.org/licenses/gpl-3.0.html) resta la fonte del testo; non modificarla né aggiungere restrizioni incompatibili.
+Il file [LICENSE](../../LICENSE) contiene già GPLv3, §§15–17: assenza di garanzia, limitazione di responsabilità e interpretazione secondo legge applicabile. Va resa raggiungibile dalla GUI insieme a copyright, versione e avvisi delle dipendenze. La [GPL ufficiale](https://www.gnu.org/licenses/gpl-3.0.html) resta la fonte del testo; non modificarla né aggiungere restrizioni incompatibili.
 
 La richiesta diventa anche un requisito di comunicazione: evidenziare che conservazione/integrità dei dati non sono garantite, distinguere sync da backup e indicare come creare **e provare a ripristinare** copie indipendenti. Gli attuali limiti del backup devono essere visibili e non nascosti dietro l'avviso. Specificare limiti delle stime e uso del software senza presentarlo come diagnosi medica. Il branding fisso resta invariato.
 

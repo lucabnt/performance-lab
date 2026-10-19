@@ -2,7 +2,7 @@
 
 ## Aggiornamento UI 0.8
 
-Definire Sprint/Wingate in **Protocolli → Crea protocollo**; nuove versioni dalla scheda corrispondente. Registrare esecuzioni in **Test e analisi → Nuovo test**, scegliendo protocollo e modalità. Importatore con sessioni/duplicati, click sul grafico per l’inizio, zoom ed esclusioni motivate. Campi facoltativi disponibili anche sui protocolli supportati. [Flusso e campi custom](PROTOCOLLI_E_CAMPI_CUSTOM.md); [corpus completo per il collaudo](CORPUS_SINTETICO_08.md). Le indicazioni UI 0.7 successive sono superate da questo flusso; le formule rimangono quelle del metodo 1.
+Definire Sprint/Wingate in **Protocolli → Crea protocollo**; nuove versioni dalla scheda corrispondente. Registrare esecuzioni in **Test e analisi → Nuovo test**, scegliendo protocollo e modalità. Importatore con sessioni/duplicati, click sul grafico per l’inizio, zoom ed esclusioni motivate. Campi facoltativi disponibili anche sui protocolli supportati. [Flusso e campi custom](PROTOCOLLI_E_CAMPI_CUSTOM.md); [corpus completo per il collaudo](DATI_SINTETICI.md). Le indicazioni UI 0.7 successive sono superate da questo flusso; le formule rimangono quelle del metodo 1.
 
 ## Scelta proposta e implementata
 

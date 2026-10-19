@@ -1,0 +1,37 @@
+# Documentazione di Fuorigiri Performance Lab
+
+Indice aggiornato al **19 ottobre 2026**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
+
+## Uso, avvio e distribuzione
+
+- [Testare il progetto e l’interfaccia](TESTARE_IL_PROGETTO.md): ambiente di sviluppo, desktop/browser, demo, reset e checklist.
+- [Dati sintetici](DATI_SINTETICI.md): composizione del corpus, scenari e risultati attesi.
+- [Società, backup e accessi](SOCIETA_BACKUP_E_ACCESSI.md): creazione, inviti, ruoli e ripristino.
+- [Configurare la sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md): cartelle, WebDAV, Drive, Dropbox, OneDrive e prerequisiti OAuth.
+- [Distribuzione](DISTRIBUZIONE.md): bundle Windows, dipendenze incluse, installer e prerequisiti Fedora/Android.
+
+## Protocolli e metodi
+
+- [Protocolli e campi personalizzati](PROTOCOLLI_E_CAMPI_CUSTOM.md).
+- [Metodi dell’incrementale](METODI_INCREMENTALE.md).
+- [Sprint e Wingate](TEST_ANAEROBICI.md).
+- [Crescita e maturazione](MATURAZIONE.md).
+
+Le specifiche conservano fonte, versione e limiti: una stima non diventa una misura osservata e protocolli differenti non diventano automaticamente confrontabili.
+
+## Sviluppo e stato del prodotto
+
+- [Requisiti e to-do](REQUISITI_E_TODO.md): registro con ID e tracciabilità; gli aggiornamenti più recenti prevalgono sulle sezioni storiche.
+- [Prossimi passi](PROSSIMI_PASSI.md): priorità attuali, dipendenze e criteri di completamento.
+- [Verifiche](VERIFICA.md): prove eseguite e limiti, in ordine cronologico inverso.
+- [Architettura generale](../ARCHITETTURA_PROPOSTA.md): decisioni di backend, UI, dati e distribuzione; documento evolutivo con sezioni datate.
+- [Dimensioni e scalabilità della sincronizzazione](SYNC_DIMENSIONI_E_SCALABILITA.md).
+- [Android](ANDROID.md): architettura e gate di build/dispositivo ancora aperti.
+- [Suite condivisa con Ammiraglia](SUITE_CONDIVISA.md).
+- [Changelog](../CHANGELOG.md) e [istruzioni della repository](../AGENTS.md).
+
+## Come mantenere la documentazione
+
+Le istruzioni operative appartengono alla guida del relativo tema; formule e limiti alla specifica del metodo; stato e accettazione al registro requisiti; risultati al registro verifiche. La roadmap riassume il lavoro residuo senza duplicare la cronologia. I documenti correnti hanno nomi indipendenti dalla release che li ha introdotti.
+
+Analisi iniziali, commenti originali, revisioni e piani superati sono conservati in [archivio](archivio/README.md). Mantengono le motivazioni e gli ID storici, senza prescrivere lo stato corrente. Non cancellare le fonti originali né presentare una build predisposta come collaudata.

@@ -1,5 +1,14 @@
 # Requisiti e to-do
 
+## Documentazione corrente — 19 ottobre 2026
+
+- **DOC-01 — implementato:** indice delle guide, separazione dei documenti storici in `archivio/`, nomi delle guide indipendenti dalle release, README italiano con presentazione in inglese e link operativi; roadmap corrente distinta dai piani originali. Le analisi e i commenti originali restano conservati. [Indice](README.md), [roadmap](PROSSIMI_PASSI.md).
+
+## Correzioni profilo e demo — 19 ottobre 2026
+
+- **UI-PROFILE-01 — implementato:** dal dettaglio di ogni famiglia di test si può aprire direttamente il profilo dell’atleta associato, chiudendo il dettaglio; nessun permesso di modifica richiesto.
+- **DEMO-MAT-01 — implementato:** corpus standard completo e ridotto includono quattro profili maturativi per società, casi maschile/femminile con indici avanzati, dati insufficienti e adulto. Snapshot e misure presenti nelle repliche e nei backup iniziali; manifest con risultati attesi. Rigenerazione conservativa esplicita, nessuna migrazione silenziosa delle demo esistenti.
+
 **Attuazione TD-83–97, 19 ottobre 2026:** implementati nei sorgenti flussi test/glossario/riferimenti/tempi, avvisi licenza, stati cloud e crescita/maturazione con snapshot, export e report. Rimangono collaudo provider reale, revisione giuridica e validazione scientifica esterna; nessun nuovo installer. [Registro e accettazione](#osservazioni-manuali-acquisite--19-ottobre-2026), [specifica maturazione](MATURAZIONE.md), [verifiche](VERIFICA.md). Le sezioni datate conservano lo stato storico; non prevalgono su aggiornamenti successivi.
 
 ## Revisione e isolamento degli archivi — 19 ottobre 2026
@@ -12,7 +21,7 @@
 - **SYNC-MIG-01 — da implementare:** separazione assistita di backup multi-società con dipendenze e cronologia complete, nuove identità/chiavi/inviti e conservazione dell'originale.
 - **QA-RELEASE-01 — da completare:** flusso GUI automatizzato completo, FIT reali anonimizzati, account cloud distinti, interruzioni/revoche/conflitti; candidato Windows su VM pulita. Fedora/Android restano rinviati al builder disponibile. Traduzione e accessibilità da completare.
 
-Dettagli: [revisione generale](REVISIONE_GENERALE_2026-10-19.md), [dimensioni e strategia sync](SYNC_DIMENSIONI_E_SCALABILITA.md). Le stime derivano da registrazioni sintetiche misurate, non da un archivio reale pluriennale.
+Dettagli: [revisione generale](archivio/REVISIONE_GENERALE_2026-10-19.md), [dimensioni e strategia sync](SYNC_DIMENSIONI_E_SCALABILITA.md). Le stime derivano da registrazioni sintetiche misurate, non da un archivio reale pluriennale.
 
 ## Suite comune — prima estrazione, 18 ottobre 2026
 
@@ -27,13 +36,13 @@ Dettagli: [revisione generale](REVISIONE_GENERALE_2026-10-19.md), [dimensioni e 
 - **TD-75 / DATA-04:** campi opzionali definiti dall’utente, tipizzati, con unità/limiti/scelte e scheda protocollo oppure prova. Aggiunta di campi alla sola esecuzione, senza mutazione del protocollo; snapshot, revisioni e validazione backend. Null/zero/false distinti. Nessuna formula arbitraria, nessuna equivalenza fisiologica implicita.
 - **TD-76 / ANA-04:** importatore FIT comune con scelta sessione e gestione esplicita duplicati; inizio su grafico, zoom sullo sforzo, riepilogo protocollo e esclusioni motivate. Nuova versione parte dal metodo precedente in Protocolli. Revisione conserva atleta/protocollo e può correggere un record riferito ad archivio storico.
 - **TD-77 / REPORT-05:** campi custom nei PDF/Markdown del singolo e dell’archivio, CSV esteso long-form tipizzato e backup; metriche numeriche custom in grafici/medie/mediane, separate per protocollo e identità del campo.
-- **TD-78 / QA-04:** corpus sintetico completo su due società, 24 profili, tre stagioni, 192 record test, gruppi/anni, antropometria, FIT/CSV, gas/lattato/recupero, zone a 7, metodi distinti, revisioni e dati mancanti. Fixture errate separate, oracoli numerici indipendenti, repliche Admin/Viewer, revoca, backup/recupero SOLO DEMO e conflitto offline da esercitare. [Matrice dei casi](CORPUS_SINTETICO_08.md).
+- **TD-78 / QA-04:** corpus sintetico completo su due società, 24 profili, tre stagioni, 192 record test, gruppi/anni, antropometria, FIT/CSV, gas/lattato/recupero, zone a 7, metodi distinti, revisioni e dati mancanti. Fixture errate separate, oracoli numerici indipendenti, repliche Admin/Viewer, revoca, backup/recupero SOLO DEMO e conflitto offline da esercitare. [Matrice dei casi](DATI_SINTETICI.md).
 
 Non inclusi: codice/formule caricate dall’utente, import generico di schemi da CSV long-form, certificazione scientifica dei metodi custom, provider reali o nuova build Android/Linux. Per ripristino fedele dei protocolli custom usare il backup. La qualifica scientifica e la verifica dei dispositivi rimangono distinte dai test del software.
 
 ## 0.7 / architettura 1.5 - implementazione richiesta il 18 ottobre 2026
 
-- **TD-68 / CLOUD-04:** implementati i tre adapter API Drive/Dropbox/OneDrive oltre a WebDAV, UI avanzata con destinazione, registrazione OAuth, stato/collegamento/scollegamento, token OS e callback desktop. Shared backend e sorgenti native Android: PKCE per Dropbox/OneDrive, autorizzazione Google Play services per Drive, rinnovo e background sui trasporti diretti. Test simulati presenti; APK e collaudo Android non eseguiti. Restano registrazioni OAuth della distribuzione, consenso/verifica provider e test reali con due account. [Guida e contratto](CLOUD_CONFIGURAZIONE_07.md).
+- **TD-68 / CLOUD-04:** implementati i tre adapter API Drive/Dropbox/OneDrive oltre a WebDAV, UI avanzata con destinazione, registrazione OAuth, stato/collegamento/scollegamento, token OS e callback desktop. Shared backend e sorgenti native Android: PKCE per Dropbox/OneDrive, autorizzazione Google Play services per Drive, rinnovo e background sui trasporti diretti. Test simulati presenti; APK e collaudo Android non eseguiti. Restano registrazioni OAuth della distribuzione, consenso/verifica provider e test reali con due account. [Guida e contratto](CONFIGURARE_LA_SINCRONIZZAZIONE.md).
 - **TD-69 / SYNC-02:** predisposizione servizio dedicato implementata come adapter/client HTTPS v1, selezionabile nella UI. Server, hosting, account del relay, amministrazione e deployment rimangono successivi; nessun obbligo di backend Fuorigiri per usare i quattro provider.
 - **TD-70 / ANA-01:** Sprint breve (default 6 s), Wingate 30 s, Wingate 15 s implementati in protocolli versionati e flussi manuale/tracciato. Carico, dispositivo, partenza, posizione, riscaldamento e finestre espliciti. Nessuna equivalenza universale fra famiglie, finestre, strumenti o risultati dichiarati/calcolati.
 - **TD-71 / ANA-02:** import test_anaerobico con schema storico, preview/commit atomico e annullamento lotto; ANA-15-070 confermato dall’utente come 15 s e 0,70 N·m/kg. Dati mancanti e peso derivato conservati; lavoro/media incoerenti segnalati. Formula indice W/s, dispositivo/partenza/finestre storici non verificati. Nessun CSV privato distribuito.
@@ -60,11 +69,11 @@ Consegna concordata: Windows e sorgenti; build Linux/Android rimandate dall’ut
 - **TD-66 / UI-23:** icona minimale Fuorigiri in SVG/PNG/ICO e vettore Android, usata da installer/eseguibile/finestra/launcher/testata/favicon. Il logo originale della società e l’attribuzione fissa restano invariati nei footer.
 - **TD-57 / AND-01–05:** dopo il consolidamento desktop, avviata shell Android e bridge al medesimo backend; SAF/Keystore/WorkManager/layout touch nel sorgente. Contratto testato su Windows, non dispositivo. Gate aperto su wheel native aggiornate, builder Linux/macOS, SDK/JDK/Gradle, APK e collaudo fisico. Non chiudere il requisito con il solo sorgente o con i test ASGI su PC.
 
-Dettagli e limiti: [consolidamento 0.6](CONSOLIDAMENTO_DISTRIBUZIONE_06.md), [Android attuale](ANDROID.md). Nessuna modifica alle formule scientifiche o agli storici in questa fase. Dopo accettazione Android restano nell’ordine Sprint breve → Wingate 30 s → Wingate 15 s. Drive/Dropbox API, compattazione dei canali grandi, rotazione dell’autorità (distinta dalla chiave del canale), audit esterno e collaudo delle librerie native rimangono requisiti aperti.
+Dettagli e limiti: [consolidamento 0.6](DISTRIBUZIONE.md), [Android attuale](ANDROID.md). Nessuna modifica alle formule scientifiche o agli storici in questa fase. Dopo accettazione Android restano nell’ordine Sprint breve → Wingate 30 s → Wingate 15 s. Drive/Dropbox API, compattazione dei canali grandi, rotazione dell’autorità (distinta dalla chiave del canale), audit esterno e collaudo delle librerie native rimangono requisiti aperti.
 
 ## Software 0.5 / architettura 1.3 — incrementale e report gerarchici
 
-Autorizzati gli step 1–4 della lista operativa nel messaggio: preset/migrazioni, motore, GUI/FIT/report e metodi specialistici, scegliendo i metodi con riferimento scientifico quando l’utente non ne dispone. [Implementazione, formule, fonti e limiti](IMPLEMENTAZIONE_INCREMENTALE_05.md).
+Autorizzati gli step 1–4 della lista operativa nel messaggio: preset/migrazioni, motore, GUI/FIT/report e metodi specialistici, scegliendo i metodi con riferimento scientifico quando l’utente non ne dispone. [Implementazione, formule, fonti e limiti](archivio/IMPLEMENTAZIONE_INCREMENTALE_05.md).
 
 | ID | Requisito | Stato |
 |---|---|---|
@@ -86,7 +95,7 @@ Ordine tecnico raccomandato: interfaccia di trasporto comune → WebDAV desktop 
 
 ## Aggiornamento architettura 1.1 — accesso diretto alle API cloud
 
-**TD-58 / CLOUD-01 — Verificare e progettare lo scambio tramite API ufficiali**, senza dipendenza dal client cartella su Android o dal server Fuorigiri. Ricerca completata in [SINCRONIZZAZIONE_CLOUD_API.md](SINCRONIZZAZIONE_CLOUD_API.md): Drive e Dropbox fattibili come trasporto, con permessi differenti. Proposta: spike Drive con `drive.file` e due account, adapter comune, gestione OAuth/portachiavi, poi Dropbox condiviso; OneDrive candidato; WebDAV ora confermato per desktop e Android in TD-59. **Ricerca/disegno completati; integrazioni e prove autenticate non implementate.**
+**TD-58 / CLOUD-01 — Verificare e progettare lo scambio tramite API ufficiali**, senza dipendenza dal client cartella su Android o dal server Fuorigiri. Ricerca completata in [SINCRONIZZAZIONE_CLOUD_API.md](archivio/SINCRONIZZAZIONE_CLOUD_API.md): Drive e Dropbox fattibili come trasporto, con permessi differenti. Proposta: spike Drive con `drive.file` e due account, adapter comune, gestione OAuth/portachiavi, poi Dropbox condiviso; OneDrive candidato; WebDAV ora confermato per desktop e Android in TD-59. **Ricerca/disegno completati; integrazioni e prove autenticate non implementate.**
 
 Il lavoro entra in INC-11/TD-50 e AND-04, con prima verifica sul desktop prima della fase Android. UI-19 esplicita account, cartella, consenso e stato; il ruolo della società resta distinto dall’account cloud. Migrazione dal trasporto cartella da collaudare, soprattutto per file aggiunti esternamente e accesso Drive per-app. Software invariato 0.4.1.
 
@@ -110,7 +119,7 @@ Ordine aggiornato: **(1)** completare e consolidare l’incrementale desktop, pr
 
 ## Pianificazione confermata e stato aggiornato dei requisiti
 
-Aggiornamento documentale del 17 ottobre 2026, successivo alla preview 0.3. La pianificazione iniziale era documentale; la preview 0.4 implementa ora TD-45–49 e parte di TD-50. Le altre voci rimangono acquisite e da implementare, secondo gli stati della tabella. I dettagli della copertura sono in [COPERTURA_TEST_E_ROADMAP.md](COPERTURA_TEST_E_ROADMAP.md).
+Aggiornamento documentale del 17 ottobre 2026, successivo alla preview 0.3. La pianificazione iniziale era documentale; la preview 0.4 implementa ora TD-45–49 e parte di TD-50. Le altre voci rimangono acquisite e da implementare, secondo gli stati della tabella. I dettagli della copertura sono in [COPERTURA_TEST_E_ROADMAP.md](archivio/COPERTURA_TEST_E_ROADMAP.md).
 
 Ordine confermato: completare il prodotto per i test incrementali, includendo **tutte** le lacune INC-01–11, quindi affrontare sprint breve/potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Le priorità P0/P1/P2 ordinano il lavoro interno alla prima fase: non rendono facoltative le voci meno urgenti. Il supporto agli scambi gassosi durante un incrementale rientra in questa fase; gli altri test di laboratorio autonomi restano distinti.
 
@@ -131,7 +140,7 @@ La scelta dei tre test successivi è confermata dall'utente; i dettagli dei meto
 
 ## Stato precedente 0.3 — Fuorigiri Performance Lab
 
-Nuovi requisiti **TD-30–44** implementati/documentati nel [registro della revisione 0.3](REVISIONE_FUORIGIRI_03.md), con scelte **UI-11–16**, contratto CSV e criteri di accettazione. La collocazione della gestione società è presente, ma il percorso completo di collegamento/ripristino non lo è: TD-45–50 precisano il lavoro residuo. [Copertura e mancanze del motore](COPERTURA_TEST_E_ROADMAP.md) distingue la fase incrementale obbligatoria dai test successivi. Le sezioni 0.2 sottostanti restano storico del progetto; il nome prodotto è ora confermato.
+Nuovi requisiti **TD-30–44** implementati/documentati nel [registro della revisione 0.3](archivio/REVISIONE_FUORIGIRI_03.md), con scelte **UI-11–16**, contratto CSV e criteri di accettazione. La collocazione della gestione società è presente, ma il percorso completo di collegamento/ripristino non lo è: TD-45–50 precisano il lavoro residuo. [Copertura e mancanze del motore](archivio/COPERTURA_TEST_E_ROADMAP.md) distingue la fase incrementale obbligatoria dai test successivi. Le sezioni 0.2 sottostanti restano storico del progetto; il nome prodotto è ora confermato.
 
 
 ## Stato del codice 0.2 — 17 ottobre 2026
@@ -142,7 +151,7 @@ Aggiornamento successivo all'implementazione e alla ripresa del lavoro. La tabel
 
 ## Decisioni della revisione documentale 0.5 (storico)
 
-17 ottobre 2026, architettura **0.5**. Convenzioni funzionali accettate; dettaglio e criteri in [Storico, zone e branding](STORICO_ZONE_E_BRANDING.md). Queste note descrivevano il disegno prima dello sviluppo; lo stato corrente è nella tabella aggiornata:
+17 ottobre 2026, architettura **0.5**. Convenzioni funzionali accettate; dettaglio e criteri in [Storico, zone e branding](archivio/STORICO_ZONE_E_BRANDING.md). Queste note descrivevano il disegno prima dello sviluppo; lo stato corrente è nella tabella aggiornata:
 
 - **TD-02/03:** logo di riferimento fornito; colori del file identificati. Resta da implementare il tema e verificarne la leggibilità.
 - **TD-04/13/16/17:** definite nove viste HIST-01–09 dal PDF, includendo anno di categoria distinto da stagione e coorte; default per atleta accettato e modalità tutti i test per continuità con l'archivio.
@@ -153,7 +162,7 @@ Aggiornamento successivo all'implementazione e alla ripresa del lavoro. La tabel
 
 Ancora aperti: formule dei riferimenti di soglia/FTP, criteri di completamento step, finestre FC, fonti dei valori medi, nome suite e resa finale del tema. Il PDF non viene importato automaticamente e non è copiato nei dati pubblici.
 
-Revisione del 17 ottobre 2026. I 29 identificatori seguono l'ordine dei [commenti originali](COMMENTI_ORIGINALI_2026-10-17.md). Questo documento distingue **integrazione nel progetto** da **implementazione nel programma**. La revisione 0.2 include modifiche al codice; i commenti originali rimangono conservati per tracciabilità.
+Revisione del 17 ottobre 2026. I 29 identificatori seguono l'ordine dei [commenti originali](archivio/COMMENTI_ORIGINALI_2026-10-17.md). Questo documento distingue **integrazione nel progetto** da **implementazione nel programma**. La revisione 0.2 include modifiche al codice; i commenti originali rimangono conservati per tracciabilità.
 
 Stati: **presente** = funzionalità riscontrata nel codice; **parziale** = solo una parte disponibile; **da sviluppare** = requisito acquisito, non implementato; **da definire** = scelta o riferimento necessario. Il riscontro è sul codice della preview locale, non una certificazione su Windows/Fedora puliti. Riferimento principale: [architettura 0.6](../ARCHITETTURA_PROPOSTA.md).
 
@@ -240,7 +249,7 @@ Conservare gli ID; per richieste composte aggiornare lo stato di ogni parte. Seg
 
 ## Osservazioni manuali acquisite — 19 ottobre 2026
 
-Le 11 osservazioni originali sono conservate in [COMMENTI_ORIGINALI_2026-10-19.md](COMMENTI_ORIGINALI_2026-10-19.md). Analisi, dipendenze, fonti e criteri di accettazione: [ANALISI_TODO_MANUALI_2026-10-19.md](ANALISI_TODO_MANUALI_2026-10-19.md). I 15 requisiti sotto sono stati attuati nei sorgenti con gli stati puntuali aggiornati. L’analisi originale resta storica; metodi effettivi in MATURAZIONE.md. Nessuna implementazione equivale a validazione scientifica esterna o rilascio di un nuovo installer.
+Le 11 osservazioni originali sono conservate in [COMMENTI_ORIGINALI_2026-10-19.md](archivio/COMMENTI_ORIGINALI_2026-10-19.md). Analisi, dipendenze, fonti e criteri di accettazione: [ANALISI_TODO_MANUALI_2026-10-19.md](archivio/ANALISI_TODO_MANUALI_2026-10-19.md). I 15 requisiti sotto sono stati attuati nei sorgenti con gli stati puntuali aggiornati. L’analisi originale resta storica; metodi effettivi in MATURAZIONE.md. Nessuna implementazione equivale a validazione scientifica esterna o rilascio di un nuovo installer.
 
 | ID | Requisito normalizzato | Stato, priorità e accettazione |
 |---|---|---|

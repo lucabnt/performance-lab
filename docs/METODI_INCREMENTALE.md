@@ -1,6 +1,6 @@
 # Metodi dell’incrementale — specifica 1.0
 
-**Aggiornamento 0.5:** questa specifica 1.0 è ora attuata per il nucleo costante. I metodi specialistici sono stati scelti e implementati come descritto in [IMPLEMENTAZIONE_INCREMENTALE_05.md](IMPLEMENTAZIONE_INCREMENTALE_05.md), su autorizzazione dell’utente a usare fonti scientifiche. Le indicazioni sottostanti «da implementare» descrivono lo stato alla redazione della 1.0; per capacità e limiti attuali prevale il documento 0.5. Motore nuovo `0.5.0`, risultati precedenti conservati.
+**Aggiornamento 0.5:** questa specifica 1.0 è ora attuata per il nucleo costante. I metodi specialistici sono stati scelti e implementati come descritto in [IMPLEMENTAZIONE_INCREMENTALE_05.md](archivio/IMPLEMENTAZIONE_INCREMENTALE_05.md), su autorizzazione dell’utente a usare fonti scientifiche. Le indicazioni sottostanti «da implementare» descrivono lo stato alla redazione della 1.0; per capacità e limiti attuali prevale il documento 0.5. Motore nuovo `0.5.0`, risultati precedenti conservati.
 
 
 17 ottobre 2026. Step 2 del piano di lavoro di Fuorigiri Performance Lab. Questo documento definisce il contratto da implementare nelle successive iterazioni INC-01–10; **non dichiara già sviluppati i nuovi algoritmi**. Il motore corrente resta `0.2.0`, con le differenze elencate sotto. Nessuna analisi archiviata viene ricalcolata o sovrascritta da questo aggiornamento.

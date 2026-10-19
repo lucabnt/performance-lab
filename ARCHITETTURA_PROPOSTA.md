@@ -12,7 +12,7 @@ Accesso cartella cloud distinto dal possesso di un token: l'evidenza dell'ultimo
 
 ## Requisiti acquisiti e disegno proposto — osservazioni del 19 ottobre 2026
 
-TD-83–97 sono acquisiti nel [registro](docs/REQUISITI_E_TODO.md); [analisi e fonti](docs/ANALISI_TODO_MANUALI_2026-10-19.md). Nessuna implementazione in questa revisione documentale. I dettagli proposti sotto rimangono disegno da verificare, non metodi scientifici già qualificati.
+TD-83–97 sono acquisiti nel [registro](docs/REQUISITI_E_TODO.md); [analisi e fonti](docs/archivio/ANALISI_TODO_MANUALI_2026-10-19.md). Nessuna implementazione in questa revisione documentale. I dettagli proposti sotto rimangono disegno da verificare, non metodi scientifici già qualificati.
 
 **UI-27–33:** correzione del test tramite pulsante/editor dedicato; testata opaca con chiusura sempre raggiungibile, focus e uscita senza perdita silenziosa; campi custom in coda; glossario contestuale a fine pagina. Riepilogo MAP/potenza di soglia/FTHR con pari evidenza e provenienza, zone adiacenti al riferimento effettivo. Coefficienti realmente applicati visibili con base e formula, senza introdurre coefficienti universali. Tempi leggibili come mm:ss e secondi, selezione di marker dal grafico e conferma esplicita; secondi e origine temporale restano coerenti con i dati esistenti. Il grafico lattato-carico rimane distinto dalla vista temporale, con tabella W/W/kg/FC collegata. Layout adattato alle metriche della famiglia, nessuna MAP fittizia per Sprint/custom.
 
@@ -30,7 +30,7 @@ Per gli archivi legacy multi-società sync e inviti sono bloccati, senza cancell
 
 Il formato v1 resta compatibile: sync gestita ordinaria scarica solo pacchetti sconosciuti, verificandoli; controlli accessi/revoche sempre acquisiti. Una verifica completa esplicita rilegge anche i pacchetti noti e rileva loro modifiche remote successive, che lo skip ordinario non controlla. Gli eventi locali già verificati restano la copia di riferimento. Il trasporto diretto mantiene la verifica completa come default.
 
-Questo riduce traffico ripetuto, non duplicazioni nel cloud. Evoluzione v2 prioritaria: campioni separati, oggetti cifrati per hash caricati una volta, eventi leggeri, cursori e snapshot, migrazione compatibile e conservazione per dispositivi offline. Backup grandi richiedono streaming/parti e prove di recupero; nel frattempo export e import applicano gli stessi limiti. [Dimensioni misurate e piano](docs/SYNC_DIMENSIONI_E_SCALABILITA.md), [revisione](docs/REVISIONE_GENERALE_2026-10-19.md).
+Questo riduce traffico ripetuto, non duplicazioni nel cloud. Evoluzione v2 prioritaria: campioni separati, oggetti cifrati per hash caricati una volta, eventi leggeri, cursori e snapshot, migrazione compatibile e conservazione per dispositivi offline. Backup grandi richiedono streaming/parti e prove di recupero; nel frattempo export e import applicano gli stessi limiti. [Dimensioni misurate e piano](docs/SYNC_DIMENSIONI_E_SCALABILITA.md), [revisione](docs/archivio/REVISIONE_GENERALE_2026-10-19.md).
 
 ## Decisione suite — repository autonome, UI comune 0.1
 
@@ -44,29 +44,29 @@ Separata la definizione dei protocolli dalla registrazione delle esecuzioni: Pro
 
 Schemi opzionali tipizzati e versionati in JSON: valori di protocollo, valori di prova, estensioni per singola esecuzione. Nessuna formula eseguibile o conversione di un custom in un metodo validato. Snapshot/revisioni/firme/scambio restano comuni alla suite. Chiavi delle metriche custom distinguono protocollo, tipo e unità; aggregazioni e report riusano il modello condiviso. Estensione additiva senza migrazione distruttiva del database. Nucleo riusabile dall’app allenamenti, branding societario invariato.
 
-Corpus riproducibile ampliato: [composizione, scenari, oracoli e repliche](docs/CORPUS_SINTETICO_08.md). Non si confondono verifiche offline con qualificazione scientifica, cloud autenticato o build Android/Linux.
+Corpus riproducibile ampliato: [composizione, scenari, oracoli e repliche](docs/DATI_SINTETICI.md). Non si confondono verifiche offline con qualificazione scientifica, cloud autenticato o build Android/Linux.
 
 ## Revisione 1.5 / software 0.7 - cloud diretti e test all-out
 
-Implementati adapter WebDAV/Drive/Dropbox/OneDrive, OAuth e credenziali locali; predisposizione client per servizio dedicato con contratto HTTP versionato. Archivio SQLite e protocollo degli eventi restano comuni. [Configurazione, permessi, fonti e limiti](docs/CLOUD_CONFIGURAZIONE_07.md). Connettività con account reali non collaudata; build Linux/Android restano rimandate. Le descrizioni storiche sotto di API proprietarie “non implementate” sono superate per il codice, non per la qualificazione inter-account.
+Implementati adapter WebDAV/Drive/Dropbox/OneDrive, OAuth e credenziali locali; predisposizione client per servizio dedicato con contratto HTTP versionato. Archivio SQLite e protocollo degli eventi restano comuni. [Configurazione, permessi, fonti e limiti](docs/CONFIGURARE_LA_SINCRONIZZAZIONE.md). Connettività con account reali non collaudata; build Linux/Android restano rimandate. Le descrizioni storiche sotto di API proprietarie “non implementate” sono superate per il codice, non per la qualificazione inter-account.
 
 Tre famiglie anaerobiche, snapshot di metodo, versioni immutabili, import/export CSV, FIT/manuale, report e storici. [Formule e comparabilità](docs/TEST_ANAEROBICI.md). UI: ingresso dedicato in Test e analisi, dettaglio separato dagli incrementali, protocollo con condizioni esplicite, medie/mediane senza pooling fra famiglie/provenienze. Report con metriche proprie e footer societario fisso; stessa suite e stessi componenti archivio/accessi/sync riusabili dall’app allenamenti. Nessuna conversione dei dati incrementali esistenti.
 
 ## Revisione 1.4 / software 0.6 — distribuzione e scambio, Android avviato
 
-18 ottobre 2026. Implementati trasporti cartella/WebDAV comuni, controlli firmati versionati, credenziali OS, rotazione recuperabile della chiave del canale e UI dedicata. Installer Windows con dipendenze incluse; configurazione Flatpak e pipeline per Fedora, ancora da compilare/collaudare su Linux. Nuova icona applicativa distinta dal logo fisso della società. [Scelte, UI, distribuzione e limiti 0.6](docs/CONSOLIDAMENTO_DISTRIBUZIONE_06.md).
+18 ottobre 2026. Implementati trasporti cartella/WebDAV comuni, controlli firmati versionati, credenziali OS, rotazione recuperabile della chiave del canale e UI dedicata. Installer Windows con dipendenze incluse; configurazione Flatpak e pipeline per Fedora, ancora da compilare/collaudare su Linux. Nuova icona applicativa distinta dal logo fisso della società. [Scelte, UI, distribuzione e limiti 0.6](docs/DISTRIBUZIONE.md).
 
 Android avviato dopo il consolidamento desktop: React + shell Kotlin/WebView e backend Python ASGI in-process, nessun socket o PC obbligatorio. SAF, Keystore e WorkManager nel sorgente. Revisione MOB-02 della proposta Capacitor; [stato preciso e gate Android](docs/ANDROID.md). Mancano wheel native aggiornate e builder POSIX/toolchain, APK e collaudo reale: non è un requisito concluso. Motore scientifico 0.5.0 e schema dati 3 invariati.
 
-Versione 1.3 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.5 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
+Versione 1.3 — 17 ottobre 2026. Architettura obiettivo aggiornata con i commenti dell'utente e la prospettiva di una suite. Confermate le convenzioni funzionali discusse (categorie/stagioni, ciclo di vita, revisioni, aggregati per atleta, ruoli e separazione delle app). Nuovi riscontri e preset nella [specifica storico, zone e branding](docs/archivio/STORICO_ZONE_E_BRANDING.md). Le altre soluzioni indicate come proposte restano da validare. Anteprima locale 0.5 disponibile: stato e limiti nel README e nel [registro requisiti](docs/REQUISITI_E_TODO.md); questo documento non certifica che ogni componente sia già implementato.
 
 ## Revisione 1.3 / software 0.5 — incrementale e report
 
-Implementati gli step 1–4 autorizzati: preset/migrazione, motore, GUI/import/report e metodi specialistici. SCI-01, DATA-03, UI-20/21 nel §21; [capacità, fonti e limiti](docs/IMPLEMENTAZIONE_INCREMENTALE_05.md). Report società/gruppo/stagione/atleta da modello comune; storico non ricalcolato. Corpus reale e validazione esterna restano distinti dalle prove software; WebDAV/Android mantengono il perimetro confermato.
+Implementati gli step 1–4 autorizzati: preset/migrazione, motore, GUI/import/report e metodi specialistici. SCI-01, DATA-03, UI-20/21 nel §21; [capacità, fonti e limiti](docs/archivio/IMPLEMENTAZIONE_INCREMENTALE_05.md). Report società/gruppo/stagione/atleta da modello comune; storico non ricalcolato. Corpus reale e validazione esterna restano distinti dalle prove software; WebDAV/Android mantengono il perimetro confermato.
 
 ## Revisione 1.1 / software invariato 0.4.1 — API cloud
 
-Verifica ufficiale Drive/Dropbox/OneDrive/WebDAV e aggiornamento Android in CLOUD-01/UI-19 (§19). Trasporto diretto API proposto senza server Fuorigiri obbligatorio; permessi per cartella distinti per provider e spike inter-account necessario. [Dettagli e accettazione](docs/SINCRONIZZAZIONE_CLOUD_API.md). Nessuna integrazione già implementata.
+Verifica ufficiale Drive/Dropbox/OneDrive/WebDAV e aggiornamento Android in CLOUD-01/UI-19 (§19). Trasporto diretto API proposto senza server Fuorigiri obbligatorio; permessi per cartella distinti per provider e spike inter-account necessario. [Dettagli e accettazione](docs/archivio/SINCRONIZZAZIONE_CLOUD_API.md). Nessuna integrazione già implementata.
 
 ## Revisione 1.0 / software 0.4.1 — metodi, nome e Android
 
@@ -82,7 +82,7 @@ TD-45–49 implementati nella preview; TD-50 parziale per audit completo, portac
 
 ## Revisione documentale 0.8 / software invariato 0.3
 
-L'utente conferma come perimetro di sviluppo **tutte** le lacune della copertura incrementale INC-01–11, con i relativi criteri nella [roadmap](docs/COPERTURA_TEST_E_ROADMAP.md). Sono inclusi rampe/discontinui, lattato, gas respiratori nell'incrementale, qualità, ripetibilità e consolidamento operativo/distributivo. Solo successivamente si svilupperanno Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (protocollo già usato dalla società), mantenendo durata, metodo, dati richiesti e confronti separati. Gli altri test restano candidati. Requisiti TD-45–54 nel [registro](docs/REQUISITI_E_TODO.md).
+L'utente conferma come perimetro di sviluppo **tutte** le lacune della copertura incrementale INC-01–11, con i relativi criteri nella [roadmap](docs/archivio/COPERTURA_TEST_E_ROADMAP.md). Sono inclusi rampe/discontinui, lattato, gas respiratori nell'incrementale, qualità, ripetibilità e consolidamento operativo/distributivo. Solo successivamente si svilupperanno Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s (protocollo già usato dalla società), mantenendo durata, metodo, dati richiesti e confronti separati. Gli altri test restano candidati. Requisiti TD-45–54 nel [registro](docs/REQUISITI_E_TODO.md).
 
 **UI-17 — Tre percorsi distinti per la società.** Creare un archivio nuovo, collegare una società tramite invito e ripristinare un backup sono azioni separate, con spiegazioni e validazioni proprie. La prima associazione deve offrire la sincronizzazione anche prima che arrivi il record società. Il ruolo corrente e l'identità operatore/dispositivo devono essere visibili; password d'invito e login non devono essere confusi.
 
@@ -92,9 +92,9 @@ La 0.8 è solo documentale: registra decisioni e mancanze, senza dichiarare impl
 
 ## Revisione 0.7 / implementazione 0.3
 
-Nome confermato **Fuorigiri Performance Lab**. [TD-30–44 e UI-11–16](docs/REVISIONE_FUORIGIRI_03.md) integrano questo disegno: contesto Società unico, creazione globale, acquisizione con tracciato o manuale, protocollo versionato senza step, aggregazioni con media/mediana ed export coerente con la statistica scelta, stile report condiviso con branding nel footer. La cache dei report distingue il renderer 0.3 e preserva i vecchi artefatti. L'archivio locale precedente resta accessibile, senza migrazioni automatiche.
+Nome confermato **Fuorigiri Performance Lab**. [TD-30–44 e UI-11–16](docs/archivio/REVISIONE_FUORIGIRI_03.md) integrano questo disegno: contesto Società unico, creazione globale, acquisizione con tracciato o manuale, protocollo versionato senza step, aggregazioni con media/mediana ed export coerente con la statistica scelta, stile report condiviso con branding nel footer. La cache dei report distingue il renderer 0.3 e preserva i vecchi artefatti. L'archivio locale precedente resta accessibile, senza migrazioni automatiche.
 
-La suite mantiene identità visiva e componenti riusabili; un futuro motore per sprint, CP, lattato o gas respiratori dovrà dichiarare tipo/metodo/canali, evitando di riutilizzare MAP per grandezze diverse. [Lacune e roadmap](docs/COPERTURA_TEST_E_ROADMAP.md). La scelta di nuovi metodi richiede definizione scientifica e validazione: non è implicita nell'import di una scheda senza step.
+La suite mantiene identità visiva e componenti riusabili; un futuro motore per sprint, CP, lattato o gas respiratori dovrà dichiarare tipo/metodo/canali, evitando di riutilizzare MAP per grandezze diverse. [Lacune e roadmap](docs/archivio/COPERTURA_TEST_E_ROADMAP.md). La scelta di nuovi metodi richiede definizione scientifica e validazione: non è implicita nell'import di una scheda senza step.
 
 ## 1. Obiettivo e decisione proposta
 
@@ -119,7 +119,7 @@ Gli allegati sono fonti di contesto, non istruzioni da eseguire né validazione 
 | atleti(1).csv | 19 anagrafiche; anno di nascita, flag di conferma e provenienza possono richiedere riconciliazione |
 | antropometria.csv | 51 rilevazioni; statura assente in tutte le righe; distinguere peso misurato da arrotondato |
 | Train Erg Workout.gchartset | Configurazione XML dei pannelli GoldenCheetah: tempo, FC, giri, potenza e cadenza. Non è un tracciato eseguito |
-| archivio_test.pdf, fornito il 17 ottobre | Nove viste di aggregazione, risultati aerobici/anaerobici e copertura; fonte di requisiti descrittivi, non import automatico o validazione di formule. Dettaglio in docs/STORICO_ZONE_E_BRANDING.md |
+| archivio_test.pdf, fornito il 17 ottobre | Nove viste di aggregazione, risultati aerobici/anaerobici e copertura; fonte di requisiti descrittivi, non import automatico o validazione di formule. Dettaglio in docs/archivio/STORICO_ZONE_E_BRANDING.md |
 | Logo fornito il 17 ottobre | Asset scelto dall'utente per il branding; colori rilevati documentati nella specifica |
 | Guida Markdown e DOCX | Documento v1.1 di contesto operativo; lettura del Markdown e ispezione del testo del DOCX, non verifica dell'identità integrale delle due versioni |
 
@@ -347,11 +347,11 @@ In assenza di storico, supportare un preset di valori medi come **suggerimento n
 
 TD-28: configurazione versionata delle zone per FC e potenza, selezionabile durante l'import e modificabile tramite revisione. Riferimenti distinti: FC massima osservata o di riferimento, FC di soglia, MAP operativa, potenza di soglia, FTP quando effettivamente disponibile. Ogni riferimento conserva valore, unità, metodo, data e provenienza. Non sostituire un riferimento mancante con un altro senza conferma.
 
-Ogni schema specifica nomi e percentuali crescenti, convenzioni dei limiti (intervalli contigui senza doppio conteggio), arrotondamento di visualizzazione e gestione di valori fuori intervallo. Salvare limiti percentuali e assoluti nell'analisi. Senza riferimento valido: zone non calcolabili. Preset iniziale PCRS-SOGLIA-5Z v1 fornito dall'utente: FC su FTHR, potenza su Watt Soglia, con confini continui confermati nella [specifica](docs/STORICO_ZONE_E_BRANDING.md). È una configurazione richiesta, non una tabella universale. Il modello supporta N zone, anche più di cinque, e N distinto per FC/potenza: lista versionata, editor dinamico, rendering e export senza colonne fisse Z1–Z5. Restano da definire i metodi di stima dei riferimenti, non le percentuali di questo preset.
+Ogni schema specifica nomi e percentuali crescenti, convenzioni dei limiti (intervalli contigui senza doppio conteggio), arrotondamento di visualizzazione e gestione di valori fuori intervallo. Salvare limiti percentuali e assoluti nell'analisi. Senza riferimento valido: zone non calcolabili. Preset iniziale PCRS-SOGLIA-5Z v1 fornito dall'utente: FC su FTHR, potenza su Watt Soglia, con confini continui confermati nella [specifica](docs/archivio/STORICO_ZONE_E_BRANDING.md). È una configurazione richiesta, non una tabella universale. Il modello supporta N zone, anche più di cinque, e N distinto per FC/potenza: lista versionata, editor dinamico, rendering e export senza colonne fisse Z1–Z5. Restano da definire i metodi di stima dei riferimenti, non le percentuali di questo preset.
 
 ### 8.2 Aggregazioni, confronti e crescita
 
-Le viste HIST-01–09 e le convenzioni derivate da archivio_test.pdf sono definite nella [specifica dello storico](docs/STORICO_ZONE_E_BRANDING.md): storico completo, anno di categoria/stagione, anno di categoria su tutte le stagioni, categoria storica, categoria/stagione, stagione corrente, atleta, coorte e copertura. Sono implementabili mediante un servizio comune. La fonte aggrega tutti i test: mantenere questa modalità esplicita accanto al default per atleta. Le soglie storiche stimate hanno viste dedicate, senza essere scartate o confuse con misure.
+Le viste HIST-01–09 e le convenzioni derivate da archivio_test.pdf sono definite nella [specifica dello storico](docs/archivio/STORICO_ZONE_E_BRANDING.md): storico completo, anno di categoria/stagione, anno di categoria su tutte le stagioni, categoria storica, categoria/stagione, stagione corrente, atleta, coorte e copertura. Sono implementabili mediante un servizio comune. La fonte aggrega tutti i test: mantenere questa modalità esplicita accanto al default per atleta. Le soglie storiche stimate hanno viste dedicate, senza essere scartate o confuse con misure.
 
 Il tipo di test deve permettere futuri domini ulteriori: risultati anaerobici importati sono un'estensione proposta, mentre il motore di analisi anaerobica resta fuori dall'implementazione incrementale iniziale. Nessuna ricostruzione dei segnali a partire dalle sole tabelle PDF.
 
@@ -485,7 +485,7 @@ Dipendenze bloccate, CI Windows/Linux, formattazione e controlli statici, change
 | 4 — Rilascio desktop | Installer su PC puliti, manuale italiano, pacchetti firmati/verificabili, gestione errori e migrazioni provata |
 | 5 — Android | App autonoma offline dopo consolidamento incrementale desktop e prima dei nuovi motori Sprint/Wingate; TD-57, AND-01–05 |
 
-Il dettaglio aggiornato delle priorità è nel [registro requisiti](docs/REQUISITI_E_TODO.md). La fase archivio comprende ora import CSV, revisioni manuali, ciclo di vita, categorie/stagioni, confronti e report aggregati. La fase sync richiede isolamento per società e ruoli, non solo trasferimento file. Branding e traduzioni IT/EN rientrano nel rilascio desktop. Il [confronto prodotti](docs/CONFRONTO_PRODOTTI.md) propone ulteriori candidati, senza estendere automaticamente il perimetro approvato.
+Il dettaglio aggiornato delle priorità è nel [registro requisiti](docs/REQUISITI_E_TODO.md). La fase archivio comprende ora import CSV, revisioni manuali, ciclo di vita, categorie/stagioni, confronti e report aggregati. La fase sync richiede isolamento per società e ruoli, non solo trasferimento file. Branding e traduzioni IT/EN rientrano nel rilascio desktop. Il [confronto prodotti](docs/archivio/CONFRONTO_PRODOTTI.md) propone ulteriori candidati, senza estendere automaticamente il perimetro approvato.
 
 Verifiche aggiuntive: import CSV ripetuto senza duplicazione e con errori recuperabili; modifica fine sforzo con ricalcolo e report precedente intatto; atleta archiviato incluso ed eliminato escluso dai nuovi aggregati; stesso atleta in più gruppi senza doppio conteggio; unità e percentuali delle zone ai confini; percorso società errato rifiutato; scrittura di visualizzatore rifiutata da API e sync; IT/EN senza stringhe mancanti, ordinamenti numerici/date, uso da tastiera e template condivisi fra app.
 
@@ -528,11 +528,11 @@ Il registro distingue scelte confermate dalle raccomandazioni ancora aperte.
 | D25 | Suite | Possibile app gemella di gestione allenamenti | Pacchetti comuni e contratti versionati, DB di ciascuna app separato; §15 |
 | D26 | Default e zone | Richiesti suggerimenti e zone configurabili | Provenienza e conferma; preset FTHR/Watt Soglia acquisito, N zone configurabile; formule dei riferimenti aperte |
 
-Prima del rilascio operativo restano soprattutto: client cloud utilizzabile su Fedora e numero di collaboratori; criteri di step valido e convenzioni di FC/recupero, oltre al consolidamento delle funzioni elencate nel README. Lo stack è confermato; le decisioni di implementazione sono documentate in `docs/DECISIONI.md`.
+Prima del rilascio operativo restano soprattutto: client cloud utilizzabile su Fedora e numero di collaboratori; criteri di step valido e convenzioni di FC/recupero, oltre al consolidamento delle funzioni elencate nel README. Lo stack è confermato; le decisioni di implementazione sono documentate in `docs/archivio/DECISIONI.md`.
 
 ## 14. Requisiti, stato e modifiche
 
-I commenti sono stati trasferiti in [Requisiti e to-do](docs/REQUISITI_E_TODO.md), con identificatori stabili, stato rispetto al codice e criteri di accettazione. La [trascrizione originale](docs/COMMENTI_ORIGINALI_2026-10-17.md) conserva il testo ricevuto. Le modifiche documentali sono registrate nel [changelog](CHANGELOG.md).
+I commenti sono stati trasferiti in [Requisiti e to-do](docs/REQUISITI_E_TODO.md), con identificatori stabili, stato rispetto al codice e criteri di accettazione. La [trascrizione originale](docs/archivio/COMMENTI_ORIGINALI_2026-10-17.md) conserva il testo ricevuto. Le modifiche documentali sono registrate nel [changelog](CHANGELOG.md).
 
 ## 15. Suite e futura app di gestione allenamenti
 
@@ -570,7 +570,7 @@ Il codice implementa i flussi locali, le zone dinamiche, gli storici e i workspa
 
 ## 19. API cloud dirette — revisione 1.1
 
-**CLOUD-01:** [verifica e disegno delle API](docs/SINCRONIZZAZIONE_CLOUD_API.md), TD-58. Il trasporto cartella resta disponibile; gli adapter API Drive/Dropbox consentiranno lo scambio diretto dei pacchetti cifrati su desktop/Android senza client cloud o server Fuorigiri obbligatori. Android usa API come obiettivo ordinario e SAF/import-export come alternative. Proposta di priorità: spike Drive con permessi minimi e due account, adapter desktop, porting Android; Dropbox successivo e OneDrive candidato; WebDAV successivamente confermato in CLOUD-02 (§20). Non è implementazione né promessa di equivalenza fra permessi dei provider.
+**CLOUD-01:** [verifica e disegno delle API](docs/archivio/SINCRONIZZAZIONE_CLOUD_API.md), TD-58. Il trasporto cartella resta disponibile; gli adapter API Drive/Dropbox consentiranno lo scambio diretto dei pacchetti cifrati su desktop/Android senza client cloud o server Fuorigiri obbligatori. Android usa API come obiettivo ordinario e SAF/import-export come alternative. Proposta di priorità: spike Drive con permessi minimi e due account, adapter desktop, porting Android; Dropbox successivo e OneDrive candidato; WebDAV successivamente confermato in CLOUD-02 (§20). Non è implementazione né promessa di equivalenza fra permessi dei provider.
 
 Drive `drive.file` è per-file e non va assunto come accesso ricorsivo universale a una cartella: collaudare contenuti creati dall’app, altri collaboratori e client cartella esterno. Dropbox App Folder non è una cartella collaborativa; Full Dropbox ha un consenso più ampio del filtro applicativo. Distinguere OAuth, condivisione del provider e ruolo firmato Fuorigiri; token protetti solo localmente. La compatibilità fra trasporti e la migrazione richiedono inventario e hash verificati.
 
@@ -578,11 +578,11 @@ Drive `drive.file` è per-file e non va assunto come accesso ricorsivo universal
 
 ## 20. WebDAV multipiattaforma — revisione 1.2
 
-**CLOUD-02 / TD-59:** confermato dall’utente il supporto WebDAV per Windows, Fedora e Android; sostituisce la classificazione come candidato della 1.1. Stesso contratto di trasporto, pacchetti cifrati/firmati, outbox locale, ruoli e conflitti. Configurazione URL/cartella e credenziali protette, diagnostica, ripresa e collaudo sulle piattaforme; nessun server Fuorigiri obbligatorio. Proposta: WebDAV primo adapter remoto dopo l’astrazione della cartella, Nextcloud come server di riferimento iniziale; Drive mantiene uno spike separato. Supporto richiesto, non implementato. [Specifiche](docs/SINCRONIZZAZIONE_CLOUD_API.md) e [sequenza operativa](docs/PROSSIMI_PASSI.md).
+**CLOUD-02 / TD-59:** confermato dall’utente il supporto WebDAV per Windows, Fedora e Android; sostituisce la classificazione come candidato della 1.1. Stesso contratto di trasporto, pacchetti cifrati/firmati, outbox locale, ruoli e conflitti. Configurazione URL/cartella e credenziali protette, diagnostica, ripresa e collaudo sulle piattaforme; nessun server Fuorigiri obbligatorio. Proposta: WebDAV primo adapter remoto dopo l’astrazione della cartella, Nextcloud come server di riferimento iniziale; Drive mantiene uno spike separato. Supporto richiesto, non implementato. [Specifiche](docs/archivio/SINCRONIZZAZIONE_CLOUD_API.md) e [sequenza operativa](docs/PROSSIMI_PASSI.md).
 
 ## 21. Incrementale e report gerarchici — revisione 1.3
 
-**SCI-01 / DATA-03:** scelta dei metodi scientifici autorizzata dall’utente; [attuazione 0.5 e fonti](docs/IMPLEMENTAZIONE_INCREMENTALE_05.md). Preset immutabili, schema 3 con backup precedente e risultati storici invariati, motore versionato, confronto separato per provenienza. Lattato, gas e ripetibilità hanno metodi distinti e limiti espliciti; non esiste una conversione universale fra MAP, FTP e soglie.
+**SCI-01 / DATA-03:** scelta dei metodi scientifici autorizzata dall’utente; [attuazione 0.5 e fonti](docs/archivio/IMPLEMENTAZIONE_INCREMENTALE_05.md). Preset immutabili, schema 3 con backup precedente e risultati storici invariati, motore versionato, confronto separato per provenienza. Lattato, gas e ripetibilità hanno metodi distinti e limiti espliciti; non esiste una conversione universale fra MAP, FTP e soglie.
 
 **UI-20:** società completa, gruppo, gruppo/stagione e atleta sono viste filtrate dello stesso report. Aggregati con n/assenti/media/mediana, copertura, grafici, schede individuali e antropometria; viste equivalenti e avvertenze comuni accorpate, nessuna duplicazione dello storico grezzo in più capitoli. PDF/MD con branding fisso e manifest di provenienza; API e GUI condividono la selezione dei dati.
 
@@ -603,3 +603,8 @@ La selezione grafica riguarda il confronto interattivo e la sua tabella; i repor
 L'interpolazione a concentrazioni fisse usa `lactate.fixed-linear/2`. Livelli per prova (default 2/3/4 mmol/L), validazione di unicità/intervallo/precisione, supporto ai livelli decimali e campioni CSV puntuali. L'analisi salva snapshot del metodo e finestra/copertura FC dal preset, associazioni ai prelievi e ragioni separate per W, W/kg e bpm. La potenza è associata a target dello step costante o carico esplicito; la FC è la media finale dello step completo costante. Nessuna estrapolazione, pooling dei carichi duplicati o correzione implicita di curve ambigue; nessun coefficiente verso FTP/MLSS. Le revisioni precedenti non vengono ricalcolate e le identità di metodo differiscono. Le metriche decimali hanno chiavi stabili (es. `lactate_3p5_hr_bpm`) e label leggibili. Export standard CSV preservato, risultati completi nel CSV lungo aggiuntivo e nei report.
 
 Lo stato Android effettivo è una shell Kotlin/WebView con Chaquopy, bridge e API ASGI in-process, credenziali native e WorkManager, non un'app esclusivamente Python né un server sul telefono. Le proposte precedenti con Capacitor rimangono alternative storiche. L'architettura consente il riuso ma deve ancora superare build e verifiche su dispositivo: wheel, compatibilità dei pin, dimensione/avvio/memoria e comportamento del sistema operativo. Il rinvio delle build non è revocato; dettagli e criteri in docs/ANDROID.md.
+
+
+### Integrazione profilo e corpus maturazione — 19 ottobre 2026
+
+Il dettaglio test offre un accesso diretto al profilo associato, anche in sola lettura, usando la navigazione interna e chiudendo la finestra. Il corpus standard richiama `demo_growth.add_growth` prima di creare inviti, repliche e backup: dati maturativi e snapshot seguono gli stessi percorsi di condivisione dei test. `demo_maturation.py` resta un ingresso compatibile al corpus ridotto, senza un secondo modello di dati.

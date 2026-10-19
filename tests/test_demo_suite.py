@@ -36,6 +36,13 @@ def test_acceptance_corpus_and_replicas(tmp_path):
     assert inspect_backup((root/'backup-SOLO-DEMO.zip').read_bytes())
     viewer_root=root/'repliche/viewer';viewer_manager=Workspaces(viewer_root,Store(viewer_root));viewer=viewer_manager.get(manifest['organizations'][0]['id'])
     assert viewer.identity['certificate']['role']=='viewer'
+    growth=[c for c in manifest['growth_cases'] if c['workspace_id']==manifest['organizations'][0]['id']]
+    assert len(growth)==4
+    backup_records=inspect_backup((root/'backup-SOLO-DEMO.zip').read_bytes())['records']
+    for case in growth:
+        assert viewer.get(case['snapshot'])['analysis']==main.get(case['snapshot'])['analysis']
+        assert any(r['id']==case['snapshot'] for r in backup_records)
+    assert manifest['organizations'][0]['athletes']==len(main.list('athlete'))
     with pytest.raises(ValueError):viewer.save('athlete',{'name':'Forbidden'})
     admin_root=root/'repliche/admin';admin_manager=Workspaces(admin_root,Store(admin_root));admin=admin_manager.get(manifest['organizations'][0]['id'])
     assert run_sync(admin)['errors']==[]

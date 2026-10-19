@@ -1,5 +1,16 @@
 # Changelog
 
+## Documentazione — riordino e presentazione, 19 ottobre 2026
+
+- README riscritto con presentazione in inglese, funzioni attuali, limiti reali, avvio del corpus completo e link alle guide pertinenti.
+- Indice `docs/README.md`; analisi, revisioni e piani superati conservati in `docs/archivio/` con collegamenti aggiornati. Guide cloud, distribuzione e dati sintetici rinominate senza numero di release.
+- Roadmap corrente riscritta con priorità, dipendenze e accettazione; nessuna funzione o build aggiunta da questo riordino.
+
+## Non rilasciato — profilo da test e corpus maturazione, 19 ottobre 2026
+
+- Collegamento «Apri profilo atleta» nel dettaglio di qualsiasi test, disponibile anche in sola lettura.
+- Demo standard completa/ridotta include quattro casi maturativi per società, con profilo femminile, antropometria avanzata e snapshot. Inclusione prima della creazione delle repliche e dei backup; alias `demo_maturation.py` conservato. Archivi esistenti non modificati automaticamente.
+
 ## Non rilasciato — attuazione TD-83–97, 19 ottobre 2026
 
 - Editor test dedicati, testata/chiusura persistenti, focus/Esc e conferma dell'uscita con modifiche non salvate. Campi custom in coda; glossario contestuale e avvisi di licenza/garanzia/conservazione dati.
@@ -16,7 +27,7 @@
 
 ## Documentazione — acquisizione to-do manuali, 19 ottobre 2026
 
-- Conservate integralmente le 11 osservazioni in `docs/COMMENTI_ORIGINALI_2026-10-19.md`; normalizzate in 15 requisiti TD-83–97 con stato, priorità e criteri di accettazione.
+- Conservate integralmente le 11 osservazioni in `docs/archivio/COMMENTI_ORIGINALI_2026-10-19.md`; normalizzate in 15 requisiti TD-83–97 con stato, priorità e criteri di accettazione.
 - Analizzati flusso correzione/chiusura test, ordine sezioni/campi custom, glossario, tempi del grafico, evidenza soglie/zone e provenienza dei coefficienti; spiegata l'utilità della vista lattato-carico già presente.
 - Distinta implementazione OAuth da operatività della distribuzione/account reali; registrati messaggi e collaudi mancanti. Avvisi GPL/garanzia/perdita dati richiesti senza modificare la licenza o promettere esenzioni assolute.
 - Definita la nuova area crescita/maturazione: HV prima delle stime, metodi e risultati osservati/stimati distinti, fasce d'età orientative, dati aggiuntivi opzionali non prioritari, storico/export e validazione. Fonti e decisioni residue nell'analisi dedicata.
@@ -29,7 +40,7 @@
 - Sync e inviti bloccati per archivi multi-società; identità e record vincolati alla società. Connessioni e canali restano separati per archivio; cartelle cloud con permessi distinti necessarie per collaboratori diversi.
 - Sync gestita ordinaria evita i pacchetti già acquisiti; nuova verifica completa esplicita. Nessuna deduplicazione remota o migrazione del formato v1 ancora introdotta.
 - Backup esportati soltanto entro i limiti accettati dal ripristino; misura dimensioni in sola lettura e piano per sync/backup scalabili documentati.
-- 156 test backend passati, uno saltato; 18 test frontend passati e build riuscita. [Revisione e prossimi passi](docs/REVISIONE_GENERALE_2026-10-19.md). Nessun installer ricompilato.
+- 156 test backend passati, uno saltato; 18 test frontend passati e build riuscita. [Revisione e prossimi passi](docs/archivio/REVISIONE_GENERALE_2026-10-19.md). Nessun installer ricompilato.
 
 ## Non rilasciato — livelli di lattato e FC interpolata
 
@@ -89,7 +100,7 @@
 - Icona minimale Fuorigiri mantenuta in SVG, PNG/ICO e vettore Android; integrazione in exe, finestra, installer, web e launcher. Logo societario/credito fissi preservati.
 - Installer Windows per utente; manifest/build Flatpak, checksum/sorgenti e pipeline manuali. Nessuna dipendenza Python/Node/Qt da installare sul PC utente; runtime Flatpak acquisito all’installazione o incluso sul supporto offline.
 - Android: shell Kotlin/WebView, adapter React/native, backend ASGI in-process, SAF per file/report, Keystore e WorkManager; layout compatto. Test del contratto su PC. **APK non disponibile:** gate wheel native aggiornate, toolchain POSIX e test dispositivo ancora aperti.
-- Formule scientifiche, engine 0.5.0, schema 3 e revisioni storiche invariati. [Stato e limiti](docs/CONSOLIDAMENTO_DISTRIBUZIONE_06.md).
+- Formule scientifiche, engine 0.5.0, schema 3 e revisioni storiche invariati. [Stato e limiti](docs/DISTRIBUZIONE.md).
 
 ## 0.5.0 — 17 ottobre 2026 / architettura 1.3
 
@@ -177,7 +188,7 @@ Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce d
 **Tipo: conferme, valutazione allegati e specifica; nessuna modifica funzionale al software.**
 
 - Registrata accettazione delle convenzioni per categorie/stagioni, ciclo di vita, revisioni, aggregazioni per atleta, ruoli e confini della suite.
-- Esaminato archivio_test.pdf e aggiunta [specifica storico, zone e branding](docs/STORICO_ZONE_E_BRANDING.md): nove viste HIST-01–09, fattibilità e prerequisiti, modalità tutti i test distinta dal default per atleta, anno di categoria distinto da stagione/coorte, copertura per metrica e confrontabilità.
+- Esaminato archivio_test.pdf e aggiunta [specifica storico, zone e branding](docs/archivio/STORICO_ZONE_E_BRANDING.md): nove viste HIST-01–09, fattibilità e prerequisiti, modalità tutti i test distinta dal default per atleta, anno di categoria distinto da stagione/coorte, copertura per metrica e confrontabilità.
 - Documentati limiti: soglie storiche stimate da distinguere da misure; nessuna statura disponibile per crescita in altezza; risultati anaerobici importabili come estensione candidata ANA-01, senza assumere approvato un nuovo motore di calcolo. Non copiati dati personali nei documenti di progetto.
 - Acquisito il logo fornito dall'utente come riferimento UI-02/03, con colori rilevati nel file e regole d'uso; nessuna modifica all'asset o alla UI.
 - Registrate le tabelle originali delle zone e la normalizzazione dei confini confermata dall'utente, incluso il 55% di potenza in Z1 (TD-28/D26). Esempi numerici sintetici e controlli attesi.
@@ -188,7 +199,7 @@ Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce d
 
 **Tipo: documentazione e disegno; nessuna modifica funzionale al software.** Revisione richiesta dopo i commenti dell'utente nella sezione To-Do.
 
-- Trasferiti tutti i 29 commenti in [Requisiti e to-do](docs/REQUISITI_E_TODO.md), riscritti con ID TD-01–29, stato e criteri verificabili; conservata la [trascrizione originale](docs/COMMENTI_ORIGINALI_2026-10-17.md). Aggiunto SUITE-01 per l'app gemella.
+- Trasferiti tutti i 29 commenti in [Requisiti e to-do](docs/REQUISITI_E_TODO.md), riscritti con ID TD-01–29, stato e criteri verificabili; conservata la [trascrizione originale](docs/archivio/COMMENTI_ORIGINALI_2026-10-17.md). Aggiunto SUITE-01 per l'app gemella.
 - Registrate le parti già presenti: flusso ERG con codice/step/riscaldamento iniziale e inserimento manuale antropometrico; distinte dalle richieste composte ancora incomplete (TD-01/08/14).
 - Esteso il modello con categorie/stagioni, nascita completa facoltativa, ciclo di vita di atleti/protocolli e revisioni manuali dei test (TD-09/10/13/24/29; D20–22).
 - Promosso l'import CSV da estensione futura a requisito, distinguendo risultati storici e serie temporali; dettagliato editor/export ERG (TD-07/11/15; D19).
@@ -197,9 +208,9 @@ Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce d
 - Aggiornata la collaborazione: archivi e cartelle per società, ruoli admin/visualizzatore e verifica delle scritture ricevute. Esplicitati limiti della revoca offline e differenza fra cifratura e autorizzazione (TD-19/20; D07).
 - Aggiunto nell'architettura il registro UI-01–10: branding blu/giallo proposto, logo e crediti, nuovo motto, IT/EN, grafici, tabelle ordinabili, accessibilità e componenti comuni (TD-02/03/05/06/12/25/26; D24).
 - Disegnati confini della suite, librerie e contratti condivisi con DB separati; proposti nomi coordinati senza rinominare la preview (SUITE-01; D25).
-- Aggiunta [ricognizione dei prodotti](docs/CONFRONTO_PRODOTTI.md) con fonti ufficiali e candidati separati dai requisiti approvati (TD-27).
+- Aggiunta [ricognizione dei prodotti](docs/archivio/CONFRONTO_PRODOTTI.md) con fonti ufficiali e candidati separati dai requisiti approvati (TD-27).
 - Aggiornati piano e verifiche attese. Verificata la copertura dei 29 commenti, i collegamenti locali dei documenti e la coerenza del registro. Non rieseguiti test applicativi: intervento solo documentale.
 
 ## Stato precedente
 
-Il documento di partenza era Architettura 0.3 del 16 ottobre 2026, con preview locale 0.1. Questo changelog viene istituito il 17 ottobre: non ricostruisce retroattivamente un elenco completo di modifiche o rilasci precedenti. Lo stato tecnico precedente resta descritto in [README](README.md), [decisioni](docs/DECISIONI.md) e [verifiche](docs/VERIFICA.md).
+Il documento di partenza era Architettura 0.3 del 16 ottobre 2026, con preview locale 0.1. Questo changelog viene istituito il 17 ottobre: non ricostruisce retroattivamente un elenco completo di modifiche o rilasci precedenti. Lo stato tecnico precedente resta descritto in [README](README.md), [decisioni](docs/archivio/DECISIONI.md) e [verifiche](docs/VERIFICA.md).

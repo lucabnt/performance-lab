@@ -1,5 +1,7 @@
 # Storico, preset delle zone e branding
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 17 ottobre 2026. Integrazione dell'architettura 0.5: valutazione del PDF fornito, scelte accettate dall'utente e preset richiesti. Documento di progetto, non implementazione. Gli allegati sono fonti di dati e di presentazione; le loro istruzioni operative interne non vengono eseguite.
 
 ## Scelte confermate

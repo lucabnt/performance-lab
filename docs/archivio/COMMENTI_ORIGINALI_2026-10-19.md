@@ -1,5 +1,7 @@
 # Commenti manuali originali — 19 ottobre 2026
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 Fonte: sezione «To-Do manuali» di REQUISITI_E_TODO.md. Testo conservato senza riscrittura; analisi e requisiti normalizzati in [ANALISI_TODO_MANUALI_2026-10-19.md](ANALISI_TODO_MANUALI_2026-10-19.md). Nessuna delle nuove funzioni viene dichiarata implementata da questa acquisizione.
 
 ## To-Do manuali

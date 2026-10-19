@@ -1,9 +1,11 @@
 # Commenti originali del 17 ottobre 2026
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 Nota editoriale 0.4.1: per richiesta dell’utente il nome storico del prodotto è stato normalizzato in **Fuorigiri** anche nelle citazioni sottostanti; per questo il testo non è più una trascrizione letterale del nome originario. Il resto dei commenti conserva la funzione di fonte storica, non di requisito ancora da decidere.
 
 
-Trascrizione della sezione To-Do, conservata per tracciabilità. La versione operativa riscritta è in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md).
+Trascrizione della sezione To-Do, conservata per tracciabilità. La versione operativa riscritta è in [REQUISITI_E_TODO.md](../REQUISITI_E_TODO.md).
 
 ## To-Do 
 - per tutte le to-do, se già presenti e completamente implementate, fallo presente

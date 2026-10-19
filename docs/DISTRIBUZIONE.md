@@ -1,4 +1,6 @@
-# Sincronizzazione e distribuzione — software 0.6 / architettura 1.4
+# Distribuzione desktop e prerequisiti mobile
+
+Guida di packaging; conserva anche il dettaglio della prima implementazione 0.6. Il prodotto nei sorgenti dichiara 0.8.0 con modifiche successive: ricompilare prima di collaudare le novità. Windows e sorgenti sono il perimetro concordato; build Fedora/Android rinviate. Gli adapter cloud oggi sono implementati: per il loro stato usare la [guida sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md), che supera le indicazioni storiche sotto.
 
 **Consegna concordata il 18 ottobre 2026:** Windows e sorgenti; l’utente ha rimandato le build Linux/Android. I gate e i collaudi sotto restano documentati, senza avviare CI o pubblicazioni.
 
@@ -14,7 +16,7 @@
 | WebDAV desktop | HTTPS, credenziali nel portachiavi, inventario, pubblicazione condizionale, rilettura, retry, accessi firmati e conflitti | Nextcloud/server reale, account distinti e interruzioni fra dispositivi reali |
 | Android | Shell Kotlin/WebView, backend ASGI in-process, bridge React, SAF, Keystore, WorkManager e test del contratto condiviso | Wheel native aggiornate, SDK/JDK/Gradle, APK, emulatore e telefono fisico; TD-57 **aperto** |
 
-Non chiamare questo stato “supporto certificato” di Nextcloud, Fedora o Android. Il test WebDAV usa un server HTTP locale di fixture; il prodotto accetta solo HTTPS. Google Drive/Dropbox via API e OAuth restano pianificati; i loro client desktop possono continuare a gestire una cartella locale.
+Non chiamare questo stato “supporto certificato” di Nextcloud, Fedora o Android. Il test WebDAV usa un server HTTP locale di fixture; il prodotto accetta solo HTTPS. Gli adapter API Drive/Dropbox/OneDrive sono stati aggiunti dopo questa prima implementazione; OAuth e cartelle condivise richiedono ancora collaudo reale. I client desktop possono anche gestire una cartella locale.
 
 ## Distribuzione senza installare Python o Node
 

@@ -1,5 +1,7 @@
 # Incrementale e report di archivio — versione 0.5
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 17 ottobre 2026. Attuazione degli step 1–4 autorizzata dall’utente, con scelta dei metodi sulla base delle fonti scientifiche disponibili. Il riferimento allegato è stato letto come esempio di struttura e aggregazioni, non come istruzione a importare dati personali né come fonte di formule validate. Nessun dato del PDF è stato inserito negli esempi o nell’archivio operativo.
 
 ## 1. Preset, migrazione e revisioni
@@ -12,7 +14,7 @@ API: GET/POST `/api/v1/analysis-presets`; il POST richiede nome, famiglia, versi
 
 ## 2. Motore costante e qualità
 
-Attuata la [specifica incrementale](METODI_INCREMENTALE.md): campione mantenuto a sinistra, intervalli semichiusi, nessun riempimento di buchi >5 s o estensione dell’ultimo campione. Valori negativi/non finiti inutilizzabili; zero potenza/cadenza valido, zero FC/gas non valido. Medie/integrali e coperture non arrotondati prima delle decisioni. Le esclusioni con motivo sottraggono gli intervalli senza comprimere l’asse temporale né sottrarli dal denominatore della copertura.
+Attuata la [specifica incrementale](../METODI_INCREMENTALE.md): campione mantenuto a sinistra, intervalli semichiusi, nessun riempimento di buchi >5 s o estensione dell’ultimo campione. Valori negativi/non finiti inutilizzabili; zero potenza/cadenza valido, zero FC/gas non valido. Medie/integrali e coperture non arrotondati prima delle decisioni. Le esclusioni con motivo sottraggono gli intervalli senza comprimere l’asse temporale né sottrarli dal denominatore della copertura.
 
 Ultimo step incrementale costante completo della sequenza contigua, con durata prevista raggiunta e potenza valida ≥95%. Aderenza separata: errore medio W/%, MAE e RMSE; banda facoltativa in ±W e quota dei secondi validi in banda, senza invalidazione automatica. Nessun bollino di aderenza se la banda non è configurata. L’interpolazione dello step parziale rimane secondaria. Il risultato primario è il target nominale dello step, da leggere insieme alla potenza realmente osservata.
 

@@ -1,22 +1,24 @@
 # Copertura dei test e sviluppi futuri
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 ## Aggiornamento software 0.5
 
-Nuove funzioni sviluppate per INC-01–10: preset/migrazioni, motore costante, correzioni e allineamento, metodi lattato/gas/ripetibilità, report completi gerarchici e grafici. La tabella sottostante conserva le lacune della 0.4: gli stati attuali e le distinzioni fra implementazione e collaudo sono nel [registro requisiti](REQUISITI_E_TODO.md) e nel [dettaglio 0.5](IMPLEMENTAZIONE_INCREMENTALE_05.md). Corpus FIT reali, validazione specialistica esterna e consolidamento INC-11 non sono dichiarati completati.
+Nuove funzioni sviluppate per INC-01–10: preset/migrazioni, motore costante, correzioni e allineamento, metodi lattato/gas/ripetibilità, report completi gerarchici e grafici. La tabella sottostante conserva le lacune della 0.4: gli stati attuali e le distinzioni fra implementazione e collaudo sono nel [registro requisiti](../REQUISITI_E_TODO.md) e nel [dettaglio 0.5](IMPLEMENTAZIONE_INCREMENTALE_05.md). Corpus FIT reali, validazione specialistica esterna e consolidamento INC-11 non sono dichiarati completati.
 
 
-Stato della preview Fuorigiri Performance Lab 0.4, aggiornamento del 17 ottobre 2026. L'utente ha confermato che **tutte le lacune dell'incrementale elencate sotto sono da implementare**, comprese quelle di priorità P2. Successivamente si procederà con Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Questa pianificazione non prescrive protocolli di esercizio e non dichiara validazione fisiologica. Nessuna lacuna INC è completata nel suo insieme: la 0.4 realizza il primo sottoinsieme operativo di INC-11 (TD-45–49 e parte di TD-50), come descritto nella [guida società/accessi](SOCIETA_BACKUP_E_ACCESSI.md).
+Stato della preview Fuorigiri Performance Lab 0.4, aggiornamento del 17 ottobre 2026. L'utente ha confermato che **tutte le lacune dell'incrementale elencate sotto sono da implementare**, comprese quelle di priorità P2. Successivamente si procederà con Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Questa pianificazione non prescrive protocolli di esercizio e non dichiara validazione fisiologica. Nessuna lacuna INC è completata nel suo insieme: la 0.4 realizza il primo sottoinsieme operativo di INC-11 (TD-45–49 e parte di TD-50), come descritto nella [guida società/accessi](../SOCIETA_BACKUP_E_ACCESSI.md).
 
 ## Sequenza di sviluppo confermata
 
-1. **Fase 1 — Copertura completa dell'incrementale e consolidamento del prodotto:** INC-01–11, con ripristino, prima sincronizzazione e ruoli descritti in TD-45–50 del [registro requisiti](REQUISITI_E_TODO.md). Ogni voce deve superare il suo criterio di accettazione; formule, corpus reale e prove sulle piattaforme sono dipendenze da acquisire, non esclusioni dal perimetro.
-2. **Fase 2 — Android:** fattibilità, sviluppo e collaudo dell’app autonoma offline (TD-57/AND-01–05), con report e scambio interoperabile con desktop. Contratti e spike possono essere preparati già durante il consolidamento della fase 1. [Architettura Android](ANDROID.md).
+1. **Fase 1 — Copertura completa dell'incrementale e consolidamento del prodotto:** INC-01–11, con ripristino, prima sincronizzazione e ruoli descritti in TD-45–50 del [registro requisiti](../REQUISITI_E_TODO.md). Ogni voce deve superare il suo criterio di accettazione; formule, corpus reale e prove sulle piattaforme sono dipendenze da acquisire, non esclusioni dal perimetro.
+2. **Fase 2 — Android:** fattibilità, sviluppo e collaudo dell’app autonoma offline (TD-57/AND-01–05), con report e scambio interoperabile con desktop. Contratti e spike possono essere preparati già durante il consolidamento della fase 1. [Architettura Android](../ANDROID.md).
 3. **Fase 3 — Primi motori aggiuntivi:** Sprint breve / potenza neuromuscolare (TD-52), Wingate 30 s (TD-53), Wingate 15 s (TD-54). Il 15 s è stato usato in passato dalla società e deve avere una propria identità/versione, con metodo storico documentato. Prima di implementarli servono specifiche del protocollo e risultati attesi; non si deducono automaticamente dal nome del test.
 4. **Dopo la fase 3 — Candidati ulteriori:** CP/W′, time trial/FTP, sprint ripetuti, test submassimali e altri protocolli di laboratorio rimangono candidati, senza impegno di implementazione in questa fase. L'integrazione dei gas in un **test incrementale**, invece, è già inclusa in INC-08.
 
 ## Inserimento Android e step 2 — revisione 1.0
 
-La [specifica dei metodi](METODI_INCREMENTALE.md) formalizza lo step 2 senza dichiarare completate le lacune software: regola degli step confermata, aderenza separata e nessun coefficiente universale di soglia/FTHR. Gli scostamenti rilevati e i metodi specialistici ancora da selezionare sono espliciti.
+La [specifica dei metodi](../METODI_INCREMENTALE.md) formalizza lo step 2 senza dichiarare completate le lacune software: regola degli step confermata, aderenza separata e nessun coefficiente universale di soglia/FTHR. Gli scostamenti rilevati e i metodi specialistici ancora da selezionare sono espliciti.
 
 La nuova richiesta inserisce **Android fra l’incrementale desktop e i nuovi test**. Contratti portabili e spike possono procedere durante il consolidamento; il rilascio mobile richiede archivio autonomo offline, report, ruoli e scambio interoperabile. Non esclude nessun INC né cambia l’ordine Sprint breve → Wingate 30 s → Wingate 15 s.
 

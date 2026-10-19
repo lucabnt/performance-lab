@@ -1,8 +1,10 @@
 # Decisioni e stato dell'implementazione
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 ## Architettura 1.4 / software 0.6 — SYNC-01/02, DIST-01/02, MOB-02 e UI-22/23
 
-Decisioni operative e stato in [consolidamento 0.6](CONSOLIDAMENTO_DISTRIBUZIONE_06.md). WebDAV con oggetti immutabili e rilettura, controlli firmati versionati e rotazione del canale recuperabile; credenziali nel portachiavi, ruoli indipendenti dal cloud. Windows: bundle completo e installer per utente. Fedora: Flatpak con runtime, senza dipendenze applicative da installare manualmente. Distribuzione offline Linux deve includere anche i runtime, non la sola `.flatpak`.
+Decisioni operative e stato in [consolidamento 0.6](../DISTRIBUZIONE.md). WebDAV con oggetti immutabili e rilettura, controlli firmati versionati e rotazione del canale recuperabile; credenziali nel portachiavi, ruoli indipendenti dal cloud. Windows: bundle completo e installer per utente. Fedora: Flatpak con runtime, senza dipendenze applicative da installare manualmente. Distribuzione offline Linux deve includere anche i runtime, non la sola `.flatpak`.
 
 UI-22: trasporto → connessione → sincronizzazione → esito/conflitti → registro/rotazione avanzata, nella condivisione della società. UI-23: icona applicativa Fuorigiri distinta dal marchio fisso della società. MOB-02: shell Android Kotlin/WebViewAssetLoader/WebMessageListener con React e backend ASGI in-process, al posto del Capacitor proposto, senza riscrivere il motore Python né usare un server sul telefono. Scelta motivata dal bridge piccolo e dalle API native già necessarie; iOS fuori scope.
 
@@ -19,7 +21,7 @@ La 0.6 non certifica Fedora/Nextcloud/Android né dichiara un APK disponibile. W
 
 ## Architettura 1.2 — CLOUD-02 / TD-59
 
-L’utente conferma **WebDAV per desktop e mobile Android**. Superata la classificazione come candidato nella revisione 1.1. Il contratto di scambio rimane comune ai trasporti e indipendente dai provider proprietari. Proposto WebDAV come primo adapter remoto dopo il refactoring della cartella locale; Nextcloud come server iniziale di collaudo, senza presumerne adozione o disponibilità di credenziali. Riferimenti: [specifica cloud](SINCRONIZZAZIONE_CLOUD_API.md), [prossimi passi](PROSSIMI_PASSI.md). Requisito acquisito, sviluppo non ancora eseguito.
+L’utente conferma **WebDAV per desktop e mobile Android**. Superata la classificazione come candidato nella revisione 1.1. Il contratto di scambio rimane comune ai trasporti e indipendente dai provider proprietari. Proposto WebDAV come primo adapter remoto dopo il refactoring della cartella locale; Nextcloud come server iniziale di collaudo, senza presumerne adozione o disponibilità di credenziali. Riferimenti: [specifica cloud](SINCRONIZZAZIONE_CLOUD_API.md), [prossimi passi](../PROSSIMI_PASSI.md). Requisito acquisito, sviluppo non ancora eseguito.
 
 
 ## Architettura 1.1 — CLOUD-01 / UI-19
@@ -30,23 +32,23 @@ Separati consenso cloud, condivisione della cartella e autorizzazione/ruolo Fuor
 
 ## Architettura 1.0 / software 0.4.1 — step 2 e portabilità
 
-**MET-01:** specifica [METODI_INCREMENTALE](METODI_INCREMENTALE.md) con algoritmi, unità, coperture, null, fonti, finestre e vettori di accettazione. Conferma utente: completezza temporale/copertura separata dall’aderenza e nessun coefficiente universale dalla MAP a soglia/FTHR. Il motore corrente non viene reinterpretato né sostituito in questo step documentale. Prima dell’implementazione specialistica restano da scegliere varianti lattato, gas e rampe.
+**MET-01:** specifica [METODI_INCREMENTALE](../METODI_INCREMENTALE.md) con algoritmi, unità, coperture, null, fonti, finestre e vettori di accettazione. Conferma utente: completezza temporale/copertura separata dall’aderenza e nessun coefficiente universale dalla MAP a soglia/FTHR. Il motore corrente non viene reinterpretato né sostituito in questo step documentale. Prima dell’implementazione specialistica restano da scegliere varianti lattato, gas e rampe.
 
 **NAME-01:** richiesta di rinomina tecnica completa; superata la compatibilità dei vecchi nomi pubblici UI-16. Package/comandi/header/configurazione/distribuzione ora Fuorigiri; modulo generico `cycling_test` invariato. Vecchi archivi e canali su disco riconosciuti per non perdere dati: nessun rename automatico di directory con percorsi assoluti, nessuna rigenerazione di identità o chiavi.
 
-**MOB-01 / UI-18:** Android acquisito come sviluppo, dopo completamento incrementale/consolidamento desktop e prima dei motori sprint/Wingate. Raccomandazione da verificare: React/Capacitor + bridge Kotlin + nucleo Python incorporato, archivio privato e trasporto astratto; desktop FastAPI/Qt rimane confermato. API cloud o SAF Android da provare, nessuna presunzione di cartelle locali Drive identiche al PC. [Alternative, dipendenze e accettazione](ANDROID.md).
+**MOB-01 / UI-18:** Android acquisito come sviluppo, dopo completamento incrementale/consolidamento desktop e prima dei motori sprint/Wingate. Raccomandazione da verificare: React/Capacitor + bridge Kotlin + nucleo Python incorporato, archivio privato e trasporto astratto; desktop FastAPI/Qt rimane confermato. API cloud o SAF Android da provare, nessuna presunzione di cartelle locali Drive identiche al PC. [Alternative, dipendenze e accettazione](../ANDROID.md).
 
 
 ## Software 0.4 / architettura 0.9 — ripristino e accessi
 
-Adottati e implementati UI-17/REC-01: operazioni società separate, bootstrap prima dei dati, recupero credenziali cifrato distinto dal backup ZIP, copie di consultazione e indipendenti senza privilegi della società originale. Rinnovo/cambio ruolo tramite invito sostitutivo e revoca, applicato sul medesimo archivio locale; stati degli inviti dichiarati come emessi, senza presumere accettazione remota. Revoca con eventi già ricevuti fissati per hash; nessuna promessa di eliminare copie o ruotare automaticamente la chiave di lettura. [Guida operativa](SOCIETA_BACKUP_E_ACCESSI.md). TD-45–49 presenti; TD-50 e INC-11 restano parziali. I test successivi mantengono l’ordine confermato.
+Adottati e implementati UI-17/REC-01: operazioni società separate, bootstrap prima dei dati, recupero credenziali cifrato distinto dal backup ZIP, copie di consultazione e indipendenti senza privilegi della società originale. Rinnovo/cambio ruolo tramite invito sostitutivo e revoca, applicato sul medesimo archivio locale; stati degli inviti dichiarati come emessi, senza presumere accettazione remota. Revoca con eventi già ricevuti fissati per hash; nessuna promessa di eliminare copie o ruotare automaticamente la chiave di lettura. [Guida operativa](../SOCIETA_BACKUP_E_ACCESSI.md). TD-45–49 presenti; TD-50 e INC-11 restano parziali. I test successivi mantengono l’ordine confermato.
 
 
 ## Pianificazione confermata / architettura 0.8 — software invariato 0.3
 
 Decisione dell'utente del 17 ottobre 2026: completare **tutte** le lacune incrementali INC-01–11, poi sviluppare Sprint breve / potenza neuromuscolare, Wingate 30 s e Wingate 15 s. Il 15 s è un protocollo usato in passato dalla società; la sua definizione storica va acquisita prima di scegliere formule e criteri. Gli altri test rimangono candidati; scambi gassosi nell'incrementale già inclusi nella prima fase. Dettagli e criteri in [COPERTURA_TEST_E_ROADMAP.md](COPERTURA_TEST_E_ROADMAP.md).
 
-Registrate le lacune di gestione società: tre percorsi distinti (creazione, invito, backup), ripristino dati separato dal recupero degli accessi del fondatore, prima sincronizzazione di archivio ancora vuoto, chiarezza dei ruoli e dei dispositivi, rinnovo e revoca. TD-45–54 nel [registro requisiti](REQUISITI_E_TODO.md); scelte UI-17 e REC-01 nell'[architettura](../ARCHITETTURA_PROPOSTA.md). Aggiornamento soltanto documentale: nessuna nuova funzione o credenziale creata e nessuna equivalenza tra Wingate 15 s e 30 s assunta.
+Registrate le lacune di gestione società: tre percorsi distinti (creazione, invito, backup), ripristino dati separato dal recupero degli accessi del fondatore, prima sincronizzazione di archivio ancora vuoto, chiarezza dei ruoli e dei dispositivi, rinnovo e revoca. TD-45–54 nel [registro requisiti](../REQUISITI_E_TODO.md); scelte UI-17 e REC-01 nell'[architettura](../../ARCHITETTURA_PROPOSTA.md). Aggiornamento soltanto documentale: nessuna nuova funzione o credenziale creata e nessuna equivalenza tra Wingate 15 s e 30 s assunta.
 
 ## Stato corrente software 0.3 / architettura 0.7
 
@@ -54,11 +56,11 @@ Nome confermato **Fuorigiri Performance Lab**. Adottate e implementate le scelte
 
 ## Stato software 0.2 / architettura 0.6
 
-Il 17 ottobre 2026 è stata implementata la parte locale dei nuovi requisiti: revisioni, osservazioni, protocolli editabili/versionati, CSV, statistiche e report storici, workspace/ruoli e firme di scambio. Stato per ID in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), prove e limiti nel [README](../README.md).
+Il 17 ottobre 2026 è stata implementata la parte locale dei nuovi requisiti: revisioni, osservazioni, protocolli editabili/versionati, CSV, statistiche e report storici, workspace/ruoli e firme di scambio. Stato per ID in [REQUISITI_E_TODO.md](../REQUISITI_E_TODO.md), prove e limiti nel [README](../../README.md).
 
 **Decisione successiva vincolante sul branding:** logo della società fondatrice incluso nel software e attribuzione fissa «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.». Nessun override da workspace, anagrafica o impostazioni UI. Le precedenti proposte di branding configurabile sono superate.
 
-La [guida di test con GUI](TESTARE_IL_PROGETTO.md) descrive avvio, fixture e checklist. La localizzazione IT/EN è parziale per diagnostiche e testi secondari; inviti e firme sono implementati, mentre portachiavi, recupero guidato e rotazione chiavi restano da completare. Le sezioni seguenti conservano la cronologia del disegno e degli scostamenti iniziali, senza descrivere necessariamente lo stato corrente.
+La [guida di test con GUI](../TESTARE_IL_PROGETTO.md) descrive avvio, fixture e checklist. La localizzazione IT/EN è parziale per diagnostiche e testi secondari; inviti e firme sono implementati, mentre portachiavi, recupero guidato e rotazione chiavi restano da completare. Le sezioni seguenti conservano la cronologia del disegno e degli scostamenti iniziali, senza descrivere necessariamente lo stato corrente.
 
 ## Conferme successive — 17 ottobre 2026, architettura 0.5
 
@@ -68,7 +70,7 @@ Ricevuti logo definitivo come riferimento e PDF storico. Valutazione delle nove 
 
 Confermati preset FC su FTHR e potenza su Watt Soglia e confini continui: FC <81 / 81–<90 / 90–<100 / 100–105 / >105%; potenza ≤55 / >55–75 / >75–90 / >90–105 / >105%. **Numero di zone configurabile**, anche oltre cinque e diverso per FC/potenza. Le formule per ottenere soglie e criteri di step valido restano aperti. Aggiornamento documentale, nessuna funzione nuova implementata.
 
-Aggiornamento documentale del 17 ottobre 2026: l'[architettura 0.4](../ARCHITETTURA_PROPOSTA.md) integra i commenti dell'utente. Stato puntuale e criteri nel [registro requisiti](REQUISITI_E_TODO.md); cronologia nel [changelog](../CHANGELOG.md). Le funzioni aggiunte al disegno non sono state implementate in questa revisione.
+Aggiornamento documentale del 17 ottobre 2026: l'[architettura 0.4](../../ARCHITETTURA_PROPOSTA.md) integra i commenti dell'utente. Stato puntuale e criteri nel [registro requisiti](../REQUISITI_E_TODO.md); cronologia nel [changelog](../../CHANGELOG.md). Le funzioni aggiunte al disegno non sono state implementate in questa revisione.
 
 ## Confermate
 

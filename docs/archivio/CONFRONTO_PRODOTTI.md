@@ -1,5 +1,7 @@
 # Confronto di prodotti e funzionalità candidate
 
+> Documento storico: conserva decisioni e osservazioni dell’epoca. Per stato e priorità attuali consultare [indice](../README.md), [requisiti](../REQUISITI_E_TODO.md) e [roadmap](../PROSSIMI_PASSI.md).
+
 Ricognizione del 17 ottobre 2026 per TD-27, basata sulle pagine ufficiali consultate. Selezione di riferimenti pertinenti, non classifica dei prodotti più diffusi né verifica pratica di tutte le funzioni. Le descrizioni commerciali non validano i metodi fisiologici. Le idee seguenti non cambiano automaticamente il perimetro di sviluppo.
 
 | Prodotto e modello | Funzioni descritte dalla fonte | Indicazioni per la suite |
@@ -11,7 +13,7 @@ Ricognizione del 17 ottobre 2026 per TD-27, basata sulle pagine ufficiali consul
 
 ## Priorità proposte
 
-- **Già richieste e da sviluppare/consolidare:** revisione dopo il grafico, gruppi/stagioni, confronti, zone configurabili, report longitudinali e import CSV. Vedi TD-04–29 nel [registro requisiti](REQUISITI_E_TODO.md).
+- **Già richieste e da sviluppare/consolidare:** revisione dopo il grafico, gruppi/stagioni, confronti, zone configurabili, report longitudinali e import CSV. Vedi TD-04–29 nel [registro requisiti](../REQUISITI_E_TODO.md).
 - **Candidate per l'app Allenamenti:** calendario per atleta/gruppo, modelli di seduta, editor strutturato, assegnazione e confronto programmato/eseguito; applicare le zone di una revisione esplicita del test.
 - **Da valutare in seguito:** modelli potenza/durata, dashboard personalizzabili, carico/fatica, feedback collaborativo e integrazioni dirette con piattaforme. Richiedono definizioni, licenze delle eventuali dipendenze, dati e prove specifiche.
 

@@ -108,6 +108,9 @@ class ArchiveStore(Store):
         identity=self.identity
         if identity['certificate']['role']!='admin' or identity['certificate']['id'] in self.revocations():
             raise ValueError('Visualizzatore: modifica non autorizzata.')
+        from .society_scope import check_record
+        organizations=self.list('organization')
+        check_record(change['record'],identity.get('organization_id') or (organizations[0]['id'] if len(organizations)==1 else None))
         body={**change,'workspace':identity['workspace'],'certificate':identity['certificate'],'certificate_signature':identity['certificate_signature']}
         return {**body,'signature':sign(identity['private_key'],body)}
 
@@ -115,6 +118,9 @@ class ArchiveStore(Store):
         identity=self.identity
         if change.get('workspace')!=identity['workspace']:
             raise ValueError('Workspace del pacchetto errato.')
+        from .society_scope import check_record
+        organizations=self.list('organization')
+        check_record(change['record'],identity.get('organization_id') or (organizations[0]['id'] if len(organizations)==1 else None))
         certificate=change['certificate']
         verify(identity['authority_public'],certificate,change['certificate_signature'])
         if certificate['workspace']!=identity['workspace'] or certificate['role']!='admin':
@@ -170,7 +176,9 @@ class Workspaces:
         identity=fresh_identity(id,operator)
         def build(stage):
             stage.mkdir();write_json(stage/'identity.json',identity)
-            return ArchiveStore(stage).save('organization',{'name':name})['id']
+            org_id=ArchiveStore(stage).save('organization',{'name':name})['id']
+            identity['organization_id']=org_id;write_json(stage/'identity.json',identity)
+            return org_id
         return self.install_new(id,name,path,build)
 
     def install_new(self,id,name,path,build):
@@ -200,11 +208,14 @@ class Workspaces:
 
 def invitation(store,name,role,password,replace_id=None):
     if len(password)<12:raise ValueError('Usare una password di almeno 12 caratteri per l’invito.')
+    from .society_scope import check_archive
+    check_archive(store)
     identity=store.identity
     if not identity.get('authority_private'):raise ValueError('Solo il dispositivo fondatore gestisce gli inviti.')
     writer=private()
     cert={'id':str(uuid4()),'workspace':identity['workspace'],'name':name,'role':role,'public_key':b64(writer.public_key().public_bytes_raw())}
     invited={k:identity[k] for k in ('workspace','authority_public','sync_key')}
+    invited['organization_id']=store.list('organization')[0]['id']
     invited.update(certificate=cert,certificate_signature=sign(identity['authority_private'],cert),private_key=b64(writer.private_bytes_raw()) if role=='admin' else None)
     payload={'identity':invited,'organization':store.list('organization')[0]}
     result=seal(payload,password)
@@ -222,6 +233,8 @@ def invitation(store,name,role,password,replace_id=None):
 def join(manager,raw,password,path=''):
     payload=unseal(raw,password)
     identity=validate_identity(payload['identity'])
+    if identity.get('organization_id') not in (None,payload['organization']['id']):raise ValueError('Invito e società non corrispondono.')
+    identity['organization_id']=payload['organization']['id']
     if identity.get('authority_private'):raise ValueError('Usare il percorso di recupero per il fondatore.')
     id=identity['workspace']
     # Validate IDs before using them as relative filesystem components.

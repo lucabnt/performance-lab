@@ -17,6 +17,8 @@ jobs:
       - run: python scripts/verify_suite_ui.py
       - run: npm ci && npm run build
         working-directory: frontend
+      - run: npm run test:signals
+        working-directory: frontend
       - run: python -m pytest -q
       - run: python scripts/build.py
       - shell: pwsh
@@ -48,7 +50,8 @@ jobs:
           flatpak-builder --user --force-clean --repo=flatpak-repo flatpak-build packaging/linux/org.fuorigiri.PerformanceLab.json
           flatpak-builder --run flatpak-build packaging/linux/org.fuorigiri.PerformanceLab.json fuorigiri --smoke-test --data /tmp/fuorigiri-ci-smoke
           mkdir -p dist/release
-          flatpak build-bundle flatpak-repo dist/release/Fuorigiri-0.6.0-linux-x86_64.flatpak org.fuorigiri.PerformanceLab --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo
+          VERSION=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          flatpak build-bundle flatpak-repo "dist/release/Fuorigiri-${VERSION}-linux-x86_64.flatpak" org.fuorigiri.PerformanceLab --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo
       - uses: actions/upload-artifact@v4
         with:
           name: Fuorigiri-linux-candidate

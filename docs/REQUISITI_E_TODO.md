@@ -1,5 +1,19 @@
 # Requisiti e to-do
 
+**Attuazione TD-83–97, 19 ottobre 2026:** implementati nei sorgenti flussi test/glossario/riferimenti/tempi, avvisi licenza, stati cloud e crescita/maturazione con snapshot, export e report. Rimangono collaudo provider reale, revisione giuridica e validazione scientifica esterna; nessun nuovo installer. [Registro e accettazione](#osservazioni-manuali-acquisite--19-ottobre-2026), [specifica maturazione](MATURAZIONE.md), [verifiche](VERIFICA.md). Le sezioni datate conservano lo stato storico; non prevalgono su aggiornamenti successivi.
+
+## Revisione e isolamento degli archivi — 19 ottobre 2026
+
+- **REV-01 — implementato:** spazi/metadati protocolli, persistenza e concorrenza della selezione società, confronti con origine soglia assente, W/kg stimati esclusi dai delta, metriche dinamiche e selezione delle serie nel profilo.
+- **SYNC-ISO-01 — implementato:** un archivio gestito per società, identità vincolata, canali/connessioni/inviti distinti. Vecchi archivi multi-società consultabili ma bloccati per sync e inviti; nessuna separazione automatica. La selezione UI non è un filtro di condivisione. Usare cartelle cloud con ACL distinte per collaboratori diversi.
+- **SYNC-PERF-01 — implementato parziale:** sync ordinaria salta pacchetti già verificati; verifica completa esplicita. Restano duplicazione degli allegati/campioni per revisione e inventario completo del canale.
+- **SYNC-V2-01 — prossima priorità:** oggetti cifrati deduplicati per hash, campioni fuori dai record, eventi leggeri, cursori/snapshot, compatibilità v1/v2 e dispositivi offline. Non cancellare cronologie prima di definire conservazione e recupero.
+- **BACKUP-SCALE-01 — da implementare subito dopo/con v2:** backup e ripristino in streaming o parti, integrità e prove di recupero oltre gli attuali 100 MB ZIP / 1 GB espanso / 10.000 allegati. Ora l'export rifiuta backup non ripristinabili: il limite non è stato rimosso.
+- **SYNC-MIG-01 — da implementare:** separazione assistita di backup multi-società con dipendenze e cronologia complete, nuove identità/chiavi/inviti e conservazione dell'originale.
+- **QA-RELEASE-01 — da completare:** flusso GUI automatizzato completo, FIT reali anonimizzati, account cloud distinti, interruzioni/revoche/conflitti; candidato Windows su VM pulita. Fedora/Android restano rinviati al builder disponibile. Traduzione e accessibilità da completare.
+
+Dettagli: [revisione generale](REVISIONE_GENERALE_2026-10-19.md), [dimensioni e strategia sync](SYNC_DIMENSIONI_E_SCALABILITA.md). Le stime derivano da registrazioni sintetiche misurate, non da un archivio reale pluriennale.
+
 ## Suite comune — prima estrazione, 18 ottobre 2026
 
 - **TD-79 / SUITE-02 — implementato:** repository autonoma `cycling-suite-common`, ramo main, tag UI 0.1.0, GPL-3.0-or-later. Le app conservano repository/build/versioni proprie; nessuna pubblicazione GitHub/npm eseguita.
@@ -195,3 +209,55 @@ Stati: **presente** = funzionalità riscontrata nel codice; **parziale** = solo 
 ## Come mantenere il registro
 
 Conservare gli ID; per richieste composte aggiornare lo stato di ogni parte. Segnare «completato» solo dopo implementazione e verifica del criterio, citando file/test o versione. Registrare ogni variazione significativa nel [changelog](../CHANGELOG.md), con motivazione, ID coinvolti e distinzione fra progetto e software.
+
+
+## Dettaglio test: visibilità dei tracciati — 18 ottobre 2026
+
+- [x] Grafico dei campioni FIT/CSV in cima al dettaglio incrementale, anaerobico e custom, con potenza, FC e cadenza sovrapposte su un unico asse temporale, mantenendo scale e unità indipendenti.
+- [x] Canali opzionali con unità esplicite: velocità, temperatura, quota; lattato come osservazioni puntuali nel tempo. Restano disponibili i grafici specialistici gas/lattato-carico.
+- [x] Distinzione e filtro tracciato/riepilogo nello storico; spiegazione nei test senza campioni, nessuna ricostruzione da medie/massimi o interpolazione delle lacune.
+- [x] Recupero dei campioni dall'oggetto del tracciato quando non inclusi nel record, senza ricalcoli automatici. Guida ed esempi in TESTARE_IL_PROGETTO.md.
+
+
+## Grafici sovrapposti e confronti leggibili — 18 ottobre 2026
+
+- [x] Un solo grafico temporale per potenza/FC/cadenza e lattato misurato, scale fisiche indipendenti, selettore per i canali aggiuntivi. Nessuna normalizzazione implicita delle grandezze.
+- [x] Storici: una curva per serie omogenea, non una voce di legenda per aggregato. Esclusione delle serie prive di valori per la metrica scelta, una sola serie iniziale e selezione esplicita di massimo quattro.
+- [x] Identità delle serie basata sulle separazioni esistenti del backend: protocollo/versione, metodo/condizioni/schema e origine soglia. Affiancamento descrittivo fra protocolli, senza aggregarli né dichiarare equivalenze automatiche.
+- [x] Metrica e protocollo prima dei filtri secondari; legenda breve, metodi nella chiave, tabella riferita alle serie visualizzate, zero/null distinti. Esportazioni complete dell'archivio filtrato chiaramente separate dalla selezione interattiva.
+- [x] Modelli grafici verificati con 12 test Node e GUI sul corpus completo, senza rigenerazione dei dati.
+
+
+## Lattato configurabile e chiarimento Android — 18 ottobre 2026
+
+- [x] Livelli di lattato configurabili per prova, default 2/3/4 mmol/L: interpolazione lineare locale W, W/kg e FC, senza estrapolazione o equivalenze automatiche con soglie fisiologiche.
+- [x] FC da finestra finale dello step completo costante e copertura del preset; bpm indisponibili se mancano step/FC validi. Metodi e prelievi di supporto salvati; vecchie revisioni preservate e metodi distinti negli storici.
+- [x] GUI di configurazione/risultati e grafici, metriche storiche dinamiche per livelli decimali, MD/PDF e CSV esteso, mantenendo lo standard CSV storico.
+- [x] Verifica numerica, casi ambigui/mancanti e report; PDF renderizzato e ispezionato, cache aggiornata per il nuovo renderer.
+- [x] Chiarimento Android: Kotlin già presente nella shell/credenziali/worker; Python incorporato con Chaquopy per riuso, ASGI in-process senza listener HTTP. Decisione e limiti descritti in ANDROID.md.
+- [ ] Build e collaudo Android su dispositivo fisico: restano rinviati come concordato; toolchain e wheel native non ancora disponibili. Confermare compatibilità dipendenze/ABI, prestazioni e ciclo di vita prima di dichiarare il prodotto Android pronto.
+
+
+## Osservazioni manuali acquisite — 19 ottobre 2026
+
+Le 11 osservazioni originali sono conservate in [COMMENTI_ORIGINALI_2026-10-19.md](COMMENTI_ORIGINALI_2026-10-19.md). Analisi, dipendenze, fonti e criteri di accettazione: [ANALISI_TODO_MANUALI_2026-10-19.md](ANALISI_TODO_MANUALI_2026-10-19.md). I 15 requisiti sotto sono stati attuati nei sorgenti con gli stati puntuali aggiornati. L’analisi originale resta storica; metodi effettivi in MATURAZIONE.md. Nessuna implementazione equivale a validazione scientifica esterna o rilascio di un nuovo installer.
+
+| ID | Requisito normalizzato | Stato, priorità e accettazione |
+|---|---|---|
+| TD-83 / UI-27 | Avviare «Correggi test» con un pulsante esplicito, anziché aprire il modulo dentro una sezione espandibile. Uniformare incrementali, anaerobici e custom. | **Implementato e verificato localmente.** Editor dedicato con conferma/annullamento, motivo e nuova revisione; permessi e protezione da modifiche concorrenti preservati. |
+| TD-84 / UI-28 | Collocare i campi personalizzati in coda al modulo e alla scheda test, prima delle azioni finali. | **Implementato e verificato localmente.** Sezione riconoscibile e coerente nelle famiglie; campi standard prioritari, validazione e valori conservati. |
+| TD-85 / UI-29 | Inserire in fondo a ogni pagina un glossario contestuale per acronimi e termini tecnici effettivamente usati. | **Implementato e verificato localmente.** Definizioni/unità/origine dei valori, IT/EN, accessibile anche da tastiera; nessun glossario vuoto o enciclopedia ripetuta. |
+| TD-86 / UI-30 | Dare a potenza di soglia e FTHR pari evidenza rispetto alla MAP e affiancarle alle zone. Riordinare le sezioni del dettaglio. | **Implementato e verificato localmente.** Riferimenti distinti, fonte e indisponibilità visibili; zone legate al riferimento esatto. Ordine proposto nell'analisi, adattato alla famiglia di test. |
+| TD-87 / SCI-02 | Mostrare subito sotto ogni soglia il metodo e l'eventuale coefficiente realmente applicato. | **Implementato nella GUI:** fonte, base/coefficiente effettivo e risultato accanto alle zone. Nessun coefficiente automatico; livelli lattato distinti dalle soglie fisiologiche. |
+| TD-88 / LEGAL-01 | Esporre insieme alla licenza l'assenza di garanzia e i limiti, compreso il rischio di perdita dati. | **Implementato:** avvisi persistenti, pannello licenza/garanzia/backup e testi GPL/dipendenze originali. Revisione giuridica del distributore ancora necessaria; nessuna esenzione assoluta dichiarata. |
+| TD-89 / UI-31 | Rendere semplice impostare i tempi guardando il grafico: minuti leggibili e secondi esatti coerenti nei campi. | **Implementato e verificato:** TimeInput secondi/mm:ss, hover in secondi, marker e selezione per incrementali/custom; inizio anaerobico con durata del protocollo. 23:45 = 1.425 s; nessuna nuova revisione al solo click. |
+| TD-90 / UI-32 | Spiegare lo scopo del grafico lattato-carico e collegarlo chiaramente a watt e FC ai livelli richiesti. | **Implementato e verificato:** spiegazione W–mmol/L, livello e punto selezionabili, guide grafiche e riga evidenziata con W/W/kg/FC. Tracciato temporale distinto; nessuna nuova equazione o estrapolazione. |
+| TD-91 / UI-33 | Mantenere sempre raggiungibile la chiusura del dettaglio test durante lo scorrimento. | **Implementato e verificato localmente.** Testata con X persistente, nome accessibile, Esc e gestione focus; nessuna perdita silenziosa di modifiche, nessuna trasparenza verso la lista sottostante. |
+| TD-92 / CLOUD-05 | Rendere comprensibili disponibilità e prerequisiti di «Collega account» per Drive/Dropbox/OneDrive. | **Implementato per stati/prerequisiti:** comando disabilitato con spiegazione quando incompleto, fallback browser e distinzione token/accesso destinazione. L’ultimo accesso verificato è vincolato alla connessione. **Aperti** registrazione OAuth della distribuzione e collaudo con account reali. |
+| TD-93 / MAT-01 | Estendere l'antropometria datata con dati necessari ai metodi maturativi, mantenendo facoltativi statura dei genitori, apertura braccia e lunghezza arti inferiori. | **Implementato:** modello misura additivo con qualità/precisione e misure avanzate facoltative, fonte della previsione esterna, correzione con motivo/revisione, UI/CSV/backup. Nessun dato opzionale diventa obbligatorio per una rilevazione. |
+| TD-94 / MAT-02 | Calcolare e mostrare la velocità di crescita staturale (HV) e la sua storia separatamente dai risultati prestativi. | **Implementato e verificato:** HV qualificata 90–400 giorni, fonti/qualità/precisione, delta e motivi; zero mantenuto, calo statura e intervalli inadeguati non annualizzati. Regole prudenziali versionate del prodotto, non criteri diagnostici. |
+| TD-95 / MAT-03 | Aggiungere metodi espliciti/versionati per maturity offset, PHV/APHV e, quando possibile, statura adulta prevista, %PAH e crescita residua. | **Implementato con perimetro esplicito:** Moore standing, Mirwald, APHV stimata e PHV quadratico longitudinale esplorativo, %PAH/residuo da previsione adulta **esterna** tracciata. Khamis–Roche automatico non incluso, tabelle corrette non verificate. Domini/SEE/limiti in MATURAZIONE.md; validazione esterna ancora aperta. |
+| TD-96 / MAT-04 | Evidenziare gli indici pertinenti all'età e disponibili, conservando tutti i risultati e lo storico nella pagina atleta. | **Implementato:** fasce non sovrapposte alla data scelta, HV/PHV disponibili in evidenza e offset sotto 16 anni; tabelle di tutte le stime e snapshot precedenti sempre consultabili. Indici opzionali in area secondaria; nessuna maturazione dedotta dalla sola età. |
+| TD-97 / MAT-05 | Integrare dati e analisi maturative in storico atleta, CSV esteso, report gerarchici, backup e sincronizzazione per società. | **Implementato e verificato localmente:** snapshot con input completi/metodo/hash, CSV estesi e report gerarchici da analisi conservate; backup/ripristino reale e sync firmata con visualizzatore testati. Schema storico preservato; oracoli indipendenti e corpus crescita dedicato. |
+
+P0 = condizione di accettazione prima del rilascio della funzione; P1 = prossima revisione di usabilità/trasparenza; P2 = nuova area funzionale dopo specifica e consolidamento. La numerazione non impone l'ordine di implementazione. Sync v2, backup scalabili e separazione legacy rimangono priorità infrastrutturali già registrate; questa acquisizione non le dichiara concluse.

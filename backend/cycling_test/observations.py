@@ -36,13 +36,22 @@ def enrich(analysis, samples, settings):
     a['zones'] = [calculate(s, references.get(s['reference']), samples, start, settings['end_s'],parameters.get('max_gap_s',5),settings.get('excluded_intervals',[])) for s in schemes]
     if a.get('preset'):
         from .specialist import lactate
-        a['lactate_analysis']=lactate(a,settings.get('lactate',[]))
-        for level in (2,4):a[f'lactate_{level}_w']=a['lactate_analysis']['results'][f'fixed_{level}']['value']
+        from .lactate_levels import metric_key
+        observations=list(settings.get('lactate',[]))
+        times={r['at_s'] for r in observations}
+        observations += [{'at_s':r['t'],'mmol_l':r['lactate_mmol_l'],'origin':'csv'} for r in samples if r.get('lactate_mmol_l') is not None and r['lactate_mmol_l']>0 and r['t'] not in times]
+        a['lactate_analysis']=lactate(a,observations,settings.get('lactate_levels'),settings.get('weight_kg'),settings.get('weight_source'))
         a['vo2peak_l_min']=a.get('gas',{}).get('vo2peak',{}).get('value')
         a['vo2peak_ml_kg_min']=a.get('gas',{}).get('vo2peak',{}).get('ml_kg_min')
         a['metric_details']=dict(a.get('metric_details',{}))
-        for level in (2,4):
-            a['metric_details'][f'lactate_{level}_w']={**a['lactate_analysis']['results'][f'fixed_{level}'],'source':'lactate_load_curve','coverage':None}
+        # Preserve stable legacy keys when a user removes 2 or 4 from the list.
+        for level in (2,4):a[metric_key(level,'w')]=None
+        for result in a['lactate_analysis']['results'].values():
+            if 'concentration_mmol_l' not in result:continue
+            level=result['concentration_mmol_l']
+            for channel,value,unit,reason in [('w',result['value'],'W',result['reason']),('wkg',result['wkg'],'W/kg',result['weight_reason']),('hr_bpm',result['hr_bpm'],'bpm',result['hr_reason'])]:
+                key=metric_key(level,channel);a[key]=value
+                a['metric_details'][key]={**result,'value':value,'unit':unit,'reason':reason,'status':'estimated' if value is not None else 'unavailable','source':'lactate_load_curve','coverage':None}
         if a.get('gas'):
             a['metric_details']['vo2peak_l_min']={**a['gas']['vo2peak'],'source':'gas_sensor','coverage':(a['gas']['vo2peak'].get('window') or {}).get('coverage')}
         for k,unit in [('threshold_w','W'),('threshold_wkg','W/kg'),('fthr_bpm','bpm'),('ftp_w','W')]:

@@ -8,7 +8,12 @@ from cryptography.exceptions import InvalidSignature
 from .store import encoded, KINDS
 
 
-def exchange(store, folder, key, transport=None):
+def exchange(store, folder, key, transport=None, verify_existing=True):
+    with store.connect() as db:
+        changes=[json.loads(r[0]) for r in db.execute('SELECT body FROM changes')]
+    from .society_scope import check_archive
+    organization=check_archive(store,changes)
+    known={c['id'] for c in changes}
     cipher = Fernet(key.encode())
     channel = hashlib.sha256(key.encode()).hexdigest()[:24]
     from .transports import FolderTransport
@@ -61,8 +66,6 @@ def exchange(store, folder, key, transport=None):
                 raw=encoded(value).encode();digest=hashlib.sha256(raw).hexdigest()
                 name=f'{stem}-{value["version"]:010d}-{digest}.json'
                 transport.put(name,raw);names.add(name)
-    with store.connect() as db:
-        changes = [json.loads(r[0]) for r in db.execute("SELECT body FROM changes")]
     sent = received = pending = 0
     for change in changes:
         if managed:
@@ -77,11 +80,14 @@ def exchange(store, folder, key, transport=None):
             blobs = {h:base64.b64encode(store.read_object(h)).decode() for h in change["record"].get("objects", [])}
             body = cipher.encrypt(encoded({"change":change,"objects":blobs}).encode())
             sent += int(transport.put(name,body));names.add(name)
-    errors = []
+    errors = [];downloaded=skipped=0
     candidates = []
     for name in sorted(names):
         if not name.endswith('.ctsync'):continue
+        if not verify_existing and name[:-7] in known:
+            skipped+=1;continue
         try:
+            downloaded+=1
             payload = json.loads(cipher.decrypt(transport.get(name)))
             if not isinstance(payload,dict) or not isinstance(payload.get('change'),dict) or not isinstance(payload['change'].get('record'),dict):
                 raise ValueError('Struttura del pacchetto non valida.')
@@ -96,12 +102,15 @@ def exchange(store, folder, key, transport=None):
                 if encoded(change) != existing[0]:
                     raise ValueError("ID duplicato con contenuto diverso")
                 continue
+            from .society_scope import check_record
+            check_record(r,organization)
             import base64
             for h in r.get("objects", []):
                 content = base64.b64decode(payload["objects"][h], validate=True)
                 if hashlib.sha256(content).hexdigest() != h:
                     raise ValueError("Checksum allegato errato")
                 store.object(content)
+            if not organization:organization=r['id'] if r['kind']=='organization' else r.get('organization_id')
             candidates.append(change)
         except (ValueError, KeyError, OSError, InvalidToken, InvalidSignature, TypeError) as exc:
             errors.append(f"{name}: pacchetto incompleto o non valido ({type(exc).__name__})")
@@ -131,5 +140,6 @@ def exchange(store, folder, key, transport=None):
     with store.connect() as db:
         conflicts = db.execute("SELECT count(*) FROM conflicts").fetchone()[0]
     return {"written_to_folder":sent,"published":sent,"received":received,"pending":pending,"conflicts":conflicts,"errors":errors,
+            "downloaded_packets":downloaded,"known_packets_skipped":skipped,"full_verification":verify_existing,
             "transport":getattr(transport,"kind","webdav" if transport.remote else "folder"),"remote_verified":transport.remote,
             "status":"Pubblicazioni Servizio remoto rilette e verificate." if transport.remote else "Scambio locale eseguito. Upload cloud non verificabile dall'app."}

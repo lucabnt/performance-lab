@@ -24,6 +24,7 @@ from cycling_test.custom_fields import attach
 from cycling_test.methods import DEFAULT,identity
 from cycling_test.specialist import gas_analysis
 from generate_examples import fit_bytes,recording,crc
+from demo_reset import reset_notice
 
 ROOT=Path(__file__).resolve().parents[1]
 PASSWORD='SoloDemo-NonUsareInProduzione-2026'
@@ -234,6 +235,14 @@ def export_portable(root,output):
     return output
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--data',default='.local/demo-suite-08');parser.add_argument('--small',action='store_true',help='Corpus ridotto per test automatici');args=parser.parse_args()
-    manifest=generate(args.data,args.small)
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--data',default='.local/demo-suite-08');parser.add_argument('--small',action='store_true',help='Corpus ridotto per test automatici')
+    parser.add_argument('--reset',action='store_true',help='Conserva la vecchia cartella in .local/demo-backups e rigenera il corpus (solo destinazioni dirette in .local).')
+    parser.add_argument('--export',metavar='ZIP',help='Dopo la generazione crea uno ZIP portabile con backup e fixture.')
+    args=parser.parse_args()
+    try:
+        if args.reset:reset_notice(args.data)
+        manifest=generate(args.data,args.small)
+    except ValueError as exc:
+        raise SystemExit(str(exc)+' Per ripopolare una demo esistente chiudere app/server e usare --reset.') from None
+    if args.export:print('Demo portabile:',export_portable(args.data,args.export))
     print(json.dumps({'root':manifest['primary_root'],'organizations':manifest['organizations'],'fixture_cases':len(manifest['cases'])},ensure_ascii=False,indent=2))

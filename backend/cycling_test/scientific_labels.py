@@ -1,5 +1,7 @@
 """Human-readable scientific statuses; identifiers remain in manifests."""
 REASONS={
+ 'stage_hr_unavailable':'FC di fine step non disponibile o copertura insufficiente',
+ 'weight_missing_or_estimated':'Peso assente o solo stimato',
  'maximum_not_verified':'Massimo non verificato: riportato solo VO2peak',
  'insufficient_window':'Finestra non sufficientemente coperta',
  'no_crossing':'Concentrazione non attraversata: nessuna estrapolazione',

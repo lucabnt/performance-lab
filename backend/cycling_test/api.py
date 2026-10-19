@@ -11,7 +11,7 @@ from typing import Annotated, Literal
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
 from fastapi.responses import JSONResponse, Response, FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 
 from .analysis import analyze
 from .erg import parse_erg
@@ -74,12 +74,7 @@ class Membership(Model):
         return self
 
 
-class Measurement(Model):
-    athlete_id: str
-    date: date
-    weight_kg: float | None = Field(default=None, gt=0, le=400)
-    height_cm: float | None = Field(default=None, gt=0, le=260)
-    source: Literal["misurato", "arrotondato", "dichiarato"] = "misurato"
+from .maturation import MeasurementPayload as Measurement
 
 
 class RecoveryObservation(Model):
@@ -137,6 +132,7 @@ class Settings(Model):
     fthr_bpm: float | None = Field(default=None, gt=0, le=250)
     fc_max_reference_bpm: float | None = Field(default=None, gt=0, le=250)
     recovery_manual: list[RecoveryObservation] = Field(default_factory=list, max_length=100)
+    lactate_levels: list[float] = Field(default_factory=lambda:[2.,3.,4.],min_length=1,max_length=20)
     lactate: list[LactateObservation] = Field(default_factory=list, max_length=100)
     zone_schemes: list[dict] | None = None
     preset_id: str | None = None
@@ -149,9 +145,17 @@ class Settings(Model):
     vo2max_verification: MaximumVerification = Field(default_factory=MaximumVerification)
     threshold_calibration: dict[str,str] = Field(default_factory=dict,max_length=20)
 
+    @field_validator('lactate_levels',mode='before')
+    @classmethod
+    def validate_lactate_levels(cls,value):
+        from .lactate_levels import validate_levels
+        return validate_levels(value)
+
     @model_validator(mode='after')
     def validate_observations(self):
         from .zones import validate
+        from .lactate_levels import validate_levels
+        self.lactate_levels=validate_levels(self.lactate_levels)
         if self.zone_schemes is not None:
             if len(self.zone_schemes) > 2:
                 raise ValueError('Un solo schema per ciascun canale.')
@@ -256,7 +260,7 @@ def create_app(root=None, token=None, frontend=None):
         result = {kind:store.list(kind) for kind in ("organization","group","athlete","membership","measurement","protocol")}
         for kind in ('membership','measurement'):
             result[kind]=[r for r in result[kind] if r.get('status')!='deleted']
-        result["test"] = [{k:v for k,v in t.items() if k != "samples"} for t in store.list("test")]
+        result["test"] = [{**{k:v for k,v in t.items() if k != "samples"},'has_trace':bool(t.get('samples') or t.get('trace_hash'))} for t in store.list("test")]
         result['operator']={k:store.identity['certificate'][k] for k in ('name','role','id')} if hasattr(store,'identity') else {'name':'Locale','role':'admin'}
         if hasattr(store,'identity'):
             result['operator'].update(owner=bool(store.identity.get('authority_private')),snapshot=bool(store.identity.get('snapshot')),
@@ -304,10 +308,20 @@ def create_app(root=None, token=None, frontend=None):
 
     @app.post("/api/v1/measurements")
     def measurement(data: Measurement):
-        require(data.athlete_id,"athlete")
-        if data.weight_kg is None and data.height_cm is None:
-            raise ValueError("Inserire almeno una misura.")
-        return store.save("measurement",data.model_dump(mode="json"))
+        a=require(data.athlete_id,"athlete")
+        return store.save("measurement",{**data.model_dump(mode="json"),'organization_id':a['organization_id']})
+
+    class MeasurementRevision(Model):
+        base:str
+        reason:str=Field(min_length=3,max_length=1000)
+        measurement:Measurement
+
+    @app.put('/api/v1/measurements/{id}')
+    def revise_measurement(id:str,data:MeasurementRevision):
+        old=require(id,'measurement')
+        if old['athlete_id']!=data.measurement.athlete_id:raise ValueError('Non è possibile trasferire la misura a un altro atleta.')
+        a=require(old['athlete_id'],'athlete')
+        return store.save('measurement',{**data.measurement.model_dump(mode='json'),'organization_id':a['organization_id'],'reason':data.reason},id,data.base)
 
     @app.post("/api/v1/protocols")
     def protocol(file: UploadFile, name: Annotated[str,Form()], family: Annotated[str,Form()], version: Annotated[str,Form()], warmup_s: Annotated[float,Form()] = 600, parent_id: Annotated[str,Form()] = "", reason: Annotated[str,Form()] = "", organization_id: Annotated[str | None,Form()] = None):
@@ -396,20 +410,26 @@ def create_app(root=None, token=None, frontend=None):
 
     @app.get("/api/v1/tests/{id}")
     def test(id: str):
-        return require(id,"test")
+        t=require(id,"test")
+        # Older records may keep samples only in the immutable trace object.
+        # Rehydrate for display without rewriting the stored analysis/revision.
+        if not t.get('samples') and t.get('trace_hash'):
+            trace=json.loads(store.read_object(t['trace_hash']))
+            return {**t,'samples':trace.get('samples',[])}
+        return {**t,'samples':t.get('samples',[])}
 
     @app.get("/api/v1/tests/{id}/report/{format}")
     def test_report(id: str, format: Literal["pdf","md"], language: Literal['it','en']='it'):
-        from .reports import report
+        from .reports import report,RENDERER_VERSION
         t = require(id,"test")
-        cached=next((r for r in store.list('report') if r.get('renderer_version')=='0.8' and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
+        cached=next((r for r in store.list('report') if r.get('renderer_version')==RENDERER_VERSION and r.get('test_revision')==t['revision'] and r.get('format')==format and r.get('language','it')==language),None)
         if cached:
             body=store.read_object(cached['objects'][0])
         else:
             body = report(t,t.get('athlete_snapshot') or require(t["athlete_id"],"athlete"),require(t["protocol_id"],"protocol"),format,language)
             if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
                 digest=store.object(body)
-                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':'0.8','test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
+                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':RENDERER_VERSION,'test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
         return download(body,"application/pdf" if format == "pdf" else "application/zip",f"test-{id}." + ("pdf" if format == "pdf" else "zip"))
 
     @app.get("/api/v1/export/{organization_id}")
@@ -464,6 +484,22 @@ def create_app(root=None, token=None, frontend=None):
     install_archive_reports(app,store,require,download)
     from .workspace_api import install_workspaces
     install_workspaces(app,workspaces,store,download)
+    from .maturation import install_api as install_maturation
+    install_maturation(app,store,require,download)
+
+    @app.get('/api/v1/legal')
+    def legal():
+        import sys
+        from . import branding
+        roots=[Path(__file__).resolve().parents[2],Path(sys.executable).parent]
+        if branding.MOBILE_ASSETS is not None:roots.insert(0,branding.MOBILE_ASSETS/'legal')
+        def read(name):
+            for root in roots:
+                if (root/name).is_file():return (root/name).read_text(encoding='utf-8')
+            raise ValueError('Documento legale non incluso nel pacchetto: '+name)
+        from . import __version__ as v
+        return {'version':v,'license':read('LICENSE'),'third_party':read('THIRD_PARTY.md')}
+
     dist = Path(frontend) if frontend else Path(__file__).resolve().parents[2]/"frontend"/"dist"
     if dist.is_dir():
         app.mount("/",StaticFiles(directory=dist,html=True),name="frontend")

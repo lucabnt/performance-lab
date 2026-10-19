@@ -3,18 +3,22 @@ from collections import defaultdict
 from statistics import median, mean, stdev
 import numpy as np
 from .methods import comparison_key
+from .lactate_levels import PATTERN,metric_key,metric_label as lactate_label
 
 METRICS = ['map_w','map_wkg','threshold_w','threshold_wkg','ftp_w','ftp_wkg','weight_kg','height_cm','fthr_bpm','fc_max_test_bpm','lactate_2_w','lactate_4_w','vo2peak_l_min','vo2peak_ml_kg_min']
 
 from .anaerobic import METRICS as ANAEROBIC_METRICS
-METRICS=list(dict.fromkeys(METRICS+ANAEROBIC_METRICS))
+METRICS=list(dict.fromkeys(METRICS+ANAEROBIC_METRICS+[metric_key(level,c) for level in (2,3,4) for c in ('w','wkg','hr_bpm')]))
 
 def metrics_for(store):
-    return list(dict.fromkeys(METRICS+[k for t in store.list('test') for k in t['analysis'] if k.startswith('custom:')]))
+    return list(dict.fromkeys(METRICS+[k for t in store.list('test') for k in t['analysis'] if k.startswith('custom:') or PATTERN.fullmatch(k)]))
 
 def custom_labels(store):
     from .custom_fields import metric_key
-    return {metric_key(t['protocol_id'],f):f['label']+(' ('+f['unit']+')' if f.get('unit') else '') for t in store.list('test') for f in t['analysis'].get('custom_fields',[]) if f['scope']=='test' and f['type']=='number'}
+    labels={metric_key(t['protocol_id'],f):f['label']+(' ('+f['unit']+')' if f.get('unit') else '') for t in store.list('test') for f in t['analysis'].get('custom_fields',[]) if f['scope']=='test' and f['type']=='number'}
+    labels.update({k:lactate_label(k) for t in store.list('test') for k in t['analysis'] if PATTERN.fullmatch(k)})
+    return labels
+
 
 def metric_applicable(record,metric):
     if metric.startswith('custom:'):return record.get('protocol_id')==metric.split(':')[1] and (metric in record.get('custom_metric_keys',record.get('analysis',record)))
@@ -87,11 +91,12 @@ def summarize(store, org, group='', season='', athlete='', mode='athlete', dimen
     previous={}
     changes=[]
     for r in sorted(unique.values(),key=lambda r:(r['date'],r['id'])):
-        key=(r['athlete_id'],r['protocol_id'],r['threshold_source'],r['method_key'])
+        key=(r['athlete_id'],r['protocol_id'],r['threshold_source'] or 'n.d.',r['method_key'])
         last=previous.get(key)
         change={'id':r['id'],'athlete':r['athlete'],'date':r['date'],'previous_date':last['date'] if last else None,'protocol_id':r['protocol_id']}
         for metric in metrics_available:
             old=last.get(metric) if last else None;new=r.get(metric)
+            if metric.endswith('wkg') and (r['weight_source']=='stimato' or last and last['weight_source']=='stimato'):old=new=None
             change[metric+'_delta']=new-old if new is not None and old is not None else None
             change[metric+'_pct']=100*(new-old)/old if new is not None and old is not None and old!=0 else None
         changes.append(change);previous[key]=r
@@ -114,8 +119,14 @@ def growth(store, org, athlete=''):
                 if last:
                     days=(date.fromisoformat(m['date'])-date.fromisoformat(last['date'])).days
                     delta=m[metric]-last[metric]
+                    quality=None
+                    annualized=delta*365.25/days if days>0 else None
+                    if metric=='height_cm':
+                        from .maturation import height_velocity
+                        qualified=height_velocity([last,m])[0]
+                        annualized=qualified['value'];quality=qualified['reason']
                     rows.append({'id':m['id']+metric,'athlete':a['surname']+' '+a['name'],'metric':metric,'date':m['date'],'previous_date':last['date'],
-                                 'days':days,'delta':delta,'annualized':delta*365.25/days if days>0 else None,'source':m.get('source','dichiarato')})
+                                 'days':days,'delta':delta,'annualized':annualized,'quality_reason':quality,'source':m.get('source','dichiarato')})
                 previous[metric]=m
     return rows
 
@@ -127,14 +138,15 @@ def paired_comparison(store,org,first,second,group=''):
     def select(data):
         rows={}
         for r in sorted(data['rows'],key=lambda r:(r['date'],r['id'])):
-            rows[(r['athlete_id'],r['protocol_id'],r['threshold_source'],r['method_key'])]=r
+            rows[(r['athlete_id'],r['protocol_id'],r['threshold_source'] or 'n.d.',r['method_key'])]=r
         return rows
     a,b=select(left),select(right);rows=[]
     for key in sorted(a.keys() & b.keys()):
         before,after=a[key],b[key]
         row={'id':after['id'],'athlete':after['athlete'],'protocol_id':after['protocol_id'],'from':before['date'],'to':after['date'],'source':key[2]}
-        for m in METRICS:
+        for m in metrics_for(store):
             x,y=before.get(m),after.get(m)
+            if m.endswith('wkg') and any(r['weight_source']=='stimato' for r in (before,after)):x=y=None
             row[m+'_delta']=y-x if x is not None and y is not None else None
             row[m+'_pct']=100*(y-x)/x if x is not None and x!=0 and y is not None else None
         rows.append(row)

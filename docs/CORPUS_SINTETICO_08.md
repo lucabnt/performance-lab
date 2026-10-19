@@ -12,14 +12,22 @@ Archivio già generato in questa sessione: `.local/demo-fuorigiri-completo`. Per
 
 Aprire l’URL **completo con token** stampato dal comando e selezionare Velodromo Aurora - SIMULAZIONE oppure Pedale del Lago - SIMULAZIONE. Anche l’eseguibile può aprire questo corpus senza Python/Node: `Fuorigiri.exe --data "F:\GitHub\test-analysis\.local\demo-fuorigiri-completo"` (adattare il percorso al proprio checkout).
 
-Per rigenerare usare una destinazione **nuova**:
+Per creare un’altra copia usare una destinazione **nuova**:
 
 ```powershell
 .venv/Scripts/python.exe scripts/demo_suite.py --data .local/demo-fuorigiri-completo-nuovo
 .venv/Scripts/python.exe scripts/serve.py --data .local/demo-fuorigiri-completo-nuovo --port 8771
 ```
 
-Su Linux usare Python dell’ambiente attivo. La generazione rifiuta cartelle già esistenti e non sovrascrive archivi. Il seed 481516 rende riproducibili gli scenari e le misure; identità, firme, revisioni e percorsi sono generati per l’istanza e non sono identici byte per byte. Lo scambio iniziale delle repliche può richiedere qualche minuto: attendere il riepilogo finale e `manifest-demo.json` prima di iniziare le modifiche.
+Per svuotare e ripopolare lo stesso percorso, dopo aver chiuso app, server e repliche:
+
+```powershell
+.venv/Scripts/python.exe scripts/demo_suite.py --data .local/demo-fuorigiri-completo --reset
+```
+
+La cartella precedente viene conservata in `.local/demo-backups`, senza cancellazione definitiva. Sono ammesse soltanto destinazioni dirette nella `.local` del progetto; radici, sottocartelle, link e archivi aperti vengono rifiutati. I backup raw vanno ripristinati al percorso originale, perché il registro contiene percorsi assoluti. [Procedura completa, avvio, ZIP e controlli](TESTARE_IL_PROGETTO.md).
+
+Su Linux usare Python dell’ambiente attivo. Senza `--reset` la generazione rifiuta cartelle già esistenti e non sovrascrive archivi. Il seed 481516 rende riproducibili gli scenari e le misure; identità, firme, revisioni e percorsi sono generati per l’istanza e non sono identici byte per byte. Lo scambio iniziale delle repliche può richiedere qualche minuto: attendere il riepilogo finale e `manifest-demo.json` prima di iniziare le modifiche.
 
 Il set ridotto `--small` serve ai test automatici, non sostituisce il corpus completo. I precedenti script demo/QA 0.3-0.7 restano fixture minime di regressione.
 

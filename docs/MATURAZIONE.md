@@ -1,0 +1,82 @@
+# Crescita e maturazione — metodi e uso, versione 1
+
+Implementazione del 19 ottobre 2026, requisiti TD-93–97. Il motore `growth-maturity/1` è separato dal motore dei test: non richiede un FIT o un test eseguito. È un supporto descrittivo, non una diagnosi o uno strumento automatico per selezionare gli atleti.
+
+## Dati e flusso
+
+Nel profilo atleta usare **Rilevazione**: data, massa e/o statura, fonte, qualità e precisione di lettura della statura. La sezione avanzata contiene dati facoltativi: statura seduta, apertura braccia, arti inferiori, stature dei genitori e una previsione adulta esterna. Non sono richiesti per registrare una misura e i loro indici restano secondari.
+
+**Correggi rilevazione** conserva una nuova revisione con motivo e controllo sulla revisione di partenza. Nascita completa e parametro M/F sono necessari per le equazioni che li richiedono; se il parametro non è indicato nella rilevazione, viene usato il sesso esplicitamente registrato nel profilo. Non viene dedotto da nome/gruppo. Solo anno di nascita non produce un'età decimale fittizia.
+
+Il pannello **Crescita e maturazione** mostra un'anteprima alla data scelta. **Conserva analisi con metodo e dati** salva uno snapshot esplicito con motivo; il selettore consente di rileggere i risultati precedenti. Cambiare una misura o il profilo non riscrive gli snapshot. Un'anteprima obsoleta viene rifiutata al salvataggio con richiesta di ricalcolo. Il visualizzatore può consultare ma non salvare o correggere.
+
+Gli snapshot conservano input completi, revisioni, hash, data di riferimento, motore e convenzioni. Sono record `report` con `analysis_type=maturation`, oggetto JSON immutabile e appartenenza alla società; non richiedono nuovi tipi di record o riscritture del database schema 3. Usano i percorsi esistenti di firma, sync, conflitti e backup. I report generici non li elencano come PDF scaricabili per errore.
+
+## Metodi implementati
+
+Età decimale = giorni dalla nascita / 365,25. Unità delle equazioni: anni, cm e kg; nessun arrotondamento intermedio.
+
+| Metodo | Calcolo / dati | Interpretazione |
+|---|---|---|
+| `hv-interval/1` | Δ statura × 365,25 / giorni tra due rilevazioni | Velocità media nell'intervallo, non velocità istantanea né previsione |
+| `moore-standing/2015-1` M | −7,999994 + 0,0036124 × età × statura | Variante Moore-2 maschile, offset stimato |
+| `moore-standing/2015-1` F | −7,709133 + 0,0042232 × età × statura | Equazione femminile Moore, offset stimato |
+| `mirwald/2002-1` | Equazioni specifiche M/F con età, statura, massa e statura seduta; lunghezza della gamba per il modello = statura − statura seduta | Modello avanzato; la lunghezza arti inserita separatamente non sostituisce questa definizione |
+| APHV stimata | Età alla rilevazione − offset del modello specifico | Non è l'età di un picco osservato |
+| `phv-local-quadratic/1` | Fit quadratico locale su cinque velocità HV attorno al massimo interno, con supporto longitudinale | Ricostruzione esplorativa: picco, data, APHV se nascita nota, RMSE e revisioni di supporto |
+| `pah-external/1` | 100 × statura / statura adulta prevista esternamente | Previsione con metodo/fonte obbligatori; nessuna previsione adulta automatica |
+| `residual-external/1` | Previsione adulta esterna − statura | Residuo condizionato alla previsione e alla sua incertezza, non crescita garantita |
+| `body-ratios/1` | 100 × misura specifica / statura | Proporzioni osservate, facoltative |
+| `limb-hv-interval/1` | Δ lunghezza arti × 365,25 / giorni | Solo con due misure specifiche valide e intervallo adeguato |
+| `height-stability/1` | Escursione di statura su almeno tre rilevazioni valide su ≥1 anno, entro l'ultima finestra di due anni | Da 18 anni; variazione ≤0,5 cm descritta come contenuta, non prova di crescita conclusa |
+
+Per Mirwald, ponendo A=età, H=statura, S=statura seduta, L=H−S e W=massa:
+
+- M: −9,236 + 0,0002708·L·S − 0,001663·A·L + 0,007216·A·S + 0,02292·100·W/H.
+- F: −9,376 + 0,0001882·L·S + 0,0022·A·L + 0,005841·A·S − 0,002658·A·W + 0,07693·100·W/H.
+
+Formule e valori SEE verificati sulla [validazione longitudinale di Kozieł e Malina](https://doi.org/10.1007/s40279-017-0750-y); il lavoro riporta anche le equazioni originali. Il [lavoro originale di Moore e collaboratori](https://doi.org/10.1249/MSS.0000000000000588) descrive sviluppo e verifica dei modelli. Gli errori delle popolazioni di sviluppo non sono intervalli di confidenza individuali: il campo SEE è conservato con questa avvertenza, senza inventare una banda personale.
+
+## Convenzioni prudenziali del prodotto
+
+Questi gate sono scelte versionate della versione 1, **non un consenso diagnostico universale**:
+
+- HV utilizzabile con statura misurata e qualità confermata su entrambe le rilevazioni, intervallo 90–400 giorni, incremento non negativo e velocità ≤20 cm/anno. Il delta grezzo resta leggibile anche quando la velocità è indisponibile. Stesso giorno o intervallo breve non vengono annualizzati come crescita attendibile.
+- Per HV viene conservato anche un limite dovuto alla precisione di lettura: somma delle precisioni in cm × 365,25 / giorni. Non è un intervallo statistico o una stima completa dell'errore dello strumento.
+- Moore: M 10–16 anni, F 9–14; Mirwald: M 12–16, F 9–14. Sono domini applicativi prudenziali del preset, non affermazioni di accuratezza per tutti i ragazzi di quelle età. Fuori dominio il valore è assente con motivo.
+- PHV longitudinale: almeno 7 stature, almeno 730 giorni complessivi, tutti gli intervalli HV validi; massimo con due intervalli per lato. Fit su cinque velocità centrate nel massimo; concavità negativa, vertice interno e almeno 180 giorni di supporto per lato del vertice. Nessun massimo valido ⇒ nessun PHV. Il fit è una convenzione esplorativa del prodotto, non l'implementazione dei modelli di spline degli studi citati.
+- Un calo di statura, un dato da verificare o una discontinuità impediscono la ricostruzione PHV; non vengono corretti o scartati silenziosamente. Non si estrapola un picco fuori dalla serie. La precisione del fit non dimostra l'accuratezza biologica.
+- Previsione adulta inferiore alla statura osservata ⇒ %PAH/residuo indisponibili, senza forzare 100% o zero. Le stature genitoriali sono archiviabili, ma **Khamis–Roche automatico non è incluso**: tabelle corrette e uso dei coefficienti devono essere verificati prima di un futuro metodo distinto. Non viene sostituito con una formula senza genitori.
+
+Fonti e popolazioni non garantiscono trasferibilità individuale ai giovani ciclisti. Prima di qualificare l'uso operativo servono confronto esterno, qualità della raccolta e validazione su dati pertinenti. Nessuna classificazione precoce/tardivo automatica è usata per decidere accesso o selezione degli atleti.
+
+## Pagina atleta e storico
+
+La data scelta determina la fascia cronologica: <13, 13–<14, 14–<15, 15–<16, 16–<18, ≥18. Orienta soltanto la lettura: HV e PHV longitudinale disponibili sono in evidenza; sotto 16 anni è evidenziato anche l'offset Moore disponibile, sempre con data della misura. Gli indici che dipendono da dati non previsti nella raccolta abituale restano nella sezione facoltativa.
+
+La tabella mantiene **tutte** le stime datate Moore/Mirwald, anche se non prioritarie per l'età corrente. Grafico HV e motivi di indisponibilità non inventano valori mancanti; zero valido resta zero. Da 18 anni compare la descrizione della variazione staturale solo se la serie la sostiene. Tutti gli snapshot precedenti restano selezionabili, con metodo e motivo.
+
+## Report, export e compatibilità
+
+Il report società e le viste gruppo/gruppo-stagione/atleta includono l'ultima analisi conservata pertinente, grafico HV, stime datate e indici facoltativi disponibili. Gli snapshot ulteriori sono elencati senza ripetere tutte le tabelle; risultati completi nel manifest Markdown. Un filtro stagione limita la data di riferimento degli snapshot alla fine dell'anno richiesto. **Il report non salva o ricalcola automaticamente una nuova analisi.**
+
+CSV storici invariati; aggiunti:
+
+- `extended/antropometria_completa.csv`: dati facoltativi, precisione, qualità, ID e revisioni.
+- `extended/maturazione.csv`: formato lungo con snapshot, data, metrica, valore, metodo, motivo e provenienza JSON.
+- `extended/maturazione_snapshot.json`: snapshot completi e input risolti.
+
+I CSV estesi sono export di analisi e non un nuovo profilo di import bulk; per ripristino fedele usare il backup. Archivi precedenti restano leggibili: i campi opzionali assenti non sono inventati e non si creano snapshot in migrazione.
+
+## Prove riproducibili
+
+`tests/test_maturation.py` verifica oracoli numerici, null/zero, nascita incompleta, qualità, domini, precisione, correzioni concorrenti, PHV di una curva cubica nota, snapshot immutati, CSV/PDF/MD, sync firmata verso visualizzatore e vero ripristino indipendente. Il campione cubico sintetico produce il picco di velocità media atteso circa **8,96 cm/anno** il **01/01/2024**; non è un test di accuratezza fisiologica su atleti reali.
+
+Per un corpus GUI nuovo:
+
+```powershell
+.venv/Scripts/python.exe scripts/demo_maturation.py --data .local/demo-crescita-nuovo
+.venv/Scripts/python.exe scripts/serve.py --data .local/demo-crescita-nuovo
+```
+
+Il generatore rifiuta destinazioni non vuote, aggiunge casi di picco, dati insufficienti e adulto a due società sintetiche e registra `growth_cases` nel manifest. Non rigenera la demo dell'utente. Le repliche preparate dal corpus base acquisiscono i nuovi casi al successivo scambio locale; non usare inviti/chiavi SOLO DEMO con dati operativi.

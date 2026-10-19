@@ -1,5 +1,62 @@
 # Changelog
 
+## Non rilasciato — attuazione TD-83–97, 19 ottobre 2026
+
+- Editor test dedicati, testata/chiusura persistenti, focus/Esc e conferma dell'uscita con modifiche non salvate. Campi custom in coda; glossario contestuale e avvisi di licenza/garanzia/conservazione dati.
+- Riferimenti MAP/potenza di soglia/FTHR con pari evidenza e zone adiacenti; coefficiente effettivo leggibile. Tempi sincronizzati secondi/mm:ss e hover esatti, selezione inizio/fine anche per custom; vista lattato-carico spiegata e collegata alla tabella.
+- Stati cloud distinguono configurazione, account e verifica della destinazione; evidenza dell'ultimo scambio vincolata alla connessione. Non creati registrazioni OAuth né collegati account reali.
+- Rilevazioni antropometriche estese e correggibili; motore crescita/maturazione versionato con HV, Moore/Mirwald, PHV longitudinale esplorativo, proporzioni e indici facoltativi. %PAH/residuo da previsione esterna esplicita, senza Khamis–Roche automatico non verificato.
+- Snapshot maturativi immutati dopo correzioni, permessi per società, CSV estesi, report PDF/MD gerarchici e backup/sync. Corpus aggiuntivo `demo_maturation.py`, oracoli numerici e test di replica/ripristino. [Metodi e limiti](docs/MATURAZIONE.md).
+- Nessun installer ricompilato; validazione scientifica esterna e collaudi reali restano necessari. Specifiche e AGENTS.md aggiornati.
+
+## Documentazione — istruzioni della repository, 19 ottobre 2026
+
+- Aggiunto `AGENTS.md` nella radice: vincoli del prodotto, fonti dei requisiti, lavoro sicuro sugli archivi, metodi scientifici, suite comune, verifiche e limiti della distribuzione.
+- Definito l'obbligo di mantenerlo aggiornato quando cambiano regole, struttura, comandi o stato dei vincoli citati; risultati e backlog dettagliati restano nei documenti dedicati.
+
+## Documentazione — acquisizione to-do manuali, 19 ottobre 2026
+
+- Conservate integralmente le 11 osservazioni in `docs/COMMENTI_ORIGINALI_2026-10-19.md`; normalizzate in 15 requisiti TD-83–97 con stato, priorità e criteri di accettazione.
+- Analizzati flusso correzione/chiusura test, ordine sezioni/campi custom, glossario, tempi del grafico, evidenza soglie/zone e provenienza dei coefficienti; spiegata l'utilità della vista lattato-carico già presente.
+- Distinta implementazione OAuth da operatività della distribuzione/account reali; registrati messaggi e collaudi mancanti. Avvisi GPL/garanzia/perdita dati richiesti senza modificare la licenza o promettere esenzioni assolute.
+- Definita la nuova area crescita/maturazione: HV prima delle stime, metodi e risultati osservati/stimati distinti, fasce d'età orientative, dati aggiuntivi opzionali non prioritari, storico/export e validazione. Fonti e decisioni residue nell'analisi dedicata.
+- Aggiornati disegno architetturale e prossimi passi. Solo documenti: nessuna modifica al programma, ai dati o ai pacchetti distribuiti.
+
+## Non rilasciato — revisione e isolamento società, 19 ottobre 2026
+
+- Corretti spazi e metadati dei protocolli, etichette di stato e navigazione; selezione della società conservata e protetta da risposte asincrone obsolete.
+- Profilo atleta con selezione di serie confrontabili; corretti confronti con origine soglia mancante, W/kg con peso stimato e metriche lattato dinamiche.
+- Sync e inviti bloccati per archivi multi-società; identità e record vincolati alla società. Connessioni e canali restano separati per archivio; cartelle cloud con permessi distinti necessarie per collaboratori diversi.
+- Sync gestita ordinaria evita i pacchetti già acquisiti; nuova verifica completa esplicita. Nessuna deduplicazione remota o migrazione del formato v1 ancora introdotta.
+- Backup esportati soltanto entro i limiti accettati dal ripristino; misura dimensioni in sola lettura e piano per sync/backup scalabili documentati.
+- 156 test backend passati, uno saltato; 18 test frontend passati e build riuscita. [Revisione e prossimi passi](docs/REVISIONE_GENERALE_2026-10-19.md). Nessun installer ricompilato.
+
+## Non rilasciato — livelli di lattato e FC interpolata
+
+- Livelli configurabili per prova, default 2/3/4 mmol/L, con W/W/kg/bpm stimati tramite interpolazione lineare locale; FC dalla finestra finale degli step completi e coperti, secondo preset. Nessuna estrapolazione o ricostruzione di FC mancanti.
+- Metodo lattato v2 e prelievi di supporto tracciabili, metriche dinamiche negli storici, UI e grafici, PDF/MD e CSV lungo `extended/lattato_livelli.csv`. Conservati schema CSV storico e revisioni precedenti; aggiornato il renderer/cache dei report.
+- Documentata l'architettura Android effettiva: Kotlin già presente con WebView/Chaquopy, API in-process e WorkManager. Chiariti costi e prerequisiti; nessuna build APK o modifica dei pin Android in questo intervento.
+
+## Non rilasciato — grafico unico e confronti leggibili
+
+- Linee potenza/FC/cadenza sovrapposte nel dettaglio con scale/unità indipendenti; lattato misurato sullo stesso grafico, canali aggiuntivi attivabili tramite selettore.
+- Storici: una curva per protocollo/metodo anziché per singolo aggregato; eliminazione delle serie vuote per la metrica, scelta iniziale della più numerosa, confronto esplicito fino a quattro serie con legenda breve e tabella coerente.
+- Protocolli diversi affiancabili senza unire medie/mediane; chiavi del backend preservate e avviso sulla diversa comparabilità. Metrica/protocollo prioritari, filtri secondari espandibili, ambito delle esportazioni esplicito.
+- Ordine globale delle categorie e colori delle serie stabili; modelli grafici verificati da 12 test Node, guida e decisioni architetturali aggiornate.
+
+## Non rilasciato — tracciati nel dettaglio test
+
+- Grafici in evidenza e uniformi per incrementali, Sprint/Wingate e protocolli custom: potenza, FC e cadenza visibili con scale separate, più velocità/temperatura/quota se disponibili. Lattato misurato nel tempo distinto dall'analisi rispetto al carico; interruzioni senza valori inventati.
+- Filtro e indicazione della disponibilità del tracciato nello storico; spiegazione esplicita per i soli riepiloghi manuali.
+- Import CSV temporale con canali aggiuntivi e unità esplicite; decoder FIT conserva velocità, temperatura e quota. Recupero campioni dagli oggetti tracciato nel dettaglio, senza modificare revisioni o analisi archiviate.
+- Guida per individuare i test dimostrativi con grafici e verifiche automatiche/UI; installer da ricompilare separatamente.
+
+## Non rilasciato — rigenerazione dati dimostrativi
+
+- `--reset` per demo minima e corpus completo: conservazione della vecchia directory in `.local/demo-backups`, controlli di percorso/link e archivi aperti, nessuna cancellazione definitiva o accesso ai riferimenti esterni.
+- Il server di sviluppo usa il blocco istanza come il desktop; ZIP portabile del corpus generabile con `--export`.
+- Guida di test riordinata con distinzione demo minima/completa, comandi sullo stesso percorso, uso GUI, repliche, ripristino ed esiti attesi.
+
 ## Non rilasciato — estrazione UI della suite
 
 - Prima libreria condivisa nella repository autonoma cycling-suite-common, UI 0.1.0. Fuorigiri usa tema/campi/tabelle/footer comuni tramite tarball locale versionato, senza dipendenza da una repository sorella durante la build.

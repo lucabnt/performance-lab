@@ -12,12 +12,18 @@ from cycling_test.reports import report
 from cycling_test.history import summarize
 from cycling_test.history_report import render
 from generate_examples import generate, ROOT
+from demo_reset import reset_notice
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--data',default='.local/demo-fuorigiri');args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--data',default='.local/demo-fuorigiri')
+    parser.add_argument('--reset',action='store_true',help='Conserva la vecchia cartella in .local/demo-backups e rigenera la demo minima (solo destinazioni dirette in .local).')
+    args=parser.parse_args()
+    if args.reset:
+        try:reset_notice(args.data)
+        except ValueError as exc:raise SystemExit(str(exc)) from None
     store=Store(args.data)
-    if store.list('organization'):raise SystemExit('Archivio non vuoto: nessun dato modificato.')
+    if store.list('organization'):raise SystemExit('Archivio non vuoto: nessun dato modificato. Per rigenerarlo chiudere app/server e usare --reset (la vecchia cartella viene conservata). Per i dati completi usare scripts/demo_suite.py.')
     manifest=generate()
     org=store.save('organization',{'name':'Fuorigiri Demo - dati sintetici'})
     protocols={};groups={}

@@ -32,3 +32,6 @@ android/local.properties
 android/wheels/*.whl
 *.jks
 *.keystore
+
+# Generated from authoritative legal documents by the frontend build.
+/frontend/public/legal/

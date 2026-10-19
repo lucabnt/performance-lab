@@ -20,6 +20,8 @@ LABELS={
  'cadenza_media_rpm':('Cadenza media (rpm)','Mean cadence (rpm)'), 'cadenza_max_rpm':('Cadenza massima (rpm)','Maximum cadence (rpm)'),
  'rapporto_trasm_m':('Sviluppo metrico (m)','Rollout (m)'), 'pedivella_m':('Lunghezza pedivella (m)','Crank length (m)')}
 def metric_label(key,language='it'):
+    from .lactate_levels import metric_label as lactate_label
+    if lactate_label(str(key),language):return lactate_label(str(key),language)
     return LABELS.get(key,(str(key).replace('_',' '),)*2)[language=='en']
 
 from .anaerobic import LABELS as ANAEROBIC_LABELS,METRIC_MAP

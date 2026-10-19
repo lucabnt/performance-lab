@@ -1,5 +1,37 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## Attuazione TD-83–97 — 19 ottobre 2026
+
+Implementati i flussi proposti sotto: `Dialog` con testata opaca persistente, focus/Esc e conferma delle modifiche non salvate; correzione dedicata per tutte le famiglie; campi custom finali, glossario contestuale IT/EN, riferimenti soglia/zone e coefficiente applicato visibile. `TimeInput` mantiene secondi canonici con lettura/inserimento mm:ss; marker e hover esplicitano l'origine temporale. Lattato-carico collegato a livello e tabella, senza nuova formula fisiologica. Componenti locali candidati a estrazione successiva nella suite; nessuna modifica implicita alla repository comune.
+
+Misure antropometriche estese senza nuovi tipi di record o riscritture schema 3; correzioni con revisione/motivo. Motore `growth-maturity/1`: HV con gate espliciti, Moore standing/Mirwald distinti e PHV quadratico longitudinale esplorativo. Domini, qualità, formule e incertezza documentati in [MATURAZIONE.md](docs/MATURAZIONE.md); non presentati come consenso diagnostico. %PAH/residuo da previsione adulta **esterna dichiarata**; nessun Khamis–Roche automatico con tabelle non verificate. Parametri opzionali non prioritari.
+
+Le analisi si conservano esplicitamente come record `report` con `analysis_type=maturation`, input completi, versioni e hash; stessa firma/sync/backup. Anteprima separata dallo storico, nessun ricalcolo silenzioso nei report. Report gerarchici renderer `archive-4` includono l'ultima analisi pertinente e le altre nel manifest; CSV estesi aggiuntivi senza mutare lo standard storico. Analisi vecchie restano consultabili dopo una correzione della misura.
+
+Accesso cartella cloud distinto dal possesso di un token: l'evidenza dell'ultimo scambio è vincolata all'impronta della connessione, senza riutilizzarla per una destinazione cambiata. Avvisi e licenza consultabili senza EULA aggiunta; documenti legali originali copiati nella build frontend per gli asset mobile. Collaudo OAuth reale, validazione scientifica esterna e revisione giuridica rimangono separati dall'implementazione.
+
+## Requisiti acquisiti e disegno proposto — osservazioni del 19 ottobre 2026
+
+TD-83–97 sono acquisiti nel [registro](docs/REQUISITI_E_TODO.md); [analisi e fonti](docs/ANALISI_TODO_MANUALI_2026-10-19.md). Nessuna implementazione in questa revisione documentale. I dettagli proposti sotto rimangono disegno da verificare, non metodi scientifici già qualificati.
+
+**UI-27–33:** correzione del test tramite pulsante/editor dedicato; testata opaca con chiusura sempre raggiungibile, focus e uscita senza perdita silenziosa; campi custom in coda; glossario contestuale a fine pagina. Riepilogo MAP/potenza di soglia/FTHR con pari evidenza e provenienza, zone adiacenti al riferimento effettivo. Coefficienti realmente applicati visibili con base e formula, senza introdurre coefficienti universali. Tempi leggibili come mm:ss e secondi, selezione di marker dal grafico e conferma esplicita; secondi e origine temporale restano coerenti con i dati esistenti. Il grafico lattato-carico rimane distinto dalla vista temporale, con tabella W/W/kg/FC collegata. Layout adattato alle metriche della famiglia, nessuna MAP fittizia per Sprint/custom.
+
+**CLOUD-05 / LEGAL-01:** collegamento account distinto da configurazione OAuth, accesso alla cartella e sync effettivamente riuscita. Mostrare prerequisiti/errori prima di promettere operatività. Informazioni/licenza rendono accessibili GPL, assenza di garanzia e limiti sulla conservazione dei dati; backup distinto dalla sync. Il testo GPL rimane intatto, avvisi della distribuzione soggetti a revisione giuridica; nessuna nuova EULA obbligatoria introdotta implicitamente.
+
+**MAT-01–05:** misure antropometriche datate indipendenti dai test e motore separato/versionato per crescita e maturazione. Prima HV con qualità e intervalli espliciti; successivamente stime antropometriche e PHV/APHV da serie longitudinali distinti. Metodi/domain/input/criteri di qualità ancora da specificare. Genitori, apertura braccia e arti facoltativi in area avanzata, indici dipendenti non in evidenza. Fasce d'età orientano la UI ma non provano il timing maturativo; assenza di input o fuori dominio ⇒ indisponibile con motivo. Storico atleta, CSV esteso, report gerarchici, backup e sync per società includono snapshot/provenienza, senza ricalcoli silenziosi. Nessuna classificazione automatica per selezione degli atleti.
+
+Il componente glossario e le primitive per testate/editor sono candidati alla libreria UI autonoma della suite; definizioni scientifiche, motori e regole di disponibilità rimangono nell'app. La richiesta non comporta un nuovo stack né un database condiviso con Ammiraglia. Sync v2/backup scalabili conservano la priorità infrastrutturale già registrata.
+
+## Decisione archivio e sincronizzazione — 19 ottobre 2026
+
+L'unità di condivisione è l'archivio di una sola società: database, oggetti, identità, inviti, chiave/canale e connessione separati. Il contenitore locale elenca gli archivi senza condividerli insieme; Android sincronizza separatamente ciascun archivio configurato. La UI conserva la selezione e scarta risposte obsolete durante il cambio società.
+
+Per gli archivi legacy multi-società sync e inviti sono bloccati, senza cancellare dati: il filtro UI non costituisce isolamento. Identità e firme controllano l'appartenenza dei record. La futura separazione assistita dovrà preservare dipendenze e cronologia e creare nuove chiavi/inviti. Collaboratori diversi richiedono cartelle/permessi cloud distinti; i controlli di accesso firmati del formato attuale non sono cifrati.
+
+Il formato v1 resta compatibile: sync gestita ordinaria scarica solo pacchetti sconosciuti, verificandoli; controlli accessi/revoche sempre acquisiti. Una verifica completa esplicita rilegge anche i pacchetti noti e rileva loro modifiche remote successive, che lo skip ordinario non controlla. Gli eventi locali già verificati restano la copia di riferimento. Il trasporto diretto mantiene la verifica completa come default.
+
+Questo riduce traffico ripetuto, non duplicazioni nel cloud. Evoluzione v2 prioritaria: campioni separati, oggetti cifrati per hash caricati una volta, eventi leggeri, cursori e snapshot, migrazione compatibile e conservazione per dispositivi offline. Backup grandi richiedono streaming/parti e prove di recupero; nel frattempo export e import applicano gli stessi limiti. [Dimensioni misurate e piano](docs/SYNC_DIMENSIONI_E_SCALABILITA.md), [revisione](docs/REVISIONE_GENERALE_2026-10-19.md).
+
 ## Decisione suite — repository autonome, UI comune 0.1
 
 Fuorigiri e Ammiraglia rimangono in repository separate. Creata la repository autonoma `cycling-suite-common`, che ospita librerie/esempi e non le applicazioni. Prima estrazione effettiva: `@cycling-suite/ui` 0.1.0 (tema, campi, tabelle, branding fisso), consumata da Fuorigiri tramite tarball versionato con sorgenti/licenza/provenienza. Nessuna dipendenza da percorsi locali di un clone fratello. [Decisioni, integrazione e perimetro](docs/SUITE_CONDIVISA.md).
@@ -555,3 +587,19 @@ Drive `drive.file` è per-file e non va assunto come accesso ricorsivo universal
 **UI-20:** società completa, gruppo, gruppo/stagione e atleta sono viste filtrate dello stesso report. Aggregati con n/assenti/media/mediana, copertura, grafici, schede individuali e antropometria; viste equivalenti e avvertenze comuni accorpate, nessuna duplicazione dello storico grezzo in più capitoli. PDF/MD con branding fisso e manifest di provenienza; API e GUI condividono la selezione dei dati.
 
 **UI-21:** sessioni FIT, correzioni, selezione temporale, marker/esclusioni con motivo, condizioni, preset e osservazioni specialistiche espliciti. Risultati calcolati, dichiarati, stimati o da rivedere distinguibili; gli identificatori tecnici restano nel manifest, con etichette leggibili nella presentazione. Import gas canonico e revisione ventilatoria non equivalgono a certificazione clinica. TD-60–62 nel registro; WebDAV/Android e i test successivi mantengono la sequenza confermata.
+
+
+### Decisione UI — grafici sovrapposti e selezione dei confronti (18 ottobre 2026)
+
+Il dettaglio usa un unico grafico Plotly sovrapposto: tempo condiviso, assi Y con unità e colori distinti, potenza/FC/cadenza inizialmente visibili. Gli altri canali continui sono selezionabili; il lattato è rappresentato come punti osservati sullo stesso tempo. Scale indipendenti facilitano la lettura temporale, ma non rendono equivalenti le altezze di segnali diversi. I modelli grafici puri sono separati dai componenti React, per verificare campioni, lacune e assi senza dipendere dal rendering Plotly.
+
+Storici e confronti presenta metrica e protocollo prima dei filtri di popolazione. Il backend conserva le proprie chiavi di comparabilità; il frontend raggruppa gli aggregati della medesima serie in un'unica voce di legenda. Nessun pooling tra protocolli, versioni, metodi/condizioni o origini soglia. Solo le serie con valori per la metrica sono selezionabili: una iniziale (maggiore numerosità valida), al massimo quattro tramite scelta esplicita, codici brevi e chiave esplicativa. Le viste temporali collegano i punti, quelle nominali mostrano soli marcatori. È consentito affiancare protocolli diversi per un confronto descrittivo, con indicazione dei limiti; non viene introdotto alcun coefficiente di conversione.
+
+La selezione grafica riguarda il confronto interattivo e la sua tabella; i report esistenti esportano l'archivio con i filtri correnti, ambito esplicitato nel pannello di esportazione. Queste regole di dominio rimangono in Fuorigiri; eventuali componenti generici della suite potranno riusare i controlli, senza incorporare criteri di comparabilità fisiologica nella libreria UI comune.
+
+
+### Metodo lattato e stato Android — 18 ottobre 2026
+
+L'interpolazione a concentrazioni fisse usa `lactate.fixed-linear/2`. Livelli per prova (default 2/3/4 mmol/L), validazione di unicità/intervallo/precisione, supporto ai livelli decimali e campioni CSV puntuali. L'analisi salva snapshot del metodo e finestra/copertura FC dal preset, associazioni ai prelievi e ragioni separate per W, W/kg e bpm. La potenza è associata a target dello step costante o carico esplicito; la FC è la media finale dello step completo costante. Nessuna estrapolazione, pooling dei carichi duplicati o correzione implicita di curve ambigue; nessun coefficiente verso FTP/MLSS. Le revisioni precedenti non vengono ricalcolate e le identità di metodo differiscono. Le metriche decimali hanno chiavi stabili (es. `lactate_3p5_hr_bpm`) e label leggibili. Export standard CSV preservato, risultati completi nel CSV lungo aggiuntivo e nei report.
+
+Lo stato Android effettivo è una shell Kotlin/WebView con Chaquopy, bridge e API ASGI in-process, credenziali native e WorkManager, non un'app esclusivamente Python né un server sul telefono. Le proposte precedenti con Capacitor rimangono alternative storiche. L'architettura consente il riuso ma deve ancora superare build e verifiche su dispositivo: wheel, compatibilità dei pin, dimensione/avvio/memoria e comportamento del sistema operativo. Il rinvio delle build non è revocato; dettagli e criteri in docs/ANDROID.md.

@@ -17,6 +17,7 @@ from .report_labels import metric_label
 from .scientific_labels import reason as scientific_reason, METHODS
 
 from .anaerobic import CSV_HEADER as ANAEROBIC_HEADER
+RENDERER_VERSION='0.8-lactate-2'
 CSV_HEADERS = {
     'test_anaerobico': ANAEROBIC_HEADER,
     "atleti": "atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note",
@@ -65,8 +66,14 @@ def specialist_charts(analysis):
     images=[];lactate=analysis.get('lactate_analysis',{})
     if lactate.get('points'):
         fig=Figure(figsize=(9,4),layout='constrained');ax=fig.subplots();points=lactate['points'];curve=lactate['curve']
-        ax.plot([p['power_w'] for p in points],[p['mmol_l'] for p in points],'o-',label='Misure',color='#1a62b7')
+        ax.plot([p['power_w'] for p in points],[p['mmol_l'] for p in points],'o',label='Prelievi associati al carico',color='#1a62b7')
+        if len(points)>1 and all(b['power_w']>a['power_w'] and b['mmol_l']>=a['mmol_l'] for a,b in zip(points,points[1:])):
+            ax.plot([p['power_w'] for p in points],[p['mmol_l'] for p in points],'--',label='Interpolazione lineare',color='#1a62b7')
         if curve:ax.plot([p['power_w'] for p in curve],[p['mmol_l'] for p in curve],':',label='Fit cubico',color='#61738a')
+        for result in lactate.get('results',{}).values():
+            if result.get('concentration_mmol_l') is not None and result['value'] is not None:
+                ax.scatter([result['value']],[result['concentration_mmol_l']],marker='D',s=30,color='#b44d78')
+                ax.axhline(result['concentration_mmol_l'],color='#b44d78',alpha=.2,linestyle=':')
         ax.set_xlabel('Carico (W)');ax.set_ylabel('Lattato (mmol/L)');ax.grid(alpha=.15);ax.legend(fontsize=8)
         out=io.BytesIO();fig.savefig(out,format='png',dpi=150);images.append(('lactate.png','Lattato - curva e misure',out.getvalue(),7.87))
     gas=analysis.get('gas')
@@ -115,7 +122,12 @@ def report(test, athlete, protocol, format, language='it'):
         metrics += [('Durata fase incrementale (s)',val(a.get('duration_incremental_s'))),('Potenza media osservata (W)',val(a.get('power_mean_w'))),('Lavoro osservato (kJ)',val(a.get('work_kj'))),('Secondi validi potenza',val(a.get('valid_power_s')))]
         if a.get('terminal_target_w') is not None:metrics += [('Carico terminale nominale (W)',val(a['terminal_target_w'])),('Media ultimi 30 s (W)',val(a.get('terminal_mean_w')))]
         for key,result in a.get('lactate_analysis',{}).get('results',{}).items():
-            metrics.append(('Lattato - '+METHODS.get(key,key)+' (W)',val(result['value'])+(' / '+scientific_reason(result['reason']) if result.get('reason') else '')))
+            level=result.get('concentration_mmol_l')
+            method_title=('Potenza a '+val(level)+' mmol/L') if level is not None else METHODS.get(key,key)
+            metrics.append(('Lattato - '+method_title+' (W)',val(result['value'])+(' / '+scientific_reason(result['reason']) if result.get('reason') else '')))
+            if level is not None and 'hr_bpm' in result:
+                metrics += [('Lattato - '+val(level)+' mmol/L (W/kg)',val(result['wkg'])+(' / '+scientific_reason(result['weight_reason']) if result.get('weight_reason') else '')),
+                            ('Lattato - '+val(level)+' mmol/L (bpm)',val(result['hr_bpm'])+(' / '+scientific_reason(result['hr_reason']) if result.get('hr_reason') else ''))]
         if a.get('gas'):
             g=a['gas'];metrics += [('VO2peak (L/min)',val(g['vo2peak']['value'])),('VO2peak (mL/kg/min)',val(g['vo2peak']['ml_kg_min'])),('VO2peak - finestra (s)',g['vo2peak']['window_s']),('VO2max verificato (L/min)',val(g['vo2max']['value']))]
             for key in ('vt1','vt2'):
@@ -143,6 +155,9 @@ def report(test, athlete, protocol, format, language='it'):
         note='Provisional convention: last completed constant incremental stage; power coverage at least 95%, without target-adherence validation. Stage HR: last 30 seconds. Recovery: window t-2 to t+3 seconds, reference: last 5 seconds of effort.' if not test.get('historical') else 'Imported declared historical results; original samples unavailable.'
     if a.get('preset'):
         note=a['method']+' Parametri risolti: '+str(a['preset']['parameters'])
+    lm=a.get('lactate_analysis',{}).get('method_snapshot')
+    if lm and a.get('lactate_analysis',{}).get('points'):
+        note += ' Metodo lattato '+lm['method_id']+'; FC media ultimi '+val(lm['hr_window_s'])+' s dello step completo, copertura minima '+val(lm['hr_coverage']*100)+'%. Valori stimati, nessuna estrapolazione o equivalenza automatica con LT/FTP/MLSS.'
     trace = f"Motore {a['engine']} | Test {test['id']} | Revisione {test['revision']} | Protocollo {protocol['id']}"
     if format == "md":
         def md(s):
@@ -214,12 +229,17 @@ def export_csv(store, organization_id):
     for m in store.list("measurement"):
         if m["athlete_id"] in ids:
             rows["antropometria"].append({"atleta_id":m["athlete_id"],"data":m["date"],"peso_kg":m.get("weight_kg"),"statura_cm":m.get("height_cm"),"peso_fonte":m.get("source", ""),"origine":"inserimento manuale"})
-    versions = [];anaerobic_rows=[]
+    versions = [];anaerobic_rows=[];lactate_rows=[]
     for t in store.list("test"):
         if t["athlete_id"] not in ids or t.get('status')=='deleted':
             continue
         a,s = t["analysis"],t["settings"]
         protocol = store.get(t["protocol_id"])
+        for result in a.get('lactate_analysis',{}).get('results',{}).values():
+            if result.get('concentration_mmol_l') is None:continue
+            lactate_rows.append({'test_id':t['id'],'test_revision':t['revision'],'atleta_id':t['athlete_id'],'data':t['date'],'protocol_id':t['protocol_id'],
+                'mmol_l':result['concentration_mmol_l'],'power_w':result['value'],'power_wkg':result.get('wkg'),'hr_bpm':result.get('hr_bpm'),
+                'method_id':result['method_id'],'hr_window_s':result.get('hr_window_s'),'status':result['status'],'power_reason':result.get('reason'),'hr_reason':result.get('hr_reason'),'weight_reason':result.get('weight_reason')})
         if t.get('test_type')=='custom':
             versions.append({'test_id':t['id'],'protocol_version_id':protocol['id'],'version':protocol['version']})
             continue
@@ -233,6 +253,7 @@ def export_csv(store, organization_id):
         rows["test_aerobico"].append({"test_id":t["id"],"atleta_id":t["athlete_id"],"data":t["date"],"protocollo_id":protocol["family"],"durata_s":a["duration_s"],"map_w":a["map_w"],"map_alt_w":a["map_alt_w"],"peso_kg":s.get("weight_kg"),"peso_fonte":"manuale","fc_max_test_bpm":a["fc_max_test_bpm"],"tracciato_parziale":"si" if a.get("power_coverage") is not None and a["power_coverage"] < .95 else "no","note":t.get("notes", "")})
         versions.append({"test_id":t["id"],"protocol_version_id":protocol["id"],"version":protocol["version"]})
         row=rows['test_aerobico'][-1]
+        row.update(lattato_2mmol_w=a.get('lactate_2_w'),lattato_4mmol_w=a.get('lactate_4_w'))
         row.update(t.get('historical_fields',{}))
         row.update(test_id=t['id'],atleta_id=t['athlete_id'])
         if not t.get('historical') or t.get('entry_source')=='manuale':
@@ -245,6 +266,9 @@ def export_csv(store, organization_id):
             writer.writeheader()
             writer.writerows({k:v for k,v in row.items() if k in header.split(',')} for row in rows[name])
             z.writestr(name+".csv",text.getvalue())
+        lactate_csv=io.StringIO(newline='')
+        lw=csv.DictWriter(lactate_csv,fieldnames=['test_id','test_revision','atleta_id','data','protocol_id','mmol_l','power_w','power_wkg','hr_bpm','method_id','hr_window_s','status','power_reason','hr_reason','weight_reason']);lw.writeheader();lw.writerows(lactate_rows)
+        z.writestr('extended/lattato_livelli.csv',lactate_csv.getvalue())
         from .custom_fields import display_rows
         custom_csv=io.StringIO(newline='');cw=csv.writer(custom_csv);cw.writerow(['test_id','protocol_id','scope','field_key','label','type','unit','value_json'])
         for t in store.list('test'):
@@ -270,6 +294,8 @@ def export_csv(store, organization_id):
                                      'zone':zone['name'],'lower_value':zone['lower_value'],'lower_inclusive':zone['lower_inclusive'],'upper_value':zone['upper_value'],
                                      'upper_inclusive':zone['inclusive'],'seconds':zone['seconds']})
         z.writestr('extended/zones.csv',extended.getvalue())
+        from .maturation import export_files as export_maturation
+        export_maturation(z,store,ids)
         referenced_protocols={t['protocol_id'] for t in store.list('test') if t['athlete_id'] in ids and t.get('status')!='deleted'}
         extended_records={kind:[r for r in store.list(kind) if r.get('athlete_id') in ids and r.get('status')!='deleted'] for kind in ('membership','measurement','test')}
         extended_records['group']=[g for g in store.list('group') if g['organization_id']==organization_id]

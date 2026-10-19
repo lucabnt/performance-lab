@@ -1,5 +1,18 @@
 # Android — requisito e architettura proposta
 
+## Valutazione dell'implementazione ibrida — 18 ottobre 2026
+
+L'implementazione attuale contiene già Kotlin: `MainActivity.kt` gestisce WebView, import/export e autorizzazioni; `NativeSecrets.kt` protegge le credenziali; `SyncWorker.kt` usa WorkManager; `FuorigiriApplication.kt` inizializza il runtime Python tramite Chaquopy. React/TypeScript fornisce l'interfaccia condivisa, Python il motore e i servizi locali. Il bridge chiama FastAPI in-process mediante ASGITransport: nessun server HTTP in ascolto sul telefono. Le vecchie sezioni che proponevano Capacitor descrivono l'alternativa iniziale, non il contenitore effettivamente scritto.
+
+Incorporare Python non è di per sé una pratica scorretta: è esattamente lo scopo di [Chaquopy](https://chaquo.com/chaquopy/). È una scelta di riuso che evita una seconda implementazione delle formule e dei formati di scambio. La parte nativa resta necessaria per integrare correttamente servizi, credenziali, file e autorizzazioni; Kotlin è la scelta adottata, senza sostenere che sia l'unico linguaggio tecnicamente possibile.
+
+Il costo reale è un'app con runtime Python, WebView e bridge, dipendenze scientifiche/crypto native e compatibilità ABI da verificare. Non equivale a un'app tutta Kotlin/Compose: avvio, memoria, dimensione APK, accessibilità/touch, ciclo di vita, prestazioni del bridge e sincronizzazione in background richiedono misure. WorkManager segue i [vincoli del sistema Android](https://developer.android.com/topic/architecture/data-layer/offline-first), non assicura intervalli esatti. La versione condivisa del motore include ora l'interpolazione lattato v2, ma non è stata collaudata su Android.
+
+Il controllo locale `scripts/build_android.py --check` segnala wheel verificate per pydantic_core e cryptography mancanti su arm64/x86_64, SDK 35/build-tools, JDK e Gradle assenti/non configurati. Il controllo è necessario ma non sufficiente: in build andranno verificate anche le versioni bloccate di NumPy, Matplotlib e ReportLab rispetto a Python 3.13 e alle ABI. Nessun APK è stato compilato o provato. Il rinvio concordato delle build resta valido.
+
+Prima di confermare definitivamente questa architettura: produrre una build debug, verificare in modalità aereo FIT → analisi → PDF, misurare avvio/memoria/dimensioni e collaudare sincronizzazione, riavvio, sospensione e recupero del processo su dispositivo fisico. Se i costi risultano eccessivi, valutare adapter più sottili o UI nativa con lo stesso motore, mediante decisione documentata; nessuna riscrittura automatica è avviata da questa osservazione.
+
+
 ## Sorgenti 0.8 — protocolli e schede condivise
 
 Catalogo, flussi manuale/file e campi opzionali tipizzati sono condivisi con la UI React e l’API Python. Nessun modulo di calcolo custom viene eseguito sul telefono: le osservazioni conservano schema, unità e snapshot come sul desktop. I contratti sono verificati su PC; la nuova UI non è stata collaudata su dispositivo Android. Build APK ancora rimandata secondo la consegna concordata.

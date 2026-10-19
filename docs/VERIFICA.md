@@ -1,5 +1,49 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Attuazione TD-83–97 — 19 ottobre 2026
+
+- **180 test backend passati, 1 saltato** (permessi symlink Windows), warning Starlette/httpx preesistente. Nuovi 24 casi maturazione: oracoli Moore/Mirwald, null/zero/domini/qualità, HV e picco cubico noto, stabilità adulta, API e revisione concorrente, snapshot conservati, CSV/MD/PDF, sync firmata verso visualizzatore e ripristino indipendente effettivo. Verifica dell'accesso cartella vincolata alla destinazione.
+- **19 test Node passati**, inclusa conversione mm:ss e arrotondamento al minuto; TypeScript/Vite e artefatto UI comune verificati. Rimane l'avviso del chunk Plotly (circa 5,3 MB minificati).
+- GUI compilata verificata sul nuovo corpus QA, senza modificare la demo dell'utente: profilo crescita con PHV atteso 8,96 cm/anno, scelta snapshot, dettaglio incrementale con soglie/zone, X persistente fino al glossario, editor dedicato, 23:45 → 1425 s e annullamento esplicito senza salvataggio. Verificati anche editor custom e Wingate 15 s (60 s = 1:00), pannello licenza e Drive non configurato con spiegazione e comando disabilitato. Nessun consenso o account reale usato.
+- Report sintetico atleta con maturazione: PDF di tre pagine generato, renderizzato con Poppler e ispezionato; tabelle, grafico HV, provenienza e footer societario. Corretto salto della sezione e precisione APHV. Artifact `output/pdf/crescita-maturazione-esempio.pdf`, Markdown corrispondente e screenshot `output/crescita-maturazione-gui.png`, `output/dettaglio-soglie-zone.png`, `output/dettaglio-chiusura-persistente.png`.
+- Smoke desktop dai sorgenti riuscito su archivio QA nuovo. Nessun installer ricompilato o account cloud reale collegato. Validazione scientifica esterna, revisione giuridica e build/collaudo Fedora/Android rimangono distinti. [Metodi e limiti](MATURAZIONE.md).
+
+## Revisione generale e sincronizzazione per società — 19 ottobre 2026
+
+- **156 test backend passati, 1 saltato** per permessi symlink Windows; warning Starlette/httpx preesistente. Il gruppo mirato sync/backup/provider passa 43 test.
+- **18 test Node passati**, TypeScript/Vite e verifica dell'artefatto UI comune riusciti. Rimane il chunk Plotly di circa 5,3 MB minificati. `pip check`, compilazione sintattica e smoke desktop dai sorgenti riusciti.
+- Verificati isolamento di due società, rifiuto di archivi multi-società prima dell'accesso al trasporto, firme/record estranei, download incrementale e verifica completa, simmetria dei limiti ZIP. Non provati account cloud reali o installer aggiornati su PC pulito.
+- Misure sintetiche: archivio Aurora 150 test, circa 6,9 MB locali e 7,9 MB di pacchetti v1; registrazione di 63 minuti a 1 Hz circa 0,81 MB per revisione nel canale. Modelli a 5 Hz e revisioni ripetute inclusi nella [valutazione dimensionale](SYNC_DIMENSIONI_E_SCALABILITA.md).
+- Correzioni, prove UI, limiti residui e sequenza del lavoro nella [revisione completa](REVISIONE_GENERALE_2026-10-19.md).
+
+## Interpolazione lattato v2 — 18 ottobre 2026
+
+- Suite backend: **147 passati, 1 saltato** (symlink Windows); warning Starlette/httpx preesistente. Nuovi 19 casi: oracolo 220 W/155 bpm a 4 mmol/L, livelli decimali, mancanze FC/peso, copertura/step parziali/rampa, ambiguità, validazione livelli, associazione CSV/manuale, API, storici, CSV/MD, revisioni e cache del vecchio renderer.
+- **12 test Node passati**, TypeScript/Vite compilato con avviso dimensione chunk Plotly. GUI verificata sul solo archivio QA separato: livelli 2/3/3.5/4/6 nel modulo di correzione, curve e tabella con W/W/kg/FC; 6 mmol/L indisponibile fuori intervallo. Nessuna modifica dei dati nell'archivio demo principale.
+- PDF sintetico generato, 4 pagine renderizzate con Poppler e ispezionate; verificati titolo atleta, valori, descrizione metodo, grafico e footer. Artifact: `output/pdf/lattato-livelli-esempio.pdf`, screenshot `output/lattato-livelli-gui.png`.
+- Android `build_android.py --check`: prerequisiti mancanti (wheel pydantic_core/cryptography verificate per arm64/x86_64, SDK 35, JDK, Gradle). Sorgenti Kotlin presenti; nessun APK compilato o testato, nessuna build Linux/Android avviata.
+
+## Grafico unico e confronto di serie — 18 ottobre 2026
+
+- **12 test Node passati**: sovrapposizione con assi indipendenti, selezione dei canali, lattato puntuale nello stesso grafico, lacune e zero; raggruppamento di più anni nella stessa serie, esclusione delle serie senza valori, metodi/protocolli/origini separati, selezione iniziale e limite quattro, categorie globali ordinate e colori stabili.
+- Build TypeScript/Vite riuscita, con il consueto avviso dimensione del chunk Plotly. Nessuna modifica a formule, aggregazioni backend o schema dati in questo intervento; la precedente suite backend resta documentata sotto.
+- GUI verificata sul corpus completo: MAP mostra inizialmente 1 delle 6 serie utili, anziché legende per tutti i protocolli; quattro serie ALL/ESO selezionabili, ulteriori scelte disabilitate e avviso di confronto descrittivo visibile. Incrementale Riva Giulia 15/03/2026 mostra potenza/FC/cadenza e lattato nello stesso grafico, su assi colorati indipendenti.
+- Screenshot: `output/test-linee-sovrapposte.png`, `output/storico-serie-selezionate.png`. Archivi demo non rigenerati, installer non ricompilati.
+
+## Grafici nel dettaglio test — 18 ottobre 2026
+
+- **128 test backend passati, 1 saltato** (permessi symlink Windows), warning Starlette/httpx preesistente. Nuove regressioni su CSV con canali opzionali/null/zero, valori non validi, unità reali dei campi FIT e recupero campioni senza alterare la revisione del record.
+- **5 test Node** del modello grafico: scale indipendenti, canali visibili, nessuna curva da riepiloghi, tempi dei prelievi, lacune e target allineato. Build TypeScript/Vite riuscita; rimane l'avviso dimensione chunk Plotly.
+- GUI compilata verificata su corpus completo esistente: filtro 22 tracciati nella società Aurora, incrementale Riva Giulia del 15/03/2026 con tre canali e lattato, Wingate 15 s Moretti Elena con tre canali; custom manuale con spiegazione esplicita. Nessun test demo modificato o rigenerato. Screenshot locale `output/test-tracciato-canali.png`.
+- Nessun installer ricompilato; canali aggiuntivi non conservati dal vecchio decoder richiedono nuova importazione del file originale.
+
+## Reset e rigenerazione delle demo — 18 ottobre 2026
+
+- Suite completa: **122 test passati, 1 saltato**, warning Starlette/httpx preesistente. Il test saltato riguarda i link simbolici, non creabili con i permessi Windows di questa sessione.
+- Verificati conservazione integrale della vecchia cartella, più reset sullo stesso nome, percorsi rifiutati, archivi principali/repliche aperti, nessun accesso ai riferimenti esterni e retry limitato per handle transitori Windows. Il corpus ridotto viene rigenerato sullo stesso percorso con nuove identità e gli stessi conteggi.
+- Collaudo CLI reale su una cartella QA nuova: creazione demo minima di 4 test, `demo.py --reset`, rifiuto di `demo_suite.py --reset` e serve.py con archivio bloccato, quindi sostituzione con corpus ridotto (6 atleti / 36 test) ed export ZIP riuscito. Sentinella e directory precedenti conservate nei backup; `.local/ui-test` dell’utente non svuotata durante il collaudo.
+- Guida principale riordinata con comandi completi, distinzione demo minima/completa, recupero dei backup raw al percorso originale, nuove schede browser, repliche e ZIP portabili. Nessun installer ricompilato.
+
 ## Estrazione UI comune — sorgenti successivi alla 0.8
 
 Repository autonoma UI 0.1.0 installata e compilata da sola, 4 test Node passati; catalogo browser verificato con nome Ammiraglia e logo societario fisso. Fuorigiri usa l’artefatto in vendor: TypeScript/Vite riusciti e 117 test backend passati. GUI Fuorigiri verificata per ordinamento MAP e apertura modulo atleta su corpus fittizio, senza salvataggi. Checksum, sorgenti/licenza e immagine originale verificati da scripts/verify_suite_ui.py. Non ricompilati gli installer; nessuna CI remota o build Linux/Android. [Dettagli](SUITE_CONDIVISA.md).

@@ -1,26 +1,202 @@
 # Come testare il progetto, inclusa l'interfaccia
 
-## Verifica UI condivisa con Ammiraglia
+## Nuovi requisiti TD-83–97: dettaglio test e maturazione
 
-La build frontend usa il pacchetto versionato in frontend/vendor: non richiede il clone della repository comune. Dalla radice eseguire `python scripts/verify_suite_ui.py`, poi la normale build frontend e il server locale sotto. Controllare tabelle/ordinamento, moduli e footer. Per il catalogo autonomo e la procedura Ammiraglia vedere [Suite condivisa](SUITE_CONDIVISA.md). Gli installer 0.8 già presenti precedono questa estrazione e non sono stati ricompilati in questo passaggio.
+Per provare insieme test esistenti e nuovi casi di crescita, creare **una cartella nuova**:
 
-## Percorso consigliato 0.8: corpus completo
+```powershell
+.venv/Scripts/python.exe scripts/demo_maturation.py --data .local/demo-crescita-nuovo
+npm --prefix frontend run build
+.venv/Scripts/python.exe scripts/serve.py --data .local/demo-crescita-nuovo
+```
 
-Per le prove complete usare il [nuovo corpus sintetico](CORPUS_SINTETICO_08.md), non le demo minime storiche riportate più sotto. Già generato in `.local/demo-fuorigiri-completo`: 2 società, 24 profili, 192 prove su tre stagioni (2 eliminate logicamente), 216 rilevazioni e 12 protocolli per società, oltre a fixture valide/errate, repliche Admin/Viewer e backup SOLO DEMO.
+Aprire l'URL completo con token stampato dal server. Questo corpus deriva dalla demo ridotta e aggiunge, in entrambe le società, tre profili «Crescita DEMO»: picco noto, dati insufficienti e adulto. Manifest `growth_cases`, misure avanzate e analisi conservate; backup principali aggiornati dopo l'aggiunta. Non usare `--reset` con questo generatore: rifiuta archivi non vuoti. Usare un altro nome oppure le procedure conservative già documentate per le demo base.
+
+Checklist funzionale:
+
+1. Aprire un incrementale con tracciato: MAP, potenza di soglia e FTHR insieme alle zone; fonte e coefficiente realmente applicato leggibili. Selezionare un livello lattato e verificare guide/punto/riga W–FC. Non aspettarsi FC se non disponibile.
+2. Scorrere fino in fondo al dettaglio: X rimane visibile. «Correggi test» apre l'editor dedicato; verificare anche Sprint/Wingate, custom e storico manuale. Cambiare un dato e chiudere: deve chiedere se continuare o scartare, senza modificare il test salvato.
+3. Nell'editor digitare `23:45` come fine dal file: il campo secondi deve diventare `1425`. Provare `23:60`: deve essere segnalato, non salvato come il vecchio valore. Il grafico indica l'origine dal file; il recupero rimane relativo alla fine sforzo. Verificare input da tastiera e selezione di un campione.
+4. Controllare campi personalizzati finali e glossario contestuale in ogni pagina. Verificare anche IT/EN per i nuovi componenti; restano testi legacy da completare.
+5. Dal footer aprire «Licenza, limiti e backup»: leggere GPL originale, avvisi delle dipendenze, assenza di garanzia e limiti backup. Nessuna EULA bloccante aggiunta. La build copia automaticamente i testi legali negli asset, senza modificarne gli originali.
+6. In Archivio e scambio → Condivisione selezionare un provider senza registrazione OAuth: comando non avviabile e spiegazione dei prerequisiti. Account collegato non significa cartella verificata; l'evidenza di accesso precedente non vale per una nuova destinazione. Non inserire credenziali reali nel corpus SOLO DEMO.
+7. Nel profilo «Crescita DEMO peak» verificare circa `8,96 cm/anno` al `01/01/2024`. Selezionare l'analisi conservata; poi una diversa data di anteprima. Nelle misure facoltative verificare statura seduta e indici avanzati senza campi obbligatori aggiuntivi. Il caso «missing» spiega le assenze; «adult» non applica i modelli adolescenti fuori dominio.
+8. Conservare una nuova analisi con motivo su una copia QA; correggere una rilevazione con motivo. La nuova anteprima può cambiare, l'analisi precedente deve rimanere identica. Verificare CSV estesi, PDF/MD atleta/società e vero ripristino del backup.
+
+Metodi e gate: [MATURAZIONE.md](MATURAZIONE.md). %PAH/residuo richiedono una previsione adulta esterna con fonte/metodo; non è presente un calcolatore automatico Khamis–Roche. I test con curve sintetiche non certificano accuratezza biologica.
+
+## Quali dati sintetici usare
+
+Per provare tutte le funzionalità usare **`scripts/demo_suite.py`**, il generatore del corpus completo. Il comando che hai eseguito, `scripts/demo.py`, genera invece la vecchia demo minima incrementale e non include tutti i casi nuovi.
+
+| Comando | Contenuto | Uso |
+|---|---|---|
+| `scripts/demo_suite.py --data <cartella>` | 2 società, 24 atleti, 216 rilevazioni, 192 test su 2024–2026 (190 non eliminati), 12 versioni di protocollo per società; FIT/CSV, Sprint/Wingate/custom, gas/lattato/recupero, gruppi/anni, ruoli e conflitti | Scelta consigliata per il collaudo completo |
+| `scripts/demo_suite.py --small --data <cartella>` | Stessi tipi di scenari, meno atleti e prove | Verifiche rapide e test automatici |
+| `scripts/demo.py --data <cartella>` | 4 atleti e 4 test incrementali da FIT, 2 ERG originali | Demo minima storica |
+
+Tutte le persone, misure e prove generate sono fittizie. Il generatore completo non importa i CSV personali allegati. [Composizione e matrice dei casi](CORPUS_SINTETICO_08.md).
+
+## Usare il corpus già presente
+
+Se esiste `.local/demo-fuorigiri-completo/manifest-demo.json`, non occorre generarlo di nuovo:
 
 ```powershell
 .venv/Scripts/python.exe scripts/serve.py --data .local/demo-fuorigiri-completo --port 8771
 ```
 
-Per rigenerarlo: `python scripts/demo_suite.py --data .local/demo-fuorigiri-completo-nuovo`, poi avviare serve.py sulla stessa destinazione. La cartella deve essere nuova; attendere manifest e riepilogo finale. Aprire il link completo con token stampato dal server e scegliere una delle due società.
+Aprire il link **completo con token** stampato dal server e selezionare **Velodromo Aurora - SIMULAZIONE** oppure **Pedale del Lago - SIMULAZIONE**. La scelta della società determina il suo archivio: non importa automaticamente i dati nell’archivio operativo abituale.
 
-Flusso aggiornato: **Protocolli → Crea protocollo** (incrementale manuale, Sprint, Wingate o Personalizzato, con campi facoltativi); **Test e analisi → Nuovo test** per scegliere protocollo/versione e inserimento manuale o da FIT/CSV. La definizione non è più nel modulo anaerobico. [Guida a versioni e campi custom](PROTOCOLLI_E_CAMPI_CUSTOM.md).
+Per la finestra desktop, con dipendenze desktop installate:
 
-Includere nella prova: creazione senza ERG, clone/versione, numeri con unità, testo/scelta/data/booleano, valori mancanti/zero/No, campi aggiunti alla sola prova, sessione FIT, inizio sul grafico, zoom, esclusioni motivate, revisioni, medie/mediane custom, PDF/Markdown/CSV esteso. La matrice del corpus descrive file, percorsi ed esiti attesi; oracoli-numerici.json offre controlli indipendenti su MAP, picco/media/lavoro e media/mediana.
+```powershell
+.venv/Scripts/python.exe desktop_entry.py --data .local/demo-fuorigiri-completo
+```
 
-I backup dello ZIP demo si aprono come **copia indipendente**, separatamente per società. Le repliche già collegate si usano dall’archivio locale o si rigenerano da sorgenti. Gli account cloud reali, Fedora, Android e il PC Windows pulito restano verifiche esterne: nessun corpus fittizio può certificarli.
+In alternativa l’eseguibile distribuito accetta `Fuorigiri.exe --data "F:\GitHub\test-analysis\.local\demo-fuorigiri-completo"`, adattando il percorso. Usare lo stesso percorso di dati nei comandi di generazione e avvio. Il programma senza `--data` potrebbe aprire il normale archivio personale anziché la demo.
 
-Le sezioni 0.3-0.7 sotto sono cronologia e fixture di regressione, non la procedura principale corrente.
+## Trovare e verificare i grafici del singolo test
+
+In **Test e analisi**, impostare **Dati disponibili → Con tracciato FIT/CSV**, poi **Analizza**. Lo stesso filtro è disponibile nello storico del profilo atleta. La colonna Dati disponibili distingue i tracciati dai soli riepiloghi. Nel corpus completo attuale ci sono **44 record con campioni** e 148 riepiloghi manuali (192 record totali, inclusi i due eliminati): non tutte le righe devono quindi avere una curva. Un CSV di storico con medie/massimi è un riepilogo, non un CSV temporale.
+
+Per un esempio completo selezionare **Velodromo Aurora - SIMULAZIONE → Riva Giulia → 15 marzo 2026 → AER-RULLO-ALL laboratorio**. In cima al dettaglio devono comparire potenza, FC e cadenza, sovrapposte in un unico grafico, ciascuna con la propria scala e tutte visibili. Gli eventuali prelievi di lattato compaiono come punti sullo stesso asse temporale, con scala in mmol/L. I controlli Canali sovrapposti permettono di mostrare/nascondere i segnali e attivare velocità, temperatura e quota, se presenti. Più sotto rimangono l'analisi lattato/carico e gli scambi gassosi quando disponibili. Aprire anche un Wingate con tracciato: deve mostrare gli stessi canali disponibili, non solo la potenza. Nei test manuali compare la spiegazione dell'assenza di campioni; valori medi e massimi non sono trasformati in curve inventate.
+
+L'importazione di un **CSV temporale** accetta questi campi (tempo in secondi crescente e almeno due campioni; canali mancanti lasciati vuoti):
+
+```csv
+t,power,hr,cadence,lactate_mmol_l,speed_kmh,temperature_c,altitude_m
+0,100,100,80,,25,20,130
+1,110,102,82,1.5,26,20,130
+2,120,104,84,,27,20,131
+```
+
+Alias italiani: `tempo_s`, `potenza_w`, `fc_bpm`, `cadenza_rpm`, `lattato_mmol_l`, `velocita_kmh`, `temperatura_c`, `quota_m`. Il lattato viene rappresentato solo agli istanti misurati, senza interpolazione. I prelievi manuali usano l'istante di raccolta; l'eventuale ritardo serve all'associazione al carico, senza spostare il punto nel grafico temporale. Le interruzioni oltre l'intervallo massimo ammesso interrompono la linea; un dato mancante non diventa zero.
+
+I FIT conservano anche velocità (convertita da m/s a km/h), temperatura e quota, se registrate. I canali aggiuntivi scartati da precedenti versioni del decoder richiedono una nuova importazione del file originale: questa modifica non ricalcola né riscrive automaticamente i test archiviati. I campioni già conservati nell'oggetto tracciato sono recuperati dal dettaglio anche se non incorporati nel record del test.
+
+Dopo aggiornamenti ai sorgenti, ricompilare la GUI con `npm.cmd --prefix frontend run build`, riavviare il server e ricaricare la pagina. Un vecchio eseguibile non acquisisce queste modifiche automaticamente. Verifica automatica del modello grafico: `npm.cmd --prefix frontend run test:signals` (Node 22.18+ oppure 24).
+
+## Interpolazione del lattato: livelli, FC e report
+
+Nel modulo di analisi incrementale, **Metodo e qualità → Livelli di lattato da stimare** permette di scegliere da 1 a 20 concentrazioni (default 2, 3 e 4 mmol/L, fino a tre decimali). Inserire i prelievi con istante e concentrazione e associarli a uno step oppure a un carico esplicito, indicando il ritardo se necessario. I prelievi nel CSV temporale vengono acquisiti automaticamente; una misura manuale allo stesso istante ha precedenza. Il carico automatico è il target dello step costante: non viene confuso con una potenza istantanea misurata.
+
+Dopo anteprima/calcolo, **Lattato: potenza e FC ai livelli richiesti** presenta punti osservati, interpolazione lineare e valori stimati W/W/kg/bpm. La FC usa la media finale dello step completo a carico costante secondo il preset (default ultimi 30 s, copertura almeno 80%); non il battito durante il prelievo o recupero. La tabella mostra separatamente le ragioni di indisponibilità: un prelievo con carico esplicito ma senza step/FC validi può dare watt senza bpm. Peso assente o stimato non produce W/kg. Attraversamenti ambigui, carichi duplicati e curve decrescenti richiedono revisione; nessuna estrapolazione oltre i prelievi.
+
+I risultati contengono metodo `lactate.fixed-linear/2`, parametri FC e prelievi di supporto. I livelli configurati e il metodo sono salvati nella revisione; modificare una prova richiede una correzione esplicita. I vecchi test non vengono ricalcolati all'apertura e possono mostrare solo watt a 2/4 mmol/L. Le nuove identità di metodo restano separate negli storici. Le concentrazioni fisse non sono automaticamente LT1/LT2, FTP o MLSS.
+
+In **Storici e confronti**, le metriche dei livelli calcolati (anche decimali, es. FC a 3.5 mmol/L) diventano disponibili. PDF e Markdown riportano stime e metodo; il CSV standard mantiene le colonne originali a 2/4 mmol/L e il file aggiuntivo **`extended/lattato_livelli.csv`** include ogni livello, W/W/kg/FC, revisione, metodo e motivi di indisponibilità. I report societari e le loro sottosezioni includono le nuove metriche disponibili.
+
+Verifiche automatiche: `.venv/Scripts/python.exe -m pytest tests/test_lactate_levels.py -q`. Caso numerico indipendente: 3 mmol/L a 200 W e 150 bpm, 5 mmol/L a 240 W e 160 bpm → 4 mmol/L a 220 W e 155 bpm. L'archivio QA separato `.local/qa-lattato-livelli-20261018` contiene una prova fittizia con livelli 2/3/3.5/4/6; il livello 6 è intenzionalmente fuori intervallo e deve risultare indisponibile. Per aprirlo: `.venv/Scripts/python.exe scripts/serve.py --data .local/qa-lattato-livelli-20261018 --port 8792`. Il PDF di verifica è in `output/pdf/lattato-livelli-esempio.pdf`. Nessuna rigenerazione dell'archivio demo abituale è necessaria.
+
+## Verificare Storici e confronti con molti protocolli
+
+1. Aprire **Storici e confronti** nel corpus completo Aurora, selezionare MAP operativa, Vista Stagione e Mediana. Metrica e protocollo sono i controlli principali; atleti/categorie/stagioni rimangono nel pannello espandibile, che segnala eventuali filtri attivi.
+2. All'apertura compare **una sola serie**, quella con più valori validi. Le aggregazioni 2024/2025/2026 dello stesso protocollo/metodo formano un'unica voce di legenda. Wingate e custom senza MAP non producono serie vuote. Le metriche indicano quanti valori sono presenti nell'archivio filtrato, prima della selezione ultimo test per atleta.
+3. Aprire **Scegli le serie da confrontare** e scegliere fino a quattro serie. La quinta scelta deve essere disabilitata; deselezionando una serie torna disponibile. Deselezionando tutte, compare un invito a sceglierne almeno una. Il pulsante Serie principale ripristina la scelta iniziale.
+4. Ogni serie mantiene protocollo/versione, metodo/condizioni e origine della soglia distinti. Le sigle S1/S2 rimandano alla chiave sotto il grafico e alla tabella con media, mediana, estremi e numerosità. Affiancare ALL ed ESO mostra un avviso: il confronto è descrittivo, senza media comune o coefficienti automatici di equivalenza. Sprint, Wingate 15 s e 30 s restano anch'essi separati.
+5. Passare a un'altra metrica: la selezione si ripristina sulla serie con più valori utili per quella metrica. Un filtro senza risultati mostra una spiegazione, non un grafico vuoto con molte legende. Le categorie temporali rimangono ordinate anche quando le serie coprono anni diversi; le viste nominali usano punti senza linee fra atleti o categorie.
+
+**Copertura dati ed esportazione dell'archivio filtrato** contiene i report completi dei filtri correnti, non solo delle quattro serie del confronto interattivo. Questo ambito è indicato nell'interfaccia. La selezione grafica non modifica archivi o risultati.
+
+I test del modello di confronto sono inclusi in `npm.cmd --prefix frontend run test:signals`.
+
+## Creare i dati nuovi oppure svuotare e ripopolare `.local/ui-test`
+
+Dalla radice del progetto, per una destinazione che ancora non esiste:
+
+```powershell
+.venv/Scripts/python.exe scripts/demo_suite.py --data .local/ui-test
+.venv/Scripts/python.exe scripts/serve.py --data .local/ui-test --port 8766
+```
+
+Se `.local/ui-test` esiste già e ricevi «Archivio non vuoto», **chiudi prima Fuorigiri, le vecchie schede del browser e tutti i server/repliche che usano quella demo**. Per arrestare il server nel suo terminale usa `Ctrl+C`. Poi:
+
+```powershell
+.venv/Scripts/python.exe scripts/demo_suite.py --data .local/ui-test --reset
+.venv/Scripts/python.exe scripts/serve.py --data .local/ui-test --port 8766
+```
+
+Questo è il comando consigliato anche per sostituire la vecchia demo da quattro test con il corpus completo. Attendere il riepilogo finale del generatore prima di avviare il server: la preparazione delle società, delle repliche e dello scambio iniziale può richiedere qualche minuto.
+
+Aprire il **nuovo URL con token in una nuova scheda** e scegliere la società. La rigenerazione ricrea gli identificativi e le identità dimostrative: una vecchia scheda può conservare la selezione di una società che non esiste più.
+
+Anche il comando originale ora supporta il reset, ma continua a produrre soltanto i quattro test della demo minima:
+
+```powershell
+.venv/Scripts/python.exe scripts/demo.py --data .local/ui-test --reset
+```
+
+Per una prova rapida dello stesso meccanismo con il generatore completo: `python scripts/demo_suite.py --data .local/ui-test --small --reset`. Per tornare al corpus completo ripetere senza `--small`.
+
+## Cosa fa `--reset` e come recuperare la cartella precedente
+
+`--reset` non cancella definitivamente il contenuto: sposta l’intera cartella precedente in **`.local/demo-backups/<nome>-<dataUTC>-<identificatore>`**, stampa il percorso e ricrea i dati nel percorso originario. Ogni reset conserva una copia distinta, comprese le modifiche manuali fatte durante le prove. Il nome del backup usa UTC, indicato dalla Z.
+
+Il reset accetta solo una cartella **direttamente sotto la `.local` di questo progetto**, per esempio `.local/ui-test` o `.local/demo-fuorigiri-completo`. Rifiuta la radice `.local`, la cartella dei backup, destinazioni esterne, sottocartelle degli archivi, link/junction e archivi aperti tramite app/server aggiornati. Il controllo vale anche per le repliche interne. Il server di test ora usa lo stesso blocco dell’app desktop.
+
+Non vengono seguiti i percorsi del registro delle società: eventuali archivi o cartelle cloud **esterni** non vengono svuotati né spostati. Le repliche e lo scambio contenuti nella cartella demo vengono conservati insieme a essa e ricreati dal generatore. Non usare il reset su una demo collegata a dati operativi.
+
+La copia conservata è una copia completa della directory, **non un backup portabile da aprire direttamente come nuovo archivio**: nei corpus con più società, registro, manifest e configurazioni contengono percorsi assoluti. Per tornare allo stato precedente, arrestare tutto, conservare altrove la nuova directory e rimettere la vecchia copia **nel suo percorso originale**. Per un ripristino indipendente usare invece i backup ZIP dall’interfaccia. Non è prevista una pulizia automatica delle copie: rimuoverle solo quando non servono più.
+
+Se la generazione si interrompe dopo lo spostamento, la copia precedente rimane nel percorso stampato. Dopo aver risolto la causa, ripetere il comando con `--reset` conserva anche il tentativo incompleto. Senza `--reset` i generatori continuano a rifiutare destinazioni già popolate; il generatore completo richiede una cartella nuova anche se quella esistente è vuota.
+
+## Come utilizzare il corpus nel collaudo
+
+- **Atleti / Società e gruppi:** categorie, stagioni, appartenenze storiche, antropometria, omonimi, dati mancanti e stati archiviato/eliminato.
+- **Protocolli:** ERG originali, definizioni manuali senza ERG o senza step, Sprint/Wingate, versioni e protocolli custom con campi facoltativi.
+- **Test e analisi:** aprire le prove già archiviate oppure registrare nuove prove manuali/da file. I FIT/CSV da importare si trovano in `<cartella-demo>/fixtures`; consultare `manifest-demo.json` per protocollo, offset, termine sforzo ed esito atteso. Alcune fixture sono volutamente invalide: non vanno tutte importate con successo.
+- **Storici e confronti:** scegliere protocollo/versione, categoria, stagione, media/mediana e metriche anche personalizzate; metodi distinti rimangono separati.
+- **Report / export:** singolo test, atleta, gruppo/anno e società; controllare PDF/Markdown, CSV base/estesi, valori zero/No distinti dai mancanti e footer societario.
+- **Import CSV:** provare prima anagrafiche, poi misure e storico; le fixture includono ID già presenti, un nuovo atleta e righe errate. Consultare la matrice per idempotenza e rifiuto atomico dei lotti.
+- **Risultati attesi indipendenti:** usare `oracoli-numerici.json` e le fixture `oracolo-*` per controllare MAP, potenza/lavoro Wingate e media/mediana.
+
+Il seed 481516 riproduce gli scenari e i valori; UUID, identità, firme e percorsi sono ricreati e non coincidono byte per byte. I quattro test minimi precedenti non coprono questo insieme di funzioni.
+
+## Provare Admin, Visualizzatore e conflitti offline
+
+Con la demo principale chiusa, avviare le tre istanze su **radici e porte differenti**:
+
+```powershell
+# Terminale 1: fondatore
+.venv/Scripts/python.exe scripts/serve.py --data .local/ui-test --port 8766
+# Terminale 2: admin
+.venv/Scripts/python.exe scripts/serve.py --data .local/ui-test/repliche/admin --port 8767
+# Terminale 3: visualizzatore
+.venv/Scripts/python.exe scripts/serve.py --data .local/ui-test/repliche/viewer --port 8768
+```
+
+Aprire ciascun URL con il suo token e selezionare la società collegata. Le repliche sono già predisposte sulla prima società. Il Visualizzatore consulta e riceve ma non modifica. Per il conflitto previsto dal corpus: sincronizzare prima Admin, poi Fondatore, osservare e risolvere il conflitto, quindi sincronizzare di nuovo entrambe le parti e il Visualizzatore. Non copiare SQLite fra le istanze. **Prima di un reset arrestare tutte e tre le istanze.**
+
+Gli inviti e il recupero SOLO DEMO usano la password pubblica `SoloDemo-NonUsareInProduzione-2026`; non usarli per archivi operativi. Il corpus non collega account cloud reali.
+
+## Usare i dati con un installer o creare uno ZIP portabile
+
+Se disponibile, estrarre `dist/release/Fuorigiri-0.8.0-demo-sintetica.zip`: contiene due ZIP nella cartella `backups`. Nell’app usare **Gestisci società → Ripristina da backup → Copia indipendente**, importandoli separatamente e assegnando un fondatore dimostrativo. Non usare «recupero originale» per questi backup dimostrativi. La copia indipendente non include le repliche già collegate: per quelle usare il corpus locale o rigenerarlo.
+
+Per creare un nuovo corpus e il suo ZIP portabile nello stesso passaggio:
+
+```powershell
+.venv/Scripts/python.exe scripts/demo_suite.py --data .local/demo-da-esportare --export .local/fuorigiri-demo.zip
+```
+
+Se quella cartella esiste già, aggiungere `--reset` secondo le regole sopra. Lo ZIP contiene backup, protocolli, fixture e controlli attesi, senza le identità private delle repliche. I report e i backup esportati dall’app derivano dalla società attualmente selezionata.
+
+## Build dell’interfaccia e UI condivisa con Ammiraglia
+
+Se frontend/dist non è presente o hai cambiato il frontend, compilare prima dell’avvio:
+
+```powershell
+Set-Location frontend
+npm ci
+npm run build
+Set-Location ..
+```
+
+La build usa il pacchetto versionato in frontend/vendor e non richiede il clone della repository comune. Dalla radice `python scripts/verify_suite_ui.py` ne verifica la provenienza; catalogo e procedura Ammiraglia sono in [Suite condivisa](SUITE_CONDIVISA.md). Per sviluppo con Vite e per le dipendenze Python/desktop vedere le sezioni di installazione sotto.
+
+Il corpus copre i percorsi offline e gli errori controllabili sul PC. Account cloud reali, Fedora, Android, dispositivi di misura, PC pulito e qualifica scientifica richiedono verifiche proprie. Gli installer 0.8 già presenti precedono l’estrazione UI comune e questi nuovi comandi di sviluppo: non sono stati ricompilati in questo passaggio.
+
+Le sezioni 0.3–0.7 seguenti sono cronologia e fixture minime di regressione, non il percorso consigliato per i nuovi dati.
 
 ## Novità 0.7: test anaerobici e cloud diretti
 
@@ -262,4 +438,34 @@ Usare lo script di build del progetto: su Windows isola il PATH del sottoprocess
 
 ## 8. Registrare l'esito
 
+Per le verifiche della revisione del 19 ottobre vedere anche la sezione seguente e [la relazione completa](REVISIONE_GENERALE_2026-10-19.md).
+
 Annotare versione app, sistema operativo, versioni Python/Node, percorso dell'archivio di prova, risultato dei comandi e checklist eseguita. Per anomalie riportare passaggi minimi, risultato atteso/ottenuto e messaggio; usare screenshot privi di dati reali. Lo stato delle verifiche effettuate è in [VERIFICA.md](VERIFICA.md); requisiti e scelte ancora aperte in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md).
+
+## 9. Isolamento società e dimensioni dell'archivio
+
+Usare società e repliche sintetiche separate. La connessione in Archivio e scambio riguarda la società aperta; per collaboratori diversi usare cartelle cloud con permessi distinti. Un vecchio archivio multi-società deve essere bloccato per sync/inviti: scegliere una società nel menu non filtra lo scambio.
+
+1. Cambiare società e ricaricare: la selezione deve rimanere; cambi rapidi durante il caricamento non devono riportare all'archivio precedente.
+2. Nei protocolli verificare spazi tra numeri/unità, stati leggibili, durata dello sforzo Sprint/Wingate e assenza di durate inventate per protocolli di sola archiviazione.
+3. Nel profilo controllare una serie iniziale e selezione fino a quattro, separate per protocollo/metodo. W/kg con peso stimato non deve produrre miglioramenti numerici nei confronti.
+4. Su repliche di prova fare due sync senza modifiche: la seconda evita i pacchetti già acquisiti. «Verifica completa del canale» li rilegge; accessi/revoche vengono acquisiti anche nella sync ordinaria. Non alterare pacchetti reali per il collaudo.
+5. Verificare che sincronizzare una società non aggiunga dati dell'altra e che le connessioni rimangano distinte.
+
+Verifiche automatiche dai sorgenti, senza rigenerare dati:
+
+```powershell
+.venv/Scripts/python.exe -m pytest -q
+npm --prefix frontend run test:signals
+npm --prefix frontend run build
+.venv/Scripts/python.exe scripts/verify_suite_ui.py
+.venv/Scripts/python.exe desktop_entry.py --smoke-test --data .local/qa-smoke-nuovo
+```
+
+Misura in sola lettura di una società, senza chiavi o contatti cloud:
+
+```powershell
+.venv/Scripts/python.exe scripts/measure_archive_size.py --data .local/demo-fuorigiri-completo/workspaces/2fa5c417-ef59-447f-af11-528f52411b01 --out output/misure-archivio-aurora.json
+```
+
+Sostituire l'identificatore con quello della propria cartella società: cambia rigenerando la demo. Non usare la cartella contenitore di più società. La stima v1 richiede gli oggetti disponibili ed esclude versioni del provider e vecchi canali. [Misure e limiti](SYNC_DIMENSIONI_E_SCALABILITA.md). L'installer precedente non acquisisce automaticamente le modifiche ai sorgenti.

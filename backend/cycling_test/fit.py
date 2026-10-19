@@ -54,12 +54,19 @@ def decode_fit(data: bytes, session_index=None, overview=False, duplicate_policy
             elif kind == "start":
                 paused = False
             event_index += 1
-        samples.append({"t": (r["timestamp"]-epoch).total_seconds(), "power": r.get("power"), "hr": r.get("heart_rate"), "cadence": r.get("cadence"), "paused": paused})
+        sample={"t": (r["timestamp"]-epoch).total_seconds(), "power": r.get("power"), "hr": r.get("heart_rate"), "cadence": r.get("cadence"), "paused": paused}
+        # fitdecode already applies FIT scale/offset: speed is m/s, altitude m.
+        speed=r.get('enhanced_speed') if r.get('enhanced_speed') is not None else r.get('speed')
+        altitude=r.get('enhanced_altitude') if r.get('enhanced_altitude') is not None else r.get('altitude')
+        if speed is not None:sample['speed_kmh']=speed*3.6
+        if altitude is not None:sample['altitude_m']=altitude
+        if r.get('temperature') is not None:sample['temperature_c']=r['temperature']
+        samples.append(sample)
         previous_time=r['timestamp']
     if any(a["t"] == b["t"] for a,b in zip(samples, samples[1:])):
         raise ValueError("FIT con timestamp duplicati: richiede revisione prima dell'analisi.")
     return {"samples": samples, "started_at": epoch.isoformat(), "duration_s": samples[-1]["t"],
-            'decoder':'fitdecode-strict/2','session_index':session_index or 0,'sessions':metadata,
+            'decoder':'fitdecode-strict/3','session_index':session_index or 0,'sessions':metadata,
             'corrections':{'duplicate_policy':duplicate_policy,'reason':correction_reason,'input_ordered':ordered},
             'laps':[{'start':str(r.get('start_time','')),'end':str(r.get('timestamp',''))} for r in messages.get('lap_mesgs',[])],
             "warnings": ["Confermare manualmente fine sforzo e offset. Il termine del file può includere recupero o defaticamento."]}

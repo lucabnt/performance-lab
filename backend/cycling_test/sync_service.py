@@ -17,6 +17,8 @@ def lock(root):
 
 
 def require_managed(store):
+    from .society_scope import check_archive
+    check_archive(store)
     if not hasattr(store,'identity') or store.identity.get('snapshot'):
         raise ValueError('Selezionare una società con accesso personale, non una copia di consultazione.')
 
@@ -25,6 +27,10 @@ def configuration(store):
     path=store.root/'sync-connection.json'
     previous=store.root/'sync-folder.txt'
     return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {'transport':'folder','folder':previous.read_text(encoding='utf-8') if previous.exists() else ''}
+
+
+def connection_fingerprint(config):
+    return hashlib.sha256(encoded(config).encode()).hexdigest()
 
 
 def configure(store,data):
@@ -76,7 +82,7 @@ def audit(store,result):
         db.execute('INSERT INTO sync_audit(body,digest) VALUES(?,?)',(body,hashlib.sha256(body.encode()).hexdigest()))
 
 
-def run_sync(store):
+def run_sync(store,verify_all=False):
     require_managed(store)
     with lock(store.root):
         config=configuration(store)
@@ -84,13 +90,13 @@ def run_sync(store):
         at=datetime.now(timezone.utc).isoformat()
         try:
             from .sync import exchange
-            result=exchange(store,None,store.identity['sync_key'],transport(store,config))
-            state={'at':at,'ok':not result['errors'] and not result['pending'],**result}
+            result=exchange(store,None,store.identity['sync_key'],transport(store,config),verify_existing=verify_all)
+            state={'at':at,'ok':not result['errors'] and not result['pending'],'connection_fingerprint':connection_fingerprint(config),**result}
             write_json(store.root/'last-sync.json',state)
             audit(store,{'ok':state['ok'],**{k:result[k] for k in ('transport','published','received','pending','conflicts')},'invalid_packets':len(result['errors'])})
             return result
         except (ValueError,OSError):
-            write_json(store.root/'last-sync.json',{'at':at,'ok':False,'error':'Scambio non completato. Controllare connessione, accessi e conflitti; dati locali conservati.'})
+            write_json(store.root/'last-sync.json',{'at':at,'ok':False,'connection_fingerprint':connection_fingerprint(config),'error':'Scambio non completato. Controllare connessione, accessi e conflitti; dati locali conservati.'})
             audit(store,{'ok':False,'transport':config['transport']})
             raise
 
@@ -152,7 +158,10 @@ def install_sync_api(app,store):
                 value=load_secret(store.root,config['transport'],config.get('client_id',''))
                 account_status='connected' if value.get('access_token') or value.get('token') else 'disconnected'
             except ValueError:account_status='vault_unavailable'
-        return {'connection':config,'account_status':account_status,'last_sync':json.loads(last.read_text(encoding='utf-8')) if last.exists() else None}
+        last_sync=json.loads(last.read_text(encoding='utf-8')) if last.exists() else None
+        same=bool(last_sync and last_sync.get('connection_fingerprint')==connection_fingerprint(config))
+        access='verified_at_last_sync' if same and last_sync.get('ok') else 'last_sync_failed' if same else 'not_verified'
+        return {'connection':config,'account_status':account_status,'last_sync':last_sync,'folder_access':access}
 
     @app.post('/api/v1/sync/connection')
     def save_connection(data:Connection):return configure(store,data.model_dump())
@@ -192,8 +201,11 @@ def install_sync_api(app,store):
             save_secret(store.root,config['transport'],{},config.get('client_id',''))
         return {'disconnected':True}
 
+    class SyncRun(BaseModel):
+        verify_all: bool=False
+
     @app.post('/api/v1/sync/run')
-    def sync():return run_sync(store)
+    def sync(data:SyncRun=SyncRun()):return run_sync(store,data.verify_all)
 
     @app.post('/api/v1/sync/rotate')
     def rotate_key():return rotate(store)

@@ -30,7 +30,13 @@ def metric(value,method,unit='W',reason=None,**extra):
             'reason':reason,**extra}
 
 
-def lactate(analysis,observations):
+def lactate(analysis,observations,levels=None,weight_kg=None,weight_source='dichiarato'):
+    from .lactate_levels import DEFAULT_LEVELS,validate_levels,token
+    levels=validate_levels(DEFAULT_LEVELS if levels is None else levels)
+    params=analysis.get('preset',{}).get('parameters',{})
+    hr_window=params.get('hr_window_s',30.)
+    snapshot={'method_id':'lactate.fixed-linear/2','hr_method':'stage-final-window/1','hr_window_s':hr_window,
+              'hr_coverage':params.get('hr_coverage',.8),'association':'explicit-step-or-delay/1','extrapolate':False}
     points=[];unmatched=[]
     for obs in observations:
         at=obs['at_s']-obs.get('delay_s',0)
@@ -38,21 +44,34 @@ def lactate(analysis,observations):
         power=obs.get('power_w')
         if power is None and stage and stage['start_w']==stage['end_w']:power=stage['end_w']
         if power is None:unmatched.append(obs);continue
-        points.append({'power_w':power,'mmol_l':obs['mmol_l'],'at_s':obs['at_s'],
+        hr=stage.get('hr',{}) if stage else {}
+        hr_ok=bool(stage and stage.get('complete') and stage.get('actual_s',0)>=hr_window and stage['start_w']==stage['end_w'] and hr.get('usable') and hr.get('coverage',0)>=snapshot['hr_coverage'] and hr.get('mean') is not None)
+        points.append({'origin':obs.get('origin','manual'),'hr_bpm':hr.get('mean') if hr_ok else None,'hr_coverage':hr.get('coverage'),
+                       'hr_reason':None if hr_ok else 'stage_hr_unavailable','hr_window_s':hr_window,'power_w':power,'mmol_l':obs['mmol_l'],'at_s':obs['at_s'],
                        'step_number':stage['number'] if stage else None,'source':'declared_load' if obs.get('power_w') is not None else 'protocol_target'})
     points.sort(key=lambda r:r['power_w']);x=np.array([r['power_w'] for r in points]);y=np.array([r['mmol_l'] for r in points])
     results={};warning=[]
     if unmatched:warning.append('Prelievi senza carico associato: selezionare step o carico esplicito.')
     valid=len(x)>=2 and len(set(x))==len(x)
     if not valid and points:warning.append('Servono carichi distinti; ripetizioni allo stesso carico richiedono revisione.')
-    for level in (2.,4.):
-        values=[]
+    for level in levels:
+        candidates=[]
         if valid:
-            values=[float(x[i]) for i,v in enumerate(y) if v==level]
-            values += [float(x[i]+(x[i+1]-x[i])*(level-y[i])/(y[i+1]-y[i])) for i in range(len(x)-1) if y[i]<level<y[i+1]]
-        status_reason='ambiguous_crossing' if len(values)>1 or valid and any(np.diff(y)<0) else 'no_crossing'
-        value=values[0] if len(values)==1 and not any(np.diff(y)<0) else None
-        results[f'fixed_{int(level)}']=metric(value,'lactate.fixed-linear/1',reason=None if value is not None else status_reason,concentration_mmol_l=level,candidates_w=values)
+            candidates=[(float(x[i]),i,i,0.) for i,v in enumerate(y) if v==level]
+            candidates += [(float(x[i]+(x[i+1]-x[i])*(level-y[i])/(y[i+1]-y[i])),i,i+1,float((level-y[i])/(y[i+1]-y[i]))) for i in range(len(x)-1) if y[i]<level<y[i+1]]
+        reason='ambiguous_crossing' if len(candidates)>1 or valid and any(np.diff(y)<0) else 'no_crossing'
+        value=hr_value=wkg=None;hr_reason=weight_reason=reason;support=[]
+        if len(candidates)==1 and not any(np.diff(y)<0):
+            value,i,j,fraction=candidates[0];reason=None
+            support=[points[i]] if i==j else [points[i],points[j]]
+            if all(p['hr_bpm'] is not None for p in support):
+                hr_value=float(points[i]['hr_bpm']+fraction*(points[j]['hr_bpm']-points[i]['hr_bpm']));hr_reason=None
+            else:hr_reason='stage_hr_unavailable'
+            if weight_kg and weight_source!='stimato':wkg=value/weight_kg;weight_reason=None
+            else:weight_reason='weight_missing_or_estimated'
+        results['fixed_'+token(level)]=metric(value,snapshot['method_id'],reason=reason,concentration_mmol_l=level,
+            candidates_w=[c[0] for c in candidates],hr_bpm=hr_value,hr_reason=hr_reason,wkg=wkg,weight_reason=weight_reason,
+            supporting_points=support,hr_method=snapshot['hr_method'],hr_window_s=hr_window)
     curve=[]
     for modified in (False,True):
         name='modified_dmax' if modified else 'dmax';method='lactate.'+name+'-cubic/1'
@@ -76,7 +95,7 @@ def lactate(analysis,observations):
                 if not curve:curve=[{'power_w':float(z),'mmol_l':float(poly(z))} for z in np.linspace(x[0],x[-1],100)]
             else:result=metric(None,method,reason='no_valid_0_4_rise_anchor')
         results[name]=result
-    return {'points':points,'unmatched':unmatched,'results':results,'curve':curve,'warnings':warning,
+    return {'method_snapshot':snapshot,'levels_mmol_l':levels,'points':points,'unmatched':unmatched,'results':results,'curve':curve,'warnings':warning,
             'interpretation':'Metodi distinti; nessuna equivalenza automatica con FTP, MLSS o VT.'}
 
 

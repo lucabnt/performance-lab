@@ -1,5 +1,15 @@
 # Prossimi passi — architettura 1.2
 
+## Aggiornamento operativo — osservazioni del 19 ottobre 2026
+
+**Attuazione successiva:** TD-83–97 sviluppati nei sorgenti con i limiti e le verifiche del [registro](REQUISITI_E_TODO.md) e di [MATURAZIONE.md](MATURAZIONE.md). Non ripartire dalla sola analisi: le priorità residue sono sync v2/backup scalabili/migrazione legacy, qualificazione su dati scientifici reali e distribuzione/OAuth collaudati. Khamis–Roche automatico resta un eventuale metodo futuro distinto dopo verifica delle tabelle corrette; gli indici %PAH/residuo usano ora una previsione esterna tracciata.
+
+Le sezioni successive conservano la pianificazione storica e non descrivono lo stato più recente di tutte le funzioni. Stato e priorità correnti nella [revisione generale](REVISIONE_GENERALE_2026-10-19.md); nuovi requisiti TD-83–97 e motivazioni nell'[analisi dei commenti manuali](ANALISI_TODO_MANUALI_2026-10-19.md).
+
+Le osservazioni aggiungono una revisione coerente del dettaglio test (editor, chiusura persistente, tempi, soglie/zone, glossario e campi custom), trasparenza di collegamento cloud/licenza e una fase nuova crescita/maturazione. Per quest'ultima: prima dati antropometrici e HV qualificata; poi specifica e validazione dei singoli modelli, infine PHV longitudinale e integrazione completa degli output. Dati genitoriali/braccia/arti rimangono opzionali e secondari. Nessuno sviluppo avviato da questa acquisizione.
+
+Restano priorità infrastrutturali sync v2, backup scalabili e migrazione legacy per società. Collaudo provider reali e Windows pulito precedono le relative promesse di rilascio; build Fedora/Android rimangono rimandate come concordato. Le nuove richieste UI possono essere affrontate come blocco coerente mentre si prepara il consolidamento, senza modificare contemporaneamente formule e formato sync.
+
 **Consegna concordata il 18 ottobre 2026:** Windows e sorgenti; l’utente ha rimandato le build Linux/Android. I gate e i collaudi sotto restano documentati, senza avviare CI o pubblicazioni.
 
 ## Stato operativo dopo la 0.6 — non ripetere i blocchi già sviluppati

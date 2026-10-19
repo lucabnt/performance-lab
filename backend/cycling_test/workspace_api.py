@@ -99,7 +99,11 @@ def install_workspaces(app,manager,store,download):
         members=directory_data.get('members',member_directory(store))
         members=list({m['id']:m for m in members+[store.identity['certificate']]}.values())
         last_sync=store.root/'last-sync.json'
-        return {'members':members,'current':store.identity['certificate'],'path':str(store.root),
+        from .society_scope import check_archive
+        scope_error=None
+        try:check_archive(store)
+        except ValueError as exc:scope_error=str(exc)
+        return {'scope_error':scope_error,'members':members,'current':store.identity['certificate'],'path':str(store.root),
                 'founder_id':directory_data.get('founder_id',store.identity['certificate']['id'] if store.identity.get('authority_private') else None),
                 'last_sync':json.loads(last_sync.read_text(encoding='utf-8')) if last_sync.exists() else None,
                 'ready':bool(store.list('organization')),
@@ -113,12 +117,12 @@ def install_workspaces(app,manager,store,download):
         with lock(store.root):revoke_member(store,id)
         return {'revoked':id,'note':'Revoca delle scritture recepita dai PC al prossimo scambio. Le copie già ricevute restano disponibili.'}
     @app.get('/api/v1/reports')
-    def reports():return store.list('report')
+    def reports():return [r for r in store.list('report') if r.get('analysis_type')!='maturation']
     @app.get('/api/v1/reports/{id}/download')
     def report(id: str):
         r=store.get(id)
         if r['kind']!='report':raise ValueError('Artefatto non valido.')
-        return download(store.read_object(r['objects'][0]),'application/pdf' if r['format']=='pdf' else 'application/zip','report.'+('pdf' if r['format']=='pdf' else 'zip'))
+        return download(store.read_object(r['objects'][0]),'application/json' if r['format']=='json' else 'application/pdf' if r['format']=='pdf' else 'application/zip','report.'+('json' if r['format']=='json' else 'pdf' if r['format']=='pdf' else 'zip'))
 
     class Resolution(BaseModel):
         choice: Literal['local','remote']

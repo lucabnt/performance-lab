@@ -61,4 +61,6 @@ def comparison_key(test):
     a=test.get('analysis',{})
     if test.get('test_type')=='custom':return 'custom:'+encoded({'protocol':test['protocol_id'],'schema':a.get('custom_fields',[]),'source':a.get('source'),'conditions':test.get('settings',{}).get('conditions',{})})
     p=a.get('preset')
-    return (p['hash']+'|engine='+a.get('engine','unknown') if p else 'legacy_unknown:'+a.get('engine','unknown'))+'|'+encoded(test.get('settings',{}).get('conditions',{}))+'|fields='+encoded(a.get('custom_fields',[]))
+    lactate_method=a.get('lactate_analysis',{}).get('method_snapshot')
+    specialist='|lactate='+encoded(lactate_method) if lactate_method else ''
+    return specialist+(p['hash']+'|engine='+a.get('engine','unknown') if p else 'legacy_unknown:'+a.get('engine','unknown'))+'|'+encoded(test.get('settings',{}).get('conditions',{}))+'|fields='+encoded(a.get('custom_fields',[]))

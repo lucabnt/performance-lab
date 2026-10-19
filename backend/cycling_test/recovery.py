@@ -30,6 +30,9 @@ def backup_bytes(store):
         try:
             with store.connect() as source:source.backup(target)
         finally:target.close()
+        object_paths=[p for p in (store.root/'objects').iterdir() if re.fullmatch('[0-9a-f]{64}',p.name)]
+        if len(object_paths)>10000 or (Path(tmp)/'archive.sqlite').stat().st_size+sum(p.stat().st_size for p in object_paths)>MAX_EXPANDED:
+            raise ValueError('Archivio oltre i limiti del backup ZIP ripristinabile. Non viene generato un backup inutilizzabile; serve una procedura di backup per archivi grandi.')
         out=io.BytesIO();hashes={}
         with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED) as z:
             db=(Path(tmp)/'archive.sqlite').read_bytes();z.writestr('archive.sqlite',db)
@@ -46,7 +49,10 @@ def backup_bytes(store):
                     path=store.root/name
                     if path.exists():manifest[name]=json.loads(path.read_text(encoding='utf-8'))
             z.writestr('manifest.json',encoded(manifest))
-        return out.getvalue()
+        result=out.getvalue()
+    if len(result)>MAX_UPLOAD:
+        raise ValueError('Backup oltre il limite ripristinabile di 100 MB compressi. Non viene scaricato un file che questa versione non può ripristinare.')
+    return result
 
 
 def inspect_backup(raw):

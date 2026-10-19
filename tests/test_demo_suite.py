@@ -68,3 +68,11 @@ def test_acceptance_corpus_and_replicas(tmp_path):
         original=next(t for t in main.list('test') if t.get('test_type')=='custom')
         assert copy.get(original['id'])['analysis']==original['analysis']
         assert len(copy.history(original['id']))==len(main.history(original['id']))
+
+    # The same destination can be repopulated while retaining the entire old root.
+    from demo_reset import reset_demo
+    backup=reset_demo(root,allowed_root=tmp_path)
+    assert (backup/'manifest-demo.json').exists() and not root.exists()
+    replacement=generate(root,small=True)
+    assert replacement['organizations'][0]['id']!=manifest['organizations'][0]['id']
+    assert replacement['organizations'][0]['tests']==manifest['organizations'][0]['tests']

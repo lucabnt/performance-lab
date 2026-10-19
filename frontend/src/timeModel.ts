@@ -1,0 +1,2 @@
+export function clock(seconds:number){if(!Number.isFinite(seconds)||seconds<0)return '—';const rounded=Math.round(seconds*1000)/1000,min=Math.floor(rounded/60),s=Number((rounded-min*60).toFixed(3));return `${min}:${s.toFixed(s%1?3:0).padStart(s%1?6:2,'0')}`}
+export function parseClock(text:string){if(!/^\d+:[0-5]\d(?:[.,]\d{1,3})?$/.test(text))return null;const [m,s]=text.replace(',','.').split(':');return Number(m)*60+Number(s)}

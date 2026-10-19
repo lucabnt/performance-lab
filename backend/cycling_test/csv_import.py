@@ -46,6 +46,13 @@ def decode_trace_csv(raw):
         values = {k:number(r.get(k,r.get(alias))) for k,alias in [('power','potenza_w'),('hr','fc_bpm'),('cadence','cadenza_rpm')]}
         if any(v is not None and v<0 for v in values.values()):
             raise ValueError(f'Riga {i}: campione negativo.')
+        # Optional channels have explicit units. Do not infer mmol/L from a
+        # generic "lactate" column or convert summary values into observations.
+        for key,alias in [('lactate_mmol_l','lattato_mmol_l'),('speed_kmh','velocita_kmh'),('temperature_c','temperatura_c'),('altitude_m','quota_m')]:
+            if key in r or alias in r:
+                values[key]=number(r.get(key,r.get(alias)))
+                if key in ('lactate_mmol_l','speed_kmh') and values[key] is not None and values[key]<0:
+                    raise ValueError(f'Riga {i}: {key} negativo.')
         samples.append({'t':t,**values,'paused':r.get('paused','').lower() in ('true','1','si')})
     if len(samples)<2:
         raise ValueError('Servono almeno due campioni.')

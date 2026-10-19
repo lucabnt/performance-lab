@@ -21,5 +21,9 @@ const labels:Record<string,[string,string]>={
  weight_kg:['Peso · kg','Weight · kg'],height_cm:['Statura · cm','Height · cm'],fthr_bpm:['FC di soglia (FTHR) · bpm','Threshold HR (FTHR) · bpm'],fc_max_test_bpm:['FC massima osservata · bpm','Observed maximum HR · bpm'],fc_max_reference_bpm:['FC massima di riferimento · bpm','Reference maximum HR · bpm'],
  rest_hr:['FC a riposo · bpm','Resting HR · bpm'],rest_after_s:['Durata riposo · s','Rest duration · s'],threshold_coefficient:['Coefficiente MAP → soglia','MAP to threshold coefficient'],rpe:['Sforzo percepito (RPE)','Perceived exertion (RPE)'],end_s:['Durata sforzo · s','Effort duration · s'],
  dichiarato:['Dichiarata','Declared'],stimata_da_map:['Stimata dalla MAP','Estimated from MAP'],warmup:['Riscaldamento','Warm-up'],increment:['Incremento','Increment'],recovery:['Recupero','Recovery'],cooldown:['Defaticamento','Cool-down']};
-export const metricLabel=(key:string)=>labels[key]?.[language==='en'?1:0]||key.replaceAll('_',' ');
+export const metricLabel=(key:string)=>{
+ const m=/^lactate_(\d+(?:p\d+)?)_(w|wkg|hr_bpm)$/.exec(key);
+ if(m){const name=(language==='en'?{w:'Power',wkg:'Relative power',hr_bpm:'HR'}:{w:'Potenza',wkg:'Potenza relativa',hr_bpm:'FC'})[m[2] as 'w'|'wkg'|'hr_bpm'];return name+(language==='en'?' at ':' a ')+m[1].replace('p','.')+' mmol/L · '+({w:'W',wkg:'W/kg',hr_bpm:'bpm'}[m[2] as 'w'|'wkg'|'hr_bpm'])}
+ return labels[key]?.[language==='en'?1:0]||key.replaceAll('_',' ');
+};
 export const numberText=(v:any)=>v==null?'—':typeof v==='number'?new Intl.NumberFormat(language,{maximumFractionDigits:2}).format(v):v;

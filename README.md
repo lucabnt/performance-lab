@@ -2,7 +2,7 @@
 
 Applicazione open source per analizzare, confrontare e archiviare test di ciclismo. Funziona prima di tutto offline, con un archivio locale separato per ogni società e condivisione facoltativa tra collaboratori.
 
-**Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.** Logo e attribuzione della società sono parte fissa del prodotto. Il progetto è generalizzabile a società e gruppi diversi.
+**Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.** Logo e attribuzione della società sono parte fissa del prodotto. Il progetto è generalizzabile a società e gruppi diversi.
 
 ## About the project
 

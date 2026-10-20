@@ -8,6 +8,7 @@ root=Path(__file__).resolve().parents[1]
 from verify_versions import verify
 verify(root)
 subprocess.run([sys.executable,str(root/'scripts/verify_suite_ui.py')],check=True)
+subprocess.run([sys.executable,str(root/'scripts/verify_core.py')],check=True)
 if not (root/'frontend/dist/index.html').exists():
     raise SystemExit('Compilare prima frontend: npm ci && npm run build')
 command=[sys.executable,'-m','PyInstaller','--noconfirm','--clean','--name','Fuorigiri',

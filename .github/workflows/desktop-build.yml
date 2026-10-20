@@ -15,6 +15,7 @@ jobs:
           node-version: '22'
       - run: python -m pip install -r requirements-lock-windows.txt
       - run: python scripts/verify_suite_ui.py
+      - run: python scripts/verify_core.py
       - run: npm ci && npm run build
         working-directory: frontend
       - run: npm run test:signals

@@ -125,4 +125,6 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 
 ## Fonte unica della UI comune
 
+Anche portachiavi, trasporti immutabili, lock di istanza e finestra Qt sono derivati da `cycling-suite-core` in wheel versionata locale. Mantenere gli adattatori prodotto e i nomi storici di servizi vault, lock e canali; l'adattatore Android rimane esplicito. Non importare sorgenti da repository sorelle. Verificare `python scripts/verify_core.py`; consegna dal common con `python scripts/sync-core.py --app ../club-lab --app ../test-analysis --install`, poi `--check`. [Dettagli](docs/CORE_CONDIVISO.md). Dati, accessi firmati, motori scientifici e formati rimangono propri di Fuorigiri.
+
 `@cycling-suite/ui` da `cycling-suite-common` possiede tema, shell responsive, controlli, liste/tabelle/riepiloghi, finestre e gestione dei tempi. Modificare le sorgenti comuni e consegnare una nuova versione; non reintrodurre implementazioni o CSS duplicati nei moduli locali. I wrapper locali adattano lingua e nomi, mentre contenuti e layout delle pagine restano nel prodotto. Importare tema, componenti, application.css, poi gli stili specifici. Prima di modificare altre repository leggere le rispettive istruzioni. Il controllo `sync:ui --check` nel common rileva dipendenze superate; la verifica standalone di questa app non richiede il clone fratello.

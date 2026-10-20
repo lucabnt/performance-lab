@@ -27,6 +27,8 @@ chaquopy {
         pip {
             options("--find-links", "${rootProject.projectDir}/wheels")
             install("-r", "${rootProject.projectDir}/requirements.txt")
+            val sharedWheel = file("${rootProject.projectDir}/../requirements-common.txt").readLines().first { it.startsWith("vendor/") }
+            install("${rootProject.projectDir}/../$sharedWheel")
         }
     }
     sourceSets { getByName("main") { srcDir("../../backend") } }

@@ -85,61 +85,12 @@ def main():
         try:server.run(sockets=[sock])
         finally:instance.close()
         return
-    from PySide6.QtCore import QUrl, QTimer
-    from PySide6.QtWidgets import QApplication
-    from PySide6.QtGui import QIcon
-    from PySide6.QtWebEngineWidgets import QWebEngineView
-    from PySide6.QtWebEngineCore import QWebEnginePage
-    thread = threading.Thread(target=serve,daemon=True)
-    thread.start()
-    qt = QApplication(sys.argv[:1])
-    qt.setApplicationName('Fuorigiri Performance Lab')
+    from cycling_suite.desktop import run_window
     from .branding import icon_path
-    qt.setWindowIcon(QIcon(str(icon_path())))
-    if sys.platform=='win32':
-        import ctypes
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('Fuorigiri.PerformanceLab')
-    class LocalPage(QWebEnginePage):
-        def acceptNavigationRequest(self,url,type,is_main):
-            if url.scheme() in ('http','https') and url.host() != '127.0.0.1':
-                from PySide6.QtGui import QDesktopServices
-                QDesktopServices.openUrl(url)
-                return False
-            return url.scheme() in ("blob", "data") or (url.host() == "127.0.0.1" and url.port() == port)
-    view = QWebEngineView()
-    view.setPage(LocalPage(view))
-    def external_window(request):
-        from PySide6.QtGui import QDesktopServices
-        url=request.requestedUrl()
-        if url.scheme() in ('http','https') and url.host()!='127.0.0.1':
-            QDesktopServices.openUrl(url)
-    view.page().newWindowRequested.connect(external_window)
-    view.setWindowTitle("Fuorigiri Performance Lab")
-    view.resize(1440,960)
-    from PySide6.QtWidgets import QFileDialog
-    def save_download(item):
-        filename,_ = QFileDialog.getSaveFileName(view,"Salva",item.downloadFileName())
-        if filename:
-            item.setDownloadDirectory(str(Path(filename).parent))
-            item.setDownloadFileName(Path(filename).name)
-            item.accept()
-        else:
-            item.cancel()
-    view.page().profile().downloadRequested.connect(save_download)
-    timer = QTimer()
-    def ready():
-        if server.started:
-            timer.stop()
-            view.load(QUrl(url))
-            view.show()
-        elif failed.is_set() or not thread.is_alive():
-            timer.stop()
-            from PySide6.QtWidgets import QMessageBox
-            QMessageBox.critical(view,'Avvio non riuscito',f'Consultare il file {root / "server.log"}')
-            qt.quit()
-    timer.timeout.connect(ready)
-    timer.start(100)
-    qt.exec()
+    thread=threading.Thread(target=serve,daemon=True);thread.start()
+    run_window(url,'Fuorigiri Performance Lab',icon_path(),port,
+               lambda:server.started,lambda:failed.is_set() or not thread.is_alive(),
+               'Fuorigiri.PerformanceLab')
     server.should_exit = True
     thread.join(timeout=5)
     sock.close()

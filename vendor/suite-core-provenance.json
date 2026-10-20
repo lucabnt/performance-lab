@@ -1,0 +1,8 @@
+{
+  "package": "cycling-suite-core",
+  "version": "0.1.2",
+  "artifact": "cycling_suite_core-0.1.2-py3-none-any.whl",
+  "sha256": "6e4a661f83db7b69956332753b154beab23ff4fb9ace160844477f043602d3dc",
+  "source": "cycling-suite-common/packages/core",
+  "origin": "Fuorigiri transports, credentials and instance lock; GPL-3.0-or-later"
+}

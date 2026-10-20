@@ -1,5 +1,11 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 ottobre: estrazione del runtime Python common
+
+Portachiavi OS, trasporti cartella/WebDAV, lock d'istanza e finestra Qt derivati da `cycling-suite-core` 0.1.2, con adattatori prodotto e nomi di vault/canali/lock conservati. **201 test backend superati, 1 saltato; 19 test frontend superati**, build TypeScript/Vite e verificatori autonomi UI/core riusciti. Il common verifica anche la derivazione nei due consumatori. Smoke del launcher desktop dai sorgenti su nuovo archivio sintetico `.local/qa-common-desktop-20261020`: import, logo e backend HTTP verificati. L'estrazione non modifica il motore scientifico o archivi reali.
+
+Predisposta l'inclusione della wheel in Chaquopy e nella wheelhouse Flatpak; build e qualificazione Android/Linux restano rinviate. Nessun nuovo installer Fuorigiri prodotto da questo intervento. Restano i warning noti Starlette/httpx e chunk Plotly grande; il test di corruzione ZIP genera deliberatamente un nome duplicato. Un warning della cache pytest su Windows non ha impedito la regressione. [Consegna e compatibilità](CORE_CONDIVISO.md).
+
 ## Galleria README — 20 ottobre 2026
 
 - Sette JPEG acquisite dalla GUI compilata corrente (0.10.0, UI comune 0.2.2), con sole persone e misure sintetiche: squadra, protocolli, incrementale, Wingate 30 s, aggregati stagionali, crescita/maturazione, report/esportazioni. Catture reali del browser locale e ispezione visiva delle immagini; tracciati e curva HV effettivamente disegnati, nessun token o credenziale nelle inquadrature.

@@ -2,6 +2,7 @@
 
 ## 0.10.0 — 20 ottobre 2026 (sorgenti; distribuzione non pubblicata)
 
+- README con sette screenshot reali dell’interfaccia: atleti, protocolli, incrementale, Wingate, storici, crescita/maturazione e report. Solo dati sintetici; immagini versionate e procedura di manutenzione legata alle modifiche UI, senza nuovi artefatti applicativi.
 - Riallineate le versioni Python, API, frontend/lockfile, Android (`versionCode` 1000), installer Windows e metadati Linux. Versione UI e nomi APK derivati dai metadati, con controllo di coerenza prima delle build.
 - Le modifiche successive alla 0.8 sono raccolte qui; i titoli dei commit V0.9/V0.10 non avevano aggiornato la versione del programma. Nessuna release 0.9.0 dichiarata retroattivamente, nessun tag o installer creato da questo riallineamento.
 

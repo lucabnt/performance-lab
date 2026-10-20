@@ -1,5 +1,11 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Galleria README — 20 ottobre 2026
+
+- Sette JPEG acquisite dalla GUI compilata corrente (0.10.0, UI comune 0.2.2), con sole persone e misure sintetiche: squadra, protocolli, incrementale, Wingate 30 s, aggregati stagionali, crescita/maturazione, report/esportazioni. Catture reali del browser locale e ispezione visiva delle immagini; tracciati e curva HV effettivamente disegnati, nessun token o credenziale nelle inquadrature.
+- Nessuna rigenerazione di demo esistenti, nessun ricalcolo dei risultati o scambio cloud avviato. Provenienza e istruzioni di rinnovo in `screenshots/README.md`, regola di manutenzione in AGENTS.md. Aggiornamento solo documentale: nessuna build applicativa nuova o suite funzionale ripetuta.
+- Verificati i sette JPEG (504.296 byte complessivi), 308 collegamenti Markdown locali senza destinazioni mancanti e `git diff --check`. Server QA arrestati e scheda browser chiusa al termine.
+
 ## Riallineamento 0.10.0 — 20 ottobre 2026
 
 - `verify_versions.py` riuscito per Python, frontend e lockfile, Android (versionName 0.10.0 / versionCode 1000), installer Windows e prima voce AppStream. Verificato il rifiuto di una versione frontend discordante su una copia temporanea dei soli metadati.

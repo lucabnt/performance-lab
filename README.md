@@ -28,6 +28,27 @@ Anteprima di sviluppo: versione dichiarata nei sorgenti **0.10.0**, con modifich
 - Report gerarchici per società, gruppo, stagione e atleta in PDF/Markdown; esportazioni CSV standard ed estese.
 - Archivi separati per società, inviti e ruoli, sincronizzazione cifrata v2 con blocchi riutilizzabili, conflitti, backup ZIP64 progressivi e separazione assistita degli archivi legacy. [Attivazione, compatibilità e limiti](docs/SYNC_V2_E_BACKUP.md).
 
+## L’interfaccia in immagini
+
+Schermate reali della versione **0.10.0**, aggiornate il **20 ottobre 2026**, con persone e risultati interamente sintetici. Mostrano l’interfaccia web condivisa con la finestra desktop; non rappresentano un collaudo Android. Cliccare un’immagine per aprirla a dimensione originale.
+
+**Atleti e squadra** — profili, ricerca, gruppi e riepilogo dell’archivio della società.
+
+[![Panoramica atleti di Fuorigiri con ricerca, filtri e risultati recenti](docs/screenshots/atleti.jpg)](docs/screenshots/atleti.jpg)
+
+| Protocolli ripetibili | Analisi incrementale |
+|---|---|
+| [![Protocolli versionati, definizioni manuali e importazione ERG](docs/screenshots/protocolli.jpg)](docs/screenshots/protocolli.jpg) | [![Test incrementale con potenza, frequenza cardiaca, cadenza e prelievi di lattato sovrapposti](docs/screenshots/test-incrementale.jpg)](docs/screenshots/test-incrementale.jpg) |
+| Creazione manuale o da ERG, famiglie e versioni conservate. | Tracciato unico con scale indipendenti e misure di lattato. |
+| **Sprint e Wingate** | **Storici e confronti** |
+| [![Wingate 30 secondi con tracciato e risultati della prova](docs/screenshots/test-wingate.jpg)](docs/screenshots/test-wingate.jpg) | [![Evoluzione stagionale della MAP con mediana, media e numerosità](docs/screenshots/storici-confronti.jpg)](docs/screenshots/storici-confronti.jpg) |
+| Esempio Wingate 30 s; metodi e durate rimangono distinti. | Serie selezionate esplicitamente, aggregati e dati mancanti. |
+| **Crescita e maturazione** | **Report ed esportazioni** |
+| [![Profilo atleta con velocità di crescita, PHV esplorativo e stime datate](docs/screenshots/crescita-maturazione.jpg)](docs/screenshots/crescita-maturazione.jpg) | [![Report filtrabili per società, gruppo, stagione o atleta e importazione CSV](docs/screenshots/report-esportazioni.jpg)](docs/screenshots/report-esportazioni.jpg) |
+| HV, analisi conservate e stime con metodo e limiti espliciti. | PDF e Markdown della società o delle sue sottosezioni; scambio CSV. |
+
+La [guida della galleria](docs/screenshots/README.md) descrive come riprodurre le viste e aggiornare immagini e didascalie insieme alle modifiche dell’interfaccia.
+
 ## Provare l’interfaccia
 
 La [guida di avvio e collaudo](docs/TESTARE_IL_PROGETTO.md) descrive installazione delle dipendenze di sviluppo, finestra desktop, browser e rigenerazione conservativa delle demo. Da un ambiente di sviluppo già predisposto, nella radice:

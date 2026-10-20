@@ -279,3 +279,7 @@ P0 = condizione di accettazione prima del rilascio della funzione; P1 = prossima
 ## 20 ottobre 2026 — riallineamento UI della suite
 
 Implementato il consumo di `@cycling-suite/ui` 0.2.2, derivato dall'interfaccia corrente di Fuorigiri 0.10.0: shell/controlli responsive, liste/tabelle/riepiloghi, finestre con testata fissa, focus/Esc e protezione delle modifiche, tempi in secondi/mm:ss. Common è la fonte delle parti condivise; i moduli locali delegano alla libreria. Menu, contenuti e layout specifici, archivi e motori rimangono separati. Aggiornamento locale di sorgenti e dipendenza, senza nuovi installer o pubblicazioni.
+
+## 20 ottobre 2026 — galleria dell’interfaccia
+
+**DOC-GALLERY-01 — Implementato.** README con schermate reali delle funzionalità principali, versionate in `docs/screenshots/`, testi alternativi e didascalie; esclusivamente dati sintetici. Sette viste acquisite e ispezionate: atleti, protocolli, incrementale, Wingate, storici con aggregati, crescita/maturazione, report ed esportazioni. [Procedura e provenienza](screenshots/README.md). Accettazione continuativa: aggiornare nello stesso intervento le immagini delle schermate modificate, comprese dipendenze UI comuni; revisione prima delle release, data/versione dichiarate, nessuna credenziale o dato personale. Non è automazione periodica né collaudo di piattaforme non distribuite.

@@ -39,6 +39,10 @@ Checklist funzionale:
 
 Metodi e gate: [MATURAZIONE.md](MATURAZIONE.md). %PAH/residuo richiedono una previsione adulta esterna con fonte/metodo; non è presente un calcolatore automatico Khamis–Roche. I test con curve sintetiche non certificano accuratezza biologica.
 
+## Aggiornare le schermate del README
+
+La [guida della galleria](screenshots/README.md) descrive acquisizione, dati sintetici, inquadrature e aggiornamento delle immagini in `docs/screenshots/`. Quando cambia una schermata rappresentata, aggiornare anche la sua immagine e didascalia nello stesso intervento. Non serve rigenerare o svuotare una demo esistente: usare un archivio QA nuovo quando occorre un corpus pulito.
+
 ## Quali dati sintetici usare
 
 Per provare tutte le funzionalità usare **`scripts/demo_suite.py`**, il generatore del corpus completo. Il comando che hai eseguito, `scripts/demo.py`, genera invece la vecchia demo minima incrementale e non include tutti i casi nuovi.

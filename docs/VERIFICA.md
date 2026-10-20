@@ -207,3 +207,8 @@ Individuata e rimossa dalla ricerca delle dipendenze una DLL ICU di Poppler intr
 ## Esito finale del bundle Windows
 
 Build pulita riuscita con PATH isolato. Eseguito `Fuorigiri.exe --smoke-test` sul bundle finale: import, logo e backend HTTP verificati, marker in `.local/smoke-02-final/smoke-ok.txt`. Avviata anche la finestra sul desktop Windows: interfaccia caricata e footer con logo/attribuzione verificati visivamente e tramite accessibilità. Non equivale ancora al collaudo su un PC pulito.
+
+
+## 20 ottobre 2026 — UI comune 0.2.2
+
+Riallineamento alla UI corrente di Fuorigiri e dipendenza condivisa da common. Verificati 8 test della libreria, 5 test frontend Ammiraglia e 19 frontend Fuorigiri; build TypeScript/Vite dei due prodotti e del catalogo, controlli standalone dei tarball e allineamento versione/impronta sorgenti comune. Browser su archivi QA nuovi e sintetici: shell/onboarding di entrambe, società/dashboard/liste e scarto protetto Ammiraglia, finestra licenza Fuorigiri. Catalogo a larghezza ridotta: focus iniziale, Esc con modifiche, continua a modificare, blocco della chiusura durante salvataggio. Resta il warning sul grande bundle Plotly. Nessun nuovo installer, prova Qt su PC pulito, collaudo completo di tutte le pagine o suite backend completa; backend invariato. Artefatti da checkout locale modificato (`source_dirty=true`).

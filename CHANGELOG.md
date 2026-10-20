@@ -226,3 +226,8 @@ Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce d
 ## Stato precedente
 
 Il documento di partenza era Architettura 0.3 del 16 ottobre 2026, con preview locale 0.1. Questo changelog viene istituito il 17 ottobre: non ricostruisce retroattivamente un elenco completo di modifiche o rilasci precedenti. Lo stato tecnico precedente resta descritto in [README](README.md), [decisioni](docs/archivio/DECISIONI.md) e [verifiche](docs/VERIFICA.md).
+
+
+## 20 ottobre 2026 — riallineamento UI della suite
+
+Implementato il consumo di `@cycling-suite/ui` 0.2.2, derivato dall'interfaccia corrente di Fuorigiri 0.10.0: shell/controlli responsive, liste/tabelle/riepiloghi, finestre con testata fissa, focus/Esc e protezione delle modifiche, tempi in secondi/mm:ss. Common è la fonte delle parti condivise; i moduli locali delegano alla libreria. Menu, contenuti e layout specifici, archivi e motori rimangono separati. Aggiornamento locale di sorgenti e dipendenza, senza nuovi installer o pubblicazioni.

@@ -274,3 +274,8 @@ Le 11 osservazioni originali sono conservate in [COMMENTI_ORIGINALI_2026-10-19.m
 | TD-97 / MAT-05 | Integrare dati e analisi maturative in storico atleta, CSV esteso, report gerarchici, backup e sincronizzazione per società. | **Implementato e verificato localmente:** snapshot con input completi/metodo/hash, CSV estesi e report gerarchici da analisi conservate; backup/ripristino reale e sync firmata con visualizzatore testati. Schema storico preservato; oracoli indipendenti e corpus crescita dedicato. |
 
 P0 = condizione di accettazione prima del rilascio della funzione; P1 = prossima revisione di usabilità/trasparenza; P2 = nuova area funzionale dopo specifica e consolidamento. La numerazione non impone l'ordine di implementazione. Sync v2, backup scalabili e separazione legacy rimangono priorità infrastrutturali già registrate; questa acquisizione non le dichiara concluse.
+
+
+## 20 ottobre 2026 — riallineamento UI della suite
+
+Implementato il consumo di `@cycling-suite/ui` 0.2.2, derivato dall'interfaccia corrente di Fuorigiri 0.10.0: shell/controlli responsive, liste/tabelle/riepiloghi, finestre con testata fissa, focus/Esc e protezione delle modifiche, tempi in secondi/mm:ss. Common è la fonte delle parti condivise; i moduli locali delegano alla libreria. Menu, contenuti e layout specifici, archivi e motori rimangono separati. Aggiornamento locale di sorgenti e dipendenza, senza nuovi installer o pubblicazioni.

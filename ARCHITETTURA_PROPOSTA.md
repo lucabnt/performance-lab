@@ -613,3 +613,8 @@ Il dettaglio test offre un accesso diretto al profilo associato, anche in sola l
 ### Sync v2 e backup v3 — 19 ottobre 2026
 
 Implementati blocchi cifrati HMAC per canale, pagine leggere con eventi originali ricostruiti e verificati, ricevute locali e checkpoint di bootstrap. Migrazione esplicita e avviso firmato: il vecchio client non diventa compatibile con v2; conservata lettura v1 e nessuna cancellazione. Backup ZIP64 v3 con snapshot e inventario JSONL, payload su disco e ricostruzione dello schema noto; flussi GUI/CLI, salvataggio diretto desktop e separazione assistita per società con nuova autorità e originale intatto. Restano eventi canonici nel DB locale, inventario completo del provider, gestione manuale degli ambigui e qualifiche reali. [Contratto e limiti](docs/SYNC_V2_E_BACKUP.md).
+
+
+## UI comune — decisione corrente del 20 ottobre 2026
+
+La UI 0.2.2 di cycling-suite-common è la fonte unica per shell/controlli, liste/tabelle/riepiloghi, finestre e tempi oltre ai componenti già estratti. Entrambe le applicazioni dipendono dallo stesso tarball versionato; i moduli locali sono adattatori e i fogli locali contengono le pagine specifiche. Aggiornamento esplicito, controllo di versione/impronta sorgenti e build autonome; nessuna dipendenza fra le due applicazioni o condivisione dei loro archivi. Vedere docs/SUITE_CONDIVISA.md.

@@ -28,7 +28,7 @@ def verify(root):
         raise ValueError('Lockfile UI non coerente: ripetere installazione e verifica.')
     with tarfile.open(fileobj=io.BytesIO(raw),mode='r:gz') as archive:
         entries=set(archive.getnames())
-        required={'package/package.json','package/LICENSE','package/NOTICE.md',
+        required={'package/src/Dialog.tsx', 'package/src/time.tsx', 'package/dist/application.css', 'package/dist/Dialog.js', 'package/package.json','package/LICENSE','package/NOTICE.md',
                   'package/src/index.ts','package/src/branding.tsx',
                   'package/scripts/copy-assets.mjs','package/tsconfig.json',
                   'package/dist/index.js','package/dist/index.d.ts',

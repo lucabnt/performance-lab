@@ -120,3 +120,8 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 - Quando un requisito aperto qui citato viene implementato/verificato, aggiornare o rimuovere l'avvertenza obsoleta e mantenere i riferimenti corretti. Nuove priorità approvate devono sostituire quelle superate senza cancellare la cronologia nei documenti di progetto.
 - Controllare i link locali e i comandi dopo modifiche strutturali. Se emerge una contraddizione, risolverla con codice, requisiti più recenti e istruzioni dell'utente, documentando il risultato; non perpetuare stati storici errati.
 - Non memorizzare segreti, dati degli atleti, percorsi personali assoluti o conversazioni complete in questo file.
+
+
+## Fonte unica della UI comune
+
+`@cycling-suite/ui` da `cycling-suite-common` possiede tema, shell responsive, controlli, liste/tabelle/riepiloghi, finestre e gestione dei tempi. Modificare le sorgenti comuni e consegnare una nuova versione; non reintrodurre implementazioni o CSS duplicati nei moduli locali. I wrapper locali adattano lingua e nomi, mentre contenuti e layout delle pagine restano nel prodotto. Importare tema, componenti, application.css, poi gli stili specifici. Prima di modificare altre repository leggere le rispettive istruzioni. Il controllo `sync:ui --check` nel common rileva dipendenze superate; la verifica standalone di questa app non richiede il clone fratello.

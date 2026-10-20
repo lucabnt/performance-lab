@@ -1,5 +1,11 @@
 # Società, sincronizzazione e dimensioni — 19 ottobre 2026
 
+## Aggiornamento: v2 e backup v3 implementati
+
+Il [contratto attuale](SYNC_V2_E_BACKUP.md) descrive blocchi cifrati riutilizzabili e pagine v2, attivazione e compatibilità, ZIP64 streaming v3 e separazione assistita delle società legacy. Le misure v1 sotto restano il confronto storico, non una stima delle nuove pubblicazioni. Il database locale conserva i record canonici; inventario remoto completo e assenza di garbage collection rimangono limiti. Le procedure non riscrivono né cancellano automaticamente archivi e pacchetti precedenti.
+
+I limiti ZIP 100 MB/1 GB/10.000 oggetti riportati sotto si applicano al **formato legacy**. V3 usa elaborazione su disco con protezioni 64 GB compressi/256 GB espansi/1.000.000 file dati e richiede spazio temporaneo. La separazione assistita è ora disponibile per riferimenti coerenti; i casi ambigui vengono bloccati e segnalati. Prove in [VERIFICA.md](VERIFICA.md).
+
 ## Che cosa viene sincronizzato
 
 L'unità è **l'archivio della singola società**, non tutto il programma e non il gruppo selezionato nel grafico. Ogni società creata con Gestisci società ha SQLite/allegati, identità/chiave, inviti/ruoli, configurazione di connessione e credenziali separati. Le credenziali sono indicizzate dal percorso dell'archivio. Il canale remoto deriva dalla chiave della società: due società non condividono il canale solo perché usano lo stesso account o la stessa cartella padre.

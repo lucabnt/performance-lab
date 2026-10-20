@@ -1,4 +1,5 @@
 """Small, immutable-object transport contract shared by desktop and Android."""
+from . import __version__
 import base64
 import os
 import re
@@ -98,7 +99,7 @@ class WebDAVTransport:
         target=self.base+quote(safe_name(name)) if name else self.base
         for attempt in range(3):
             try:
-                req=Request(target,data=data,method=method,headers={'Authorization':self.auth,'User-Agent':'Fuorigiri/0.6',**(headers or {})})
+                req=Request(target,data=data,method=method,headers={'Authorization':self.auth,'User-Agent':f'Fuorigiri/{__version__}',**(headers or {})})
                 with self.opener.open(req,timeout=self.timeout) as response:
                     if response.status not in accepted:raise ValueError('Risposta WebDAV non supportata.')
                     limit=MAX_INVENTORY if method=='PROPFIND' else MAX_PACKET

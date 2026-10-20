@@ -26,17 +26,24 @@ def install_workspaces(app,manager,store,download):
 
     @app.post('/api/v1/workspaces/restore/preview')
     def restore_preview(file: UploadFile):
-        from .recovery import inspect_backup,summary,MAX_UPLOAD
+        from .recovery import summary
+        from .backup_stream import inspect_file,MAX_COMPRESSED,CHUNK
         import hashlib,os
-        raw=file.file.read(MAX_UPLOAD+1)
-        data=inspect_backup(raw)
-        digest=hashlib.sha256(raw).hexdigest()
+        from uuid import uuid4
         pending=manager.root/'restore-staging';pending.mkdir(exist_ok=True)
-        path=pending/digest
-        if not path.exists():
-            from uuid import uuid4
-            temp=pending/(str(uuid4())+'.tmp');temp.write_bytes(raw);os.chmod(temp,0o600);temp.replace(path)
-        return {**summary(data),'backup_hash':digest}
+        temp=pending/(str(uuid4())+'.tmp');digest=hashlib.sha256();size=0
+        try:
+            with temp.open('xb') as out:
+                os.chmod(temp,0o600)
+                while chunk:=file.file.read(CHUNK):
+                    size+=len(chunk)
+                    if size>MAX_COMPRESSED:raise ValueError('Backup oltre 64 GB.')
+                    digest.update(chunk);out.write(chunk)
+            with inspect_file(temp) as data:info=summary(data)
+            value=digest.hexdigest();path=pending/value
+            temp.replace(path)
+            return {**info,'backup_hash':value}
+        finally:temp.unlink(missing_ok=True)
 
     @app.post('/api/v1/workspaces/restore')
     def restore_archive(backup_hash: str=Form(),mode: Literal['snapshot','independent','recover']=Form(),path: str=Form(''),operator: str=Form(''),
@@ -45,16 +52,48 @@ def install_workspaces(app,manager,store,download):
         import re,hashlib
         if not re.fullmatch('[0-9a-f]{64}',backup_hash):raise ValueError('Identificatore backup non valido.')
         pending=manager.root/'restore-staging'/backup_hash
-        try:raw=pending.read_bytes()
+        from .backup_stream import digest_file
+        try:digest=digest_file(pending)
         except FileNotFoundError as exc:raise ValueError('Ripetere l’anteprima del backup.') from exc
-        if hashlib.sha256(raw).hexdigest()!=backup_hash:raise ValueError('Anteprima non integra: ricaricare il backup.')
+        if digest!=backup_hash:raise ValueError('Anteprima non integra: ricaricare il backup.')
         recovery_raw=recovery_file.file.read(1_000_001) if recovery_file else None
         if recovery_raw and len(recovery_raw)>1_000_000:raise ValueError('File di recupero troppo grande.')
-        try:result=restore(manager,raw,mode,path,operator,recovery_raw,password)
+        try:result=restore(manager,pending,mode,path,operator,recovery_raw,password)
         except OSError as exc:raise ValueError('Ripristino non completato: cartella non disponibile o scrittura non riuscita. Nessun archivio esistente sovrascritto.') from exc
         try:pending.unlink(missing_ok=True)
         except OSError:pass  # Cache cleanup must not turn a published restore into a reported failure.
         return result
+
+    class SaveBackup(BaseModel):
+        path:str=Field(min_length=1,max_length=2000)
+
+    @app.post('/api/v1/backup/scalable/save')
+    def save_scalable_backup(data:SaveBackup):
+        from pathlib import Path
+        from .backup_stream import write_backup
+        target=Path(data.path).expanduser()
+        if not target.is_absolute() or target.suffix.lower()!='.zip':raise ValueError('Indicare un percorso assoluto di file .zip.')
+        root=store.root.resolve();resolved=target.resolve()
+        if root==resolved or root in resolved.parents:raise ValueError('Salvare il backup fuori dalla cartella dati della società.')
+        write_backup(store,target)
+        return {'path':str(target),'schema':3,'note':'Backup scritto e completato. Conservare separatamente il recupero degli accessi.'}
+
+    @app.post('/api/v1/workspaces/split/preview')
+    def split_preview():
+        from .society_migration import preview
+        return preview(store)
+
+    class SplitSociety(BaseModel):
+        organization_id:str
+        source_hash:str=Field(pattern='^[0-9a-f]{64}$')
+        operator:str=Field(min_length=1,max_length=300)
+        path:str=''
+
+    @app.post('/api/v1/workspaces/split')
+    def split_society(data:SplitSociety):
+        from .society_migration import extract
+        from .sync_service import lock
+        with lock(store.root):return extract(manager,store,data.organization_id,data.source_hash,data.operator,data.path)
 
     @app.post('/api/v1/workspaces/access')
     def replace_access(file: UploadFile,password: str=Form()):

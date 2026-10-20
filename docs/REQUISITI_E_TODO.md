@@ -1,5 +1,9 @@
 # Requisiti e to-do
 
+## Versionamento prodotto — 20 ottobre 2026
+
+- **REL-VERSION-01 — implementato:** versione sorgenti 0.10.0 coerente fra backend/API, UI e lockfile, Android (`versionCode` 1000), installer Windows e AppStream Linux. `scripts/verify_versions.py` blocca build/release incoerenti; UI, header HTTP e nomi APK derivano dalle rispettive fonti correnti. Versioni di motori, renderer, protocolli e formati dati rimangono indipendenti. Nessuna pubblicazione o ricompilazione di installer implicita.
+
 ## Documentazione corrente — 19 ottobre 2026
 
 - **DOC-01 — implementato:** indice delle guide, separazione dei documenti storici in `archivio/`, nomi delle guide indipendenti dalle release, README italiano con presentazione in inglese e link operativi; roadmap corrente distinta dai piani originali. Le analisi e i commenti originali restano conservati. [Indice](README.md), [roadmap](PROSSIMI_PASSI.md).
@@ -16,9 +20,9 @@
 - **REV-01 — implementato:** spazi/metadati protocolli, persistenza e concorrenza della selezione società, confronti con origine soglia assente, W/kg stimati esclusi dai delta, metriche dinamiche e selezione delle serie nel profilo.
 - **SYNC-ISO-01 — implementato:** un archivio gestito per società, identità vincolata, canali/connessioni/inviti distinti. Vecchi archivi multi-società consultabili ma bloccati per sync e inviti; nessuna separazione automatica. La selezione UI non è un filtro di condivisione. Usare cartelle cloud con ACL distinte per collaboratori diversi.
 - **SYNC-PERF-01 — implementato parziale:** sync ordinaria salta pacchetti già verificati; verifica completa esplicita. Restano duplicazione degli allegati/campioni per revisione e inventario completo del canale.
-- **SYNC-V2-01 — prossima priorità:** oggetti cifrati deduplicati per hash, campioni fuori dai record, eventi leggeri, cursori/snapshot, compatibilità v1/v2 e dispositivi offline. Non cancellare cronologie prima di definire conservazione e recupero.
-- **BACKUP-SCALE-01 — da implementare subito dopo/con v2:** backup e ripristino in streaming o parti, integrità e prove di recupero oltre gli attuali 100 MB ZIP / 1 GB espanso / 10.000 allegati. Ora l'export rifiuta backup non ripristinabili: il limite non è stato rimosso.
-- **SYNC-MIG-01 — da implementare:** separazione assistita di backup multi-società con dipendenze e cronologia complete, nuove identità/chiavi/inviti e conservazione dell'originale.
+- **SYNC-V2-01 — implementato nei sorgenti:** blocchi cifrati riutilizzabili, campioni separati nell’involucro remoto, pagine leggere, ricevute/cursore locale e checkpoint di bootstrap; attivazione esplicita del fondatore con avviso firmato, lettura v1/v2 e storico conservato. Il database locale resta canonico; inventario remoto ancora completo e nessuna pulizia automatica. [Contratto e limiti](SYNC_V2_E_BACKUP.md).
+- **BACKUP-SCALE-01 — implementato nei sorgenti:** ZIP64 schema 3 con snapshot SQLite, inventario JSONL, hash e file elaborati su disco; upload/anteprima/ripristino progressivi, pubblicazione atomica e lettura dei backup precedenti. Prova effettiva oltre 100 MB; limiti superiori non qualificati in produzione. Salvataggio diretto desktop evita il buffering del download nel browser.
+- **SYNC-MIG-01 — implementato nei sorgenti:** anteprima e impronta, estrazione per società con dipendenze e tutte le revisioni, conflitti e file propri, nuova autorità/canale/inviti e originale intatto. Riferimenti incoerenti o non attribuibili bloccano la procedura; editor di riconciliazione dei casi ambigui non implementato.
 - **QA-RELEASE-01 — da completare:** flusso GUI automatizzato completo, FIT reali anonimizzati, account cloud distinti, interruzioni/revoche/conflitti; candidato Windows su VM pulita. Fedora/Android restano rinviati al builder disponibile. Traduzione e accessibilità da completare.
 
 Dettagli: [revisione generale](archivio/REVISIONE_GENERALE_2026-10-19.md), [dimensioni e strategia sync](SYNC_DIMENSIONI_E_SCALABILITA.md). Le stime derivano da registrazioni sintetiche misurate, non da un archivio reale pluriennale.
@@ -147,7 +151,7 @@ Nuovi requisiti **TD-30–44** implementati/documentati nel [registro della revi
 
 Aggiornamento successivo all'implementazione e alla ripresa del lavoro. La tabella descrive ora il codice 0.2; le note di disegno 0.5 sottostanti restano contesto storico. [Guida di prova con GUI](TESTARE_IL_PROGETTO.md) e [verifiche](VERIFICA.md) distinguono test eseguiti e collaudi ancora necessari.
 
-**Branding fisso:** logo incluso nel bundle e testo «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.». Nessuna personalizzazione di logo/credito per società o workspace. ZONE-01 implementato a lista dinamica, con prove a 3/5/7 zone. ANA-01 resta un'estensione candidata, non sviluppata.
+**Branding fisso:** logo incluso nel bundle e testo «Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.». Nessuna personalizzazione di logo/credito per società o workspace. ZONE-01 implementato a lista dinamica, con prove a 3/5/7 zone. ANA-01 resta un'estensione candidata, non sviluppata.
 
 ## Decisioni della revisione documentale 0.5 (storico)
 

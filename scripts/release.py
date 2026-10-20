@@ -8,7 +8,8 @@ import zipfile
 from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
-version=tomllib.loads((root/'pyproject.toml').read_text(encoding='utf-8'))['project']['version']
+from verify_versions import verify
+version=verify(root)
 release=root/'dist/release';release.mkdir(parents=True,exist_ok=True)
 sources=release/f'Fuorigiri-{version}-sources.zip'
 names=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z'],cwd=root).decode().split('\0')

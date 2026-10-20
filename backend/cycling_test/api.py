@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse, Response, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 
+from . import __version__
 from .analysis import analyze
 from .erg import parse_erg
 from .fit import decode_fit
@@ -195,7 +196,7 @@ def create_app(root=None, token=None, frontend=None):
     workspaces=Workspaces(legacy.root,legacy)
     store=workspaces.proxy
     token = token or os.environ.get("FUORIGIRI_TOKEN") or secrets.token_urlsafe(32)
-    app = FastAPI(title="Fuorigiri Performance Lab", version="0.8.0", docs_url=None, redoc_url=None)
+    app = FastAPI(title="Fuorigiri Performance Lab", version=__version__, docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
 
@@ -215,7 +216,7 @@ def create_app(root=None, token=None, frontend=None):
             identity=selected.identity
             read_only=identity['certificate']['role']=='viewer' or identity['certificate']['id'] in selected.revocations()
             allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync',
-                '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore',
+                '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore','/api/v1/workspaces/split/preview','/api/v1/workspaces/split','/api/v1/backup/scalable/save',
                 '/api/v1/sync/connection','/api/v1/sync/run','/api/v1/sync/oauth/start','/api/v1/sync/oauth/callback','/api/v1/sync/oauth/disconnect','/api/v1/anaerobic/preview','/api/v1/custom/preview')
             allowed=allowed or request.url.path=='/api/v1/repeatability' or request.url.path.startswith('/api/v1/repeatability/report/')
             if read_only and not allowed:
@@ -438,6 +439,19 @@ def create_app(root=None, token=None, frontend=None):
         require(organization_id,"organization")
         return download(export_csv(store,organization_id),"application/zip","storico-csv.zip")
 
+    @app.get('/api/v1/backup/scalable')
+    def scalable_backup():
+        from .backup_stream import write_backup
+        from fastapi.responses import FileResponse
+        from starlette.background import BackgroundTask
+        import tempfile,shutil
+        stage=Path(tempfile.mkdtemp(prefix='fuorigiri-download-'))
+        try:
+            file=write_backup(store,stage/'fuorigiri-backup-v3.zip')
+            return FileResponse(file,media_type='application/zip',filename=file.name,background=BackgroundTask(shutil.rmtree,stage))
+        except Exception:
+            shutil.rmtree(stage);raise
+
     @app.get("/api/v1/backup")
     def backup():
         from .recovery import backup_bytes
@@ -447,6 +461,10 @@ def create_app(root=None, token=None, frontend=None):
     def sync(data: SyncInput):
         from .sync import exchange
         if hasattr(store,'identity') and store.identity.get('snapshot'):raise ValueError('Copia di consultazione: nessun accesso al canale della società originale.')
+        if hasattr(store,'identity'):
+            from .sync_service import configure,run_sync
+            configure(store,{'transport':'folder','folder':data.folder})
+            return run_sync(store,verify_all=True)
         key=store.identity['sync_key'] if hasattr(store,'identity') else data.key
         from .workspaces import write_json
         from datetime import datetime,timezone

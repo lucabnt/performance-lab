@@ -9,6 +9,7 @@ import json
 import os
 import shutil
 import subprocess
+import tomllib
 from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
@@ -34,6 +35,8 @@ def main():
     parser.add_argument('--gradle',default=shutil.which('gradle') or '')
     parser.add_argument('--release',action='store_true',help='Produce APK release non firmato; firma separata con chiave del titolare')
     args=parser.parse_args()
+    from verify_versions import verify
+    verify(root)
     problems=check_wheels()
     if not (root/'frontend/dist/index.html').is_file():problems.append('Interfaccia compilata con npm ci && npm run build')
     sdk=Path(os.environ.get('ANDROID_HOME',os.environ.get('ANDROID_SDK_ROOT','__missing__')))
@@ -45,11 +48,12 @@ def main():
     if args.check:
         print('Prerequisiti presenti. Non equivale a compilazione, installazione o collaudo su dispositivo.');return
     subprocess.run([args.gradle,'--no-daemon','assembleRelease' if args.release else 'assembleDebug'],cwd=root/'android',check=True)
+    version=tomllib.loads((root/'pyproject.toml').read_text(encoding='utf-8'))['project']['version']
     mode='release' if args.release else 'debug'
     candidates=list((root/f'android/app/build/outputs/apk/{mode}').glob('*.apk'))
     if not candidates:raise SystemExit('Gradle non ha prodotto un APK.')
     release=root/'dist/release';release.mkdir(parents=True,exist_ok=True)
-    for apk in candidates:shutil.copy2(apk,release/f'Fuorigiri-0.8.0-android-{mode}.apk')
+    for apk in candidates:shutil.copy2(apk,release/f'Fuorigiri-{version}-android-{mode}.apk')
     print('APK copiato in dist/release. Debug non è un rilascio operativo; release richiede firma e collaudo.')
 
 

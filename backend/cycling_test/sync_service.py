@@ -90,7 +90,21 @@ def run_sync(store,verify_all=False):
         at=datetime.now(timezone.utc).isoformat()
         try:
             from .sync import exchange
-            result=exchange(store,None,store.identity['sync_key'],transport(store,config),verify_existing=verify_all)
+            connection=transport(store,config)
+            protocol=store.identity.get('sync_protocol',1)
+            if 'format2.json' in connection.list():
+                from .workspaces import verify
+                notice=json.loads(connection.get('format2.json'))
+                try:verify(store.identity['authority_public'],{k:v for k,v in notice.items() if k!='signature'},notice['signature'])
+                except Exception as exc:raise ValueError('Firma dell’avviso formato non valida.') from exc
+                if notice.get('workspace')!=store.identity['workspace'] or notice.get('protocol')!=2:raise ValueError('Avviso formato non valido.')
+                protocol=2
+                if store.identity.get('sync_protocol',1)!=2:write_json(store.root/'identity.json',{**store.identity,'sync_protocol':2})
+            if protocol==2 and store.identity.get('authority_private'):
+                from .workspaces import sign
+                notice={'workspace':store.identity['workspace'],'protocol':2,'history_preserved':True}
+                connection.put('format2.json',encoded({**notice,'signature':sign(store.identity['authority_private'],notice)}).encode())
+            result=exchange(store,None,store.identity['sync_key'],connection,verify_existing=verify_all,protocol=protocol)
             state={'at':at,'ok':not result['errors'] and not result['pending'],'connection_fingerprint':connection_fingerprint(config),**result}
             write_json(store.root/'last-sync.json',state)
             audit(store,{'ok':state['ok'],**{k:result[k] for k in ('transport','published','received','pending','conflicts')},'invalid_packets':len(result['errors'])})
@@ -161,7 +175,19 @@ def install_sync_api(app,store):
         last_sync=json.loads(last.read_text(encoding='utf-8')) if last.exists() else None
         same=bool(last_sync and last_sync.get('connection_fingerprint')==connection_fingerprint(config))
         access='verified_at_last_sync' if same and last_sync.get('ok') else 'last_sync_failed' if same else 'not_verified'
-        return {'connection':config,'account_status':account_status,'last_sync':last_sync,'folder_access':access}
+        return {'connection':config,'account_status':account_status,'last_sync':last_sync,'folder_access':access,'protocol':store.identity.get('sync_protocol',last_sync.get('protocol',1) if last_sync else 1)}
+
+    class UpgradeFormat(BaseModel):
+        all_devices_updated: bool
+
+    @app.post('/api/v1/sync/format-v2')
+    def upgrade_format(data:UpgradeFormat):
+        require_managed(store)
+        if not store.identity.get('authority_private'):raise ValueError('Solo il fondatore attiva il formato v2.')
+        if not data.all_devices_updated:raise ValueError('Aggiornare prima tutti i dispositivi; i vecchi client non leggono v2.')
+        with lock(store.root):
+            write_json(store.root/'identity.json',{**store.identity,'sync_protocol':2})
+        return {'protocol':2,'note':'V2 attivata su questo dispositivo. Il prossimo scambio pubblica l’avviso firmato. Storico v1 conservato; i vecchi client non ricevono le nuove pubblicazioni.'}
 
     @app.post('/api/v1/sync/connection')
     def save_connection(data:Connection):return configure(store,data.model_dump())

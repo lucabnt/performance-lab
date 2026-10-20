@@ -3,7 +3,7 @@ const translations:Record<string,string> = {
  'SOCIETÀ':'CLUB',
  'Gestisci società':'Manage clubs',
  'Apri archivio locale precedente':'Open previous local archive',
- 'v0.3 · Anteprima di sviluppo':'v0.3 · Development preview',
+ 'Anteprima di sviluppo':'Development preview',
  'Solo scheda d’archivio, senza step':'Archive record only, without stages',
  'Protocollo d’archivio senza step. Utilizzabile con risultati manuali.':'Archive protocol without stages. Available for manually entered results.',
  'Richiede un protocollo con step':'Requires a protocol with stages',

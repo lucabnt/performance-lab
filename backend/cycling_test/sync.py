@@ -8,12 +8,19 @@ from cryptography.exceptions import InvalidSignature
 from .store import encoded, KINDS
 
 
-def exchange(store, folder, key, transport=None, verify_existing=True):
+def exchange(store, folder, key, transport=None, verify_existing=True, protocol=1):
+    if protocol not in (0,1,2):raise ValueError('Formato sincronizzazione non supportato.')
+    if protocol==2:
+        # v1 is read first, preserving controls, rotations and legacy events.
+        previous=exchange(store,folder,key,transport,verify_existing,protocol=0)
+        from .sync_v2 import exchange_v2
+        return exchange_v2(store,folder,key,transport,verify_existing,previous)
     with store.connect() as db:
-        changes=[json.loads(r[0]) for r in db.execute('SELECT body FROM changes')]
+        changes=[json.loads(r[0]) for r in db.execute('SELECT body FROM changes')] if protocol else []
     from .society_scope import check_archive
-    organization=check_archive(store,changes)
-    known={c['id'] for c in changes}
+    with store.connect() as db:
+        organization=check_archive(store,(json.loads(r[0]) for r in db.execute('SELECT body FROM changes')))
+        known={r[0] for r in db.execute('SELECT id FROM changes')}
     cipher = Fernet(key.encode())
     channel = hashlib.sha256(key.encode()).hexdigest()[:24]
     from .transports import FolderTransport
@@ -54,11 +61,11 @@ def exchange(store, folder, key, transport=None, verify_existing=True):
                     versions[value['version']]=value
                 except (InvalidSignature,KeyError,TypeError) as exc:raise ValueError('Firma del controllo accessi non valida.') from exc
             if stem=='revocations':
-                known=set()
+                revoked_known=set()
                 for version in sorted(versions):
                     current=set(versions[version]['revoked'])
-                    if not known.issubset(current):raise ValueError('Le revoche non possono essere rimosse da un controllo successivo.')
-                    known=current
+                    if not revoked_known.issubset(current):raise ValueError('Le revoche non possono essere rimosse da un controllo successivo.')
+                    revoked_known=current
             if versions:updates.append((stem,local,versions[max(versions)]))
         for stem,local,value in updates:
             write_json(local,value)
@@ -68,6 +75,7 @@ def exchange(store, folder, key, transport=None, verify_existing=True):
                 transport.put(name,raw);names.add(name)
     sent = received = pending = 0
     for change in changes:
+        if protocol==0:break
         if managed:
             # Viewers relay no writes; admins only relay already authenticated events.
             if store.identity['certificate']['role']!='admin' or store.identity['certificate']['id'] in store.revocations():continue
@@ -114,6 +122,15 @@ def exchange(store, folder, key, transport=None, verify_existing=True):
             candidates.append(change)
         except (ValueError, KeyError, OSError, InvalidToken, InvalidSignature, TypeError) as exc:
             errors.append(f"{name}: pacchetto incompleto o non valido ({type(exc).__name__})")
+    received,pending,conflicts=apply_candidates(store,candidates)
+    return {"written_to_folder":sent,"published":sent,"received":received,"pending":pending,"conflicts":conflicts,"errors":errors,
+            "downloaded_packets":downloaded,"known_packets_skipped":skipped,"full_verification":verify_existing,
+            "transport":getattr(transport,"kind","webdav" if transport.remote else "folder"),"remote_verified":transport.remote,
+            "status":"Pubblicazioni Servizio remoto rilette e verificate." if transport.remote else "Scambio locale eseguito. Upload cloud non verificabile dall'app."}
+
+
+def apply_candidates(store,candidates):
+    received=pending=0
     while candidates:
         progress = False
         remaining = []
@@ -139,7 +156,4 @@ def exchange(store, folder, key, transport=None, verify_existing=True):
             break
     with store.connect() as db:
         conflicts = db.execute("SELECT count(*) FROM conflicts").fetchone()[0]
-    return {"written_to_folder":sent,"published":sent,"received":received,"pending":pending,"conflicts":conflicts,"errors":errors,
-            "downloaded_packets":downloaded,"known_packets_skipped":skipped,"full_verification":verify_existing,
-            "transport":getattr(transport,"kind","webdav" if transport.remote else "folder"),"remote_verified":transport.remote,
-            "status":"Pubblicazioni Servizio remoto rilette e verificate." if transport.remote else "Scambio locale eseguito. Upload cloud non verificabile dall'app."}
+    return received,pending,conflicts

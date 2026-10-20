@@ -59,7 +59,7 @@ def fresh_identity(id,operator):
 
 
 def write_json(path,value):
-    tmp=path.with_name(path.name+'.'+str(uuid4())+'.tmp')
+    tmp=path.with_name(str(uuid4())+'.tmp')
     try:
         tmp.write_text(encoded(value),encoding='utf-8');os.chmod(tmp,0o600);tmp.replace(path)
     finally:tmp.unlink(missing_ok=True)
@@ -96,7 +96,7 @@ class SnapshotStore(Store):
     def identity(self):
         return {'snapshot':True,'certificate':{'id':'snapshot','name':'Backup dati — sola lettura','role':'viewer'}}
     def revocations(self):return []
-    def sign_change(self,change):raise ValueError('Copia di consultazione: modifiche non consentite.')
+    def sign_change(self,change,db=None):raise ValueError('Copia di consultazione: modifiche non consentite.')
 
 
 class ArchiveStore(Store):
@@ -104,12 +104,12 @@ class ArchiveStore(Store):
     def identity(self):
         return json.loads((self.root/'identity.json').read_text(encoding='utf-8'))
 
-    def sign_change(self, change):
+    def sign_change(self, change, db=None):
         identity=self.identity
         if identity['certificate']['role']!='admin' or identity['certificate']['id'] in self.revocations():
             raise ValueError('Visualizzatore: modifica non autorizzata.')
         from .society_scope import check_record
-        organizations=self.list('organization')
+        organizations=[json.loads(r[0]) for r in db.execute("SELECT data FROM records WHERE kind='organization'")] if db is not None else self.list('organization')
         check_record(change['record'],identity.get('organization_id') or (organizations[0]['id'] if len(organizations)==1 else None))
         body={**change,'workspace':identity['workspace'],'certificate':identity['certificate'],'certificate_signature':identity['certificate_signature']}
         return {**body,'signature':sign(identity['private_key'],body)}
@@ -216,6 +216,7 @@ def invitation(store,name,role,password,replace_id=None):
     cert={'id':str(uuid4()),'workspace':identity['workspace'],'name':name,'role':role,'public_key':b64(writer.public_key().public_bytes_raw())}
     invited={k:identity[k] for k in ('workspace','authority_public','sync_key')}
     invited['organization_id']=store.list('organization')[0]['id']
+    invited['sync_protocol']=identity.get('sync_protocol',1)
     invited.update(certificate=cert,certificate_signature=sign(identity['authority_private'],cert),private_key=b64(writer.private_bytes_raw()) if role=='admin' else None)
     payload={'identity':invited,'organization':store.list('organization')[0]}
     result=seal(payload,password)

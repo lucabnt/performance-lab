@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys
 
-ATTRIBUTION = 'Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.'
+ATTRIBUTION = 'Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.'
 MOBILE_ASSETS = None
 
 

@@ -1,12 +1,13 @@
 # Documentazione di Fuorigiri Performance Lab
 
-Indice aggiornato al **19 ottobre 2026**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
+Indice aggiornato al **20 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
 
 ## Uso, avvio e distribuzione
 
 - [Testare il progetto e l’interfaccia](TESTARE_IL_PROGETTO.md): ambiente di sviluppo, desktop/browser, demo, reset e checklist.
 - [Dati sintetici](DATI_SINTETICI.md): composizione del corpus, scenari e risultati attesi.
 - [Società, backup e accessi](SOCIETA_BACKUP_E_ACCESSI.md): creazione, inviti, ruoli e ripristino.
+- [Sync v2, backup v3 e separazione società](SYNC_V2_E_BACKUP.md): attivazione, compatibilità, flussi GUI/CLI e limiti.
 - [Configurare la sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md): cartelle, WebDAV, Drive, Dropbox, OneDrive e prerequisiti OAuth.
 - [Distribuzione](DISTRIBUZIONE.md): bundle Windows, dipendenze incluse, installer e prerequisiti Fedora/Android.
 

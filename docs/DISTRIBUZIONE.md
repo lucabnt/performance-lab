@@ -1,6 +1,6 @@
 # Distribuzione desktop e prerequisiti mobile
 
-Guida di packaging; conserva anche il dettaglio della prima implementazione 0.6. Il prodotto nei sorgenti dichiara 0.8.0 con modifiche successive: ricompilare prima di collaudare le novità. Windows e sorgenti sono il perimetro concordato; build Fedora/Android rinviate. Gli adapter cloud oggi sono implementati: per il loro stato usare la [guida sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md), che supera le indicazioni storiche sotto.
+Guida di packaging; conserva anche il dettaglio della prima implementazione 0.6. Il prodotto nei sorgenti dichiara 0.10.0: ricompilare prima di collaudare le novità. Windows e sorgenti sono il perimetro concordato; build Fedora/Android rinviate. Gli adapter cloud oggi sono implementati: per il loro stato usare la [guida sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md), che supera le indicazioni storiche sotto.
 
 **Consegna concordata il 18 ottobre 2026:** Windows e sorgenti; l’utente ha rimandato le build Linux/Android. I gate e i collaudi sotto restano documentati, senza avviare CI o pubblicazioni.
 
@@ -17,6 +17,8 @@ Guida di packaging; conserva anche il dettaglio della prima implementazione 0.6.
 | Android | Shell Kotlin/WebView, backend ASGI in-process, bridge React, SAF, Keystore, WorkManager e test del contratto condiviso | Wheel native aggiornate, SDK/JDK/Gradle, APK, emulatore e telefono fisico; TD-57 **aperto** |
 
 Non chiamare questo stato “supporto certificato” di Nextcloud, Fedora o Android. Il test WebDAV usa un server HTTP locale di fixture; il prodotto accetta solo HTTPS. Gli adapter API Drive/Dropbox/OneDrive sono stati aggiunti dopo questa prima implementazione; OAuth e cartelle condivise richiedono ancora collaudo reale. I client desktop possono anche gestire una cartella locale.
+
+Prima di preparare artefatti eseguire `python scripts/verify_versions.py`. La fonte prodotto è `pyproject.toml`; build/release rifiutano metadati discordanti. L’allineamento 0.10.0 del 20 ottobre non ricompila gli installer già esistenti.
 
 ## Distribuzione senza installare Python o Node
 
@@ -53,7 +55,7 @@ flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/fl
 flatpak install --user flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
 python3 scripts/prepare_flatpak.py
 flatpak-builder --user --force-clean --repo=flatpak-repo flatpak-build packaging/linux/org.fuorigiri.PerformanceLab.json
-flatpak build-bundle flatpak-repo Fuorigiri-0.6.0-linux-x86_64.flatpak org.fuorigiri.PerformanceLab --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak build-bundle flatpak-repo Fuorigiri-0.10.0-linux-x86_64.flatpak org.fuorigiri.PerformanceLab --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
 La preparazione risolve le dipendenze nel **Python 3.13 del medesimo SDK**, salva wheel, versioni risolte e checksum; la successiva build usa `--no-index`. Non riusare il lock Windows, che contiene pacchetti specifici Windows. `wheelhouse/requirements-resolved.txt` e `SHA256.json` devono accompagnare gli artefatti di build; prima di pubblicare una release congelare/revisionare quel risultato e verificare gli avvisi di licenza.
@@ -103,7 +105,7 @@ Una rotazione non può cancellare copie già scaricate, recuperare automaticamen
 
 Nuova icona applicativa: quadrante aperto verde acqua, lancetta bianca e punto giallo su fondo blu scuro. Fonte mantenuta `frontend/public/branding/fuorigiri.svg`; script `scripts/generate_icons.py` genera PNG multi-taglia e ICO, vettore Android equivalente mantenuto nella shell.
 
-Uso: exe, installer, finestra/taskbar Windows, favicon, testata app, launcher Linux e Android. Non sostituisce il logo originale della società: il footer e l’attribuzione **Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.** rimangono fissi nei report/prodotto. L’icona Fuorigiri segue la licenza del progetto; il marchio della società mantiene lo stato già documentato in THIRD_PARTY.
+Uso: exe, installer, finestra/taskbar Windows, favicon, testata app, launcher Linux e Android. Non sostituisce il logo originale della società: il footer e l’attribuzione **Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.** rimangono fissi nei report/prodotto. L’icona Fuorigiri segue la licenza del progetto; il marchio della società mantiene lo stato già documentato in THIRD_PARTY.
 
 ## Accettazione prima del rilascio
 

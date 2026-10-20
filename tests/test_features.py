@@ -114,4 +114,4 @@ def test_growth_paired_and_fixed_branding(tmp_path):
     c=client(tmp_path)
     assert c.post('/api/v1/organizations',json={'name':'X','logo':'other.png'}).status_code==422
     assert logo_path().read_bytes().startswith(b'\x89PNG')
-    assert ATTRIBUTION=='Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.'
+    assert ATTRIBUTION=='Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.'

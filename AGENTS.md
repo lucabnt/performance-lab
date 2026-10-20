@@ -1,23 +1,24 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **19 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **20 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
+- Versione prodotto corrente **0.10.0**; fonte di riferimento `pyproject.toml`. Eseguire `python scripts/verify_versions.py` quando si toccano versioni o packaging. Il controllo, richiamato da build/release, confronta Python, frontend/lockfile, Android, installer Windows e AppStream Linux. Android `versionCode = major*10000 + minor*100 + patch` (minor/patch < 100). Titoli di commit e versioni dei motori/report/formati dati sono distinti dal numero prodotto; non cambiare schemi o renderer per un semplice riallineamento.
 - Nome prodotto: **Fuorigiri Performance Lab**; eseguibile Windows `Fuorigiri.exe`. Non reintrodurre i nomi precedenti, salvo compatibilità documentata per archivi esistenti.
 - Software open source **GPL-3.0-or-later**, offline first, per test e storico degli atleti nel ciclismo. Interfaccia comprensibile a operatori non tecnici.
 - Stack: Python/FastAPI, SQLite e oggetti locali; React/TypeScript/Vite e Plotly; desktop PySide6/Qt WebEngine.
 - Android: sorgenti Kotlin/WebView con Python incorporato tramite Chaquopy, API in-process e servizi nativi. Non descriverlo come app esclusivamente Python o come APK già disponibile.
 - Le app della suite, inclusa Ammiraglia, mantengono repository, build e dati separati. Componenti comuni nella repository autonoma `cycling-suite-common`; integrazione tramite pacchetti versionati, senza dipendere da una cartella sorella durante la build. Consultare [SUITE_CONDIVISA.md](docs/SUITE_CONDIVISA.md).
-- Branding fisso: logo della società originale e testo **«Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.»**. Non renderli personalizzabili per società. L'icona applicativa Fuorigiri è distinta dal logo societario.
+- Branding fisso: logo della società originale e testo **«Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.»**. Non renderli personalizzabili per società. L'icona applicativa Fuorigiri è distinta dal logo societario.
 
 ## Dove trovare lo stato attendibile
 
 Leggere prima i documenti pertinenti al compito; non assumere che una descrizione storica rappresenti il codice attuale.
 
 | Documento | Uso |
-| [Indice documentazione](docs/README.md) | Guide attuali e accesso separato ai documenti storici |
 |---|---|
+| [Indice documentazione](docs/README.md) | Guide attuali e accesso separato ai documenti storici |
 | [REQUISITI_E_TODO.md](docs/REQUISITI_E_TODO.md) | Requisiti identificati, stato e criteri di accettazione |
 | [ARCHITETTURA_PROPOSTA.md](ARCHITETTURA_PROPOSTA.md) | Decisioni architetturali e di UI, proposte e vincoli |
 | [CHANGELOG.md](CHANGELOG.md) | Modifiche effettive; distinguere documentazione, sorgenti e rilascio |
@@ -36,7 +37,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 - `backend/cycling_test/`: API, archivio, importatori, motori scientifici, report e sincronizzazione.
 - `frontend/src/`: interfaccia, grafici e modelli di presentazione; `frontend/tests/`: verifiche dei modelli e dello stato.
 - `tests/`: test Python e regressioni.
-- `scripts/`: sviluppo, corpus dimostrativi, verifiche e packaging.
+- `scripts/`: sviluppo, corpus dimostrativi, verifiche e packaging. `archive_tools.py` per backup/migrazione su percorsi espliciti; `verify_storage_v2.py --large` prova sintetica oltre 100 MB, solo destinazione nuova.
 - `android/`: shell, bridge e configurazione Android; stato e prerequisiti in [ANDROID.md](docs/ANDROID.md).
 - `frontend/public/branding/`: risorse di branding incluse nel prodotto.
 - `docs/`: requisiti, decisioni, metodi, prove e guide.
@@ -60,7 +61,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 - Non sincronizzare il database SQLite aperto tramite client cloud. Usare i trasporti di scambio del progetto; con collaboratori diversi occorrono anche permessi/cartelle cloud distinti.
 - Credenziali nei meccanismi protetti del sistema; non aggiungere fallback in chiaro, segreti universali, token nei log o fixture con credenziali reali. `identity.json` contiene segreti: non pubblicarlo né mostrarne il contenuto.
 - La sync ordinaria gestita salta pacchetti già acquisiti; la verifica completa li rilegge. Non presentare il primo comportamento come audit integrale del contenuto remoto. Preservare compatibilità, firme, revoche e conflitti.
-- Sync v1 duplica tracciati/allegati tra revisioni. Sync v2 e backup scalabili sono lavori aperti, non capacità già disponibili: [dimensioni e piano](docs/SYNC_DIMENSIONI_E_SCALABILITA.md).
+- Sync v2 e backup ZIP64 v3 implementati: [contratto](docs/SYNC_V2_E_BACKUP.md). Attivazione esplicita del fondatore dopo aggiornamento di tutti i dispositivi, avviso firmato, lettura v1/v2; vecchi client non leggono nuove pagine. Blocchi HMAC/cifrati e checkpoint non sostituiscono firme originali e controlli di revoca. Nessuna riscrittura delle revisioni locali canoniche, cancellazione automatica o inventario remoto paginato. V3 elabora payload su disco, ma metadati ZIP e singoli record occupano memoria; grandi download frontend possono ancora accumularsi nel browser: preferire salvataggio diretto desktop o CLI. Conservare lettura backup legacy.
 - Non aggirare i limiti di backup/import semplicemente aumentando numeri o memoria. Progettare streaming/parti, integrità, recupero e compatibilità.
 - Non cancellare pacchetti, originali o revisioni per ridurre spazio senza una politica esplicita per recupero e dispositivi offline. Sync non equivale a backup.
 - Non rigenerare o svuotare `.local/ui-test` o demo esistenti per verificare una modifica. Preferire un archivio QA nuovo; usare il reset conservativo documentato solo quando richiesto. Non distribuire dati personali degli allegati: usare dati sintetici o anonimizzati con autorizzazione.

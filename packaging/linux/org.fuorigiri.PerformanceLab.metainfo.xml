@@ -8,5 +8,5 @@
   <description><p>Atleti, protocolli versionati, test incrementali, grafici, report PDF e Markdown, CSV e sincronizzazione cifrata tramite WebDAV o cartella locale.</p></description>
   <launchable type="desktop-id">org.fuorigiri.PerformanceLab.desktop</launchable>
   <content_rating type="oars-1.1"/>
-  <releases><release version="0.8.0" date="2026-10-18"/></releases>
+  <releases><release version="0.10.0" date="2026-10-20"/><release version="0.8.0" date="2026-10-18"/></releases>
 </component>

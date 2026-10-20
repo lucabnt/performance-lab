@@ -10,7 +10,7 @@ Fuorigiri Performance Lab is an open-source, offline-first application for cycli
 
 ## Stato attuale
 
-Anteprima di sviluppo: versione dichiarata nei sorgenti **0.8.0**, con modifiche successive descritte nel [changelog](CHANGELOG.md). Una modifica ai sorgenti non aggiorna gli installer già prodotti.
+Anteprima di sviluppo: versione dichiarata nei sorgenti **0.10.0**, con modifiche descritte nel [changelog](CHANGELOG.md). Una modifica ai sorgenti non aggiorna gli installer già prodotti.
 
 - **Desktop:** Python/FastAPI, SQLite e oggetti locali; React/TypeScript e Plotly; finestra PySide6/Qt WebEngine. Packaging Windows con dipendenze incluse, ancora da qualificare su PC pulito per i sorgenti attuali.
 - **Linux/Fedora e Android:** configurazioni e sorgenti presenti; build e collaudi rimandati. Android usa una shell Kotlin con interfaccia React e backend Python incorporato; nessun APK qualificato disponibile.
@@ -26,7 +26,7 @@ Anteprima di sviluppo: versione dichiarata nei sorgenti **0.8.0**, con modifiche
 - Grafici interattivi con segnali sovrapposti; storici e aggregati con media, mediana, numerosità e gestione dei mancanti.
 - Crescita e maturazione: HV, stime Moore/Mirwald, PHV longitudinale esplorativo e analisi conservate. %PAH e residuo richiedono una previsione adulta esterna tracciata.
 - Report gerarchici per società, gruppo, stagione e atleta in PDF/Markdown; esportazioni CSV standard ed estese.
-- Archivi separati per società, inviti e ruoli, sincronizzazione cifrata, conflitti, backup e ripristino guidato.
+- Archivi separati per società, inviti e ruoli, sincronizzazione cifrata v2 con blocchi riutilizzabili, conflitti, backup ZIP64 progressivi e separazione assistita degli archivi legacy. [Attivazione, compatibilità e limiti](docs/SYNC_V2_E_BACKUP.md).
 
 ## Provare l’interfaccia
 

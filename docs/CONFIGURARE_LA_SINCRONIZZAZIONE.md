@@ -6,6 +6,8 @@ Implementati adapter WebDAV, Google Drive API v3, Dropbox API v2, Microsoft Grap
 
 **Stato verificato:** test automatici con risposte API simulate e server WebDAV locale, UI desktop compilata. Nessun accesso ad account reali o registrazione OAuth creato in questa attività; disponibilità dei permessi e collaborazione con due account vanno collaudate sul provider. Android ha gli adapter condivisi e i flussi nativi nei sorgenti; compilazione APK e verifica su dispositivo restano rimandate, come Linux.
 
+Per attivare il formato v2, aggiornare prima tutti i dispositivi: [procedura e compatibilità](SYNC_V2_E_BACKUP.md). Tutti i trasporti usano lo stesso formato e archivio per società.
+
 ## Uso e registrazioni
 
 Archivio e scambio → società selezionata → sincronizzazione. Il ruolo Fuorigiri deriva dall’invito personale e non dal provider. Ogni operatore accede al cloud con il proprio account, che deve poter leggere/scrivere la cartella. Un visualizzatore Fuorigiri può configurare il collegamento e ricevere dati, ma non pubblica modifiche ai dati.

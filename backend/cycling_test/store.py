@@ -68,7 +68,7 @@ class Store:
                 data = {**payload, 'id': id, 'kind': kind, 'revision': revision}
                 change = {'schema':1,'id':revision,'device':device,'base':None,'created_at':datetime.now(timezone.utc).isoformat(),'record':data}
                 if hasattr(self, 'sign_change'):
-                    change=self.sign_change(change)
+                    change=self.sign_change(change,db=db)
                 db.execute('INSERT INTO records VALUES(?,?,?,?)',(id,kind,revision,encoded(data)))
                 db.execute('INSERT INTO changes VALUES(?,?)',(revision,encoded(change)))
                 result.append(data)
@@ -84,7 +84,7 @@ class Store:
                 revision=str(uuid4())
                 record={**old,'status':'deleted','reason':reason,'revision':revision}
                 change={'schema':1,'id':revision,'device':device,'base':old['revision'],'created_at':datetime.now(timezone.utc).isoformat(),'record':record}
-                if hasattr(self,'sign_change'):change=self.sign_change(change)
+                if hasattr(self,'sign_change'):change=self.sign_change(change,db=db)
                 db.execute('UPDATE records SET revision=?,data=? WHERE id=?',(revision,encoded(record),record['id']))
                 db.execute('INSERT INTO changes VALUES(?,?)',(revision,encoded(change)))
 
@@ -130,7 +130,7 @@ class Store:
             if parents:
                 change['parents']=list(dict.fromkeys([base]+parents))
             if hasattr(self, 'sign_change'):
-                change = self.sign_change(change)
+                change = self.sign_change(change,db=db)
             db.execute("INSERT OR REPLACE INTO records VALUES(?,?,?,?)", (id, kind, revision, encoded(data)))
             db.execute("INSERT INTO changes VALUES(?,?)", (revision, encoded(change)))
         return data

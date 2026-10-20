@@ -3,6 +3,7 @@
 Account registration is supplied by the distributor/user. Refresh credentials
 live in the OS vault, separately from the archive, invitations and data backups.
 """
+from . import __version__
 import base64
 import hashlib
 import json
@@ -55,7 +56,7 @@ class CloudHTTP:
         renewed=False
         for attempt in range(4):
             try:
-                h={'User-Agent':'Fuorigiri/0.7',**(headers or {})}
+                h={'User-Agent':f'Fuorigiri/{__version__}',**(headers or {})}
                 if auth:h['Authorization']='Bearer '+self.token()
                 with self.opener.open(Request(url,data=body,headers=h,method=method),timeout=30) as response:
                     if response.status not in accepted:raise ValueError('Risposta cloud inattesa.')

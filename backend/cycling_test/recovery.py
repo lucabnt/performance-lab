@@ -118,11 +118,20 @@ def _inspect(raw):
 
 
 def summary(data):
+    if hasattr(data['rows'],'path'):
+        from .backup_stream import connection
+        with connection(data['rows'].path.as_uri()+'?mode=ro',uri=True) as db:
+            counts=dict(db.execute('SELECT kind,count(*) FROM records GROUP BY kind'))
+            organizations=[{'id':r['id'],'name':r['name']} for row in db.execute("SELECT data FROM records WHERE kind='organization'") if (r:=json.loads(row[0]))]
+        manifest=data['manifest']
+        return {'organizations':organizations,'counts':{kind:counts.get(kind,0) for kind in ('athlete','test','measurement','protocol')},
+                'created_at':manifest.get('created_at'),'schema':manifest['schema'],'workspace':manifest.get('workspace'),
+                'checksums':True,'objects':len(data['files'])-1}
     records=data['records'];manifest=data['manifest']
     return {'organizations':[{'id':r['id'],'name':r['name']} for r in records if r['kind']=='organization'],
         'counts':{kind:sum(r['kind']==kind for r in records) for kind in ('athlete','test','measurement','protocol')},
         'created_at':manifest.get('created_at'),'schema':manifest['schema'],'workspace':manifest.get('workspace'),
-        'checksums':manifest['schema']==2,'objects':sum(n.startswith('objects/') for n in data['files'])}
+        'checksums':manifest['schema']>=2,'objects':sum(n.startswith('objects/') for n in data['files'])}
 
 
 def export_recovery(store,password):
@@ -137,7 +146,14 @@ def export_recovery(store,password):
 
 
 def restore(manager,raw,mode,path='',operator='',recovery_raw=None,password=''):
-    data=inspect_backup(raw);info=summary(data);extra={}
+    if isinstance(raw,Path):
+        from .backup_stream import inspect_file
+        with inspect_file(raw) as data:return _restore_data(manager,data,mode,path,operator,recovery_raw,password)
+    return _restore_data(manager,inspect_backup(raw),mode,path,operator,recovery_raw,password)
+
+
+def _restore_data(manager,data,mode,path='',operator='',recovery_raw=None,password=''):
+    info=summary(data);extra={}
     if mode not in ('snapshot','independent','recover'):raise ValueError('Modalità ripristino non valida.')
     if mode=='recover':
         try:
@@ -186,18 +202,21 @@ def restore(manager,raw,mode,path='',operator='',recovery_raw=None,password=''):
                 for table in ('records','changes','conflicts'):
                     rows=data['rows'][table]
                     if mode=='independent' and table=='changes':
-                        rebuilt=[]
-                        for event in data['changes'].values():
-                            original=hashlib.sha256(encoded(event).encode()).hexdigest()
-                            body={k:v for k,v in event.items() if k not in ('workspace','certificate','certificate_signature','signature')}
-                            signed=signer.sign_change({**body,'import_origin':{'sha256':original,'note':'Copia indipendente da backup; nessuna autorità originale ereditata.'}})
-                            rebuilt.append((signed['id'],encoded(signed)))
-                        rows=rebuilt
-                    if mode=='independent' and table=='conflicts':rows=[]
+                        def rebuilt():
+                            for event in data['changes'].values():
+                                original=hashlib.sha256(encoded(event).encode()).hexdigest()
+                                body={k:v for k,v in event.items() if k not in ('workspace','certificate','certificate_signature','signature')}
+                                signed=signer.sign_change({**body,'import_origin':{'sha256':original,'note':'Copia indipendente da backup; nessuna autorità originale ereditata.'}},db=db)
+                                yield signed['id'],encoded(signed)
+                        rows=rebuilt()
+                    if mode=='independent' and table=='conflicts':
+                        rows=((r[0],db.execute('SELECT body FROM changes WHERE id=?',(r[0],)).fetchone()[0]) for r in data['rows']['conflicts'])
                     placeholders=','.join('?' for _ in TABLES[table])
                     db.executemany(f'INSERT INTO {table} VALUES({placeholders})',rows)
             for name,body in data['files'].items():
-                if name.startswith('objects/'):(stage/name).write_bytes(body)
+                if name.startswith('objects/'):
+                    if isinstance(body,Path):shutil.copyfile(body,stage/name)
+                    else:(stage/name).write_bytes(body)
             write_json(stage/'restore-info.json',{'mode':mode,'source_workspace':info['workspace'],'restored_at':datetime.now(timezone.utc).isoformat()})
             entry={'id':id,'path':str(target),'name':info['organizations'][0]['name'],'organization_id':info['organizations'][0]['id'],
                 'organizations':info['organizations'],'mode':mode}

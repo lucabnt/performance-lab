@@ -104,7 +104,7 @@ Scelta confermata: **Python per backend e analisi; React/TypeScript per l'interf
 
 Decisioni confermate: Python + React/TypeScript; PC Windows/Linux prima, smartphone/tablet successivamente; sincronizzazione mediante cartella locale gestita da un client cloud esterno; ultimo step completato come metrica primaria del preset e interpolazione separata; licenza GPL. Gli ERG servono a definire rapidamente protocolli da archiviare e versionare; i CSV forniti definiscono dati da gestire e contratto di esportazione, non una richiesta di importare adesso dati personali.
 
-Il prodotto è sviluppato per Progetto Ciclismo – Rodengo Saiano. **Branding fisso richiesto:** logo incluso e dicitura «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.», non modificabili da interfaccia, società o workspace. Anagrafiche, protocolli, categorie e regole restano dati configurabili; il motore non contiene formule dipendenti dal nome della società.
+Il prodotto è sviluppato per Progetto Ciclismo – Rodengo Saiano. **Branding fisso richiesto:** logo incluso e dicitura «Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.», non modificabili da interfaccia, società o workspace. Anagrafiche, protocolli, categorie e regole restano dati configurabili; il motore non contiene formule dipendenti dal nome della società.
 
 ## 2. Che cosa dicono gli allegati
 
@@ -225,7 +225,7 @@ Le scelte seguenti sono parte dell'architettura, non modifiche già eseguite all
 |---|---|---|
 | UI-01 | Shell con navigazione laterale, selettore società, breadcrumb e area di lavoro a schede; distinguere sempre società e applicazione attive. | Base già presente; shell condivisa fra Test e Allenamenti, voci specifiche per app. |
 | UI-02 | Tema neutro con blu come accento principale e giallo contenuto, coerenti con il logo individuato di Progetto Ciclismo; evitare grandi superfici sature. Token semantici per sfondo, testo, azione, bordo, focus e stati. | Logo allegato selezionato: blu #1A62B7 e giallo #FFF100 rilevati nel file; superfici attenuate derivate. Tema blu implementato nella preview 0.2; contrasto e accessibilità da consolidare. Vedi specifica branding. |
-| UI-03 | Logo discreto nella parte bassa e link [Progetto Ciclismo – Rodengo Saiano](https://www.asdprogettociclismorodengosaiano.it/); credito [Luca Bontempi](https://lucabontempi.com/). Testo: **Strumenti aperti a supporto del ciclismo giovanile**. | Implementato in branding.tsx/branding.py. Logo e attribuzione fissi: «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.». Link aperti nel browser esterno, mai necessari al funzionamento offline. |
+| UI-03 | Logo discreto nella parte bassa e link [Progetto Ciclismo – Rodengo Saiano](https://www.asdprogettociclismorodengosaiano.it/); credito [Luca Bontempi](https://lucabontempi.com/). Testo: **Strumenti aperti a supporto del ciclismo giovanile**. | Implementato in branding.tsx/branding.py. Logo e attribuzione fissi: «Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.». Link aperti nel browser esterno, mai necessari al funzionamento offline. |
 | UI-04 | Scheda atleta con tab Profilo, Antropometria, Test e Storico. Selettore MAP/FTP e W/W/kg; peso e statura in pannelli con tempo comune e unità visibili. | Proposta di layout. Se manca FTP mostrare dato non disponibile; non ribattezzare una soglia generica come FTP. |
 | UI-05 | Cataloghi di traduzione IT/EN condivisi e specifici per app; identificatori stabili, formattazione locale per date/numeri, lingua report selezionabile. | Da sviluppare; CSV canonico indipendente dalla lingua, tradurre anche grafici, errori e accessibilità. |
 | UI-06 | Tabella comune con ordinamento tipizzato per ogni colonna di dati, ricerca, filtri persistenti per vista e paginazione. Valori mancanti in fondo; azioni non ordinabili. | Da sviluppare; lo stesso insieme filtrato alimenta grafici e report, non soltanto la pagina visibile. |
@@ -608,3 +608,8 @@ Lo stato Android effettivo è una shell Kotlin/WebView con Chaquopy, bridge e AP
 ### Integrazione profilo e corpus maturazione — 19 ottobre 2026
 
 Il dettaglio test offre un accesso diretto al profilo associato, anche in sola lettura, usando la navigazione interna e chiudendo la finestra. Il corpus standard richiama `demo_growth.add_growth` prima di creare inviti, repliche e backup: dati maturativi e snapshot seguono gli stessi percorsi di condivisione dei test. `demo_maturation.py` resta un ingresso compatibile al corpus ridotto, senza un secondo modello di dati.
+
+
+### Sync v2 e backup v3 — 19 ottobre 2026
+
+Implementati blocchi cifrati HMAC per canale, pagine leggere con eventi originali ricostruiti e verificati, ricevute locali e checkpoint di bootstrap. Migrazione esplicita e avviso firmato: il vecchio client non diventa compatibile con v2; conservata lettura v1 e nessuna cancellazione. Backup ZIP64 v3 con snapshot e inventario JSONL, payload su disco e ricostruzione dello schema noto; flussi GUI/CLI, salvataggio diretto desktop e separazione assistita per società con nuova autorità e originale intatto. Restano eventi canonici nel DB locale, inventario completo del provider, gestione manuale degli ambigui e qualifiche reali. [Contratto e limiti](docs/SYNC_V2_E_BACKUP.md).

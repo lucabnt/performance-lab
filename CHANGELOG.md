@@ -1,17 +1,29 @@
 # Changelog
 
-## Documentazione — riordino e presentazione, 19 ottobre 2026
+## 0.10.0 — 20 ottobre 2026 (sorgenti; distribuzione non pubblicata)
+
+- Riallineate le versioni Python, API, frontend/lockfile, Android (`versionCode` 1000), installer Windows e metadati Linux. Versione UI e nomi APK derivati dai metadati, con controllo di coerenza prima delle build.
+- Le modifiche successive alla 0.8 sono raccolte qui; i titoli dei commit V0.9/V0.10 non avevano aggiornato la versione del programma. Nessuna release 0.9.0 dichiarata retroattivamente, nessun tag o installer creato da questo riallineamento.
+
+### Sync v2, backup e migrazione, 19 ottobre 2026
+
+- Formato di scambio v2: blocchi cifrati riutilizzabili, campioni separati nelle pubblicazioni, pagine leggere e ricevute/checkpoint; firme originali ricostruite e verificate. Attivazione esplicita, avviso firmato e lettura v1 conservata, senza cancellazione della storia.
+- Backup ZIP64 v3 scritto/verificato/ripristinato progressivamente su disco, hash e inventario JSONL; download e salvataggio diretto desktop, compatibilità con i backup legacy. Prova reale su 101 MB sintetici non comprimibili.
+- Separazione assistita per società con anteprima, impronta, dipendenze e revisioni complete, conflitti, oggetti propri e nuove identità/chiavi; originale conservato e blocco dei casi ambigui.
+- Ripristino indipendente conserva i conflitti; firma durante import/migrazione usa la transazione corrente, evitando blocchi SQLite sui lotti grandi. CLI di manutenzione e prova di scala riproducibile. Nessun installer ricompilato né provider reale qualificato.
+
+### Documentazione — riordino e presentazione, 19 ottobre 2026
 
 - README riscritto con presentazione in inglese, funzioni attuali, limiti reali, avvio del corpus completo e link alle guide pertinenti.
 - Indice `docs/README.md`; analisi, revisioni e piani superati conservati in `docs/archivio/` con collegamenti aggiornati. Guide cloud, distribuzione e dati sintetici rinominate senza numero di release.
 - Roadmap corrente riscritta con priorità, dipendenze e accettazione; nessuna funzione o build aggiunta da questo riordino.
 
-## Non rilasciato — profilo da test e corpus maturazione, 19 ottobre 2026
+### profilo da test e corpus maturazione, 19 ottobre 2026
 
 - Collegamento «Apri profilo atleta» nel dettaglio di qualsiasi test, disponibile anche in sola lettura.
 - Demo standard completa/ridotta include quattro casi maturativi per società, con profilo femminile, antropometria avanzata e snapshot. Inclusione prima della creazione delle repliche e dei backup; alias `demo_maturation.py` conservato. Archivi esistenti non modificati automaticamente.
 
-## Non rilasciato — attuazione TD-83–97, 19 ottobre 2026
+### attuazione TD-83–97, 19 ottobre 2026
 
 - Editor test dedicati, testata/chiusura persistenti, focus/Esc e conferma dell'uscita con modifiche non salvate. Campi custom in coda; glossario contestuale e avvisi di licenza/garanzia/conservazione dati.
 - Riferimenti MAP/potenza di soglia/FTHR con pari evidenza e zone adiacenti; coefficiente effettivo leggibile. Tempi sincronizzati secondi/mm:ss e hover esatti, selezione inizio/fine anche per custom; vista lattato-carico spiegata e collegata alla tabella.
@@ -20,12 +32,12 @@
 - Snapshot maturativi immutati dopo correzioni, permessi per società, CSV estesi, report PDF/MD gerarchici e backup/sync. Corpus aggiuntivo `demo_maturation.py`, oracoli numerici e test di replica/ripristino. [Metodi e limiti](docs/MATURAZIONE.md).
 - Nessun installer ricompilato; validazione scientifica esterna e collaudi reali restano necessari. Specifiche e AGENTS.md aggiornati.
 
-## Documentazione — istruzioni della repository, 19 ottobre 2026
+### Documentazione — istruzioni della repository, 19 ottobre 2026
 
 - Aggiunto `AGENTS.md` nella radice: vincoli del prodotto, fonti dei requisiti, lavoro sicuro sugli archivi, metodi scientifici, suite comune, verifiche e limiti della distribuzione.
 - Definito l'obbligo di mantenerlo aggiornato quando cambiano regole, struttura, comandi o stato dei vincoli citati; risultati e backlog dettagliati restano nei documenti dedicati.
 
-## Documentazione — acquisizione to-do manuali, 19 ottobre 2026
+### Documentazione — acquisizione to-do manuali, 19 ottobre 2026
 
 - Conservate integralmente le 11 osservazioni in `docs/archivio/COMMENTI_ORIGINALI_2026-10-19.md`; normalizzate in 15 requisiti TD-83–97 con stato, priorità e criteri di accettazione.
 - Analizzati flusso correzione/chiusura test, ordine sezioni/campi custom, glossario, tempi del grafico, evidenza soglie/zone e provenienza dei coefficienti; spiegata l'utilità della vista lattato-carico già presente.
@@ -33,7 +45,7 @@
 - Definita la nuova area crescita/maturazione: HV prima delle stime, metodi e risultati osservati/stimati distinti, fasce d'età orientative, dati aggiuntivi opzionali non prioritari, storico/export e validazione. Fonti e decisioni residue nell'analisi dedicata.
 - Aggiornati disegno architetturale e prossimi passi. Solo documenti: nessuna modifica al programma, ai dati o ai pacchetti distribuiti.
 
-## Non rilasciato — revisione e isolamento società, 19 ottobre 2026
+### revisione e isolamento società, 19 ottobre 2026
 
 - Corretti spazi e metadati dei protocolli, etichette di stato e navigazione; selezione della società conservata e protetta da risposte asincrone obsolete.
 - Profilo atleta con selezione di serie confrontabili; corretti confronti con origine soglia mancante, W/kg con peso stimato e metriche lattato dinamiche.
@@ -42,33 +54,33 @@
 - Backup esportati soltanto entro i limiti accettati dal ripristino; misura dimensioni in sola lettura e piano per sync/backup scalabili documentati.
 - 156 test backend passati, uno saltato; 18 test frontend passati e build riuscita. [Revisione e prossimi passi](docs/archivio/REVISIONE_GENERALE_2026-10-19.md). Nessun installer ricompilato.
 
-## Non rilasciato — livelli di lattato e FC interpolata
+### livelli di lattato e FC interpolata
 
 - Livelli configurabili per prova, default 2/3/4 mmol/L, con W/W/kg/bpm stimati tramite interpolazione lineare locale; FC dalla finestra finale degli step completi e coperti, secondo preset. Nessuna estrapolazione o ricostruzione di FC mancanti.
 - Metodo lattato v2 e prelievi di supporto tracciabili, metriche dinamiche negli storici, UI e grafici, PDF/MD e CSV lungo `extended/lattato_livelli.csv`. Conservati schema CSV storico e revisioni precedenti; aggiornato il renderer/cache dei report.
 - Documentata l'architettura Android effettiva: Kotlin già presente con WebView/Chaquopy, API in-process e WorkManager. Chiariti costi e prerequisiti; nessuna build APK o modifica dei pin Android in questo intervento.
 
-## Non rilasciato — grafico unico e confronti leggibili
+### grafico unico e confronti leggibili
 
 - Linee potenza/FC/cadenza sovrapposte nel dettaglio con scale/unità indipendenti; lattato misurato sullo stesso grafico, canali aggiuntivi attivabili tramite selettore.
 - Storici: una curva per protocollo/metodo anziché per singolo aggregato; eliminazione delle serie vuote per la metrica, scelta iniziale della più numerosa, confronto esplicito fino a quattro serie con legenda breve e tabella coerente.
 - Protocolli diversi affiancabili senza unire medie/mediane; chiavi del backend preservate e avviso sulla diversa comparabilità. Metrica/protocollo prioritari, filtri secondari espandibili, ambito delle esportazioni esplicito.
 - Ordine globale delle categorie e colori delle serie stabili; modelli grafici verificati da 12 test Node, guida e decisioni architetturali aggiornate.
 
-## Non rilasciato — tracciati nel dettaglio test
+### tracciati nel dettaglio test
 
 - Grafici in evidenza e uniformi per incrementali, Sprint/Wingate e protocolli custom: potenza, FC e cadenza visibili con scale separate, più velocità/temperatura/quota se disponibili. Lattato misurato nel tempo distinto dall'analisi rispetto al carico; interruzioni senza valori inventati.
 - Filtro e indicazione della disponibilità del tracciato nello storico; spiegazione esplicita per i soli riepiloghi manuali.
 - Import CSV temporale con canali aggiuntivi e unità esplicite; decoder FIT conserva velocità, temperatura e quota. Recupero campioni dagli oggetti tracciato nel dettaglio, senza modificare revisioni o analisi archiviate.
 - Guida per individuare i test dimostrativi con grafici e verifiche automatiche/UI; installer da ricompilare separatamente.
 
-## Non rilasciato — rigenerazione dati dimostrativi
+### rigenerazione dati dimostrativi
 
 - `--reset` per demo minima e corpus completo: conservazione della vecchia directory in `.local/demo-backups`, controlli di percorso/link e archivi aperti, nessuna cancellazione definitiva o accesso ai riferimenti esterni.
 - Il server di sviluppo usa il blocco istanza come il desktop; ZIP portabile del corpus generabile con `--export`.
 - Guida di test riordinata con distinzione demo minima/completa, comandi sullo stesso percorso, uso GUI, repliche, ripristino ed esiti attesi.
 
-## Non rilasciato — estrazione UI della suite
+### estrazione UI della suite
 
 - Prima libreria condivisa nella repository autonoma cycling-suite-common, UI 0.1.0. Fuorigiri usa tema/campi/tabelle/footer comuni tramite tarball locale versionato, senza dipendenza da una repository sorella durante la build.
 - Sorgenti/licenza inclusi nel pacchetto; provenienza, checksum, lockfile e logo originale verificati prima del packaging. Nuovo catalogo e guida per Ammiraglia nella repository comune.
@@ -169,7 +181,7 @@ Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce d
 
 **Tipo: implementazione e collaudo locale**, dopo approvazione delle scelte e ripresa del lavoro interrotto.
 
-- Logo originale aggiunto in `frontend/public/branding/`, incluso nel bundle Vite/PyInstaller e nei report. Branding reso fisso su richiesta successiva: «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.» (TD-02/03/26; UI-02/03). Le società non possono personalizzarlo.
+- Logo originale aggiunto in `frontend/public/branding/`, incluso nel bundle Vite/PyInstaller e nei report. Branding reso fisso su richiesta successiva: «Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.» (TD-02/03/26; UI-02/03). Le società non possono personalizzarlo.
 - Implementati modifica profilo, nascita completa facoltativa, categorie/stagioni e anno di categoria, ciclo di vita reversibile di atleti/protocolli e filtri storici (TD-09/10/13/14/24).
 - Aggiunti editor protocolli con fasi e versioni, export ERG/JSON e tabelle ordinabili (TD-08/11/12). Confronto grafico delle differenze ancora futuro.
 - Import FIT/CSV temporale, lattato/RPE/recupero manuale, coefficienti e riferimenti, proposta ultima antropometria e preset stimati con fonte; revisioni successive di test con campioni e risultati storici (TD-15/21/22/23/29).

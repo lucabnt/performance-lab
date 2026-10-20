@@ -1,5 +1,22 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Riallineamento 0.10.0 — 20 ottobre 2026
+
+- `verify_versions.py` riuscito per Python, frontend e lockfile, Android (versionName 0.10.0 / versionCode 1000), installer Windows e prima voce AppStream. Verificato il rifiuto di una versione frontend discordante su una copia temporanea dei soli metadati.
+- API FastAPI e pannello legale verificati a 0.10.0 tramite TestClient; GUI compilata aperta su archivio QA nuovo: barra laterale mostra 0.10.0. Smoke desktop dai sorgenti riuscito.
+- 13 test cloud e 19 test frontend passati; build TypeScript/Vite riuscita, compilazione Python e `git diff --check` riusciti. Rimangono warning Starlette/httpx e chunk Plotly già noti. Nessuna modifica a metodi scientifici o formati dei dati; non ripetuta l’intera suite per questo riallineamento.
+- Changelog raggruppato sotto 0.10.0, con precedenti versioni e prove storiche conservate. Controllo metadati richiamato prima di build desktop/Android e preparazione release; nomi APK letti da pyproject. Nessun EXE/installer/Flatpak/APK prodotto o pubblicato e nessun tag Git creato da questa operazione.
+
+## Sync v2, backup v3 e separazione società — 19 ottobre 2026
+
+- Suite completa: **200 passati, 1 saltato** (permessi symlink Windows). Dopo l’ultimo affinamento della cache per ricezione interrotta: **8 test v2 mirati passati**, compreso il nuovo caso di ripresa dall’ultimo blocco mancante. Warning Starlette/httpx preesistente; warning ZIP duplicato prodotto intenzionalmente dal test di rifiuto.
+- Verificati firme originali e firma dell’involucro v2, rifiuto di pagine contraffatte da un visualizzatore, deduplicazione tra revisioni, ricezione mancante/ritentata e corruzione con verifica completa, convivenza v1/v2, conflitti e revoca. Interruzione durante la pubblicazione e durante la ricezione: riuso dei blocchi già validati, senza cancellare storico.
+- Backup v3: export/verifica/ripristino senza letture integrali degli allegati, rifiuto di corruzione/duplicati/percorsi estranei/oggetti storici mancanti, lettura legacy e recupero originale. Separazione legacy con dipendenze, tutte le revisioni, file propri, nuovi accessi, impronta obsoleta rifiutata, ambiguità bloccate e rollback in caso di errore del registro.
+- Prova effettiva `verify_storage_v2.py --large` su `.local/qa-streaming-101mb-20261019`: payload sintetico non comprimibile **101.000.000 byte**, ZIP **101.033.574 byte**, ripristino indipendente e SHA-256 verificati. Picco allocazioni Python durante l’export **4.280.330 byte**, circa **8,92 s** per export/verifica/ripristino su questo PC; non comprende tutta la memoria nativa/OS e non è un benchmark dei limiti massimi. Riepilogo locale `verification.json` nel corpus QA.
+- **19 test frontend passati**, build TypeScript/Vite riuscita e UI comune verificata; rimane il noto chunk Plotly. Smoke desktop dai sorgenti riuscito; compilazione sintattica e controllo diff riusciti.
+- GUI su archivio QA dedicato: analisi di due società legacy → estrazione indipendente → apertura della società corretta; attivazione v2 subordinata al controllo dei dispositivi aggiornati; scambio locale v2 completato; salvataggio diretto del backup v3 e ispezione via CLI. Screenshot `output/sync-v2-verifica.png` e `output/backup-v3-verifica.png`. Archivi operativi e demo dell’utente non migrati né rigenerati.
+- Limiti: inventario remoto ancora completo, nessuna compattazione/garbage collection, record canonici ancora nel DB locale; legacy ambigui richiedono correzione prima dell’estrazione. Non collaudati volumi 64/256 GB, un milione di file, account cloud reali, Windows pulito o backup nativi Android grandi. Nessun installer ricompilato e nessuna build Fedora/Android avviata. [Contratto e uso](SYNC_V2_E_BACKUP.md).
+
 ## Riordino documentazione — 19 ottobre 2026
 
 - Verificati 280 collegamenti locali in 33 documenti (README, AGENTS, architettura, changelog e documentazione): nessuna destinazione mancante prima delle sole aggiunte a questo registro e ai requisiti. Nessun riferimento Markdown ai nomi delle tre guide rinominate rimasto. `git diff --check` riuscito.

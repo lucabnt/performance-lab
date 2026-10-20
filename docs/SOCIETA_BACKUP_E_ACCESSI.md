@@ -2,6 +2,8 @@
 
 17 ottobre 2026. Flusso locale della preview Fuorigiri Performance Lab 0.4. Gli accessi sono associati all'operatore su un dispositivo; non esiste un account online con login remoto. La password dell'invito protegge il file JSON, non è una password da inserire ogni volta che si apre il programma.
 
+Backup scalabile v3 e separazione dei legacy multi-società sono ora disponibili: [guida corrente](SYNC_V2_E_BACKUP.md). Le tre modalità di ripristino sotto restano valide; i limiti dei vecchi ZIP non descrivono v3.
+
 ## Scegliere l'operazione giusta
 
 Aprire **Gestisci società**, accanto al selettore laterale. I tre percorsi sono separati:

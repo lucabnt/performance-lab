@@ -58,7 +58,7 @@ Nome confermato **Fuorigiri Performance Lab**. Adottate e implementate le scelte
 
 Il 17 ottobre 2026 è stata implementata la parte locale dei nuovi requisiti: revisioni, osservazioni, protocolli editabili/versionati, CSV, statistiche e report storici, workspace/ruoli e firme di scambio. Stato per ID in [REQUISITI_E_TODO.md](../REQUISITI_E_TODO.md), prove e limiti nel [README](../../README.md).
 
-**Decisione successiva vincolante sul branding:** logo della società fondatrice incluso nel software e attribuzione fissa «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.». Nessun override da workspace, anagrafica o impostazioni UI. Le precedenti proposte di branding configurabile sono superate.
+**Decisione successiva vincolante sul branding:** logo della società fondatrice incluso nel software e attribuzione fissa «Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.». Nessun override da workspace, anagrafica o impostazioni UI. Le precedenti proposte di branding configurabile sono superate.
 
 La [guida di test con GUI](../TESTARE_IL_PROGETTO.md) descrive avvio, fixture e checklist. La localizzazione IT/EN è parziale per diagnostiche e testi secondari; inviti e firme sono implementati, mentre portachiavi, recupero guidato e rotazione chiavi restano da completare. Le sezioni seguenti conservano la cronologia del disegno e degli scostamenti iniziali, senza descrivere necessariamente lo stato corrente.
 

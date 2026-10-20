@@ -1,5 +1,17 @@
 # Come testare il progetto, inclusa l'interfaccia
 
+## Sync v2, backup v3 e migrazione delle società
+
+[Guida e contratto completi](SYNC_V2_E_BACKUP.md). Su copie sintetiche, aggiornare tutti i client, attivare v2 come fondatore e verificare che la replica acquisisca tracciato e successive correzioni senza duplicare i blocchi. Togliere un blocco dal solo canale QA, verificare errore e ritentare dopo averlo ripristinato; usare Verifica completa per controllare anche i blocchi noti.
+
+Per il backup scegliere v3; su desktop usare Salva direttamente su disco per file grandi. Ripristinare realmente in copia indipendente e confrontare revisioni e allegati. In un legacy sintetico con due società usare Analizza archivio aperto → Separa società: verificare una sola società nella copia e originale intatto. La procedura si blocca su riferimenti incrociati o non attribuibili.
+
+```powershell
+.venv/Scripts/python.exe scripts/verify_storage_v2.py --data .local/qa-streaming-nuovo --large
+```
+
+Genera 101 MB sintetici non comprimibili e prova backup, verifica e ripristino oltre il vecchio limite. Usare una cartella nuova; servono circa 1 GB libero e tempo per le copie. Non rigenera gli archivi dell’utente.
+
 ## Nuovi requisiti TD-83–97: dettaglio test e maturazione
 
 Per provare insieme test esistenti e nuovi casi di crescita, creare **una cartella nuova**:
@@ -173,7 +185,7 @@ Gli inviti e il recupero SOLO DEMO usano la password pubblica `SoloDemo-NonUsare
 
 ## Usare i dati con un installer o creare uno ZIP portabile
 
-Se disponibile, estrarre `dist/release/Fuorigiri-0.8.0-demo-sintetica.zip`: contiene due ZIP nella cartella `backups`. Nell’app usare **Gestisci società → Ripristina da backup → Copia indipendente**, importandoli separatamente e assegnando un fondatore dimostrativo. Non usare «recupero originale» per questi backup dimostrativi. La copia indipendente non include le repliche già collegate: per quelle usare il corpus locale o rigenerarlo.
+Se disponibile, estrarre il pacchetto demo della versione interessata (per esempio il precedente `dist/release/Fuorigiri-0.8.0-demo-sintetica.zip`, che non viene rigenerato cambiando il numero prodotto): contiene due ZIP nella cartella `backups`. Nell’app usare **Gestisci società → Ripristina da backup → Copia indipendente**, importandoli separatamente e assegnando un fondatore dimostrativo. Non usare «recupero originale» per questi backup dimostrativi. La copia indipendente non include le repliche già collegate: per quelle usare il corpus locale o rigenerarlo.
 
 Per creare un nuovo corpus e il suo ZIP portabile nello stesso passaggio:
 
@@ -226,7 +238,8 @@ Android: `python scripts/build_android.py --check` elenca i gate reali; non scar
 
 ## Versione 0.5 — preset, metodi e report completi
 
-`.venv/Scripts/python.exe -m pytest -q` verifica il nucleo e le API. Compilare TypeScript/Vite con i comandi sotto. Schema 3: alla prima apertura di un database precedente viene salvata `migrations/before-v3.sqlite`; la storia delle analisi resta invariata. Dettagli e limiti in [IMPLEMENTAZIONE_INCREMENTALE_05.md](archivio/IMPLEMENTAZIONE_INCREMENTALE_05.md).
+`.venv/Scripts/python.exe scripts/verify_versions.py
+.venv/Scripts/python.exe -m pytest -q` verifica il nucleo e le API. Compilare TypeScript/Vite con i comandi sotto. Schema 3: alla prima apertura di un database precedente viene salvata `migrations/before-v3.sqlite`; la storia delle analisi resta invariata. Dettagli e limiti in [IMPLEMENTAZIONE_INCREMENTALE_05.md](archivio/IMPLEMENTAZIONE_INCREMENTALE_05.md).
 
 Per una prova isolata completa: `.venv/Scripts/python.exe scripts/qa_incremental.py --data .local/qa-incrementale-05-nuova`, poi `.venv/Scripts/python.exe scripts/serve.py --data .local/qa-incrementale-05-nuova --port 8766`; aprire l’URL con token stampato. Solo quattro atleti/otto test sintetici, due stagioni. Non usare un archivio reale per questi comandi; lo script rifiuta destinazioni già popolate.
 
@@ -323,6 +336,7 @@ Il lockfile npm viene usato da `npm ci`. `requirements-lock-windows.txt` descriv
 Windows:
 
 ```powershell
+.venv/Scripts/python.exe scripts/verify_versions.py
 .venv/Scripts/python.exe -m pytest -q
 Set-Location frontend
 npm run build
@@ -387,7 +401,7 @@ Linux: `FUORIGIRI_API_URL=http://127.0.0.1:8767 npm run dev`. Non basta aprire `
 
 | Prova | Passaggi | Risultato atteso |
 |---|---|---|
-| Avvio e branding | Aprire l'elenco atleti e scorrere fino in basso. | Quattro profili sintetici; logo locale e testo fisso «Sviluppato da Luca Bontempi per Progetto CIclismo - Rodengo Saiano A.S.D.». Nessun controllo per cambiarli. |
+| Avvio e branding | Aprire l'elenco atleti e scorrere fino in basso. | Quattro profili sintetici; logo locale e testo fisso «Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.». Nessun controllo per cambiarli. |
 | Ordinamento | Cliccare due volte ATLETA; provare DATA e valori numerici nelle tabelle. | Indicatore crescente/decrescente e ordine coerente. I mancanti rimangono in fondo. |
 | Profilo | Aprire un atleta, usare Modifica profilo, inserire data completa di nascita coerente con l'anno. | Modifica salvata; nome, anno e data disponibili dopo riapertura. Data/anno incoerenti sono rifiutati. |
 | Antropometria | Aggiungere una rilevazione datata. | Tabella aggiornata e grafico peso/statura su assi con unità distinte. |
@@ -457,6 +471,7 @@ Usare società e repliche sintetiche separate. La connessione in Archivio e scam
 Verifiche automatiche dai sorgenti, senza rigenerare dati:
 
 ```powershell
+.venv/Scripts/python.exe scripts/verify_versions.py
 .venv/Scripts/python.exe -m pytest -q
 npm --prefix frontend run test:signals
 npm --prefix frontend run build

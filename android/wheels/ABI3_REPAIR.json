@@ -1,0 +1,51 @@
+[
+  {
+    "tool": "repair_android_abi3/1",
+    "lief": "1.0.0-d05b3499b",
+    "wheel": "cryptography-50.0.2-cp313-abi3-android_26_x86_64.whl",
+    "original_sha256": "28075522da8587bc16b68886bd66dd645cfa6932019aba8db703b1287bedce44",
+    "repaired_sha256": "c853153a3e49776a51967167c0cf9e728dcda2f47d14b2b19729abafcaf6ea69",
+    "changes": [
+      {
+        "module": "cryptography/hazmat/bindings/_rust.abi3.so",
+        "before": [
+          "libdl.so",
+          "libc.so"
+        ],
+        "after": [
+          "libpython3.so",
+          "libdl.so",
+          "libc.so"
+        ],
+        "original_sha256": "99fbeca7c358583a308d819571fed6adb9e48f40237274c6e447f110f778e461",
+        "repaired_sha256": "09808caac05d9a8815a361243943ef2c8a90f460cb0b2d2fe81897ee46484548"
+      }
+    ],
+    "runtime_verified": true,
+    "runtime_context": "2026-10-20: emulator API 35 x86_64, OfflineRuntimeTest via ADB: OK (1 test), imports, Fernet, Ed25519, Keystore, API state."
+  },
+  {
+    "tool": "repair_android_abi3/1",
+    "lief": "1.0.0-d05b3499b",
+    "wheel": "cryptography-50.0.2-cp313-abi3-android_26_arm64_v8a.whl",
+    "original_sha256": "894decf5a78b70c86a5ee48c7afb433165752d7de545d3bf4a8e467cde8cb2bc",
+    "repaired_sha256": "5c6a34bd459b7200120dc6c65ac73e8b2cd6f7201320024beac5b8ab4275e8a2",
+    "changes": [
+      {
+        "module": "cryptography/hazmat/bindings/_rust.abi3.so",
+        "before": [
+          "libdl.so",
+          "libc.so"
+        ],
+        "after": [
+          "libpython3.so",
+          "libdl.so",
+          "libc.so"
+        ],
+        "original_sha256": "3f053089bbe9f2c26629e040456dfef997e65286b77729a4ee506ea3cc64e849",
+        "repaired_sha256": "94c475965f49a942a7c139063c4eb71878c0b699555ffaa0febfede9fbf7811c"
+      }
+    ],
+    "runtime_verified": false
+  }
+]

@@ -27,6 +27,7 @@ restore-staging/
 # Platform build caches, toolchains, signing material and prepared wheels
 wheelhouse/
 android/.gradle/
+android/.idea/
 android/**/build/
 android/local.properties
 android/wheels/*.whl
@@ -35,3 +36,8 @@ android/wheels/*.whl
 
 # Generated from authoritative legal documents by the frontend build.
 /frontend/public/legal/
+
+# Release signing material stays outside version control.
+*.p12
+*.pfx
+keystore.properties

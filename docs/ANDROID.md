@@ -1,5 +1,27 @@
 # Android — requisito e architettura proposta
 
+## Ripresa del collaudo con Android Studio — 20 ottobre 2026
+
+**TD-99–101:** navigazione Indietro tra schermate, filtri/pagine conservati, schede atleti/test, azioni dei moduli raggiungibili e ultima società persistente dopo chiusura del processo. UI comune 0.2.4 consegnata soltanto a Fuorigiri. Vedere [pratiche Android della suite](ANDROID_PRATICHE_SUITE.md) per riuso e limiti.
+
+**Navigazione TD-98:** testata con menu hamburger per società, sezioni, Info e lingua. Info contiene versione, stato offline, logo/attribuzione e testi legali; nessun footer ripetuto nelle altre viste Android. Indietro chiude menu/dialoghi prima di uscire. Verificato su emulatore; immagini reali nella [galleria](screenshots/README.md).
+
+**Stato più recente:** APK debug prodotto e avviato sull’emulatore API 35 x86_64. Corretto il collegamento libpython delle wheel cryptography e verificato il test nativo di import, cifratura/firma, API e Keystore (**1 test passato**). Verificata la schermata Gestisci società e corretti gli insets Android. Telefono ARM64, flussi applicativi completi, provider reali e pagine 16 KB restano da collaudare. Dettagli e digest nel [registro verifiche](VERIFICA.md); ricostruzione e riparazione in [ANDROID_WHEEL_FEDORA.md](ANDROID_WHEEL_FEDORA.md).
+
+Procedura consolidata: [Compilare le wheel Android su Fedora Kinoite](ANDROID_WHEEL_FEDORA.md). Include Toolbox, JDK/SDK/NDK, Rust separato, OpenSSL/libffi, i due hook riusciti, build delle sei wheel e trasferimento Windows. I tentativi precedenti sono conservati in [VERIFICA.md](VERIFICA.md).
+
+L’utente ha ripreso il collaudo Android locale: **prima emulatore, poi telefono**. Il rinvio storico non vale per questo collaudo autorizzato; il packaging applicativo Fedora resta rinviato. Emulatore API 35 x86_64 rilevato online. Studio installato; wrapper Gradle **8.13** presente. Il runtime JBR 25 dell’IDE non va confuso con il JDK di compilazione: usare **JDK 21** e conservare le versioni AGP/Kotlin/Chaquopy del progetto.
+
+Percorso corrente con Android Studio su Windows:
+
+1. Aprire la cartella `android/`. Configurare Gradle JDK 21, SDK platform 35 e Python host 3.13; non sostituire la venv desktop.
+2. Trasferire le sei wheel in `android/wheels/` e verificarle contro SHA256.json come descritto nella guida Fedora. Il gate include CFFI 2.0.0. I file binari non sono inclusi automaticamente dal clone Git.
+3. Compilare il frontend dalla radice con `npm --prefix frontend ci` e `npm --prefix frontend run build`. Questo passaggio serve a includere l’interfaccia corrente negli asset dell’APK.
+4. Con SDK/JDK nella sessione, eseguire dalla radice `python scripts/build_android.py --check --gradle <percorso-wrapper>`. In alternativa, dopo il controllo esplicito delle wheel, eseguire `gradlew.bat :app:assembleDebug --stacktrace` dalla cartella android. La chiamata Gradle diretta non esegue il gate Python.
+5. Solo con APK prodotto passare all’installazione su emulatore e telefono, test strumentali e prove offline/import/report, poi WebDAV e OAuth con account QA. Usare dati sintetici.
+
+Le quattro prove Python del bridge mobile già passate su Windows non provano compilazione Kotlin, caricamento delle estensioni native, WebView o Keystore su Android. Le wheel prodotte non certificano chiusura di tutte le dipendenze Chaquopy o compatibilità 16 KB. Import nativi e avvio verificati su x86_64; comportamento completo dell’app e telefono ancora da collaudare.
+
 ## Valutazione dell'implementazione ibrida — 18 ottobre 2026
 
 L'implementazione attuale contiene già Kotlin: `MainActivity.kt` gestisce WebView, import/export e autorizzazioni; `NativeSecrets.kt` protegge le credenziali; `SyncWorker.kt` usa WorkManager; `FuorigiriApplication.kt` inizializza il runtime Python tramite Chaquopy. React/TypeScript fornisce l'interfaccia condivisa, Python il motore e i servizi locali. Il bridge chiama FastAPI in-process mediante ASGITransport: nessun server HTTP in ascolto sul telefono. Le vecchie sezioni che proponevano Capacitor descrivono l'alternativa iniziale, non il contenitore effettivamente scritto.
@@ -99,3 +121,7 @@ Import FIT/ERG/CSV da picker o «Apri con»; copiare l’originale nell’archiv
 5. **AND-05, qualità e distribuzione:** migrazioni, interruzione del processo, spazio esaurito, grandi tracce, accessibilità/touch, finestre adattive, firma APK e gestione sicura della chiave di rilascio. APK firmato e sorgenti/procedura riproducibile; pubblicazione su store eventuale, distinta dallo sviluppo richiesto.
 
 Il completamento Android richiede tutti questi flussi. Un prototipo, una PWA o la sola visualizzazione dello storico non chiudono TD-57. Raccolta live Bluetooth/ANT+ e controllo del rullo sono possibili estensioni, non comprese automaticamente nell’analisi di file richiesta.
+
+## Ergonomia aggiornata — 21 ottobre 2026
+
+TD-102–104: hamburger a sinistra, Back di sistema; spaziature moderate, testata con società/sezione/ruolo. Grafico in Scorri pagina per default, comandi sotto la figura, Esplora/Zoom e vista ampia; un Back esce dalla modalità di esplorazione prima di chiudere il dettaglio. Dati tabellari paginati come alternativa alla figura. Avvio con fasi e riprova, Plotly locale differito. Common UI 0.2.6, sorgenti/adozione in ANDROID_PRATICHE_SUITE.md; prove e limiti in VERIFICA.md.

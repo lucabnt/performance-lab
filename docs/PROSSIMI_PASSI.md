@@ -1,8 +1,14 @@
 # Prossimi passi
 
-Stato dei sorgenti **0.10.0** al **20 ottobre 2026**. Le funzioni sviluppate e le prove eseguite sono tracciate in [requisiti](REQUISITI_E_TODO.md) e [verifiche](VERIFICA.md). Il [piano precedente](archivio/PIANO_STORICO_2026-10-19.md) resta disponibile come cronologia.
+Stato dei sorgenti **0.10.0** al **21 ottobre 2026**. Le funzioni sviluppate e le prove eseguite sono tracciate in [requisiti](REQUISITI_E_TODO.md) e [verifiche](VERIFICA.md). Il [piano precedente](archivio/PIANO_STORICO_2026-10-19.md) resta disponibile come cronologia.
 
 Incrementale, Sprint/Wingate, protocolli custom, report gerarchici e maturazione sono già implementati con i limiti documentati: non sono attività da ricominciare. Sync v2, backup streaming v3 e separazione assistita sono stati aggiunti: [contratto](SYNC_V2_E_BACKUP.md). Il prossimo obiettivo è qualificarli con dati/ambienti reali e rendere distribuibile il prodotto attuale.
+
+## Priorità attuale: candidato pilot Windows + Android, 21 ottobre
+
+Candidato locale preparato; qualificare il prodotto corrente prima di nuove funzioni. [Checklist con check e verbale](COLLAUDO_PILOT.md). Windows: bundle/installer aggiornato e PC pulito; Android: release non firmato su richiesta dell’utente, [chiave e firma del titolare](FIRMA_ANDROID.md), poi telefono ARM64. Seguire con un solo provider e due account reali fra Windows/Android, backup/recupero e aggiornamento. Nessuna pubblicazione o CI remota avviata implicitamente.
+
+Regressione locale: 201 Python passati/1 skip e 25 frontend passati; prove precedenti su emulatore e sorgenti nel registro. La checklist distingue questi risultati dai gate esterni ancora aperti. Le sezioni sotto dettagliano il lavoro residuo, non rinviano nuovamente il collaudo Android già riaperto.
 
 ## 1. Qualificare e far evolvere la sincronizzazione v2
 
@@ -30,9 +36,7 @@ Ricompilare il candidato Windows dopo il consolidamento e provarlo su VM pulita:
 
 ## 5. Fedora e Android
 
-**Build rinviate dall’utente:** riprenderle quando sarà disponibile il builder adatto. Fedora: produrre e collaudare il pacchetto con runtime. Android: wheel native aggiornate, SDK/JDK/Gradle, APK, emulatore e dispositivo fisico; verificare file, Keystore, report, lavoro in background e scambio tra mobile e desktop per tutti i trasporti previsti.
-
-L’architettura Kotlin/React/Python e gli adapter sono nei sorgenti; non equivalgono a un’app mobile collaudata. [Stato Android](ANDROID.md), [distribuzione](DISTRIBUZIONE.md).
+**Fedora:** packaging e collaudo ancora rimandati. **Android:** APK debug e runtime verificati su emulatore; candidato release non firmato prodotto, con firma, telefono e qualifica completa ancora aperti. Non usare il rinvio storico per descrivere lo stato attuale. [Stato Android](ANDROID.md), [distribuzione](DISTRIBUZIONE.md), [pilot](COLLAUDO_PILOT.md).
 
 ## 6. Evoluzioni successive
 

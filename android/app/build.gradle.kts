@@ -33,6 +33,12 @@ chaquopy {
     }
     sourceSets { getByName("main") { srcDir("../../backend") } }
 }
+// --find-links directories are otherwise not tracked when local wheels change.
+tasks.matching { it.name.startsWith("install") && it.name.endsWith("PythonRequirements") }.configureEach {
+    inputs.files(fileTree("${rootProject.projectDir}/wheels") {
+        include("*.whl", "SHA256.json")
+    })
+}
 dependencies {
     implementation("com.google.android.gms:play-services-auth:22.0.0")
     implementation("androidx.activity:activity-ktx:1.10.1")

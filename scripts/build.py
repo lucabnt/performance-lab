@@ -1,10 +1,23 @@
 """Build on the target OS. Run npm ci && npm run build in frontend first."""
 import os
+import argparse
 import subprocess
 import sys
 from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
+parser=argparse.ArgumentParser(description='Build desktop Fuorigiri con dipendenze incluse')
+parser.add_argument('--output-root',type=Path,help='Nuova directory isolata per bundle/work/spec; rifiuta destinazioni esistenti')
+args=parser.parse_args()
+bundle=root/'dist/Fuorigiri'
+extra=[]
+if args.output_root:
+    output=args.output_root.resolve()
+    output.mkdir(parents=True,exist_ok=False)
+    (output/'work').mkdir()
+    bundle=output/'bundle/Fuorigiri'
+    extra=['--distpath',str(output/'bundle'),'--workpath',str(output/'work'),'--specpath',str(output/'work')]
+
 from verify_versions import verify
 verify(root)
 subprocess.run([sys.executable,str(root/'scripts/verify_suite_ui.py')],check=True)
@@ -20,6 +33,7 @@ command=[sys.executable,'-m','PyInstaller','--noconfirm','--clean','--name','Fuo
          '--hidden-import','uvicorn.protocols.http.auto','--hidden-import','uvicorn.protocols.websockets.auto',
          '--hidden-import','uvicorn.lifespan.on']
 if sys.platform=='win32':command.extend(['--windowed','--icon',str(root/'frontend/public/branding/fuorigiri.ico')])
+command.extend(extra)
 command.append(str(root/'desktop_entry.py'))
 env=os.environ.copy()
 if sys.platform=='win32':
@@ -31,8 +45,6 @@ if sys.platform=='win32':
 subprocess.run(command,cwd=root,check=True,env=env)
 import shutil
 for name in ('LICENSE','README.md','THIRD_PARTY.md','ARCHITETTURA_PROPOSTA.md','CHANGELOG.md'):
-    shutil.copy2(root/name,root/'dist/Fuorigiri'/name)
-(root/'dist/Fuorigiri/docs').mkdir(exist_ok=True)
-for path in (root/'docs').glob('*.md'):
-    shutil.copy2(path,root/'dist/Fuorigiri/docs'/path.name)
-shutil.copytree(root/'examples',root/'dist/Fuorigiri/examples',dirs_exist_ok=True)
+    shutil.copy2(root/name,bundle/name)
+shutil.copytree(root/'docs',bundle/'docs',dirs_exist_ok=True)
+shutil.copytree(root/'examples',bundle/'examples',dirs_exist_ok=True)

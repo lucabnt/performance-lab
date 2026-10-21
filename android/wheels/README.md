@@ -1,11 +1,17 @@
 # Wheel native Android
 
-Le wheel non vengono prese da repository binari non verificati. Questa directory riceve gli artefatti di un builder Linux/macOS autorizzato e il relativo `SHA256.json` (mappa nome file → digest SHA256).
+## Stato al 20 ottobre 2026
 
-Gate iniziale: `pydantic_core==2.41.4` e `cryptography==50.0.2`, Python 3.13, ABI `arm64-v8a` e `x86_64`, API minima compatibile con minSdk 26. Le versioni pronte nel repository Chaquopy sono state verificate: Pydantic Core assente; Cryptography solo 42.0.8 per cp313. Non viene effettuato un downgrade della crittografia per ottenere un APK.
+**Aggiornamento runtime:** le due wheel cryptography originali richiedono riparazione DT_NEEDED libpython3.so tramite scripts/repair_android_abi3.py; originali conservati, provenienza in [ABI3_REPAIR.json](ABI3_REPAIR.json), manifest SHA256 aggiornato ai binari corretti. LIEF è solo uno strumento di build. La variante x86_64 è stata caricata sull’emulatore API 35 e il test nativo import/Fernet/Ed25519/Keystore/API è passato; ARM64 riparata ma non eseguita. La guida include questa fase obbligatoria per i binari originali ricevuti. Gradle traccia ora file wheel e manifest come input.
 
-Per compilare pacchetti Python 3.13+, Chaquopy raccomanda [cibuildwheel Android](https://cibuildwheel.pypa.io/en/stable/platforms/#android), su **Linux x86_64 o macOS**, con SDK/NDK. Le estensioni Rust richiedono i target Android e Cryptography anche OpenSSL compilato per la stessa ABI: non basta rinominare una wheel manylinux/Windows. La procedura della singola libreria va completata e collaudata sul builder, compresa la compatibilità delle pagine di memoria da 16 KB.
+Il builder Fedora Kinoite/Toolbox dell’utente ha prodotto sei wheel API 26: pydantic-core 2.41.4, CFFI 2.0.0 e cryptography 50.0.2 per Python 3.13, entrambe le ABI x86_64 e arm64-v8a. Sei file successivamente trasferiti e verificati localmente contro il manifest; Chaquopy li ha risolti per entrambe le ABI e la build Windows ha prodotto il primo APK debug. Il primo avvio è stato poi verificato su x86_64; i flussi completi restano da collaudare. Cryptography x86_64 ha superato abi3audit strict; per ARM64 è stato ricevuto elenco/hash.
 
-NumPy 1.26.2 e Matplotlib 3.8.4 hanno wheel cp313 nel repository ufficiale Chaquopy. La loro presenza non certifica il caricamento su tutti i dispositivi né la compatibilità 16 KB. Il gate finale comprende tutte le dipendenze native transitive e il collaudo nell'app, non soltanto le due wheel sopra.
+La procedura operativa corretta è [Compilare le wheel Android su Fedora Kinoite](../../docs/ANDROID_WHEEL_FEDORA.md). Contiene prerequisiti, comandi in ordine, hook before-build verificati e diagnosi. I tentativi intermedi sono conservati in [VERIFICA.md](../../docs/VERIFICA.md); non ripetere gli override CFLAGS/LDFLAGS/PKG_CONFIG risultati insufficienti.
 
-Eseguire dalla radice `python scripts/build_android.py --check`. Finché il controllo segnala prerequisiti mancanti, non esiste un APK funzionante di questa revisione. Il sorgente della shell e il contratto ASGI sono presenti e testati separatamente; TD-57 rimane aperto.
+## File e controlli
+
+Questa directory riceve i sei `.whl` dal builder autorizzato, senza rinominarli. [SHA256.json](SHA256.json) contiene la mappa nome file → SHA-256 comunicata dal builder. Il gate `scripts/build_android.py` verifica versioni/ABI richieste e digest dei file presenti. CFFI 2.0.0 è fissato nei requisiti Android. Il gate non esegue test di import né certifica il runtime; una ricompilazione con hash diversi richiede provenienza e verifica esplicita prima di aggiornare il manifest.
+
+Le wheel binarie sono ignorate da Git; il manifest è versionato. Non usare wheel manylinux/Windows rinominate, librerie Fedora come target Android o downgrade della crittografia per ottenere l’APK. Le dipendenze build host devono restare eseguibili su Linux, quelle distribuite nell’app devono essere Android.
+
+Dalla radice eseguire `python scripts/build_android.py --check --gradle <percorso-wrapper>` con SDK/JDK configurati. Per il controllo delle sole wheel e la compilazione Gradle diretta vedere la guida. La presenza delle sei wheel non garantisce la risoluzione di tutte le dipendenze transitive: NumPy, Matplotlib, renderer PDF e altre estensioni rimangono da collaudare, insieme alle pagine da 16 KB. TD-57 rimane aperto fino al collaudo effettivo dell’app.

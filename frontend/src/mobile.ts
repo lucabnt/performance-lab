@@ -43,3 +43,8 @@ if(native.FuorigiriNative){
   event.preventDefault();exportAnchor(anchor);
  },true);
 }
+
+/** Temporary orientation request owned by the chart; Android restores its previous policy. */
+export function setChartLandscape(landscape:boolean){
+ native.FuorigiriNative?.postMessage(JSON.stringify({type:'chartOrientation',landscape}));
+}

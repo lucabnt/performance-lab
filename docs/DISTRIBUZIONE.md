@@ -1,10 +1,16 @@
 # Distribuzione desktop e prerequisiti mobile
 
-Guida di packaging; conserva anche il dettaglio della prima implementazione 0.6. Il prodotto nei sorgenti dichiara 0.10.0: ricompilare prima di collaudare le novità. Windows e sorgenti sono il perimetro concordato; build Fedora/Android rinviate. Gli adapter cloud oggi sono implementati: per il loro stato usare la [guida sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md), che supera le indicazioni storiche sotto.
+Guida di packaging; conserva anche il dettaglio della prima implementazione 0.6. Il prodotto nei sorgenti dichiara 0.10.0: ricompilare prima di collaudare le novità. Windows e sorgenti erano il perimetro iniziale; Fedora resta rimandato, il collaudo Android è stato riaperto e il candidato Windows/Android è stato preparato il 21 ottobre. Gli adapter cloud oggi sono implementati: per il loro stato usare la [guida sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md), che supera le indicazioni storiche sotto.
 
 **Consegna concordata il 18 ottobre 2026:** Windows e sorgenti; l’utente ha rimandato le build Linux/Android. I gate e i collaudi sotto restano documentati, senza avviare CI o pubblicazioni.
 
 18 ottobre 2026. L’utente autorizza il consolidamento della sincronizzazione/distribuzione, quindi Android, e richiede dipendenze incluse per l’utente finale e un’icona minimale. Il motore scientifico rimane **0.5.0**, lo schema dei dati rimane **3**: nessun risultato storico viene ricalcolato per questo aggiornamento.
+
+## Candidato pilot — 21 ottobre 2026
+
+Prodotto 0.10.0, identificativo separato pilot-20261021-01. Artefatti in `dist/candidates/Fuorigiri-0.10.0-pilot-20261021-01/`, senza sovrascrivere vecchie release. Windows con bundle dipendenze, installer e ZIP portabile; Android release intenzionalmente non firmato, come richiesto dal titolare. Prima di installarlo seguire [firma Android](FIRMA_ANDROID.md). [Checklist e verbale del pilot](COLLAUDO_PILOT.md), stato effettivo in VERIFICA.md. Nessun rilascio pubblico, chiave generata o prova su PC pulito/telefono implicita.
+
+Build isolate: `python scripts/build.py --output-root .local/candidate-build-nuovo` rifiuta una destinazione già esistente. Inno Setup accetta `/DAppDistDir=<bundle-Fuorigiri-assoluto>` e `/DAppOutputDir=<output-assoluto>` mantenendo AppId e versione. `scripts/package_candidate.py --help` congela gli input in una destinazione nuova, include sorgenti/wheel native verificate e genera manifest/checksum; non firma né pubblica. Copiare l’intero bundle portabile, non il solo EXE. Fonti e wheel non costituiscono una cache offline completa di dipendenze PyPI/Gradle.
 
 ## Scelte e stato reale
 

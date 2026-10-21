@@ -1,11 +1,11 @@
 {
   "package": "@cycling-suite/ui",
-  "version": "0.2.2",
-  "artifact": "cycling-suite-ui-0.2.2.tgz",
-  "sha256": "f5e8b3e389a68e39363e64d9460662077398803e4af8adb6e48f1a3c910595d1",
-  "source_digest": "08f6d01edf5ec50dee0f3646261b80f80074834424a40692ff20d9a8f6eb6fc7",
+  "version": "0.2.8",
+  "artifact": "cycling-suite-ui-0.2.8.tgz",
+  "sha256": "77d10deeb0f328d13b223833faacbba1f8329b3be8233926b68edf0d2d9ff957",
+  "source_digest": "81d473d1d307c91f94f2aaafee63efe873f2f5c8a372a04688560ee891d39f28",
   "source_repository": "cycling-suite-common",
-  "source_revision": "e18e52b6788b5daa8ccded72c5816de2f17024f3",
+  "source_revision": "a515ba7b647388569c6493be02d1a95d9a25f40e",
   "source_dirty": true,
   "license": "GPL-3.0-or-later",
   "contains_sources": true

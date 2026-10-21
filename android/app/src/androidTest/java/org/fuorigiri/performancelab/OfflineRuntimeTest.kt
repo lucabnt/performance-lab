@@ -21,7 +21,18 @@ class OfflineRuntimeTest {
             python.getModule("matplotlib.figure")
             python.getModule("reportlab.platypus")
             python.getModule("pydantic_core")
+            python.getModule("_cffi_backend")
             python.getModule("cryptography.hazmat.primitives.asymmetric.ed25519")
+            val builtins = python.getModule("builtins")
+            builtins.callAttr("exec", """
+                from cryptography.fernet import Fernet
+                from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+                payload = b'fuorigiri-android-native-check'
+                cipher = Fernet(Fernet.generate_key())
+                assert cipher.decrypt(cipher.encrypt(payload)) == payload
+                signing = Ed25519PrivateKey.generate()
+                signing.public_key().verify(signing.sign(payload), payload)
+            """.trimIndent(), builtins.callAttr("dict"))
             val path=File(context.cacheDir,"instrumented-${System.nanoTime()}").absolutePath
             val runtime=python.getModule("cycling_test.mobile_runtime").callAttr("MobileRuntime",path)
             val response=JSONObject(runtime.callAttr("request",JSONObject().put("path","/api/v1/state").put("method","GET").toString()).toString())

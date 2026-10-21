@@ -6,14 +6,17 @@ Applicazione open source per analizzare, confrontare e archiviare test di ciclis
 
 ## About the project
 
-Fuorigiri Performance Lab is an open-source, offline-first application for cycling performance testing and athlete monitoring. It combines a Python analysis backend with a React/TypeScript interface to manage athletes, organisations, groups and versioned test protocols; analyse incremental, sprint and Wingate tests from FIT/CSV files or manual results; explore interactive histories; and export Markdown, PDF and CSV reports. Growth and maturation estimates retain their inputs, methods and limitations. Each organisation has a separate local archive, with optional encrypted synchronisation through WebDAV, Google Drive, Dropbox or OneDrive. Windows packaging includes application dependencies; Linux and Android build configurations and sources are present, but their builds and device validation remain pending.
+Fuorigiri Performance Lab is an open-source, offline-first application for cycling performance testing and athlete monitoring. It combines a Python analysis backend with a React/TypeScript interface to manage athletes, organisations, groups and versioned test protocols; analyse incremental, sprint and Wingate tests from FIT/CSV files or manual results; explore interactive histories; and export Markdown, PDF and CSV reports. Growth and maturation estimates retain their inputs, methods and limitations. Each organisation has a separate local archive, with optional encrypted synchronisation through WebDAV, Google Drive, Dropbox or OneDrive. Windows packaging includes application dependencies; Linux build configurations and sources are present; Linux packaging remains pending. An Android debug APK now runs on an x86_64 emulator with a native runtime smoke test; physical-device and complete workflow validation remain pending.
 
 ## Stato attuale
+
+Candidato locale **0.10.0 · pilot-20261021-01** preparato (Windows installer/portabile e Android release non firmato): [checklist di collaudo](docs/COLLAUDO_PILOT.md) e [firma APK Android](docs/FIRMA_ANDROID.md). Versione prodotto 0.10.0; pacchetti locali e gate nel [registro verifiche](docs/VERIFICA.md), nessuna release pubblica.
 
 Anteprima di sviluppo: versione dichiarata nei sorgenti **0.10.0**, con modifiche descritte nel [changelog](CHANGELOG.md). Una modifica ai sorgenti non aggiorna gli installer già prodotti.
 
 - **Desktop:** Python/FastAPI, SQLite e oggetti locali; React/TypeScript e Plotly; finestra PySide6/Qt WebEngine. Packaging Windows con dipendenze incluse, ancora da qualificare su PC pulito per i sorgenti attuali.
-- **Linux/Fedora e Android:** configurazioni e sorgenti presenti; build e collaudi rimandati. Android usa una shell Kotlin con interfaccia React e backend Python incorporato; nessun APK qualificato disponibile.
+- **Linux/Fedora:** configurazioni e sorgenti presenti; packaging e collaudo rimandati.
+- **Android:** APK debug compilato e avviato su emulatore x86_64, con test del runtime nativo passato. Shell Kotlin, interfaccia React e backend Python incorporato; telefono e collaudo completo ancora aperti, nessuna release Android pubblicata.
 - **Cloud:** adapter implementati e verificati con fixture. Servono registrazioni OAuth per la distribuzione e collaudi con account reali distinti. Il servizio dedicato è predisposto come contratto/client, senza un servizio ospitato già disponibile.
 - **Metodi:** risultati misurati, dichiarati, interpolati e stimati restano distinti e versionati. Le verifiche sintetiche non sostituiscono la validazione scientifica esterna.
 
@@ -46,6 +49,22 @@ Schermate reali della versione **0.10.0**, aggiornate il **20 ottobre 2026**, co
 | **Crescita e maturazione** | **Report ed esportazioni** |
 | [![Profilo atleta con velocità di crescita, PHV esplorativo e stime datate](docs/screenshots/crescita-maturazione.jpg)](docs/screenshots/crescita-maturazione.jpg) | [![Report filtrabili per società, gruppo, stagione o atleta e importazione CSV](docs/screenshots/report-esportazioni.jpg)](docs/screenshots/report-esportazioni.jpg) |
 | HV, analisi conservate e stime con metodo e limiti espliciti. | PDF e Markdown della società o delle sue sottosezioni; scambio CSV. |
+
+### Android: navigazione compatta
+
+Catture reali dell’APK debug su emulatore API 35 x86_64, 21 ottobre 2026, con società sintetica. Menu, Info, elenchi, moduli e grafici adattati al touch; il collaudo sul telefono resta aperto.
+
+| Menu Android | Info |
+|---|---|
+| <a href="docs/screenshots/android-menu.png"><img src="docs/screenshots/android-menu.png" width="230" alt="Menu Android con società, sezioni, Info e lingua"/></a> | <a href="docs/screenshots/android-info.png"><img src="docs/screenshots/android-info.png" width="230" alt="Info Android con versione, logo societario, attribuzione e licenza"/></a> |
+
+| Elenco atleti | Modulo con azione persistente |
+|---|---|
+| <a href="docs/screenshots/android-atleti.png"><img src="docs/screenshots/android-atleti.png" width="230" alt="Schede atleti e filtri richiudibili su Android"/></a> | <a href="docs/screenshots/android-modulo.png"><img src="docs/screenshots/android-modulo.png" width="230" alt="Modulo Android con Salva visibile durante lo scorrimento"/></a> |
+
+<a href="docs/screenshots/android-grafico.png"><img src="docs/screenshots/android-grafico.png" width="270" alt="Grafico Android con Scorri pagina predefinito e comandi di esplorazione sotto la figura"/></a>
+
+<a href="docs/screenshots/android-grafico-orizzontale.png"><img src="docs/screenshots/android-grafico-orizzontale.png" width="650" alt="Vista ampia Android immersiva: grafico orizzontale a tutto schermo con comandi richiamabili"/></a>
 
 La [guida della galleria](docs/screenshots/README.md) descrive come riprodurre le viste e aggiornare immagini e didascalie insieme alle modifiche dell’interfaccia.
 

@@ -2,13 +2,23 @@ package org.fuorigiri.performancelab
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.ImageView
+import android.widget.Button
+import android.view.Gravity
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,9 +27,37 @@ import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
+    private var chartPreviousOrientation: Int? = null
+    private var chartPreviousBars: Int? = null
+    private var chartPreviousBarsBehavior: Int? = null
+    private fun chartLandscape(enabled: Boolean) {
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        if (enabled) {
+            if (chartPreviousOrientation == null) chartPreviousOrientation = requestedOrientation
+            if (chartPreviousBars == null) {
+                val insets = ViewCompat.getRootWindowInsets(window.decorView)
+                chartPreviousBars = listOf(WindowInsetsCompat.Type.statusBars(),WindowInsetsCompat.Type.navigationBars()).filter { insets?.isVisible(it) != false }.fold(0) { mask, type -> mask or type }
+                chartPreviousBarsBehavior = controller.systemBarsBehavior
+            }
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        } else {
+            chartPreviousOrientation?.let { requestedOrientation = it }
+            chartPreviousOrientation = null
+            chartPreviousBars?.let { visible ->
+                if (visible != 0) controller.show(visible)
+                val hidden = WindowInsetsCompat.Type.systemBars() and visible.inv()
+                if (hidden != 0) controller.hide(hidden)
+            }
+            chartPreviousBarsBehavior?.let { controller.systemBarsBehavior = it }
+            chartPreviousBars = null;chartPreviousBarsBehavior = null
+        }
+    }
     private var googleSession: String? = null
     private val googleResolution = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
         try {
@@ -68,15 +106,62 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(TextView(this).apply { text = "Fuorigiri Performance Lab\nAvvio dell’archivio offline…"; setPadding(32, 64, 32, 32) })
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+        showStatus("Fuorigiri Performance Lab\nPreparazione del motore locale…")
         Runtime.executor.execute {
             try {
                 Runtime.get(applicationContext)
-                runOnUiThread { setupWebView();handleOAuth(intent) }
-            } catch (_: Exception) {
-                runOnUiThread { setContentView(TextView(this).apply { text = "Avvio non riuscito. L’archivio è conservato. Questa build richiede la verifica delle dipendenze native Android."; setPadding(32,64,32,32) }) }
+                runOnUiThread { showStatus("Fuorigiri Performance Lab\nApertura dell’interfaccia…");setupWebView();handleOAuth(intent) }
+            } catch (error: Exception) {
+                if (BuildConfig.DEBUG) Log.e("FuorigiriStartup", "Offline runtime initialization failed", error)
+                runOnUiThread { showStatus("Avvio non riuscito. I dati locali sono conservati. Riavvia l’app; se il problema persiste, segnala il codice AVVIO-01.", failed = true) }
             }
         }
+    }
+
+    private fun showStatus(message: String, failed: Boolean = false) {
+        val margin = (24 * resources.displayMetrics.density).toInt()
+        val status = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER
+            setPadding(margin, margin, margin, margin)
+            setBackgroundColor(android.graphics.Color.rgb(246,248,251))
+            addView(LinearLayout(this@MainActivity).apply {
+                orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
+                addView(ImageView(this@MainActivity).apply {
+                    setImageResource(R.drawable.fuorigiri)
+                    importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                }, LinearLayout.LayoutParams((40*resources.displayMetrics.density).toInt(),(40*resources.displayMetrics.density).toInt()).apply { marginEnd=(10*resources.displayMetrics.density).toInt() })
+                addView(TextView(this@MainActivity).apply {
+                    text="Fuorigiri\nPERFORMANCE LAB";textSize=20f
+                    setTextColor(android.graphics.Color.rgb(27,48,72))
+                })
+            })
+            if (!failed) addView(ProgressBar(this@MainActivity).apply {
+                contentDescription = "Apertura in corso"
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            })
+            addView(TextView(this@MainActivity).apply {
+                text = message.removePrefix("Fuorigiri Performance Lab\n"); textSize = 18f; gravity = Gravity.CENTER
+                setTextColor(android.graphics.Color.rgb(27,48,72))
+                setPadding(0, margin, 0, margin)
+                accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+            })
+            if (failed) addView(Button(this@MainActivity).apply {
+                text = "Riprova"; minHeight = (48 * resources.displayMetrics.density).toInt()
+                setOnClickListener { recreate() }
+            })
+        }
+        setContentView(status)
+        ViewCompat.setOnApplyWindowInsetsListener(status) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            view.setPadding(margin + bars.left, margin + bars.top, margin + bars.right, margin + bars.bottom)
+            insets
+        }
+        ViewCompat.requestApplyInsets(status)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -91,6 +176,10 @@ class MainActivity : ComponentActivity() {
         }
         val loader = WebViewAssetLoader.Builder().addPathHandler("/", WebViewAssetLoader.AssetsPathHandler(this)).build()
         web.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+                chartLandscape(false)
+                super.onPageStarted(view, url, favicon)
+            }
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse {
                 if (request.url.scheme != "https" || request.url.host != "appassets.androidplatform.net") return blocked()
                 return loader.shouldInterceptRequest(request.url) ?: blocked()
@@ -125,6 +214,7 @@ class MainActivity : ComponentActivity() {
             val command = try { JSONObject(raw) } catch (_: Exception) { return@addWebMessageListener }
             val id = command.optString("id")
             when (command.optString("type")) {
+                "chartOrientation" -> runOnUiThread { chartLandscape(command.optBoolean("landscape")) }
                 "request" -> Runtime.executor.execute {
                     val response = try {
                         val result = synchronized(Runtime.lock) { Runtime.get(applicationContext).callAttr("request", command.getJSONObject("payload").toString()).toString() }
@@ -166,19 +256,23 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        setContentView(web, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-        ViewCompat.setOnApplyWindowInsetsListener(web) { view, insets ->
-            val bars=insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
+        val container = FrameLayout(this).apply {
+            addView(web, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        }
+        setContentView(container)
+        ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
+            val bars=insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime() or WindowInsetsCompat.Type.displayCutout())
             view.setPadding(bars.left,bars.top,bars.right,bars.bottom);insets
         }
+        ViewCompat.requestApplyInsets(container)
         web.loadUrl("$origin/index.html")
         if(preferences.getBoolean("background",false))SyncWorker.schedule(this)
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                web.evaluateJavascript("(()=>{const close=document.querySelector('.overlay .close, .overlay button[aria-label=\"Chiudi\"]');if(close){close.click();return true}return false})()") { value -> if(value!="true")finish() }
+                web.evaluateJavascript("(()=>{if(typeof window.fuorigiriChartBack==='function'&&window.fuorigiriChartBack())return true;const dialogs=document.querySelectorAll('dialog[open]');const dialog=dialogs[dialogs.length-1];if(dialog){dialog.dispatchEvent(new Event('cancel',{bubbles:false,cancelable:true}));return true}const close=document.querySelector('.overlay .close, .overlay button[aria-label=\"Chiudi\"]');if(close){close.click();return true}return typeof window.fuorigiriBack==='function'?window.fuorigiriBack():false})()") { value -> if(value!="true")finish() }
             }
         })
     }
     private fun blocked() = WebResourceResponse("text/plain", "UTF-8", 403, "Blocked", emptyMap(), "Contenuto non disponibile".byteInputStream())
-    override fun onDestroy() { pickerCallback?.onReceiveValue(null);pickerCallback=null;if(::web.isInitialized) web.destroy();super.onDestroy() }
+    override fun onDestroy() { chartLandscape(false);pickerCallback?.onReceiveValue(null);pickerCallback=null;if(::web.isInitialized) web.destroy();super.onDestroy() }
 }

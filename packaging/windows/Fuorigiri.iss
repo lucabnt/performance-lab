@@ -1,6 +1,12 @@
 #ifndef AppVersion
   #define AppVersion "0.10.0"
 #endif
+#ifndef AppDistDir
+  #define AppDistDir "..\..\dist\Fuorigiri"
+#endif
+#ifndef AppOutputDir
+  #define AppOutputDir "..\..\dist\release"
+#endif
 [Setup]
 AppId={{A491CC28-F146-4D8B-A7AD-AB4B8E3CA922}
 AppName=Fuorigiri Performance Lab
@@ -16,7 +22,7 @@ WizardStyle=modern
 LicenseFile=..\..\LICENSE
 SetupIconFile=..\..\frontend\public\branding\fuorigiri.ico
 UninstallDisplayIcon={app}\Fuorigiri.exe
-OutputDir=..\..\dist\release
+OutputDir={#AppOutputDir}
 OutputBaseFilename=Fuorigiri-{#AppVersion}-windows-x64-setup
 Compression=lzma2/normal
 SolidCompression=yes
@@ -30,7 +36,7 @@ Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "..\..\dist\Fuorigiri\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#AppDistDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Tasks]
 Name: "desktopicon"; Description: "Crea un collegamento sul desktop"; Flags: unchecked

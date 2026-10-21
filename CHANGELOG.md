@@ -1,7 +1,31 @@
 # Changelog
 
-## 0.10.0 — 20 ottobre 2026 (sorgenti; distribuzione non pubblicata)
+## 0.10.0 — 20–21 ottobre 2026 (sorgenti; distribuzione non pubblicata)
 
+- 21 ottobre, PILOT-01: preparazione candidato locale Windows/Android 0.10.0 con ID separato, build Windows isolate e output Inno configurabile, packager con sorgenti/wheel/checksum; checklist di collaudo e istruzioni firma Android del titolare. Nessuna chiave generata o pubblicazione; APK release non firmato per scelta dell’utente.
+
+- 21 ottobre, correzione TD-106: nella testata Android logo alla destra della scritta, testo e marchio allineati a destra; hamburger invariato a sinistra. UI comune 0.2.8, senza modificare i bootstrap centrati o la sidebar desktop.
+
+- 21 ottobre, TD-106–107: logo applicativo a sinistra del nome anche all’avvio; grafico orizzontale immersivo senza intestazione o cornice, barre Android nascoste temporaneamente, X e comandi flottanti. Ripristino barre/orientamento e Back verificati su emulatore; UI comune 0.2.7 consegnata solo a Fuorigiri.
+
+- 21 ottobre, TD-105: Vista ampia Android apre il grafico in orizzontale e ripristina l’orientamento precedente alla chiusura, conservando il dettaglio test; dimensioni adattive alla rotazione, Back da Esplora separato dalla chiusura. APK aggiornato e prova reale su emulatore, screenshot orizzontale nella galleria.
+
+- 21 ottobre, TD-102–104: hamburger a sinistra e Back di sistema; spaziature Android compatte, contesto persistente, grafici con comandi sotto la figura e Scorri pagina predefinito. Un Back esce dall’esplorazione; cancel dei dialoghi annidati corretto nel common 0.2.6. Plotly differito, avvio con fasi/riprova, valori tabellari accessibili e paginati; API e risultati scientifici invariati.
+
+- 21 ottobre, completamento Android TD-99–101: ritorno tra sezioni/profili/elenchi con pagina e filtri conservati, ultima società persistente dopo chiusura, schede paginate e filtri richiudibili, moduli con azioni sticky e campi facoltativi raggruppati. Componenti comuni consegnati come UI 0.2.4, guida delle best practice per le app future nella repository comune; nessun aggiornamento implicito di Ammiraglia o pubblicazione.
+
+- Android: società, sezioni e lingua nel menu hamburger; nuova vista Info per versione, stato offline, logo/attribuzione fissi e licenza. Indietro chiude prima i dialoghi. APK debug aggiornato e verificato visivamente su emulatore, galleria con screenshot reali; navigazione desktop conservata.
+
+- Corretto il primo avvio Android: wheel cryptography ABI3 con dipendenza libpython esplicita, strumento di repair con originali/hash tracciati e RECORD valido; Gradle rileva cambi delle wheel locali. Insets WebView e messaggio di errore corretti. APK installato/avviato su emulatore x86_64 e test nativo import, cifratura/firma, API e Keystore passato; telefono e collaudo completo ancora aperti.
+
+- Primo APK debug locale Android prodotto su Windows: dipendenze risolte per entrambe le ABI, sei wheel trasferite e digest verificati. Pacchetto di circa 96 MiB con frontend incluso; installazione e avvio su dispositivo ancora da collaudare, nessuna release pubblicata.
+
+- Guida consolidata per ricostruire le sei wheel Android su Fedora Kinoite/Toolbox: toolchain, ambiente di sessione, OpenSSL/libffi, hook riusciti, checksum e trasferimento Windows. Guide Android e indice riallineati; cronologia dei tentativi mantenuta nel registro verifiche. Nessuna nuova build eseguita da questa documentazione.
+
+- Aggiornamento Android: sei wheel native costruite sul builder utente; digest attesi registrati, gate esteso a CFFI e dipendenza Android fissata a 2.0.0. Trasferimento e integrità locale ancora da verificare, nessun APK collaudato.
+
+- Primo risultato del builder Android Fedora Kinoite/Toolbox: dal log dell’utente, pydantic_core 2.41.4 cp313 Android x86_64 compilato e riparato con auditwheel. Procedura documentata; wheel ancora da trasferire e provare nell’app, ARM64/cryptography aperti, nessun APK prodotto.
+- Ripresa richiesta della preparazione Android Studio: documentati flusso Windows/telefono, SDK/Gradle e blocco reale delle wheel native; quattro test del bridge passati su Windows. Nessun APK compilato o dispositivo collaudato.
 - README con sette screenshot reali dell’interfaccia: atleti, protocolli, incrementale, Wingate, storici, crescita/maturazione e report. Solo dati sintetici; immagini versionate e procedura di manutenzione legata alle modifiche UI, senza nuovi artefatti applicativi.
 - Riallineate le versioni Python, API, frontend/lockfile, Android (`versionCode` 1000), installer Windows e metadati Linux. Versione UI e nomi APK derivati dai metadati, con controllo di coerenza prima delle build.
 - Le modifiche successive alla 0.8 sono raccolte qui; i titoli dei commit V0.9/V0.10 non avevano aggiornato la versione del programma. Nessuna release 0.9.0 dichiarata retroattivamente, nessun tag o installer creato da questo riallineamento.

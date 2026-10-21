@@ -1,5 +1,53 @@
 # Requisiti e to-do
 
+## PILOT-01 — candidato e accettazione Windows/Android, 21 ottobre 2026
+
+Richiesta: preparare un candidato e una checklist Markdown con completamenti. Versione prodotto conservata 0.10.0, ID candidato separato. Build isolate, Windows dipendenze incluse/installer/portabile; Android release non firmato su scelta esplicita del titolare, con procedura per chiave stabile e firma. Sorgenti/wheel/provenienza e checksum a corredo, nessuna pubblicazione. Criteri: regressione locale, smoke congelato, integrità pacchetti e checklist tracciata; PC pulito, firma, telefono, provider reali e validazione esterna restano gate distinti prima della promozione. [Collaudo](COLLAUDO_PILOT.md), [firma](FIRMA_ANDROID.md).
+
+## TD-106–107 — marchio e grafico immersivo Android, 21 ottobre 2026
+
+- **TD-106 — implementato, corretto su indicazione dell’utente:** nella testata Android scritta Fuorigiri/Performance Lab allineata a destra, seguita dal logo alla sua destra; intero gruppo sul bordo destro, hamburger a sinistra. Variante comune brand-end dalla UI 0.2.8. Sostituisce la precedente indicazione “logo a sinistra” nella testata; bootstrap centrati e sidebar desktop conservano la propria composizione. Il logo societario resta distinto e fisso.
+- **TD-107 — implementato e verificato su emulatore:** Vista ampia orizzontale usa l’intera WebView, senza cornice o intestazione visibile “Esplora grafico”. Titolo accessibile conservato; X flottante e pannello Comandi grafico richiamabile, chiuso di default. Grafico alto quanto il viewport; comandi/dati non sottraggono una fascia permanente. Barre Android temporaneamente nascoste, richiamabili con swipe di sistema; ripristino della visibilità/politica precedente alla chiusura insieme all’orientamento. Back esce prima dall’esplorazione, poi chiude il pannello aperto, poi la vista. I comandi restano sotto il grafico nella vista normale. Cutout/insets di sicurezza rispettati; telefono/TalkBack/tablet da qualificare.
+
+## TD-105 — Vista ampia orizzontale Android, 21 ottobre 2026
+
+**Implementato e verificato su emulatore:** Vista ampia richiede temporaneamente sensorLandscape tramite bridge nativo di origine fidata; memorizza la precedente politica di orientamento e la ripristina alla chiusura, allo smontaggio della vista o al reload della WebView. La rotazione non ricarica il test e il grafico adatta altezza/larghezza al viewport. Scorri pagina rimane il default; un Back esce da Esplora/Zoom restando in orizzontale, il successivo chiude la vista e ripristina l’orientamento. Nessuna modifica all’orientamento globale delle altre schermate. Telefono e finestre/tablet rimangono da qualificare.
+
+## TD-102–104 — grafici touch, avvio e contesto Android, 21 ottobre 2026
+
+- **TD-102 — implementato, collaudo emulatore:** hamburger sempre a sinistra, nessuna freccia Indietro duplicata nella testata; ritorno tramite tasto/gesture di sistema. Padding e margini Android moderatamente ridotti, senza ridurre i controlli sotto 48 CSS px. Grafici in Scorri pagina per default, anche nella vista ampia: comandi Esplora, Zoom, Ripristina e Vista ampia sotto la figura. Un solo Indietro esce da Esplora/Zoom, mantenendo aperto il dettaglio; successivamente chiude l’ultimo dialogo e poi segue la cronologia. Dialoghi annidati isolano cancel. Zoom/pan riservano le gesture al grafico soltanto dopo attivazione esplicita; nessuna modifica ai campioni/calcoli.
+- **TD-103 — implementato:** apertura nativa con indicatore indeterminato e fase reale; caricamento interfaccia/archivio distinto, stato leggibile e Riprova in caso di errore, senza suggerire reset. Plotly in chunk locale differito e caricato quando un grafico raggiunge il viewport; nessun download Internet necessario. Non equivale a runtime Python istantaneo né a riduzione del peso complessivo dell’APK.
+- **TD-104 — implementato, accessibilità completa da qualificare:** testata Android persistente con società/sezione e operatore/ruolo, contesto atleta/data nel dettaglio; focus sul titolo al cambio pagina, lingua documento IT/EN, controlli grafici con stato premuto leggibile e movimento ridotto nel common. Alternativa tabellare ai grafici con serie/unità, min/max/conteggio dei valori numerici, mancanti distinti da zero e 30 righe per pagina. Coordinate di serie diverse non vengono equiparate. Telefono, TalkBack, testo di sistema ingrandito e ulteriori configurazioni rimangono gate distinti dalle prove DOM/emulatore.
+
+**Riutilizzo:** UI comune 0.2.6, ChartFrame e LoadingState; logica scientifica, scelta dei modi touch, caricamento Plotly, route e contenuti rimangono di Fuorigiri. Nessun aggiornamento automatico di Ammiraglia. Prove effettive in VERIFICA.md; guida suite aggiornata nello stesso intervento.
+
+
+## TD-99–101 — ergonomia Android e pratiche suite, 20 ottobre 2026
+
+- **TD-99 — implementato:** Indietro chiude prima menu/dialoghi con conferma delle modifiche; altrimenti torna tra sezione/profilo/elenco, con pagina, filtri e scroll conservati nella sessione. Solo la radice consente uscita. Cronologia limitata e azzerata al cambio archivio. Atleti/test Android in schede da 20 record, ricerca e filtri richiudibili, ritorno alla prima pagina dopo un filtro; niente tabelle orizzontali per questi due elenchi. Moduli principali (atleta/gruppo, misura, protocolli, manuale/incrementale/anaerobico/custom/revisione storica) con FormActions comuni; azioni originali e validazioni preservate, campi numerici non negativi con tastiera appropriata, tempi manuali con TimeInput, riferimenti/recupero facoltativi richiudibili. Riepilogo società e guida test richiudibili su Android. Tabelle desktop e viste analitiche restano distinte.
+- **TD-100 — implementato:** all’avvio Android si ricorda l’ultima coppia archivio/società mediante preferenza locale persistente. Non memorizza dati sportivi o credenziali. Ogni apertura riconcilia l’ID con l’inventario; un archivio sparito porta alla selezione, senza aprire un’altra società. Test per morte sessione/preferenze malformate/risposte obsolete, prova di force-stop sull’emulatore.
+- **TD-101 — documentato e adottato dove indicato:** guida canonica delle best practice Android in cycling-suite-common/docs/ANDROID_BEST_PRACTICES.md; fonte unica dei componenti RecordCards, CollapsibleFilters e FormActions nella UI comune 0.2.4. Consegna versionata locale a Fuorigiri, senza aggiornamento implicito delle altre app o pubblicazione. Adozioni/verifiche specifiche nel registro Fuorigiri; telefono, TalkBack e IME completo sono gate separati.
+
+Criteri: elenco filtrato/pagina conservati tornando dal profilo; dettaglio test si chiude sull’elenco; bozza sporca protetta; selezione riaperta dopo arresto; nessun fallback su società diversa se rimossa. Le prove effettive e le limitazioni sono in VERIFICA.md.
+
+## TD-98 — navigazione Android compatta, 20 ottobre 2026
+
+**Richiesta:** Gestisci società, sezioni e lingua nel menu hamburger; informazioni del footer in una sezione Info.
+
+**Implementato:** su Android testata con pulsante Apri menu e identità prodotto. Il menu raccoglie selezione società/Gestisci società, Atleti, Test e analisi, Protocolli, Società e gruppi, Storici e confronti, Archivio e scambio, Info e lingua. Info è raggiungibile anche senza società e contiene versione, stato locale/offline, logo/attribuzione fissi e licenza/limiti. Questi contenuti non sono ripetuti nel footer delle altre pagine Android. Navigazione desktop e componenti comuni conservati: menu di prodotto composto con Dialog e controlli della suite, nessuna copia dei suoi stili o nuova dipendenza dalla repository sorella.
+
+**Accettazione verificata su emulatore API 35 x86_64:** apertura menu, Indietro chiude senza uscire dall’app, scelta Info chiude il menu, Gestisci società apre un solo dialogo, licenza raggiungibile, etichette IT/EN e lingua ripristinata. Screenshot reali nella galleria. Telefono e prove tattili/accessibilità complete rimangono distinti.
+
+## Avanzamento Android — 20 ottobre 2026
+
+**Ultimo esito:** corretto collegamento ABI3 delle wheel cryptography, APK installato e avviato su emulatore API 35 x86_64, test nativo import/cifratura/firma/API/Keystore passato. Corrette sovrapposizioni con barre Android e invalidazione cache wheel Gradle. TD-57 resta aperto per telefono ARM64, report/import/test completi, cloud e accettazione. Le note successive conservano gli stati precedenti.
+
+**Aggiornamento:** trasferimento e hash delle sei wheel verificati localmente, dipendenze Chaquopy risolte per entrambe le ABI, APK debug prodotto su Windows. TD-57 ancora aperto: emulatore non rilevato all’ultimo controllo ADB, installazione/import nativi e flussi applicativi da collaudare. I paragrafi successivi descrivono il gate precedente.
+
+Procedura ripetibile documentata in [ANDROID_WHEEL_FEDORA.md](ANDROID_WHEEL_FEDORA.md); versioni degli strumenti host non completamente registrate nel log, quindi nessuna garanzia di identità binaria.
+
+TD-57 resta aperto: builder Fedora autorizzato per wheel Android, sei artefatti prodotti e digest ricevuti. Gate di packaging esteso a CFFI 2.0.0, oltre a pydantic-core/cryptography. Accettazione residua: trasferimento e hash locali, risoluzione dipendenze Chaquopy, APK, import nativi e collaudo prima su emulatore poi telefono. Il packaging applicativo Linux resta rinviato.
+
 ## Versionamento prodotto — 20 ottobre 2026
 
 - **REL-VERSION-01 — implementato:** versione sorgenti 0.10.0 coerente fra backend/API, UI e lockfile, Android (`versionCode` 1000), installer Windows e AppStream Linux. `scripts/verify_versions.py` blocca build/release incoerenti; UI, header HTTP e nomi APK derivano dalle rispettive fonti correnti. Versioni di motori, renderer, protocolli e formati dati rimangono indipendenti. Nessuna pubblicazione o ricompilazione di installer implicita.

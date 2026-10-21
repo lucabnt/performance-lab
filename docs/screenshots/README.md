@@ -37,3 +37,28 @@ Usare una normale finestra desktop e zoom browser al 100%, inquadrature comparab
 - Registrare l’aggiornamento nel changelog e le verifiche effettive in VERIFICA.md. Il rinnovo è una verifica redazionale **manuale**, non un job automatico né una prova funzionale completa.
 
 Non includere backup o archivi di generazione nella repository. Terminato il lavoro chiudere il browser QA e arrestare il server locale con Ctrl+C.
+
+
+## Android: navigazione, elenchi e moduli — 21 ottobre 2026
+
+`android-menu.png`, `android-info.png`, `android-atleti.png`, `android-modulo.png` e `android-grafico.png` e `android-grafico.png` documentano l’APK debug reale su emulatore API 35 x86_64: Fuorigiri 0.10.0, UI comune 0.2.6, HEAD `d67afad` più modifiche locali TD-98–104. Catture PNG integrali 1080 × 2424, senza ritocchi. Società sintetica Velodromo Aurora - SIMULAZIONE ripristinata come copia QA indipendente; nessun account cloud o dato personale. Le immagini desktop sopra conservano provenienza distinta. Non rappresentano il collaudo su telefono.
+
+- `android-menu.png`: Apri menu; società, sezioni, Info e lingua.
+- `android-info.png`: sezione Info con versione, stato locale/offline, logo e attribuzione fissi, licenza.
+- `android-atleti.png`: elenco atleti, riepilogo e filtri chiusi, schede e comandi touch.
+- `android-modulo.png`: Aggiungi atleta, modulo vuoto senza salvataggio; checkbox allineata e azione Salva persistente. Chiudere senza creare record.
+- `android-grafico.png`: Test e analisi → dati Con tracciato → primo Riva Giulia, 01/10/2026, Discontinuo descrittiva DEMO. Scorrere alla figura completa e comandi sottostanti; Scorri pagina attivo, nessun tooltip. Potenza/FC/cadenza selezionate.
+
+Ripetere le catture interessate dopo modifiche Android. Verificare anche Indietro, mantenimento di filtri/pagina, conferma delle modifiche non salvate e riapertura della società. Non sostituire le immagini desktop con quelle Android.
+
+### Aggiornamento TD-105, 21 ottobre 2026
+
+`android-grafico-orizzontale.png`: nuova cattura reale della Vista ampia sull’emulatore API 35 x86_64, APK TD-105 (UI comune invariata 0.2.6), 2424×1080. Stesso test sintetico Riva Giulia 01/10/2026 indicato sopra, Scorri pagina attivo e motore grafico pronto. Aprire Vista ampia e attendere rotazione/resize prima della cattura. Immagine integrale senza ritocchi; non rappresenta un telefono fisico. Le altre catture conservano la provenienza TD-102–104.
+
+### Aggiornamento TD-106–107, 21 ottobre 2026
+
+Sostituiti `android-grafico-orizzontale.png` e `android-atleti.png` con catture integrali reali dell’APK TD-106–107, UI comune 0.2.7, stessa società sintetica e stesso emulatore. Vista ampia ora immersiva, priva della testata visiva, con X e pannello Comandi grafico chiuso; barre Android nascoste, cutout rispettato. Dismiss dell’istruzione fullscreen del sistema prima della foto; nessun ritocco delle immagini. Le altre catture mantengono la provenienza precedente.
+
+### Correzione logo a destra, 21 ottobre 2026
+
+Rinnovati android-atleti.png, android-menu.png e android-info.png: APK con common UI 0.2.8, logo dopo la scritta e allineamento a destra nella testata. Stesso emulatore/società sintetica, foto integrali ispezionate. Le catture dei grafici mantengono la propria provenienza.

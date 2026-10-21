@@ -10,3 +10,4 @@ numpy==1.26.2
 matplotlib==3.8.4
 reportlab==4.4.4
 cryptography==50.0.2
+cffi==2.0.0

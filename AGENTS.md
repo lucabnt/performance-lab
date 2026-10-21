@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **20 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **21 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -8,7 +8,15 @@ Ultima revisione: **20 ottobre 2026**. Ambito: tutta questa repository, salvo is
 - Nome prodotto: **Fuorigiri Performance Lab**; eseguibile Windows `Fuorigiri.exe`. Non reintrodurre i nomi precedenti, salvo compatibilità documentata per archivi esistenti.
 - Software open source **GPL-3.0-or-later**, offline first, per test e storico degli atleti nel ciclismo. Interfaccia comprensibile a operatori non tecnici.
 - Stack: Python/FastAPI, SQLite e oggetti locali; React/TypeScript/Vite e Plotly; desktop PySide6/Qt WebEngine.
-- Android: sorgenti Kotlin/WebView con Python incorporato tramite Chaquopy, API in-process e servizi nativi. Non descriverlo come app esclusivamente Python o come APK già disponibile.
+- Android: sorgenti Kotlin/WebView con Python incorporato tramite Chaquopy, API in-process e servizi nativi. Non descriverlo come app esclusivamente Python; distinguere APK debug generato, collaudo runtime e distribuzione pubblica.
+- Procedura del builder Fedora Kinoite/Toolbox: [ANDROID_WHEEL_FEDORA.md](docs/ANDROID_WHEEL_FEDORA.md). Ripristinare sempre l’ambiente rustup separato; non usare le librerie host come target.
+- Wheel cryptography ABI3: i primi binari Fedora mancavano di DT_NEEDED libpython3.so. Riparazione esplicita con scripts/repair_android_abi3.py, originali conservati e provenienza in android/wheels/ABI3_REPAIR.json; non modificare hash senza verifica. Gradle deve tracciare i file wheel come input.
+- Android TD-99–101: Indietro usa dialog cancel e poi cronologia di schermate limitata, svuotata al cambio archivio. Ultima coppia workspace/società persistente di soli ID, verificata contro inventario; non aprire un’altra società se manca quella ricordata. Componenti mobili nel common e guida in [ANDROID_PRATICHE_SUITE.md](docs/ANDROID_PRATICHE_SUITE.md); mantenere stato di filtri e paginazione quando si torna da un profilo. Componenti mobili disponibili dalla UI comune 0.2.4; elenco e modulo Android nella galleria hanno provenienza distinta dalle schermate desktop.
+- Android TD-106–107: testata Android con scritta allineata a destra e logo alla destra del nome (correzione esplicita dell’utente, UI comune 0.2.8); fullscreen grafico senza testata/cornice, X flottante e pannello comandi/dati chiuso inizialmente (common UI 0.2.7). Conservare nome accessibile e ripristino delle barre native oltre all’orientamento; Back esce dal modo, poi chiude pannello e vista.
+- Android TD-105: Vista ampia richiede landscape temporaneo via bridge nativo; rilascio/ripristino dell’orientamento precedente alla chiusura, smontaggio o reload. Conservare il test durante la rotazione e adattare le dimensioni della figura; non usare trasformazioni CSS o blocco globale.
+- Android TD-102–104: solo hamburger a sinistra; Back di sistema esce prima da Esplora/Zoom, poi chiude l’ultimo dialogo, infine segue la cronologia. Scorri pagina predefinito, comandi sotto il grafico e alternativa tabellare paginata. Plotly differito al viewport: non reintrodurlo nell’import iniziale. Superfici/stili e cancel annidati dal common UI 0.2.6; non duplicarli nei prodotti. Distinguere alleggerimento JavaScript da tempo d’avvio Python misurato.
+- UI Android TD-98: menu hamburger composto con Dialog comune per società, sezioni e lingua; versione, logo/attribuzione e testi legali nella vista Info anche senza società. Non ripristinare il footer ripetuto sulle altre pagine Android. Desktop conserva navigazione e footer propri; screenshot Android in docs/screenshots/.
+- Gate native Android: `scripts/build_android.py` richiede pydantic-core, cryptography e CFFI per entrambe le ABI, con digest in `android/wheels/SHA256.json`. Gli hash comunicati dal builder non provano il trasferimento o il caricamento nell’app; conservare queste verifiche separate.
 - Le app della suite, inclusa Ammiraglia, mantengono repository, build e dati separati. Componenti comuni nella repository autonoma `cycling-suite-common`; integrazione tramite pacchetti versionati, senza dipendere da una cartella sorella durante la build. Consultare [SUITE_CONDIVISA.md](docs/SUITE_CONDIVISA.md).
 - Branding fisso: logo della società originale e testo **«Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.»**. Non renderli personalizzabili per società. L'icona applicativa Fuorigiri è distinta dal logo societario.
 
@@ -110,8 +118,9 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 ## Distribuzione e accettazione
 
 - Il programma finale deve funzionare senza installare Python/Node/Qt a mano. Usare gli script di packaging e verificare che frontend, risorse e dipendenze siano inclusi; non consegnare il solo EXE se richiede il resto del bundle.
-- Stato concordato: **Windows e sorgenti; build Linux/Fedora e Android rimandate dall'utente**. Non avviare build remote o dichiarare APK/Flatpak collaudati senza nuova richiesta e ambiente adeguato.
+- Stato concordato: **Windows e sorgenti; build Linux/Fedora rimandate**. Il 20 ottobre l’utente ha riaperto il collaudo Android con Android Studio: preparazione e verifiche locali autorizzate, con ricetta toolchain/wheel documentata e primi collaudi su emulatore nel registro verifiche; telefono e qualifica completa rimangono distinti. Nessuna build remota implicita né APK/Flatpak dichiarato collaudato senza ambiente e prove adeguate.
 - OAuth/provider reali, collaborazione con due account, Windows pulito e dispositivi reali sono gate distinti dai test simulati. Dichiarare esplicitamente quali sono stati eseguiti.
+- Candidato pilot Windows/Android autorizzato il 21 ottobre: versione prodotto 0.10.0 con identificativo candidato separato, build in directory nuove; checklist in docs/COLLAUDO_PILOT.md e firma in docs/FIRMA_ANDROID.md. L’utente ha richiesto APK release non firmato: nessuna chiave generata; firma del titolare prima di installazione operativa. build.py --output-root e package_candidate.py rifiutano destinazioni già presenti; non sovrascrivere vecchie consegne.
 - Non pubblicare release, installatori, pacchetti comuni o modifiche alla repository sorella come effetto implicito di una modifica locale.
 
 ## Mantenere aggiornato questo file

@@ -490,3 +490,50 @@ Misura in sola lettura di una società, senza chiavi o contatti cloud:
 ```
 
 Sostituire l'identificatore con quello della propria cartella società: cambia rigenerando la demo. Non usare la cartella contenitore di più società. La stima v1 richiede gli oggetti disponibili ed esclude versioni del provider e vecchi canali. [Misure e limiti](SYNC_DIMENSIONI_E_SCALABILITA.md). L'installer precedente non acquisisce automaticamente le modifiche ai sorgenti.
+
+
+## Collaudo del menu Android — TD-98
+
+Dopo aver compilato il frontend e ricostruito/installato l’APK secondo [la guida Android](ANDROID.md), aprire l’app nell’emulatore. Non basta aggiornare il browser o il frontend dist per aggiornare l’APK già installato.
+
+1. Verificare testata compatta con pulsante Apri menu; società/sezioni/lingua non occupano più la pagina chiusa. Il primo avvio senza società continua a proporre la creazione o il collegamento come contenuto iniziale.
+2. Aprire il menu: controllare selezione società, Gestisci società, tutte le sezioni, Info e lingua. Indietro deve chiudere il menu lasciando l’app aperta; riaprire e verificare il pulsante Chiudi finestra.
+3. Da Gestisci società aprire il gestore: deve esserci un solo dialogo, senza menu ancora sotto. Chiudere senza creare o cambiare dati operativi.
+4. Aprire Info anche senza società: versione, stato locale/offline, logo societario, attribuzione e licenza/limiti presenti. Sulle altre pagine Android nessun footer con questi elementi.
+5. Aprire licenza/limiti da Info e chiudere con Indietro. Verificare lingua EN nel menu (Open menu/About), quindi ripristinare la lingua iniziale.
+6. Su desktop verificare che sidebar, lingua nella testata e footer siano rimasti. Il layout Android dipende dal bridge nativo, non dalla sola dimensione del browser.
+
+Catture attuali e provenienza in [screenshots/README.md](screenshots/README.md). Non usare credenziali o archivi reali per i fotogrammi.
+
+
+## Collaudo Indietro, schede, moduli e riapertura — TD-99–101
+
+Usare una società sintetica ripristinata come **Nuova copia indipendente**, mai un archivio operativo. Il backup completo di Velodromo Aurora include 22 profili e 150 test (gli elenchi operativi escludono gli eliminati e possono mostrarne meno). Nell’emulatore QA è stata creata una copia con fondatore QA Android, senza alterare le demo desktop.
+
+1. In Atleti aprire Riepilogo società e Filtri atleti. Verificare ricerca, gruppo e stato; le schede mostrano anno, ultimo test e MAP solo quando disponibile. Massimo 20 schede per pagina.
+2. In Test e analisi cercare Wingate, andare alla seconda pagina e aprire un test. Indietro chiude il dettaglio mantenendo pagina/filtro. Dal dettaglio aprire il profilo atleta e usare Indietro: tornare al medesimo elenco filtrato/pagina. Cambiare filtro riparte dalla prima pagina.
+3. Aprire Nuovo atleta senza salvare; verificare campi e azione Salva raggiungibile. Modificare un campo, usare Indietro e provare Continua a modificare/Scarta e chiudi. Non deve sparire la bozza senza conferma. Non chiudere durante un salvataggio in corso.
+4. Aprire una nuova prova manuale: campi essenziali davanti, altri risultati e recupero richiudibili, tempi con TimeInput in mm:ss/secondi e payload in secondi. Non salvare soltanto per provare il layout; fare vere prove di creazione solo nella copia QA.
+5. Aprire una misura e una prova anaerobica/custom per verificare barra delle azioni, tastiere numeriche, validazioni e protezione della bozza. Controllare telefono verticale/orizzontale, tastiera estesa e TalkBack sul dispositivo reale: la prova con tastiera flottante dell’emulatore non li sostituisce.
+6. Selezionare la società QA, arrestare completamente il processo (adb shell am force-stop org.fuorigiri.performancelab), riaprire dall’icona/Android Studio: stessa società e dati. Il numero della società non va confuso con l’operatore. Cancellare dati dell’app non è equivalente a chiuderla e cancella anche la preferenza.
+7. Per l’ID ricordato non più presente usare un test di modello o un archivio QA dedicato; mai cancellare una società operativa. L’app deve mostrare la selezione esplicita, senza entrare in un’altra società.
+
+Le pratiche riutilizzabili sono in [ANDROID_PRATICHE_SUITE.md](ANDROID_PRATICHE_SUITE.md), che rimanda al documento canonico del common. Le schede di telefono non cambiano la confrontabilità dei dati o i calcoli.
+
+## Grafici touch, avvio e contesto Android — TD-102–104
+
+1. Arrestare e riaprire l’app senza cancellarne i dati. Osservare fase nativa e lettura dell’archivio; controllare l’ultima società, hamburger a sinistra, contesto e ruolo. Nell’elenco senza figure Plotly non deve comparire tra le risorse caricate della WebView.
+2. Aprire un test con tracciato: Scorri pagina deve essere selezionato. Trascinare sul grafico: scorre il dialogo, nessuno zoom involontario. I comandi sono sotto la figura. Attivare Esplora o Zoom e provare trascinamento/tocco; ripristinare la vista. Indietro deve tornare a Scorri pagina senza chiudere il test.
+3. Aprire Vista ampia: parte in Scorri pagina. Indietro chiude solo la vista ampia; se è attivo Esplora/Zoom, la prima pressione disattiva il modo. Il test sottostante rimane aperto. Controllare che bozza e filtri non siano persi.
+4. Aprire Valori e riepilogo del grafico: min/max/conteggi e dati originali, unità e — leggibili, massimo 30 righe per pagina. Verificare anche zero e assenze, senza equivalenza automatica di ascisse tra serie.
+5. Provare lingua EN, focus e testo ingrandito. Verificare su telefono TalkBack, contrasto, gesture e tastiera: il solo emulatore non certifica questi comportamenti. Provare anche avvio senza Internet; per un errore controllato usare una copia QA, senza corrompere l’archivio abituale. Riprova deve mantenere i dati e non proporre reset.
+
+Il chunk grafico differito riduce il JavaScript iniziale; l’APK contiene comunque Plotly. Misurare separatamente tempo del runtime Python, prima pagina utilizzabile e prima figura. L’indicatore è indeterminato perché non esiste una percentuale affidabile del lavoro completato.
+
+### Vista ampia orizzontale — TD-105
+
+Da telefono/emulatore verticale aprire un test con tracciato e Vista ampia: deve passare in orizzontale senza ricaricare la pagina o perdere il test. Attendere il ridimensionamento della figura. Attivare Esplora: il primo Back torna a Scorri pagina restando orizzontale, il successivo chiude la vista e ripristina l’orientamento precedente. Ripetere con X, verificare il test sottostante e provare anche partenza già orizzontale/autorotazione abilitata. Reload della WebView deve rilasciare la richiesta temporanea. Tablet/multiwindow e politiche di orientamento del sistema richiedono prove dedicate.
+
+### Fullscreen e marchio — TD-106–107
+
+Verificare logo Fuorigiri a sinistra del nome, senza wrap né schiacciamento, anche nei bootstrap. In Vista ampia devono sparire cornice, intestazione visiva e barre Android: rimangono figura, X flottante e Comandi grafico. Chiudere l’eventuale guida fullscreen del sistema prima delle foto. Aprire il pannello, provare dati e modi touch; Back esce dal modo prima di chiudere pannello/vista. Uscire con X e Back, verificando barre e orientamento precedenti ripristinati e test aperto. Provare swipe dal bordo per barre transitorie, lettore schermo e configurazioni diverse su dispositivo reale.

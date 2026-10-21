@@ -618,3 +618,50 @@ Implementati blocchi cifrati HMAC per canale, pagine leggere con eventi original
 ## UI comune — decisione corrente del 20 ottobre 2026
 
 La UI 0.2.2 di cycling-suite-common è la fonte unica per shell/controlli, liste/tabelle/riepiloghi, finestre e tempi oltre ai componenti già estratti. Entrambe le applicazioni dipendono dallo stesso tarball versionato; i moduli locali sono adattatori e i fogli locali contengono le pagine specifiche. Aggiornamento esplicito, controllo di versione/impronta sorgenti e build autonome; nessuna dipendenza fra le due applicazioni o condivisione dei loro archivi. Vedere docs/SUITE_CONDIVISA.md.
+
+
+## Android: collegamento nativo e avvio — 20 ottobre 2026
+
+Le estensioni Android devono dichiarare esplicitamente la dipendenza dal runtime Python. Le wheel cryptography ABI3 originali mancavano di DT_NEEDED libpython3.so: la riparazione di packaging è esplicita, conserva codice .text/ABI, rigenera RECORD e registra provenienza/hash. LIEF è soltanto un tool del builder, non una dipendenza dell’app. Non usare caricamento globale forzato o downgrade della crittografia come fallback. Gli input Gradle includono wheel e manifest per non distribuire copie in cache precedenti. [Procedura](docs/ANDROID_WHEEL_FEDORA.md).
+
+La shell nativa contiene WebView in un FrameLayout che applica gli insets di sistema/cutout/tastiera; non affidarsi al padding interno WebView per evitare sovrapposizioni. Anche gli stati di avvio/errore rispettano gli insets. Gli errori mostrano un codice stabile e conservano l’archivio; dettagli dell’inizializzazione soltanto nel Logcat debug. Avvio e test nativo verificati su emulatore x86_64, non equivalenti alla qualifica ARM64 o dell’intera app.
+
+
+## Navigazione Android compatta — TD-98, 20 ottobre 2026
+
+La shell Android mantiene soltanto identità prodotto e pulsante hamburger nella testata. Contenuti di navigazione, scelta/gestione società e lingua sono nel menu modale; selezione di una voce chiude il menu. Il tasto Indietro invia cancel al dialogo aperto, preservando anche le conferme sulle modifiche non salvate degli editor; chiude l’app solo senza dialoghi aperti. Info è una vista indipendente dalla società, con metadati prodotto, stato offline, logo/attribuzione fissi e accesso ai testi legali. Nessun footer informativo ripetuto sulle altre viste Android; la UI desktop resta con la navigazione e il footer consueti.
+
+Il menu usa Dialog della suite per focus, Esc/cancel, superficie e controlli. Le voci e la composizione rimangono di Fuorigiri come layout di prodotto; non si introduce un secondo drawer o CSS duplicato rispetto al common. Rilevamento Android tramite il bridge già installato, non tramite larghezza schermo: un browser desktop stretto non diventa automaticamente l’app Android.
+
+
+## Ergonomia Android e preferenza della società — 20 ottobre 2026
+
+La cronologia UI è limitata a 32 schermate e appartiene al prodotto: route, atleta selezionato, filtri/pagina e scroll; nessuna copia dei campioni o attraversamento di archivi diversi. Kotlin invia prima cancel all’ultimo dialogo, quindi usa il callback di navigazione React; solo la radice permette l’uscita. Gli editor bloccano chiusura durante operazioni in corso e mantengono conferma delle bozze modificate.
+
+La coppia archivio/società Android è una preferenza persistente di soli ID; sessionStorage da solo non sopravvive alla chiusura del processo. Le richieste mantengono lo specchio di sessione, ma il bootstrap risolve la preferenza contro l’inventario locale e i permessi. Un ID mancante non apre una società diversa. Nessun dato personale o segreto aggiunto alle preferenze.
+
+RecordCards, CollapsibleFilters e FormActions provengono dalla UI comune 0.2.4 (consegna locale a Fuorigiri). I due elenchi frequenti passano a schede paginate, con filtri espliciti. I moduli mantengono gli stessi pulsanti, payload e validazioni: la barra azioni è sticky nello scrollport, senza cloni di submit; campi secondari restano disponibili in sezioni richiudibili. Non è una riscrittura dei motori o una qualifica di tutte le tabelle analitiche mobili. [Pratiche canoniche della suite](docs/ANDROID_PRATICHE_SUITE.md).
+
+## Android: grafici e avvio progressivo — 21 ottobre 2026
+
+TD-102–104 sostituiscono la freccia visibile nella testata con il solo hamburger a sinistra. Back nativo gestisce nell’ordine modalità esplorazione del grafico attivo, ultimo dialogo (cancel isolato), cronologia di pagina, uscita alla radice. Il grafico parte in Scorri pagina, con comandi sotto la figura; solo Esplora/Zoom catturano le gesture. La vista ampia è un Dialog comune annidato, con ritorno al test senza perderlo. Ogni figura offre anche riepilogo e dati tabellari paginati, senza interpolare o assimilare coordinate/serie differenti.
+
+Plotly è importato dinamicamente in un chunk locale separato; IntersectionObserver avvia le figure visibili, mantenendo le richieste e gli asset all’interno dell’app. La schermata iniziale nativa distingue preparazione motore e apertura interfaccia; React distingue caricamento dati ed errore con riprova. Nessuna percentuale inventata né requisito di rete. La riduzione del JavaScript iniziale non certifica da sola un avvio complessivo più rapido: misurazione su telefono ancora necessaria.
+
+Common UI 0.2.6 possiede densità, superfici ChartFrame/LoadingState e semantica Dialog (cancel non si propaga al genitore, focus senza scroll). Il prodotto possiede motore grafico, scelte dei modi, dati/tabella scientifica, contesto e bridge Back. Testata persistente con società/sezione/ruolo, dialogo test con atleta/data/protocollo; bersagli touch conservati. Non duplicare questi stili nei prodotti gemelli. Fonti: [Plotly](https://plotly.com/javascript/configuration-options/), [accessibilità Android](https://developer.android.com/guide/topics/ui/accessibility/views/apps-views).
+
+### TD-105 — orientamento temporaneo della figura Android
+
+Vista ampia invia chartOrientation al bridge ristretto all’origine locale. MainActivity conserva requestedOrientation e richiede SENSOR_LANDSCAPE; al rilascio ripristina la politica precedente, anche in caso di reload. Il componente React rilascia la richiesta quando viene smontato. Manifest configChanges già evita la ricreazione per orientation/screenSize; la figura ascolta il viewport e mantiene le scale durante il ridimensionamento. Non ruotare con CSS né bloccare globalmente l’app in landscape. Su grandi schermi/multiwindow il sistema può ignorare richieste di orientamento: mantenere layout adattivo e qualificare questi casi separatamente. [Riferimento Android](https://developer.android.com/reference/android/content/pm/ActivityInfo).
+
+### TD-106–107 — identità orizzontale e figura immersiva
+
+UI comune 0.2.7: marchio con flex row/nowrap e icona non comprimibile; Dialog fullscreen con titolo solo accessibile e chiusura flottante, ChartFrame fullscreen e FloatingPanel generico per i comandi. Fuorigiri compone modi touch, riepilogo e dati nel pannello chiuso inizialmente. Il dialogo riempie il viewport senza padding/cornice e la figura segue l’altezza disponibile. Nella vista normale i comandi rimangono sotto la figura.
+
+La stessa richiesta chartOrientation gestisce landscape e immersione nativa: visibilità/behavior originali delle barre conservati, barre nascoste con riapparizione transitoria tramite swipe, ripristino su chiusura/smontaggio/reload. Cutout e IME conservano i propri insets. Back prioritario: modo esplorazione, pannello aperto, dialogo, cronologia. Non rendere invisibili nome accessibile, X o alternativa tabellare per eliminare la testata visuale. Logo applicativo a sinistra del nome anche nei bootstrap HTML e nativo.
+
+Correzione TD-106, 21 ottobre 2026: testata Android con nome/tagline allineati a destra, prima dell’icona che sta sul lato destro. Gruppo a destra e hamburger a sinistra. Variante brand-end nel common UI 0.2.8; sostituisce l’indicazione precedente sul lato dell’icona nella testata, senza cambiare bootstrap centrati o sidebar desktop.
+
+## Candidato pilot — 21 ottobre 2026
+
+Identificativo separato dalla versione 0.10.0, sorgenti congelati del working tree e manifest/hash per file; non cambiare versioni dei motori o schemi per il candidato. Build Windows isolate con output-root e definizioni Inno per bundle/output; AppId conservato. Packager dedicato rifiuta output esistente, controlla ZIP/ABI/wheel e raccoglie sorgenti/native wheel senza chiavi o dati locali. Android release non firmato su scelta utente: firma e custodia chiave del titolare, senza sostituzione con chiave debug. Candidato locale non equivale a release o qualifica di PC pulito/telefono/provider; checklist separa prove automatiche, collaudi e promozione.

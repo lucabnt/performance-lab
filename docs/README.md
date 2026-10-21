@@ -1,8 +1,11 @@
 # Documentazione di Fuorigiri Performance Lab
 
-Indice aggiornato al **20 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
+Indice aggiornato al **21 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
 
 ## Uso, avvio e distribuzione
+
+- [Collaudo candidato pilot](COLLAUDO_PILOT.md): operazioni, risultati attesi, check di completamento e verbale Windows/Android.
+- [Firma Android](FIRMA_ANDROID.md): creazione/custodia chiave a cura del titolare e firma/verifica della copia release.
 
 - [Testare il progetto e l’interfaccia](TESTARE_IL_PROGETTO.md): ambiente di sviluppo, desktop/browser, demo, reset e checklist.
 - [Dati sintetici](DATI_SINTETICI.md): composizione del corpus, scenari e risultati attesi.
@@ -28,7 +31,9 @@ Le specifiche conservano fonte, versione e limiti: una stima non diventa una mis
 - [Verifiche](VERIFICA.md): prove eseguite e limiti, in ordine cronologico inverso.
 - [Architettura generale](../ARCHITETTURA_PROPOSTA.md): decisioni di backend, UI, dati e distribuzione; documento evolutivo con sezioni datate.
 - [Dimensioni e scalabilità della sincronizzazione](SYNC_DIMENSIONI_E_SCALABILITA.md).
+- [Pratiche Android riutilizzabili nella suite](ANDROID_PRATICHE_SUITE.md): componenti comuni, navigazione/persistenza, elenchi/moduli e gate.
 - [Android](ANDROID.md): architettura e gate di build/dispositivo ancora aperti.
+- [Wheel Android su Fedora Kinoite](ANDROID_WHEEL_FEDORA.md): procedura consolidata Toolbox, dipendenze native, hook, checksum e trasferimento Windows.
 - [Suite condivisa con Ammiraglia](SUITE_CONDIVISA.md).
 - [Changelog](../CHANGELOG.md) e [istruzioni della repository](../AGENTS.md).
 

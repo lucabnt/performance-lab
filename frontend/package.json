@@ -10,7 +10,7 @@
     "test:signals": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
-    "@cycling-suite/ui": "file:vendor/cycling-suite-ui-0.2.2.tgz",
+    "@cycling-suite/ui": "file:vendor/cycling-suite-ui-0.2.8.tgz",
     "lucide-react": "^0.468.0",
     "plotly.js-dist-min": "^3.0.0",
     "react": "^19.0.0",

@@ -17,10 +17,13 @@ def read(raw):
     text = raw.decode('utf-8-sig')
     if not text.strip(): raise ValueError('CSV vuoto.')
     delimiter = ';' if text.splitlines()[0].count(';') > text.splitlines()[0].count(',') else ','
-    reader = csv.DictReader(io.StringIO(text), delimiter=delimiter)
-    if not reader.fieldnames or len(reader.fieldnames)!=len(set(reader.fieldnames)):
-        raise ValueError('Intestazioni CSV mancanti o duplicate.')
-    rows=list(reader)
+    reader = csv.DictReader(io.StringIO(text), delimiter=delimiter, strict=True)
+    try:
+        if not reader.fieldnames or len(reader.fieldnames)!=len(set(reader.fieldnames)):
+            raise ValueError('Intestazioni CSV mancanti o duplicate.')
+        rows=list(reader)
+    except csv.Error:
+        raise ValueError('CSV non valido: controllare virgolette e dimensione dei campi.') from None
     if any(None in row or any(v is None for v in row.values()) for row in rows):
         raise ValueError('Numero di colonne incoerente: controllare delimitatori e virgolette.')
     return rows

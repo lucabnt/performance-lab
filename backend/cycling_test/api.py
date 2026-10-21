@@ -205,7 +205,8 @@ def create_app(root=None, token=None, frontend=None):
         if request.url.hostname not in ("127.0.0.1", "localhost", "testserver"):
             return JSONResponse({"detail":"Host non consentito"},status_code=403)
         if request.url.path.startswith("/api/"):
-            if not secrets.compare_digest(request.headers.get("X-Fuorigiri-Token", ""), token):
+            supplied = request.headers.get("X-Fuorigiri-Token", "")
+            if not supplied.isascii() or not secrets.compare_digest(supplied, token):
                 return JSONResponse({"detail":"Sessione non autorizzata. Riaprire l'app."},status_code=401)
         try:
             selected=workspaces.get(request.headers.get('X-Fuorigiri-Workspace',''))

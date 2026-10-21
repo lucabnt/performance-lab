@@ -1,5 +1,21 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## Aggiornamento candidato pilot-20261021-02 — 21 ottobre 2026
+
+Anche lo ZIP portabile finale è stato estratto in una nuova cartella QA: smoke dell'EXE estratto riuscito, PATH limitato a Windows e archivio di prova separato.
+
+Consegna completata in `dist/candidates/Fuorigiri-0.10.0-pilot-20261021-02`: installer 196044889 byte, ZIP portabile 279666090 byte, APK unsigned 99396505 byte (SHA-256 `c512ac572ae5d67d6dc3008806425ac5f325c45cc8a4730887e6d500e00a27ff`). Verificati i 12 checksum finali e CRC degli ZIP; smoke dell'EXE compilato riuscito con PATH senza Python/Node. Installer creato da Inno Setup 6.7.3 senza installazione o firma Authenticode. Sorgenti e wheel incluse in archivi separati; vecchia consegna conservata.
+
+Ricompilati bundle Windows e APK release dai sorgenti corretti nella revisione odierna; versione prodotto 0.10.0/code 1000 invariata, candidato distinto. PyInstaller in `.local/candidate-windows-20261021-02`; Gradle 8.13 offline con JDK Temurin 21, `assembleRelease` e lintVital riusciti. Primo tentativo con JDK 25 di Android Studio fallito per incompatibilità del runtime, senza modifica al progetto. APK con arm64-v8a/x86_64, minSdk 26/target 35, non debuggable; zipalign 16 KB riuscito, apksigner conferma assenza di firma. Nessuna chiave generata, nessuna installazione Android o prova ARM64/pagine 16 KB runtime. Candidato precedente conservato; checklist corrente aggiornata al nuovo ID.
+
+## Revisione sorgenti e correzioni conservative — 21 ottobre 2026
+
+- Header token non ASCII rifiutati con 401; misure eliminate escluse anche dal CSV antropometrico principale; CSV malformati o con campi oltre limite rifiutati con 422, senza importazione parziale. Preservati CSV multilinea validi, virgolette raddoppiate, formati e metodi scientifici.
+- I tre nuovi test di regressione fallivano prima delle correzioni. Suite finale: **204 test Python superati, 1 saltato**, in 74,57 s. Dopo l'aggiunta dell'ulteriore asserzione sui CSV validi, i 6 test di `test_review_regressions.py` sono stati rieseguiti con successo. Baseline: 201 passati e 1 saltato.
+- **25 test frontend superati**, build TypeScript/Vite riuscita; `pip check`, verificatori versioni/UI/core e `git diff --check` riusciti. `npm audit --json` non segnala vulnerabilità note nei pacchetti npm. Non equivale a scansione CVE Python: `pip-audit` non disponibile nell'ambiente controllato.
+- Restano warning Starlette/httpx, ZIP duplicato intenzionale nel test di corruzione e dimensione del chunk Plotly già separato. Non modificata la UI, non ripetuto il collaudo grafico. Nessun installer/EXE/APK rigenerato o provider reale contattato.
+- Export CSV grezzo con rischio di interpretazione formule conservato per compatibilità: occorre una scelta distinta per l'export destinato ai fogli di calcolo. Analisi trasversale in `cycling-suite-common/docs/REVISIONE_APPLICAZIONI_2026-10-21.md`. I candidati compilati esistenti non includono queste correzioni.
+
 ## Preparazione candidato pilot — 21 ottobre 2026
 
 Candidato locale prodotto 0.10.0, ID pilot-20261021-01; nessuna pubblicazione. Regressione completa: **201 Python passati, 1 saltato**, due warning noti (Starlette/httpx e ZIP corrotto intenzionalmente duplicato). **25 test frontend passati**, build TypeScript/Vite e verificatori versioni/UI 0.2.8/core 0.1.2 riusciti. Sintassi dei due script Python di packaging e dei due blocchi PowerShell della guida firma verificata senza eseguire generazione chiavi.

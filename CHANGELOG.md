@@ -1,5 +1,7 @@
 # Changelog
 
+- 21 ottobre, revisione conservativa dei sorgenti: token HTTP non ASCII rifiutati senza errore interno; export antropometrico coerente con l'eliminazione delle misure; CSV malformati e campi oltre limite producono errori gestiti, mantenendo i CSV multilinea validi. Nessun cambiamento UI, schema o metodo scientifico; correzioni non ancora incluse nei candidati compilati. Prove in `docs/VERIFICA.md`.
+
 ## 0.10.0 — 20–21 ottobre 2026 (sorgenti; distribuzione non pubblicata)
 
 - 21 ottobre, PILOT-01: preparazione candidato locale Windows/Android 0.10.0 con ID separato, build Windows isolate e output Inno configurabile, packager con sorgenti/wheel/checksum; checklist di collaudo e istruzioni firma Android del titolare. Nessuna chiave generata o pubblicazione; APK release non firmato per scelta dell’utente.

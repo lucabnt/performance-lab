@@ -2,6 +2,48 @@ from cycling_test.history import paired_comparison,summarize
 from cycling_test.store import Store
 
 
+def test_non_ascii_session_token_is_rejected(tmp_path):
+    from fastapi.testclient import TestClient
+    from cycling_test.api import create_app
+    client = TestClient(create_app(tmp_path, token='test'))
+    assert client.get('/api/v1/state', headers={b'x-fuorigiri-token': b'\xff'}).status_code == 401
+
+
+def test_csv_parser_errors_are_validation_errors(tmp_path):
+    import csv
+    from cycling_test.csv_import import read
+    from fastapi.testclient import TestClient
+    from cycling_test.api import create_app
+    client = TestClient(create_app(tmp_path, token='test'))
+    client.headers['X-Fuorigiri-Token'] = 'test'
+    assert read(b'name,note\r\nQA,"first line\r\nsecond ""quoted"" line"\r\n')[0]['note'] == 'first line\r\nsecond "quoted" line'
+    org = client.post('/api/v1/organizations', json={'name': 'QA'}).json()
+    for raw in (b'atleta_id,cognome,nome\nx,Demo,"unfinished',
+                b'atleta_id,cognome,nome\nx,Demo,' + b'a' * (csv.field_size_limit() + 1)):
+        response = client.post('/api/v1/import/preview',
+                               data={'organization_id': org['id'], 'profile': 'atleti'},
+                               files={'file': ('bad.csv', raw)})
+        assert response.status_code == 422
+    assert client.get('/api/v1/state').json()['athlete'] == []
+
+
+def test_csv_export_excludes_deleted_measurements(tmp_path):
+    import csv
+    import io
+    import json
+    import zipfile
+    from cycling_test.reports import export_csv
+    s, org, athlete, _ = records(tmp_path)
+    for status, weight in [('active', 50), ('deleted', 60)]:
+        s.save('measurement', {'athlete_id': athlete['id'], 'date': '2026-01-01',
+                               'weight_kg': weight, 'status': status})
+    with zipfile.ZipFile(io.BytesIO(export_csv(s, org['id']))) as archive:
+        rows = list(csv.DictReader(io.StringIO(archive.read('antropometria.csv').decode())))
+        assert [row['peso_kg'] for row in rows] == ['50']
+        extended = json.loads(archive.read('extended/archive.json'))
+        assert len(extended['measurement']) == 1
+
+
 def records(tmp_path):
     s=Store(tmp_path)
     org=s.save('organization',{'name':'QA'})

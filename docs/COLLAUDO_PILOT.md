@@ -1,8 +1,8 @@
 # Collaudo del candidato pilot — Windows e Android
 
-Candidato **Fuorigiri 0.10.0 · pilot-20261021-01**. Preparato il **21 ottobre 2026**. Versione prodotto invariata; identificativo candidato e digest distinguono questa consegna dalle build precedenti. Non è una release pubblicata né un’accettazione per la produzione.
+Candidato **Fuorigiri 0.10.0 · pilot-20261021-02**. Preparato il **21 ottobre 2026**. Versione prodotto invariata; identificativo candidato e digest distinguono questa consegna dalle build precedenti. Non è una release pubblicata né un’accettazione per la produzione.
 
-La cartella di consegna è `dist/candidates/Fuorigiri-0.10.0-pilot-20261021-01/`; `candidate.json` identifica sorgenti, artefatti e limitazioni, `SHA256SUMS.txt` contiene i digest. Il sorgente congelato proviene dal working tree con modifiche locali: il commit base da solo non identifica tutti i byte. Non sostituire file dopo aver iniziato il collaudo; una correzione produce un nuovo candidato.
+La cartella di consegna è `dist/candidates/Fuorigiri-0.10.0-pilot-20261021-02/`; `candidate.json` identifica sorgenti, artefatti e limitazioni, `SHA256SUMS.txt` contiene i digest. Il sorgente congelato proviene dal working tree con modifiche locali: il commit base da solo non identifica tutti i byte. Non sostituire file dopo aver iniziato il collaudo; una correzione produce un nuovo candidato.
 
 **Come usare i check:** `[x]` soltanto con prova effettiva e riscontro annotato; `[ ]` significa ancora da eseguire. Non trasformare un test sintetico/emulatore in una prova di account reale o dispositivo fisico. Annotare data, operatore, dispositivo/OS, digest e risultato. Per un errore usare l’ID della prova e descrivere atteso/ottenuto; allegare solo log e immagini senza dati personali, credenziali o token.
 

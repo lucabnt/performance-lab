@@ -227,7 +227,7 @@ def export_csv(store, organization_id):
     for a in athletes:
         rows["atleti"].append({"atleta_id":a["id"],"cognome":a["surname"],"nome":a["name"],"anno_nascita":a.get("birth_year"),"anno_nascita_confermato":"si" if a.get("birth_confirmed") else "no","origine_anno_nascita":a.get("birth_source", ""),"sesso":a.get("sex", ""),"attivo":"si" if a.get("status","active")=="active" else "no","note":a.get("notes", "")})
     for m in store.list("measurement"):
-        if m["athlete_id"] in ids:
+        if m["athlete_id"] in ids and m.get('status') != 'deleted':
             rows["antropometria"].append({"atleta_id":m["athlete_id"],"data":m["date"],"peso_kg":m.get("weight_kg"),"statura_cm":m.get("height_cm"),"peso_fonte":m.get("source", ""),"origine":"inserimento manuale"})
     versions = [];anaerobic_rows=[];lactate_rows=[]
     for t in store.list("test"):

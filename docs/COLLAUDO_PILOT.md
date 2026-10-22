@@ -30,6 +30,10 @@ Consegna `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-04/`, successiva al ca
 
 Nessuna riscrittura automatica delle rilevazioni già importate con la vecchia versione; conservare gli originali e usare correzioni motivate se necessario. Windows e Android restano 0.10.0; checksum e candidato distinguono la consegna. I pacchetti precedenti restano conservati.
 
+## Assegnazione gruppi del 22 ottobre 2026
+
+Consegna successiva `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-05/`, con GRUPPI-01 e tutte le correzioni del candidato 04. Ripetere F-01: aggiungere dal profilo, selezionare più atleti da gruppo e stagione, cercare senza perdere selezioni e verificare conteggi, periodo e anno di categoria. Le appartenenze sovrapposte nello stesso gruppo sono saltate; le precedenti rimangono conservate. Verificare accesso in sola lettura e aggiornamento sopra la versione precedente su copia QA. Nessun aggiornamento operativo eseguito dall’agente.
+
 ## 0. Identificazione e preparazione
 
 - [ ] **P-01** Confrontare i digest dei file ricevuti con SHA256SUMS.txt: devono coincidere. Registrare il candidato esatto nel verbale in fondo.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 22 ottobre 2026 — assegnazione atleti ai gruppi
+
+- GRUPPI-01: comando visibile nel profilo atleta e Aggiungi atleti su gruppi, stagioni ed elenco filtrato. Ricerca e selezione multipla, periodo e anno di categoria, esclusione di appartenenze sovrapposte già presenti; salvataggio atomico e permessi Admin dati. Nessuna modifica retroattiva alle appartenenze esistenti.
+
 ## 22 ottobre 2026 — importazioni test e modelli CSV
 
 - IMPORT-03: anteprime specifiche di test aerobici e anaerobici con atleta, codice protocollo e risultati; protocolli nuovi separati dal conteggio delle righe. Modelli CSV vuoti scaricabili per tutti e quattro i profili dalla sezione import. Import anaerobico generale per Sprint e Wingate 15/30 s con tipo/durata espliciti; compatibilità ANA-15-070 e rifiuto di metadati in conflitto. Include IMPORT-02 antropometria. Candidato finale successivo alle build già consegnate.

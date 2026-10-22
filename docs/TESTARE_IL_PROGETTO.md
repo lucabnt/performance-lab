@@ -541,3 +541,7 @@ Verificare logo Fuorigiri a sinistra del nome, senza wrap né schiacciamento, an
 ## Importazione antropometrica IMPORT-02
 
 Importare prima atleti sintetici; nel CSV antropometria provare peso senza statura, fonti misurato/arrotondato/derivato/stimato, origine e fonte mancante (dichiarato). Verificare in anteprima nome completo e ID atleta, data, unità, fonte e origine; mai ID tecnico della rilevazione. Dopo commit, riaprire e correggere una misura derivata conservando origine, esportare CSV e verificare provenienza; reimport identico deve saltare duplicati. Fonte sconosciuta deve bloccare il lotto. Le misure derivate/stimate non diventano idonee ai modelli di crescita che richiedono misure misurate e valide. Gli import precedenti non vengono riscritti automaticamente.
+
+## Assegnazione atleti GRUPPI-01
+
+Dal profilo usare Aggiungi a un gruppo. Da Società e gruppi usare Aggiungi atleti su categoria o stagione: cercare, selezionare più atleti e confermare periodo e anno di categoria. Seleziona tutti riguarda i risultati della ricerca; le scelte precedenti restano selezionate anche cambiando ricerca. Un atleta già assegnato nello stesso gruppo in un periodo sovrapposto non è selezionabile. Verificare assegnazione dalla lista filtrata, conteggi aggiornati, appartenenze nel profilo e conservazione dei periodi storici. Il visualizzatore deve vedere i comandi disabilitati; un lotto con un riferimento invalido non deve salvare le altre righe.

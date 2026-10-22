@@ -1,5 +1,9 @@
 # Requisiti e to-do
 
+## GRUPPI-01 — assegnazione singola e multipla
+
+Richiesta: aggiungere appartenenze dal profilo e dal gruppo, selezionando più atleti dal gruppo. Implementato nei sorgenti: azione in testa al profilo, su gruppo/stagione e lista filtrata; ricerca, selezione multipla e selezione di tutti i risultati; periodo/anno di categoria espliciti. Salvataggio atomico con controllo società, stato attivo e sovrapposizioni sullo stesso gruppo. Selezioni già coperte non duplicate; storico conservato, accesso visualizzatore bloccato.
+
 ## IMPORT-03 — import test e modelli CSV vuoti
 
 Richiesta: correggere anteprime aerobici/anaerobici, offrire CSV vuoti compilabili dalla sezione import e generalizzare il nome/metodo anaerobico. Implementato: preview test con atleta, data, protocollo e metriche; nuovi protocolli separati da righe pronte. Quattro modelli scaricabili con sole intestazioni canoniche. Sprint 3–10 s, Wingate 15/30 con tipo e durata espliciti; compatibilità storico ANA-15-070 senza reinterpretazioni. Mancanti non trasformati in zero; import rimane riepilogo dichiarato e non ricostruisce campioni.

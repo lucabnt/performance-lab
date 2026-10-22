@@ -38,6 +38,7 @@ def test_viewer_can_remember_society_without_writing_society_records(tmp_path):
     client.headers.update({'X-Fuorigiri-Token':'t','X-Fuorigiri-Workspace':joined['id']})
     assert client.put('/api/v1/workspaces/last-selection',json={'workspace':joined['id'],'organization':joined['organization_id']}).status_code==200
     assert client.post('/api/v1/organizations',json={'name':'Forbidden'}).status_code==403
+    assert client.post('/api/v1/memberships/batch',json={'group_id':'g','athlete_ids':['a'],'start':'2026-01-01'}).status_code==403
 
 
 def test_separate_archives_viewer_and_forgery(tmp_path):

@@ -1,5 +1,15 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 22 ottobre 2026 — GRUPPI-01 assegnazioni
+
+- 9 test mirati appartenenze/workspace passati: aggiunta atomica, ripetizione senza duplicati, sovrapposizioni inclusive, periodi consecutivi, anno di categoria, gruppo/stagione, dati di altra società, atleti archiviati, date incoerenti, compatibilità con appartenenze singole precedenti e blocco viewer.
+- Suite completa in esecuzione separata dalla build: 219 passati, 1 saltato; 25 test frontend passati. La prima esecuzione concorrente alla build frontend aveva incontrato un file del logo temporaneamente non accessibile; ripetizione a build conclusa riuscita. Nessuna modifica allo smoke o ai controlli per aggirarlo.
+- Browser sull’app compilata completa, backend reale e archivio sintetico nuovo: aggiunti Beta/Gamma alla stagione 2026 dopo ricerca con selezione conservata; Alfa già assegnato disabilitato. Conferma con due aggiunte e conteggi 1→3. Dal profilo Beta aggiunta singola al gruppo padre, senza riscrivere l’appartenenza alla stagione. Nessun dato personale o archivio operativo usato.
+- Ultima build frontend ricontrollata nel browser: comandi su gruppo/stagione e lista filtrata, dialogo con due scelte e conferma, stagione distinta nel profilo. Screenshot reale in `docs/screenshots/gruppi-aggiungi-atleti.png`.
+- Build 05: bundle Windows completato e smoke EXE congelato con PATH Windows riuscito. Installer Inno Setup compilato in 112,781 s. APK release/debug completati offline in 1 min 2 s; ZIP, frontend corrente e runtime di entrambe le ABI verificati, firma debug v2 valida, release non firmato e allineamento controllati.
+- Consegna 05 completata: 14 checksum finali verificati, ZIP integri e sorgenti funzionali confrontati con lo snapshot; frontend bundle/APK corrente. Portabile estratto in directory nuova e smoke con PATH Windows riuscito. Nessuna installazione operativa o collaudo su telefono/PC pulito eseguito in questa sessione.
+- Preparazione pacchetti successivi `pilot-20261022-05`, con versione prodotto 0.10.0 invariata e consegne precedenti conservate; telefono e PC pulito rimangono verifiche distinte.
+
 ## 22 ottobre 2026 — IMPORT-03 test e modelli CSV
 
 - Lettura in sola pianificazione dei CSV forniti: 51 test aerobici e 2 protocolli, 38 test anaerobici e 1 protocollo; nessun errore. File originali e archivi operativi non modificati; dati personali non inclusi nelle fixture o nelle consegne.

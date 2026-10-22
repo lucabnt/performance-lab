@@ -70,3 +70,7 @@ Rinnovati android-atleti.png, android-menu.png e android-info.png: APK con commo
 ## Import CSV del 22 ottobre 2026
 
 `import-csv-anaerobici.png`: componente ImportPanel reale in pagina QA locale dedicata, con backend FastAPI reale e archivio sintetico nuovo. Mostra modello vuoto scaricabile e preview di Sprint e Wingate 30 s nello stesso lotto, protocolli separati dalle righe. Fonte frontend corrente 0.10.0 e UI comune 0.2.8; screenshot senza ritocchi, non una cattura del bridge Android o del telefono. Verificati anche gli altri tre profili e tutti i download; guide e prove in IMPORT_CSV.md e VERIFICA.md.
+
+## Assegnazione gruppi del 22 ottobre 2026
+
+`gruppi-aggiungi-atleti.png`: app completa compilata 0.10.0, UI comune 0.2.8, backend reale e archivio QA sintetico. Dialogo Aggiungi atleti con due selezioni, atleta già assegnato disabilitato e conferma. Verificati salvataggio multiplo nella stagione e singolo dal profilo; non è collaudo Android nativo. Immagine reale senza ritocchi o dati personali.

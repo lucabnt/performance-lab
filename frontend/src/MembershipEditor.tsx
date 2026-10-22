@@ -26,7 +26,7 @@ export function MembershipEditor({athletes,groups,memberships,athleteId,groupId,
   {athleteId?(assigned(athleteId)&&<p role="status">{tr('Atleta già assegnato al gruppo nel periodo indicato.')}</p>):<>
    <label>{tr('Cerca atleta')}<input type="search" value={query} onChange={e=>setQuery(e.target.value)}/></label>
    <p>{tr('Gli atleti già assegnati nel periodo indicato non sono selezionabili.')}</p>
-   <label><input type="checkbox" checked={all} disabled={!eligible.length||busy} onChange={()=>setPicked(ids=>all?ids.filter(id=>!eligible.some(a=>a.id===id)):[...new Set([...ids,...eligible.map(a=>a.id)])])}/>{tr('Seleziona tutti i risultati della ricerca')}</label>
+   <label className="choice"><input type="checkbox" checked={all} disabled={!eligible.length||busy} onChange={()=>setPicked(ids=>all?ids.filter(id=>!eligible.some(a=>a.id===id)):[...new Set([...ids,...eligible.map(a=>a.id)])])}/>{tr('Seleziona tutti i risultati della ricerca')}</label>
    <p role="status">{tr('Atleti selezionati:')} {selected.length}</p>
    <DataTable rows={shown} columns={[{key:'select',label:tr('Seleziona'),render:a=><input type="checkbox" aria-label={`${tr('Seleziona')} ${a.surname} ${a.name}`} disabled={busy||assigned(a.id)} checked={selected.includes(a.id)} onChange={()=>toggle(a.id)}/>},{key:'surname',label:tr('Cognome')},{key:'name',label:tr('Nome')},{key:'birth_year',label:tr('Anno di nascita')},{key:'membership',label:tr('Appartenenza'),render:a=>assigned(a.id)?tr('Già assegnato nel periodo'):tr('Disponibile')}]}/>
    {!shown.length&&<p>{tr('Nessun atleta corrisponde alla ricerca.')}</p>}

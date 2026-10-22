@@ -1,0 +1,26 @@
+# Importazione in blocco da CSV
+
+Da Archivio e scambio, nella sezione Importazione in blocco da CSV, scegliere il tipo e premere **Scarica modello CSV vuoto**. Ogni modello contiene soltanto la riga delle intestazioni; non contiene persone o misure dimostrative. Compilare e salvare in CSV UTF-8, poi scegliere il file dalla stessa sezione. Importare prima le anagrafiche: le associazioni usano gli ID, non i nomi.
+
+| Tipo | Campi sempre obbligatori | Contenuto |
+|---|---|---|
+| Anagrafiche atleti | atleta_id, cognome, nome | Nascita, conferma, fonte, sesso, stato e note facoltativi |
+| Antropometria | atleta_id, data | Almeno peso_kg o statura_cm; peso_fonte e origine conservati |
+| Test aerobici | test_id, atleta_id, data, protocollo_id | Risultati dichiarati, dati mancanti vuoti |
+| Test anaerobici | test_id, atleta_id, data, protocollo_id | tipo_test e durata_s richiesti per codici diversi dallo storico ANA-15-070 |
+
+Date nel formato `AAAA-MM-GG`. Sono accettati CSV con virgola o punto e virgola; un numero con virgola decimale deve essere correttamente racchiuso fra virgolette quando il separatore è la virgola. Il modello scaricato usa virgole e UTF-8 con BOM. Lasciare vuoti i risultati non rilevati: zero significa zero. Tutte le colonne opzionali sono elencate e presenti nel modello.
+
+## Test anaerobici
+
+Compilare `tipo_test` con `sprint`, `wingate15` o `wingate30`, e `durata_s` rispettivamente fra 3 e 10, 15 o 30 secondi. Dichiarare codice protocollo, dispositivo, partenza, posizione, coppia e finestre quando disponibili; usare codici diversi quando cambiano le condizioni. I risultati importati sono riepiloghi dichiarati e conservano il file originale; non viene ricostruito un tracciato o ricalcolato un test dai soli risultati.
+
+Il codice storico `ANA-15-070` resta associato a 15 s e 0,70 N·m/kg anche nei CSV privi di tipo e durata. Se tali colonne vengono compilate, devono essere coerenti; un altro tipo o carico richiede un codice distinto. Non estendere quelle condizioni agli altri protocolli.
+
+## Anteprima e conferma
+
+Le quattro anteprime mostrano colonne adatte ai dati: per i test, ID, atleta riconciliato, data, protocollo e risultati principali; per antropometria, peso, statura, fonte e origine. La vista mostra fino a 20 record e ne dichiara il numero; il lotto conserva tutte le righe. I protocolli d’archivio da creare sono elencati separatamente e non aumentano il conteggio delle righe pronte mostrato all’operatore.
+
+Correggere tutti gli errori prima di **Conferma importazione atomica**. I duplicati riconosciuti vengono saltati. Il caricamento per anteprima non salva atleti, misure o test; il file viene conservato nello staging locale. CSV e modelli non sostituiscono un backup completo dell’archivio.
+
+Per antropometria sono conservate le fonti misurato, arrotondato, dichiarato, derivato e stimato. Fonte vuota significa dichiarato; fonte sconosciuta genera errore. La classificazione originale degli import già effettuati non viene riscritta automaticamente.

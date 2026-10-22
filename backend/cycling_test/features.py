@@ -167,10 +167,13 @@ def install_features(app, store, require, download, preview):
 
     @app.get('/api/v1/import/schemas')
     def import_schemas():
-        from .csv_import import SCHEMAS
-        from .reports import CSV_HEADERS
-        from .anaerobic import EXTENDED_HEADER
-        return {k:{**v,'optional':[h for h in (EXTENDED_HEADER if k=='test_anaerobico' else CSV_HEADERS[k]).split(',') if h not in v['required']]} for k,v in SCHEMAS.items()}
+        from .csv_import import SCHEMAS,import_columns
+        return {k:{**v,'optional':[h for h in import_columns(k) if h not in v['required']]} for k,v in SCHEMAS.items()}
+
+    @app.get('/api/v1/import/template/{profile}')
+    def import_template(profile:str):
+        from .csv_import import template_csv
+        return download(template_csv(profile),'text/csv; charset=utf-8',profile+'-modello.csv')
 
     @app.get('/api/v1/zones/presets')
     def presets():
@@ -222,8 +225,20 @@ def install_features(app, store, require, download, preview):
         if len(raw)>30_000_000: raise ValueError('CSV troppo grande.')
         result=plan_import(store,organization_id,profile,raw)
         digest=store.object(raw)
+        athletes={a['id']:a for a in store.list('athlete') if a['organization_id']==organization_id}
+        protocols={p['id']:p for p in store.list('protocol')}
+        protocols.update({p['id']:p for kind,p in result['entries'] if kind=='protocol'})
+        records=[(kind,p) for kind,p in result['entries'] if kind!='protocol']
+        created=[p for kind,p in result['entries'] if kind=='protocol']
+        preview=[]
+        for kind,payload in records[:20]:
+            athlete=athletes.get(payload.get('athlete_id'),{})
+            protocol=protocols.get(payload.get('protocol_id'),{})
+            preview.append({'kind':kind,**payload,**({'athlete_name':(athlete.get('surname','')+' '+athlete.get('name','')).strip(),
+                'athlete_external_id':athlete.get('external_id',athlete.get('id',''))} if athlete else {}),
+                **({'protocol_code':protocol['family'],'protocol_name':protocol['name']} if protocol else {})})
         return {k:v for k,v in result.items() if k!='entries'} | {'staged_hash':digest,'ready':len(result['entries']),
-                'preview':[{'kind':k,**v} for k,v in result['entries'][:20]]}
+                'ready_rows':len(records),'new_protocols':[{'code':p['family'],'name':p['name']} for p in created],'preview':preview}
 
     class Commit(Model):
         organization_id: str

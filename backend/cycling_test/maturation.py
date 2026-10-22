@@ -32,7 +32,8 @@ class MeasurementPayload(BaseModel):
     date:date
     weight_kg:float|None=Field(default=None,gt=0,le=400)
     height_cm:float|None=Field(default=None,gt=0,le=260)
-    source:Literal['misurato','arrotondato','dichiarato']='misurato'
+    source:Literal['misurato','arrotondato','dichiarato','derivato','stimato']='misurato'
+    origin:str=Field(default='',max_length=1000)
     quality:Literal['valid','uncertain','excluded']='valid'
     precision_cm:float=Field(default=.1,gt=0,le=5)
     model_sex:Literal['','M','F']=''

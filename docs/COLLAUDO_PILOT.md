@@ -24,6 +24,12 @@ Nuova consegna `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-02/`, con DESKTO
 
 Ripetere F-02 sul codice modificabile per tutte le famiglie e F-08 sull’anteprima anagrafica completa, più W-04/W-07 e A-05/A-06 sui dispositivi del collaudo. Non importare dati personali nei corpus distribuiti. Esiti tecnici effettivi e limiti in VERIFICA.md; la preparazione dei pacchetti non aggiorna automaticamente l’installazione del PC o del telefono.
 
+## Aggiornamento importazioni del 22 ottobre 2026
+
+Consegna `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-04/`, successiva al candidato 02 e con IMPORT-02/03. La preparazione 03 è stata interrotta prima del confezionamento per includere la richiesta estesa sui test e sui modelli CSV. Ripetere F-08 su tutti i profili: scaricare e compilare i quattro modelli vuoti; verificare nomi/risultati nelle anteprime, conteggi separati dei protocolli e import anaerobico Sprint/15/30 con tipo e durata espliciti. Per antropometria verificare origine e fonti derivate/stimate in salvataggio, correzione ed export.
+
+Nessuna riscrittura automatica delle rilevazioni già importate con la vecchia versione; conservare gli originali e usare correzioni motivate se necessario. Windows e Android restano 0.10.0; checksum e candidato distinguono la consegna. I pacchetti precedenti restano conservati.
+
 ## 0. Identificazione e preparazione
 
 - [ ] **P-01** Confrontare i digest dei file ricevuti con SHA256SUMS.txt: devono coincidere. Registrare il candidato esatto nel verbale in fondo.

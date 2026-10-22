@@ -113,6 +113,38 @@ def test_athlete_csv_preview_preserves_identity_and_birth_metadata(tmp_path):
             assert saved[key]==row[key]
 
 
+def test_measurement_csv_preview_commit_export_and_revision_preserve_provenance(tmp_path):
+    import csv
+    c=client(tmp_path);org=post(c,'organizations',{'name':'Demo'})
+    a=post(c,'athletes',{'organization_id':org['id'],'surname':'Demo','name':'Uno'})
+    raw=('atleta_id,data,peso_kg,statura_cm,peso_fonte,origine\n'+''.join(f"{a['id']},2026-01-{i:02d},50,160,{source},da test\n" for i,source in enumerate(['misurato','arrotondato','dichiarato','derivato','stimato',''],1))).encode()
+    def preview(raw):
+        r=c.post('/api/v1/import/preview',data={'organization_id':org['id'],'profile':'antropometria'},files={'file':('data.csv',raw)})
+        assert r.status_code==200,r.text
+        return r.json()
+    p=preview(raw)
+    assert p['errors']==[] and p['ready']==6
+    for row,source in zip(p['preview'],['misurato','arrotondato','dichiarato','derivato','stimato','dichiarato']):
+        assert (row['athlete_name'],row['athlete_external_id'],row['weight_kg'],row['height_cm'],row['source'],row['origin'])==('Demo Uno',a['id'],50,160,source,'da test')
+    post(c,'import/commit',{'organization_id':org['id'],'profile':'antropometria','staged_hash':p['staged_hash']})
+    assert preview(raw)['skipped']==6
+    measurements=c.get('/api/v1/state').json()['measurement']
+    derived=next(m for m in measurements if m['source']=='derivato')
+    from cycling_test.maturation import anthropometric
+    from cycling_test.api import Measurement
+    assert anthropometric(a,derived)['models']['moore']['value'] is None
+    payload={k:v for k,v in derived.items() if k in Measurement.model_fields}
+    revised=c.put('/api/v1/measurements/'+derived['id'],json={'base':derived['revision'],'reason':'Verifica nota','measurement':{**payload,'notes':'Corretta'}})
+    assert revised.status_code==200,revised.text
+    assert revised.json()['source']=='derivato' and revised.json()['origin']=='da test'
+    with zipfile.ZipFile(io.BytesIO(c.get('/api/v1/export/'+org['id']).content)) as z:
+        rows=list(csv.DictReader(io.StringIO(z.read('antropometria.csv').decode())))
+    assert next(r for r in rows if r['data']=='2026-01-04')['peso_fonte']=='derivato'
+    assert all(r['origine']=='da test' for r in rows)
+    bad=preview(raw.replace(b'misurato',b'sconosciuto'))
+    assert len(bad['errors'])==1
+
+
 def test_trace_csv_units_and_timestamps():
     assert decode_trace_csv(b't,power,hr\n0,100,120\n1,110,121\n')['samples'][1]['power']==110
     with pytest.raises(ValueError):decode_trace_csv(b't,power\n0,100\n0,120\n')
@@ -134,3 +166,66 @@ def test_growth_paired_and_fixed_branding(tmp_path):
     assert c.post('/api/v1/organizations',json={'name':'X','logo':'other.png'}).status_code==422
     assert logo_path().read_bytes().startswith(b'\x89PNG')
     assert ATTRIBUTION=='Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.'
+
+
+def test_import_templates_are_header_only_and_use_canonical_columns(tmp_path):
+    import csv
+    from cycling_test.csv_import import import_columns
+    c=client(tmp_path);org=post(c,'organizations',{'name':'Demo'})
+    for profile in ('atleti','antropometria','test_aerobico','test_anaerobico'):
+        response=c.get('/api/v1/import/template/'+profile)
+        assert response.status_code==200,response.text
+        rows=list(csv.reader(io.StringIO(response.content.decode('utf-8-sig'))))
+        assert rows==[import_columns(profile)]
+        assert '.csv' in response.headers['content-disposition']
+        assert len(set(rows[0]))==len(rows[0])
+        empty=c.post('/api/v1/import/preview',data={'organization_id':org['id'],'profile':profile},files={'file':('empty.csv',response.content)})
+        assert empty.status_code==200,empty.text
+        assert empty.json()['rows']==0 and empty.json()['ready_rows']==0 and empty.json()['errors']==[]
+    assert c.get('/api/v1/import/template/unknown').status_code==422
+
+
+def test_test_import_preview_separates_protocols_and_shows_athletes_and_results(tmp_path):
+    c=client(tmp_path);org=post(c,'organizations',{'name':'Demo'})
+    a=post(c,'athletes',{'organization_id':org['id'],'surname':'Demo','name':'Uno'})
+    raw=('test_id,atleta_id,data,protocollo_id,map_w,soglia_w,fc_max_test_bpm\n'+''.join(f"A{i},{a['id']},2026-01-01,DEMO-AER,200,160,190\n" for i in range(21))).encode()
+    response=c.post('/api/v1/import/preview',data={'organization_id':org['id'],'profile':'test_aerobico'},files={'file':('a.csv',raw)})
+    assert response.status_code==200,response.text
+    p=response.json()
+    assert not p['errors'] and p['ready_rows']==21 and p['ready']==22
+    assert p['new_protocols']==[{'code':'DEMO-AER','name':'DEMO-AER'}]
+    assert len(p['preview'])==20 and all(r['kind']=='test' for r in p['preview'])
+    assert all((r['athlete_name'],r['athlete_external_id'],r['protocol_code'],r['analysis']['map_w'])==('Demo Uno',a['id'],'DEMO-AER',200) for r in p['preview'])
+    post(c,'import/commit',{'organization_id':org['id'],'profile':'test_aerobico','staged_hash':p['staged_hash']})
+    state=c.get('/api/v1/state').json()
+    assert len(state['test'])==21 and len(state['protocol'])==1
+
+
+def test_general_anaerobic_csv_templates_support_all_families_and_legacy(tmp_path):
+    import csv
+    from cycling_test.csv_import import template_csv
+    c=client(tmp_path);org=post(c,'organizations',{'name':'Demo'})
+    a=post(c,'athletes',{'organization_id':org['id'],'surname':'Demo','name':'Uno'})
+    fields=next(csv.reader(io.StringIO(template_csv('test_anaerobico').decode('utf-8-sig'))))
+    out=io.StringIO();writer=csv.DictWriter(out,fieldnames=fields);writer.writeheader()
+    for i,(kind,duration) in enumerate([('sprint',6),('wingate15',15),('wingate30',30)]):
+        writer.writerow({'test_id':f'T{i}','atleta_id':a['id'],'data':'2026-01-01','protocollo_id':f'DEMO-{kind}','tipo_test':kind,'durata_s':duration,'picco_w':800,'media_w':600})
+    writer.writerow({'test_id':'LEGACY','atleta_id':a['id'],'data':'2026-01-01','protocollo_id':'ANA-15-070','picco_w':750})
+    def preview(raw):
+        response=c.post('/api/v1/import/preview',data={'organization_id':org['id'],'profile':'test_anaerobico'},files={'file':('a.csv',raw)})
+        assert response.status_code==200,response.text
+        return response.json()
+    raw=out.getvalue().encode();p=preview(raw)
+    assert not p['errors'] and p['ready_rows']==4 and len(p['new_protocols'])==4
+    assert [r['test_type'] for r in p['preview']]==['sprint','wingate15','wingate30','wingate15']
+    assert [r['analysis']['duration_s'] for r in p['preview']]==[6,15,30,15]
+    assert all(r['athlete_name']=='Demo Uno' and r['analysis']['peak_w'] for r in p['preview'])
+    post(c,'import/commit',{'organization_id':org['id'],'profile':'test_anaerobico','staged_hash':p['staged_hash']})
+    assert preview(raw)['skipped']==4
+    assert len(c.get('/api/v1/state').json()['test'])==4
+    # Conflicting explicit legacy metadata must not be silently overridden.
+    out=io.StringIO();writer=csv.DictWriter(out,fieldnames=fields);writer.writeheader()
+    writer.writerow({'test_id':'CONFLICT','atleta_id':a['id'],'data':'2026-01-01','protocollo_id':'ANA-15-070','tipo_test':'wingate30','durata_s':30})
+    assert len(preview(out.getvalue().encode())['errors'])==1
+    response=c.post('/api/v1/import/preview',data={'organization_id':org['id'],'profile':'test_anaerobico'},files={'file':('a.csv',b'test_id,atleta_id\n')})
+    assert response.status_code==422

@@ -4,6 +4,8 @@ Indice aggiornato al **21 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivo
 
 ## Uso, avvio e distribuzione
 
+- [Importazione CSV e modelli vuoti](IMPORT_CSV.md): quattro profili, anteprime, fonti e protocolli anaerobici.
+
 - [Collaudo candidato pilot](COLLAUDO_PILOT.md): operazioni, risultati attesi, check di completamento e verbale Windows/Android.
 - [Firma Android](FIRMA_ANDROID.md): creazione/custodia chiave a cura del titolare e firma/verifica della copia release.
 

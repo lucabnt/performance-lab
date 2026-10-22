@@ -1,5 +1,22 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 22 ottobre 2026 — IMPORT-03 test e modelli CSV
+
+- Lettura in sola pianificazione dei CSV forniti: 51 test aerobici e 2 protocolli, 38 test anaerobici e 1 protocollo; nessun errore. File originali e archivi operativi non modificati; dati personali non inclusi nelle fixture o nelle consegne.
+- Suite completa: 214 passati, 1 saltato; 25 test frontend e build riusciti. Tre test aggiuntivi coprono modelli canonici con sole intestazioni, preview vuota valida per tutti i profili, download, conteggio separato protocolli/righe, preview limitata a 20 test effettivi e commit, Sprint/15/30 e legacy nello stesso lotto, duplicati e conflitti dei metadati legacy. 29 test mirati import/anaerobici passati; warning preesistenti.
+- Browser con backend reale e archivio QA nuovo: caricati quattro CSV sintetici, controllate le preview; download effettivo dei quattro modelli confrontato byte per byte con le intestazioni canoniche. Screenshot reale della pagina QA in `docs/screenshots/import-csv-anaerobici.png`. Nessuna alterazione delle regole di origine o sicurezza per eseguire il collaudo.
+- Bundle Windows 04 compilato e smoke EXE congelato con PATH limitato a Windows riuscito. Android release/debug completati offline in 33 s.
+- Installer Windows 04 compilato da bundle isolato in 127,672 s (196097209 byte). Verificati firma debug v2, assenza firma release, allineamento APK, ZIP e hash del frontend corrente nelle due build Android, entrambe con runtime ARM64/x86_64. 53 test mirati import/anaerobico/crescita passati sullo stato finale.
+- Consegna 04 completata in `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-04`: installer, portabile, APK debug e release non firmato, sorgenti, wheel e ZIP dei quattro modelli vuoti. Verificati 14 checksum e corrispondenza byte dei sorgenti funzionali nello ZIP; portabile estratto e smoke indipendente riuscito con PATH Windows. Nessun pacchetto precedente o archivio operativo sostituito. Firma release, telefono e PC pulito restano da collaudare.
+- Preparazione finale Windows/Android `pilot-20261022-04` dai sorgenti con IMPORT-02/03; build precedenti conservate. Le nuove anteprime non certificano la comparabilità scientifica dei protocolli o ricreano campioni assenti.
+
+## 22 ottobre 2026 — IMPORT-02 antropometria
+
+- CSV personale letto soltanto per pianificazione, senza commit: 51 righe pronte, nessun errore; 44 pesi misurati, 2 arrotondati, 5 derivati, nessuna statura presente. Nessun dato personale copiato nelle fixture, negli archivi QA o nei pacchetti.
+- 35 test mirati import/crescita passati; suite completa 211 passati, 1 saltato; 25 test frontend e build riusciti. Test sintetico API su anteprima, fonti incluso stimato e default dichiarato, commit, duplicati, correzione, origine ed export; fonte sconosciuta segnalata e derivato non ammesso al modello Moore.
+- Browser: componente ImportPanel reale in pagina QA temporanea con API sintetica; atleta, data, peso, statura mancante, fonte derivata e origine verificati visivamente. Cattura in `output/qa-import-antropometria/anteprima.png`; non prova il bridge Android.
+- Preparazione `pilot-20261022-03` interrotta prima del confezionamento per includere IMPORT-03 nel successivo candidato 04, separato dalle consegne precedenti. Android assembleRelease e assembleDebug completati offline in 40 s con JDK 21. Nessuna installazione operativa o modifica dei dati già importati.
+
 ## 22 ottobre 2026 — build pilot-20261022-02
 
 - Suite Python completa: 210 passati, 1 saltato, warning preesistenti Starlette/httpx e ZIP con nome duplicato nel caso di corruzione intenzionale. Frontend corrente già compilato e 25 test modelli passati; versioni prodotto 0.10.0, UI 0.2.8 e core 0.1.2 coerenti.

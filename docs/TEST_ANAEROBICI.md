@@ -1,5 +1,7 @@
 # Sprint breve e Wingate - metodo 1, software 0.7
 
+Dal 22 ottobre 2026, **Archivio e scambio → Importazione in blocco da CSV → Test anaerobici** offre un modello vuoto esteso per Sprint e Wingate 15/30 s. Nome generale e istruzioni sostituiscono l’etichetta Storico Wingate 15 s; rimane la compatibilità ANA-15-070. [Guida CSV](IMPORT_CSV.md).
+
 ## Aggiornamento UI 0.8
 
 Definire Sprint/Wingate in **Protocolli → Crea protocollo**; nuove versioni dalla scheda corrispondente. Registrare esecuzioni in **Test e analisi → Nuovo test**, scegliendo protocollo e modalità. Importatore con sessioni/duplicati, click sul grafico per l’inizio, zoom ed esclusioni motivate. Campi facoltativi disponibili anche sui protocolli supportati. [Flusso e campi custom](PROTOCOLLI_E_CAMPI_CUSTOM.md); [corpus completo per il collaudo](DATI_SINTETICI.md). Le indicazioni UI 0.7 successive sono superate da questo flusso; le formule rimangono quelle del metodo 1.

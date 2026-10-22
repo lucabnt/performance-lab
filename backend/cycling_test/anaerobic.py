@@ -160,7 +160,10 @@ def finish(a,spec,settings,source):
 def historical_plan(store,org,raw):
     from .csv_import import read,number
     rows=read(raw);required={'test_id','atleta_id','data','protocollo_id'}
-    if rows and required-set(rows[0]):raise ValueError('Colonne obbligatorie: '+', '.join(sorted(required)))
+    import csv,io
+    text=raw.decode('utf-8-sig');header=text.splitlines()[0]
+    headers=next(csv.reader(io.StringIO(text),delimiter=';' if header.count(';')>header.count(',') else ','))
+    if required-set(headers):raise ValueError('Colonne obbligatorie: '+', '.join(sorted(required)))
     if len(rows)>100000:raise ValueError('Troppe righe nel lotto.')
     athletes={a.get('external_id',a['id']):a for a in store.list('athlete') if a['organization_id']==org and a.get('status')!='deleted'}
     athletes.update({a['id']:a for a in athletes.copy().values()})
@@ -174,6 +177,8 @@ def historical_plan(store,org,raw):
             identity=str(uuid5(NAMESPACE_URL,org+'|anaerobic-test|'+r['test_id']))
             if identity in existing or any(t['athlete_id']==athlete['id'] and r['test_id'] in (t['id'],t.get('external_id')) for t in tests):skipped+=1;continue
             legacy=code=='ANA-15-070'
+            if legacy and ((r.get('tipo_test') and r['tipo_test']!='wingate15') or (r.get('durata_s') and number(r['durata_s'])!=15) or (r.get('coppia_nm_kg') and number(r['coppia_nm_kg'])!=.70)):
+                raise ValueError('ANA-15-070 identifica 15 s e 0,70 N·m/kg: metadati in conflitto, usare un codice distinto.')
             family='wingate15' if legacy else r['tipo_test']
             duration=15 if legacy else number(r['durata_s'])
             if family in ('wingate15','wingate30') and duration!=(15 if family=='wingate15' else 30):raise ValueError('Durata e tipo Wingate incoerenti.')

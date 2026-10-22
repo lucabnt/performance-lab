@@ -80,3 +80,7 @@ Per un corpus GUI nuovo:
 ```
 
 Il corpus standard `demo_suite.py`, anche `--small`, include quattro casi per società: picco maschile (circa 8,96 cm/anno), crescita femminile (circa 7,96), dati insufficienti e adulto. Sono presenti misure avanzate e snapshot; il manifest `growth_cases` contiene i risultati attesi. Repliche e backup includono questi dati fin dalla creazione. `demo_maturation.py` è un alias della demo ridotta. Gli archivi esistenti non sono aggiornati automaticamente: usare una destinazione nuova o il reset conservativo del generatore standard descritto nella guida. Non usare inviti/chiavi SOLO DEMO con dati operativi.
+
+## Provenienza delle rilevazioni importate
+
+Dal 22 ottobre 2026 IMPORT-02 conserva anche le fonti `derivato` e `stimato`, senza convertirle in `dichiarato`, e il campo opzionale `origin` del record (colonna CSV `origine`). Editor, revisioni ed export conservano tali informazioni. Le misure non misurate continuano a non superare i gate che richiedono fonte `misurato` e qualità valida; formule e versione del motore rimangono invariate. Nessuna riscrittura dei dati già importati.

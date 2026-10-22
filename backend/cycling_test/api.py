@@ -308,6 +308,36 @@ def create_app(root=None, token=None, frontend=None):
             raise ValueError("Atleta e gruppo devono appartenere alla stessa società.")
         return store.save("membership",data.model_dump(mode="json"))
 
+    class MembershipBatch(Model):
+        group_id:str
+        athlete_ids:list[str]=Field(min_length=1,max_length=1000)
+        start:date
+        end:date|None=None
+        category_year:int|None=Field(default=None,ge=1,le=20)
+
+    @app.post('/api/v1/memberships/batch')
+    def membership_batch(data:MembershipBatch):
+        from uuid import uuid5,NAMESPACE_URL
+        g=require(data.group_id,'group')
+        if g.get('status','active')!='active':
+            raise ValueError('Scegliere un gruppo attivo.')
+        athletes=[require(id,'athlete') for id in dict.fromkeys(data.athlete_ids)]
+        entries=[];skipped=[]
+        existing=store.list('membership')
+        for a in athletes:
+            if a['organization_id']!=g['organization_id']:
+                raise ValueError('Atleta e gruppo devono appartenere alla stessa società.')
+            if a.get('status','active')!='active':
+                raise ValueError('Si possono aggiungere soltanto atleti attivi.')
+            payload=Membership(athlete_id=a['id'],group_id=g['id'],start=data.start,end=data.end,category_year=data.category_year).model_dump(mode='json')
+            if any(m['athlete_id']==a['id'] and m['group_id']==g['id'] and m.get('status')!='deleted'
+                   and m['start']<=(payload['end'] or '9999-12-31') and (m.get('end') or '9999-12-31')>=payload['start'] for m in existing):
+                skipped.append(a['id']);continue
+            payload['id']=str(uuid5(NAMESPACE_URL,'membership|'+g['id']+'|'+a['id']+'|'+payload['start']+'|'+str(payload['end'])))
+            entries.append(('membership',payload))
+        records=store.save_batch(entries) if entries else []
+        return {'added':len(records),'skipped':len(skipped),'memberships':records}
+
     @app.post("/api/v1/measurements")
     def measurement(data: Measurement):
         a=require(data.athlete_id,"athlete")

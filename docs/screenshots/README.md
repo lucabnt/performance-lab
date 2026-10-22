@@ -66,3 +66,7 @@ Rinnovati android-atleti.png, android-menu.png e android-info.png: APK con commo
 ## Codice dei protocolli — 22 ottobre 2026
 
 `protocollo-codice.png`: browser locale, Fuorigiri 0.10.0 con modifiche PROTOCOLLI-01, UI comune 0.2.8. Archivio QA nuovo e società interamente sintetica. Nuova versione Wingate 15 s: campo Codice modificabile con `ANA-DEMO-15` ereditato dalla scheda appena salvata. Immagine reale senza ritocchi; nessun installer aggiornato o collaudo Android implicito.
+
+## Import CSV del 22 ottobre 2026
+
+`import-csv-anaerobici.png`: componente ImportPanel reale in pagina QA locale dedicata, con backend FastAPI reale e archivio sintetico nuovo. Mostra modello vuoto scaricabile e preview di Sprint e Wingate 30 s nello stesso lotto, protocolli separati dalle righe. Fonte frontend corrente 0.10.0 e UI comune 0.2.8; screenshot senza ritocchi, non una cattura del bridge Android o del telefono. Verificati anche gli altri tre profili e tutti i download; guide e prove in IMPORT_CSV.md e VERIFICA.md.

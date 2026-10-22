@@ -1,5 +1,13 @@
 # Requisiti e to-do
 
+## IMPORT-03 — import test e modelli CSV vuoti
+
+Richiesta: correggere anteprime aerobici/anaerobici, offrire CSV vuoti compilabili dalla sezione import e generalizzare il nome/metodo anaerobico. Implementato: preview test con atleta, data, protocollo e metriche; nuovi protocolli separati da righe pronte. Quattro modelli scaricabili con sole intestazioni canoniche. Sprint 3–10 s, Wingate 15/30 con tipo e durata espliciti; compatibilità storico ANA-15-070 senza reinterpretazioni. Mancanti non trasformati in zero; import rimane riepilogo dichiarato e non ricostruisce campioni.
+
+## IMPORT-02 — anteprima e provenienza antropometria
+
+Richiesta: rendere leggibile l’importazione antropometrica. Implementato: atleta riconciliato, data e misure con unità, fonte e origine; conteggio record visibili nell’anteprima limitata a 20. Preservare misurato, arrotondato, dichiarato, derivato e stimato senza conversioni silenziose; origine anche nelle correzioni e nell’export. I modelli di crescita continuano a richiedere misure misurate e valide. Nessuna correzione retroattiva automatica degli import precedenti.
+
 ## IMPORT-01 — anteprima anagrafica CSV
 
 Anteprima specifica per atleti con identità, nascita e provenienza, stato e note; nessuna Data generica. Errori visualizzati solo se presenti. Implementato nei sorgenti il 22 ottobre 2026; importatore e archivi invariati.

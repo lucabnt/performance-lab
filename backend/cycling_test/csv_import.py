@@ -6,11 +6,26 @@ from datetime import date
 from uuid import uuid5, NAMESPACE_URL
 
 SCHEMAS = {
-    'test_anaerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Wingate storico ANA-15-070: 15 s e coppia 0,70 N·m/kg; risultati facoltativi, formula fatica non verificata.'},
+    'test_anaerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Sprint breve, Wingate 15 s o 30 s: indicare tipo_test (sprint, wingate15, wingate30) e durata_s. Il solo codice storico ANA-15-070 conserva la compatibilità a 15 s e 0,70 N·m/kg.'},
     'atleti': {'required':['atleta_id','cognome','nome'], 'rule':'Nome e cognome obbligatori; gli altri campi sono facoltativi.'},
     'antropometria': {'required':['atleta_id','data'], 'rule':'Almeno peso_kg oppure statura_cm; peso_fonte facoltativo (dichiarato).'},
     'test_aerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Risultati facoltativi: i valori assenti restano vuoti, mai zero.'},
 }
+
+
+
+def import_columns(profile):
+    if profile not in SCHEMAS:
+        raise ValueError('Profilo CSV non supportato.')
+    from .reports import CSV_HEADERS
+    from .anaerobic import EXTENDED_HEADER
+    return (EXTENDED_HEADER if profile=='test_anaerobico' else CSV_HEADERS[profile]).split(',')
+
+
+def template_csv(profile):
+    stream=io.StringIO(newline='')
+    csv.writer(stream).writerow(import_columns(profile))
+    return stream.getvalue().encode('utf-8-sig')
 
 
 def read(raw):
@@ -102,7 +117,7 @@ def plan_import(store, org, profile, raw):
                 date.fromisoformat(r['data'])
                 if profile=='antropometria':
                     payload=Measurement(athlete_id=athlete_id,date=r['data'],weight_kg=number(r.get('peso_kg')),height_cm=number(r.get('statura_cm')),
-                                        source=r.get('peso_fonte') if r.get('peso_fonte') in ('misurato','arrotondato','dichiarato') else 'dichiarato').model_dump(mode='json')
+                                        source=r.get('peso_fonte','').strip() or 'dichiarato',origin=r.get('origine','')).model_dump(mode='json')
                     if payload['weight_kg'] is None and payload['height_cm'] is None:
                         raise ValueError('Rilevazione priva di misure.')
                     if any(m['athlete_id']==athlete_id and m['date']==payload['date'] and m.get('weight_kg')==payload['weight_kg'] and m.get('height_cm')==payload['height_cm'] and m.get('source')==payload['source'] for m in store.list('measurement')):

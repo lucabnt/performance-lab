@@ -537,3 +537,7 @@ Da telefono/emulatore verticale aprire un test con tracciato e Vista ampia: deve
 ### Fullscreen e marchio — TD-106–107
 
 Verificare logo Fuorigiri a sinistra del nome, senza wrap né schiacciamento, anche nei bootstrap. In Vista ampia devono sparire cornice, intestazione visiva e barre Android: rimangono figura, X flottante e Comandi grafico. Chiudere l’eventuale guida fullscreen del sistema prima delle foto. Aprire il pannello, provare dati e modi touch; Back esce dal modo prima di chiudere pannello/vista. Uscire con X e Back, verificando barre e orientamento precedenti ripristinati e test aperto. Provare swipe dal bordo per barre transitorie, lettore schermo e configurazioni diverse su dispositivo reale.
+
+## Importazione antropometrica IMPORT-02
+
+Importare prima atleti sintetici; nel CSV antropometria provare peso senza statura, fonti misurato/arrotondato/derivato/stimato, origine e fonte mancante (dichiarato). Verificare in anteprima nome completo e ID atleta, data, unità, fonte e origine; mai ID tecnico della rilevazione. Dopo commit, riaprire e correggere una misura derivata conservando origine, esportare CSV e verificare provenienza; reimport identico deve saltare duplicati. Fonte sconosciuta deve bloccare il lotto. Le misure derivate/stimate non diventano idonee ai modelli di crescita che richiedono misure misurate e valide. Gli import precedenti non vengono riscritti automaticamente.

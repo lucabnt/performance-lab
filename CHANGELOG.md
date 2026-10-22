@@ -1,5 +1,13 @@
 # Changelog
 
+## 22 ottobre 2026 — importazioni test e modelli CSV
+
+- IMPORT-03: anteprime specifiche di test aerobici e anaerobici con atleta, codice protocollo e risultati; protocolli nuovi separati dal conteggio delle righe. Modelli CSV vuoti scaricabili per tutti e quattro i profili dalla sezione import. Import anaerobico generale per Sprint e Wingate 15/30 s con tipo/durata espliciti; compatibilità ANA-15-070 e rifiuto di metadati in conflitto. Include IMPORT-02 antropometria. Candidato finale successivo alle build già consegnate.
+
+## 22 ottobre 2026 — importazione antropometria
+
+- IMPORT-02: anteprima specifica con ID atleta, nome completo, data, peso, statura, fonte e origine, senza identificativi tecnici della rilevazione. Fonti derivato/stimato conservate in import, editor ed export; origine preservata. Valori fonte sconosciuti segnalati, assenze mantenute vuote. Nessuna riscrittura degli archivi già importati.
+
 ## 22 ottobre 2026 — aggiornamento candidato Windows e Android
 
 - Preparazione candidato `pilot-20261022-02` dai sorgenti correnti: riapertura desktop, codice protocolli e anteprima anagrafica CSV. Installer e portabile Windows, APK release non firmato e debug per collaudo separati dalle consegne precedenti; versione prodotto 0.10.0 invariata. Nessuna pubblicazione o installazione automatica.

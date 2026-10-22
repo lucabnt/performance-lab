@@ -8,6 +8,16 @@ La cartella di consegna è `dist/candidates/Fuorigiri-0.10.0-pilot-20261021-02/`
 
 Questa checklist nei sorgenti è un registro vivo. La copia inclusa nella consegna fotografa il momento del packaging: annotare i risultati successivi qui o in una propria copia, senza modificare gli artefatti originali o riscrivere i loro checksum. Verifica finale locale dei 12 file e ZIP portabile estratto/smoke riuscita; PC pulito e telefono restano da provare.
 
+## Aggiornamento Windows del 22 ottobre 2026
+
+Consegna Windows separata: `dist/candidates/Fuorigiri-0.10.0-windows-20261022-01/`. Include DESKTOP-01; il candidato Windows/Android del 21 ottobre rimane conservato. Numero prodotto 0.10.0 invariato: identificativo della consegna e SHA-256 distinguono i binari. Questo prova la sostituzione della stessa versione; un futuro passaggio di versione richiederà una prova distinta.
+
+1. Prima dell’aggiornamento, esportare un backup dei dati e il recupero degli accessi; annotare società e numerosità di atleti/test. Conservare le copie fuori dalla cartella dell’app.
+2. Chiudere Fuorigiri e avviare il nuovo `Fuorigiri-0.10.0-windows-x64-setup.exe`, con lo stesso utente Windows e mantenendo la cartella di installazione proposta. Non occorre disinstallare prima.
+3. Aprire l’app e verificare società, dati e accessi conservati (W-04). L’installer mantiene AppId e destinazione; non include archivi dimostrativi nella cartella dati dell’utente.
+4. Al primo avvio aggiornato selezionare una volta la società: la vecchia versione non aveva salvato la preferenza desktop. Chiudere completamente e riaprire: deve aprirsi direttamente quella società (W-07).
+5. Ripetere con un’altra società e senza rete. Annotare esito, digest dell’installer e problemi. Il nuovo installer non è firmato Authenticode; l’eventuale avviso Windows sulla provenienza è distinto da un errore dell’app.
+
 ## 0. Identificazione e preparazione
 
 - [ ] **P-01** Confrontare i digest dei file ricevuti con SHA256SUMS.txt: devono coincidere. Registrare il candidato esatto nel verbale in fondo.
@@ -29,6 +39,7 @@ Questa checklist nei sorgenti è un registro vivo. La copia inclusa nella conseg
 ## 2. Windows — installazione e aggiornamento
 
 - [ ] **W-01** Installare su Windows pulito con utente normale. Atteso: avvio senza Python/Node/Qt installati, logo, frontend e Info/versione corretti.
+- [ ] **W-07** Con installer contenente DESKTOP-01: creare/aprire una società, chiudere completamente e riaprire. Atteso: ultima società aperta direttamente, anche senza rete. Ripetere cambiando società; archivio ricordato indisponibile: selettore con avviso, nessun’altra società aperta automaticamente. Il candidato del 21 ottobre non contiene questa correzione.
 - [ ] **W-02** Disabilitare Internet e riaprire. Atteso: società locale, elenchi, protocolli, test e grafici disponibili; nessuna rete richiesta per Plotly.
 - [ ] **W-03** Percorso dati con spazi/accenti; apertura e riapertura senza errori. Non usare la cartella dei binari per archiviare dati.
 - [ ] **W-04** Installare sopra una versione precedente su copia QA dopo backup. Atteso: archivi, identità, credenziali e storico conservati; nessuna migrazione o ricalcolo silenzioso dei risultati.

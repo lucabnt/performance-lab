@@ -1,5 +1,9 @@
 # Changelog
 
+## 22 ottobre 2026 — riapertura desktop
+
+- DESKTOP-01: Windows/Linux ricordano l’ultima società nelle preferenze locali del backend, indipendentemente dalla porta HTTP e dalla sessione WebEngine. Ripristino verificato contro inventario, nessun cambio automatico verso un altro archivio se quello ricordato manca; preferenza di soli ID, anche per visualizzatori. Modifica ai sorgenti; preparazione di una nuova consegna Windows `windows-20261022-01` per collaudare l’aggiornamento. Il candidato e gli installer precedenti restano invariati.
+
 - 21 ottobre, revisione conservativa dei sorgenti: token HTTP non ASCII rifiutati senza errore interno; export antropometrico coerente con l'eliminazione delle misure; CSV malformati e campi oltre limite producono errori gestiti, mantenendo i CSV multilinea validi. Nessun cambiamento UI, schema o metodo scientifico; correzioni non ancora incluse nei candidati compilati. Prove in `docs/VERIFICA.md`.
 
 ## 0.10.0 — 20–21 ottobre 2026 (sorgenti; distribuzione non pubblicata)

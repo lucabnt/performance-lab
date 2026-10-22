@@ -24,6 +24,29 @@ def install_workspaces(app,manager,store,download):
     def list_workspaces():
         return manager.entries()
 
+    class LastSelection(BaseModel):
+        workspace: str=Field(max_length=100)
+        organization: str=Field(max_length=100)
+
+    @app.get('/api/v1/workspaces/last-selection')
+    def last_selection():
+        # Device preference, outside society databases and synchronized records.
+        path=manager.root/'last-selection.json'
+        try:
+            return LastSelection.model_validate_json(path.read_text(encoding='utf-8')).model_dump()
+        except (OSError,ValueError):
+            return {'workspace':'','organization':''}
+
+    @app.put('/api/v1/workspaces/last-selection')
+    def remember_selection(data:LastSelection):
+        from .workspaces import write_json
+        selected=manager.get(data.workspace)
+        if data.organization and not any(o['id']==data.organization for o in selected.list('organization')):
+            raise ValueError('Società non presente nell’archivio selezionato.')
+        with manager.lock:
+            write_json(manager.root/'last-selection.json',data.model_dump())
+        return data.model_dump()
+
     @app.post('/api/v1/workspaces/restore/preview')
     def restore_preview(file: UploadFile):
         from .recovery import summary

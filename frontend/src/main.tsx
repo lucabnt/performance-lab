@@ -69,9 +69,22 @@ function App(){
  const [pickTarget,setPickTarget]=useState('');const [editMeasurement,setEditMeasurement]=useState<Row|undefined>();
  const [workspaces,setWorkspaces]=useState<Row[]>([]),[workspace,setWorkspace]=useState(sessionStorage.getItem('fuorigiri-workspace')||'');
  const [loading,setLoading]=useState(true),[started,setStarted]=useState(false);const refreshSequence=useRef(0);
+ const restoredSelection=useRef(android);
  const readSelection=()=>rememberedSelection(sessionStorage,android?localStorage:undefined);
  const writeSelection=(s:{workspace:string;organization:string})=>saveSelection(s,sessionStorage,android?localStorage:undefined);
- const refresh=async()=>{const sequence=++refreshSequence.current;setLoading(true);try{const result=await loadArchiveSelection(api,readSelection,writeSelection,()=>sequence===refreshSequence.current);if(result&&sequence===refreshSequence.current){setStarted(true);setState(result.state);setWorkspace(result.workspace);setOrg(result.organization);setWorkspaces(result.workspaces);if(result.missing)setNotice('L’archivio ricordato non è più disponibile. Seleziona una società: nessun dato è stato eliminato.')}}finally{if(sequence===refreshSequence.current)setLoading(false)}};
+ const refresh=async()=>{const sequence=++refreshSequence.current;setLoading(true);try{
+  if(!restoredSelection.current){
+   const saved=await api('workspaces/last-selection',undefined,'GET','');
+   if(sequence!==refreshSequence.current)return;
+   writeSelection(saved);restoredSelection.current=true;
+  }
+  const result=await loadArchiveSelection(api,readSelection,writeSelection,()=>sequence===refreshSequence.current);
+  if(result&&sequence===refreshSequence.current){
+   if(!android)await api('workspaces/last-selection',{workspace:result.workspace,organization:result.organization},'PUT','');
+   if(sequence!==refreshSequence.current)return;
+   setStarted(true);setState(result.state);setWorkspace(result.workspace);setOrg(result.organization);setWorkspaces(result.workspaces);if(result.missing)setNotice('L’archivio ricordato non è più disponibile. Seleziona una società: nessun dato è stato eliminato.');
+  }
+ }finally{if(sequence===refreshSequence.current)setLoading(false)}};
  useEffect(()=>{refresh().catch(e=>setError(e.message))},[]);
  useEffect(()=>{window.scrollTo(0,0);if(android)requestAnimationFrame(()=>{const heading=document.querySelector<HTMLElement>('main h1');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true})}})},[page,selected,workspace,org]);
  useEffect(()=>setAthletePage(0),[search,groupFilter,lifecycle,workspace,org]);

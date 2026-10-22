@@ -8,6 +8,38 @@ from cycling_test.workspaces import Workspaces,invitation,join
 from cycling_test.sync import exchange
 
 
+def test_last_society_survives_backend_restart_and_origin_change(tmp_path):
+    manager=Workspaces(tmp_path,Store(tmp_path))
+    first=manager.create('First','Owner');second=manager.create('Second','Owner')
+    choice={'workspace':second['id'],'organization':second['organization_id']}
+    client=TestClient(create_app(tmp_path,token='first'),base_url='http://127.0.0.1:50001')
+    client.headers['X-Fuorigiri-Token']='first'
+    assert client.get('/api/v1/workspaces/last-selection').json()=={'workspace':'','organization':''}
+    assert client.put('/api/v1/workspaces/last-selection',json=choice).status_code==200
+    reopened=TestClient(create_app(tmp_path,token='second'),base_url='http://127.0.0.1:50002')
+    reopened.headers['X-Fuorigiri-Token']='second'
+    assert reopened.get('/api/v1/workspaces/last-selection').json()==choice
+    assert set(json.loads((tmp_path/'last-selection.json').read_text()))=={'workspace','organization'}
+    assert reopened.put('/api/v1/workspaces/last-selection',json={**choice,'organization':first['organization_id']}).status_code==422
+    assert reopened.get('/api/v1/workspaces/last-selection').json()==choice
+    assert TestClient(create_app(tmp_path,token='private')).get('/api/v1/workspaces/last-selection').status_code==401
+    (tmp_path/'last-selection.json').write_text('invalid',encoding='utf-8')
+    assert reopened.get('/api/v1/workspaces/last-selection').json()=={'workspace':'','organization':''}
+
+
+def test_viewer_can_remember_society_without_writing_society_records(tmp_path):
+    owner=Workspaces(tmp_path/'owner',Store(tmp_path/'owner'));entry=owner.create('Club','Owner')
+    manager=Workspaces(tmp_path/'viewer',Store(tmp_path/'viewer'))
+    joined=join(manager,invitation(owner.get(entry['id']),'Reader','viewer','long-password-123'),'long-password-123')
+    folder=tmp_path/'cloud';folder.mkdir()
+    exchange(owner.get(entry['id']),folder,owner.get(entry['id']).identity['sync_key'])
+    exchange(manager.get(joined['id']),folder,manager.get(joined['id']).identity['sync_key'])
+    client=TestClient(create_app(tmp_path/'viewer',token='t'))
+    client.headers.update({'X-Fuorigiri-Token':'t','X-Fuorigiri-Workspace':joined['id']})
+    assert client.put('/api/v1/workspaces/last-selection',json={'workspace':joined['id'],'organization':joined['organization_id']}).status_code==200
+    assert client.post('/api/v1/organizations',json={'name':'Forbidden'}).status_code==403
+
+
 def test_separate_archives_viewer_and_forgery(tmp_path):
     a=Workspaces(tmp_path/'a',Store(tmp_path/'a'))
     b=Workspaces(tmp_path/'b',Store(tmp_path/'b'))

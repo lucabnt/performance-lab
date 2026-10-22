@@ -1,5 +1,9 @@
 # Requisiti e to-do
 
+## DESKTOP-01 — ultima società alla riapertura, 22 ottobre 2026
+
+**Implementato nei sorgenti.** All’avvio desktop riaprire l’ultima società visualizzata, inclusa quella appena creata, senza ripetere la selezione. Preferenza del dispositivo (soli ID di archivio e società), indipendente dalla porta HTTP, esclusa dai dati condivisi. Validazione contro inventario e stato; archivio ricordato assente: selettore con avviso, senza scegliere un’altra società. Funziona anche per il visualizzatore senza concedere scritture societarie. Android mantiene il comportamento esistente. Accettazione sull’installer aggiornato ancora da eseguire.
+
 ## PILOT-01 — candidato e accettazione Windows/Android, 21 ottobre 2026
 
 Richiesta: preparare un candidato e una checklist Markdown con completamenti. Versione prodotto conservata 0.10.0, ID candidato separato. Build isolate, Windows dipendenze incluse/installer/portabile; Android release non firmato su scelta esplicita del titolare, con procedura per chiave stabile e firma. Sorgenti/wheel/provenienza e checksum a corredo, nessuna pubblicazione. Criteri: regressione locale, smoke congelato, integrità pacchetti e checklist tracciata; PC pulito, firma, telefono, provider reali e validazione esterna restano gate distinti prima della promozione. [Collaudo](COLLAUDO_PILOT.md), [firma](FIRMA_ANDROID.md).

@@ -1,5 +1,9 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## 22 ottobre 2026 — preferenza di riapertura desktop
+
+L’origine HTTP desktop cambia porta a ogni avvio: sessionStorage/localStorage non sono una fonte persistente adeguata. `GET/PUT /api/v1/workspaces/last-selection` memorizza atomicamente `last-selection.json` nella radice dati del dispositivo, con soli ID workspace/organization, senza segreti né revisioni sincronizzate. La GUI desktop legge la preferenza prima dell’inventario e salva solo la selezione risolta; errori e archivi mancanti non portano all’apertura arbitraria di un altro archivio. Endpoint autenticati, scrittura ammessa anche ai visualizzatori come preferenza locale. Android mantiene la preferenza locale già adottata. Nessuna dipendenza da una porta fissa o dal profilo WebEngine.
+
 ## Attuazione TD-83–97 — 19 ottobre 2026
 
 Implementati i flussi proposti sotto: `Dialog` con testata opaca persistente, focus/Esc e conferma delle modifiche non salvate; correzione dedicata per tutte le famiglie; campi custom finali, glossario contestuale IT/EN, riferimenti soglia/zone e coefficiente applicato visibile. `TimeInput` mantiene secondi canonici con lettura/inserimento mm:ss; marker e hover esplicitano l'origine temporale. Lattato-carico collegato a livello e tabella, senza nuova formula fisiologica. Componenti locali candidati a estrazione successiva nella suite; nessuna modifica implicita alla repository comune.

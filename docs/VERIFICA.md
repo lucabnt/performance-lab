@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 22 ottobre 2026 — DESKTOP-01, riapertura ultima società
+
+- Suite Python completa: **206 passati, 1 saltato**; nuovi casi di persistenza dopo ricreazione backend/cambio porta/token, preferenza malformata, ID incoerenti, autenticazione e visualizzatore. Restano i warning noti Starlette/httpx e ZIP duplicato intenzionale.
+- Frontend: **25 test passati**, TypeScript/Vite compilati; warning noto sul chunk Plotly.
+- GUI desktop web compilata su archivio QA nuovo `.local/qa-last-society-20261022`: creata società sintetica, arrestato backend sulla porta 8774, riavviato sulla 8775 con nuova sessione/token e nuova scheda. La società ricordata si apre direttamente sulla pagina Atleti, senza selezione manuale. Verificato stato accessibile della GUI.
+- Nessun layout cambiato; schermate della galleria ancora rappresentative. Nessun archivio preesistente modificato. Il candidato del 21 ottobre e l’installazione precedente non contengono questa correzione. Nuova build Windows isolata in `.local/candidate-windows-20261022-01`: PyInstaller riuscito e smoke dell’EXE congelato superato con PATH limitato a Windows, senza Python/Node. Installer Inno Setup compilato con successo (111,625 s), consegna `dist/candidates/Fuorigiri-0.10.0-windows-20261022-01`, SHA-256 `b4d1538adb7d1f0f5659ec41b07662fb3e38d774884799f8859aaa507c9f7915`, 196051115 byte, quattro checksum verificati. Non firmato Authenticode; aggiornamento sopra l’installazione dell’utente non eseguito dall’agente, resta W-04/W-07.
+
+
 ## Aggiornamento candidato pilot-20261021-02 — 21 ottobre 2026
 
 Anche lo ZIP portabile finale è stato estratto in una nuova cartella QA: smoke dell'EXE estratto riuscito, PATH limitato a Windows e archivio di prova separato.

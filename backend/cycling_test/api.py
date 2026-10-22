@@ -217,7 +217,7 @@ def create_app(root=None, token=None, frontend=None):
             identity=selected.identity
             read_only=identity['certificate']['role']=='viewer' or identity['certificate']['id'] in selected.revocations()
             allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync',
-                '/api/v1/workspaces','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore','/api/v1/workspaces/split/preview','/api/v1/workspaces/split','/api/v1/backup/scalable/save',
+                '/api/v1/workspaces','/api/v1/workspaces/last-selection','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore','/api/v1/workspaces/split/preview','/api/v1/workspaces/split','/api/v1/backup/scalable/save',
                 '/api/v1/sync/connection','/api/v1/sync/run','/api/v1/sync/oauth/start','/api/v1/sync/oauth/callback','/api/v1/sync/oauth/disconnect','/api/v1/anaerobic/preview','/api/v1/custom/preview')
             allowed=allowed or request.url.path=='/api/v1/repeatability' or request.url.path.startswith('/api/v1/repeatability/report/')
             if read_only and not allowed:

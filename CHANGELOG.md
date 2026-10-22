@@ -1,5 +1,17 @@
 # Changelog
 
+## 22 ottobre 2026 — aggiornamento candidato Windows e Android
+
+- Preparazione candidato `pilot-20261022-02` dai sorgenti correnti: riapertura desktop, codice protocolli e anteprima anagrafica CSV. Installer e portabile Windows, APK release non firmato e debug per collaudo separati dalle consegne precedenti; versione prodotto 0.10.0 invariata. Nessuna pubblicazione o installazione automatica.
+
+## 22 ottobre 2026 — anteprima importazione anagrafica
+
+- Anteprima CSV atleti con cognome, nome, anno di nascita, conferma, fonte, sesso, stato e note. Eliminata la colonna Data non pertinente e sostituita la tabella errori vuota con un messaggio esplicito. Correzione nei sorgenti, non negli installer esistenti.
+
+## 22 ottobre 2026 — codice dei protocolli
+
+- PROTOCOLLI-01: Codice visibile, precompilato e modificabile per tutte le famiglie e per import ERG; nuove versioni inizializzate dal codice salvato. Negli anaerobici codice operativo separato dal tipo di test, con compatibilità delle chiamate precedenti e controllo duplicati codice/versione. Nessuna modifica agli storici o ai metodi scientifici; modifica ai sorgenti, non agli installer già consegnati.
+
 ## 22 ottobre 2026 — riapertura desktop
 
 - DESKTOP-01: Windows/Linux ricordano l’ultima società nelle preferenze locali del backend, indipendentemente dalla porta HTTP e dalla sessione WebEngine. Ripristino verificato contro inventario, nessun cambio automatico verso un altro archivio se quello ricordato manca; preferenza di soli ID, anche per visualizzatori. Modifica ai sorgenti; preparazione di una nuova consegna Windows `windows-20261022-01` per collaudare l’aggiornamento. Il candidato e gli installer precedenti restano invariati.

@@ -18,6 +18,12 @@ Consegna Windows separata: `dist/candidates/Fuorigiri-0.10.0-windows-20261022-01
 4. Al primo avvio aggiornato selezionare una volta la società: la vecchia versione non aveva salvato la preferenza desktop. Chiudere completamente e riaprire: deve aprirsi direttamente quella società (W-07).
 5. Ripetere con un’altra società e senza rete. Annotare esito, digest dell’installer e problemi. Il nuovo installer non è firmato Authenticode; l’eventuale avviso Windows sulla provenienza è distinto da un errore dell’app.
 
+## Aggiornamento Windows e Android del 22 ottobre 2026
+
+Nuova consegna `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-02/`, con DESKTOP-01, codice protocolli e anteprima anagrafica IMPORT-01. Versione prodotto 0.10.0 invariata, candidato e checksum distinti; pacchetti precedenti conservati. Windows: installer sopra la versione esistente o ZIP portabile completo. Android: release non firmato per firma del titolare, debug separato per collaudo con la stessa firma debug precedente; non sostituisce il percorso release e non richiede disinstallare o cancellare dati.
+
+Ripetere F-02 sul codice modificabile per tutte le famiglie e F-08 sull’anteprima anagrafica completa, più W-04/W-07 e A-05/A-06 sui dispositivi del collaudo. Non importare dati personali nei corpus distribuiti. Esiti tecnici effettivi e limiti in VERIFICA.md; la preparazione dei pacchetti non aggiorna automaticamente l’installazione del PC o del telefono.
+
 ## 0. Identificazione e preparazione
 
 - [ ] **P-01** Confrontare i digest dei file ricevuti con SHA256SUMS.txt: devono coincidere. Registrare il candidato esatto nel verbale in fondo.

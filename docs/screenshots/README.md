@@ -62,3 +62,7 @@ Sostituiti `android-grafico-orizzontale.png` e `android-atleti.png` con catture 
 ### Correzione logo a destra, 21 ottobre 2026
 
 Rinnovati android-atleti.png, android-menu.png e android-info.png: APK con common UI 0.2.8, logo dopo la scritta e allineamento a destra nella testata. Stesso emulatore/società sintetica, foto integrali ispezionate. Le catture dei grafici mantengono la propria provenienza.
+
+## Codice dei protocolli — 22 ottobre 2026
+
+`protocollo-codice.png`: browser locale, Fuorigiri 0.10.0 con modifiche PROTOCOLLI-01, UI comune 0.2.8. Archivio QA nuovo e società interamente sintetica. Nuova versione Wingate 15 s: campo Codice modificabile con `ANA-DEMO-15` ereditato dalla scheda appena salvata. Immagine reale senza ritocchi; nessun installer aggiornato o collaudo Android implicito.

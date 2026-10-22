@@ -4,7 +4,7 @@ import json
 import math
 from datetime import date
 from uuid import uuid5,NAMESPACE_URL
-from pydantic import BaseModel,ConfigDict,Field,model_validator
+from pydantic import BaseModel,ConfigDict,Field,model_validator,field_validator
 from typing import Literal
 from .store import encoded
 from .custom_fields import FieldDefinition,protocol_metadata,attach
@@ -25,6 +25,7 @@ class Protocol(Model):
     organization_id: str
     name: str=Field(min_length=1,max_length=300)
     family: Literal['sprint','wingate30','wingate15']
+    code: str|None=Field(default=None,min_length=1,max_length=100,exclude=True)
     version: str=Field(default='1',min_length=1,max_length=100)
     parent_id: str|None=None
     reason: str=Field(default='',max_length=3000)
@@ -39,6 +40,14 @@ class Protocol(Model):
     end_window_s: float=Field(default=1,ge=.1,le=5)
     max_gap_s: float=Field(default=2,gt=0,le=5)
     coverage_min: float=Field(default=.95,ge=.95,le=1)
+    @field_validator('code')
+    @classmethod
+    def valid_code(cls,value):
+        if value is not None:
+            value=value.strip()
+            if not value:raise ValueError('Il codice non può essere vuoto.')
+        return value
+
     @model_validator(mode='after')
     def duration(self):
         if self.family=='wingate15':self.duration_s=15
@@ -212,9 +221,10 @@ def install_api(app,store):
             p=require(data.parent_id,'protocol')
             if p.get('organization_id')!=data.organization_id or not is_anaerobic(p):raise ValueError('Protocollo padre non valido.')
             if not data.reason.strip():raise ValueError('Motivare la nuova versione.')
-        if any(p.get('organization_id')==data.organization_id and p.get('test_type')==data.family and p.get('name')==data.name and p.get('version')==data.version for p in store.list('protocol')):raise ValueError('Nome e versione del protocollo già presenti.')
+        code=data.code or data.family
+        if any(p.get('organization_id')==data.organization_id and p.get('family')==code and p.get('version')==data.version for p in store.list('protocol')):raise ValueError('Codice e versione del protocollo già presenti.')
         metadata=protocol_metadata(data.model_dump())
-        return store.save('protocol',{**metadata,'organization_id':data.organization_id,'name':data.name,'family':data.family,'test_type':data.family,'version':data.version,'parent_id':data.parent_id,'reason':data.reason,'status':'active','anaerobic_spec':data.model_dump(),'definition':{'points':[],'segments':[],'duration_s':data.duration_s},'objects':[]})
+        return store.save('protocol',{**metadata,'organization_id':data.organization_id,'name':data.name,'family':code,'test_type':data.family,'version':data.version,'parent_id':data.parent_id,'reason':data.reason,'status':'active','anaerobic_spec':data.model_dump(),'definition':{'points':[],'segments':[],'duration_s':data.duration_s},'objects':[]})
     def prepare(data,editing=False):
         athlete=require(data.athlete_id,'athlete');p=require(data.protocol_id,'protocol')
         if not is_anaerobic(p) or p.get('historical'):raise ValueError('Selezionare un protocollo anaerobico attivo con metodo esplicito.')

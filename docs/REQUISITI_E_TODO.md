@@ -1,5 +1,13 @@
 # Requisiti e to-do
 
+## IMPORT-01 — anteprima anagrafica CSV
+
+Anteprima specifica per atleti con identità, nascita e provenienza, stato e note; nessuna Data generica. Errori visualizzati solo se presenti. Implementato nei sorgenti il 22 ottobre 2026; importatore e archivi invariati.
+
+## PROTOCOLLI-01 — codice modificabile, 22 ottobre 2026
+
+Richiesta: Codice precompilato ma modificabile anche per Wingate e altre famiglie. Implementato nei sorgenti per incrementali manuali/ERG, Sprint, Wingate 15/30 e personalizzati. Proposta iniziale dal tipo, codice salvato riproposto nelle nuove versioni; metodo anaerobico indipendente dal codice. API precedenti compatibili, storici intatti e duplicati codice/versione rifiutati. Contratto e limiti delle revisioni in [Protocolli e campi](PROTOCOLLI_E_CAMPI_CUSTOM.md). Verifiche in VERIFICA.md.
+
 ## DESKTOP-01 — ultima società alla riapertura, 22 ottobre 2026
 
 **Implementato nei sorgenti.** All’avvio desktop riaprire l’ultima società visualizzata, inclusa quella appena creata, senza ripetere la selezione. Preferenza del dispositivo (soli ID di archivio e società), indipendente dalla porta HTTP, esclusa dai dati condivisi. Validazione contro inventario e stato; archivio ricordato assente: selettore con avviso, senza scegliere un’altra società. Funziona anche per il visualizzatore senza concedere scritture societarie. Android mantiene il comportamento esistente. Accettazione sull’installer aggiornato ancora da eseguire.

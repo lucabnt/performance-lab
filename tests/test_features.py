@@ -94,6 +94,25 @@ def test_csv_preview_atomic_duplicate_history(tmp_path):
         assert 'assets/logo.png' in z.namelist()
 
 
+def test_athlete_csv_preview_preserves_identity_and_birth_metadata(tmp_path):
+    c=client(tmp_path);org=post(c,'organizations',{'name':'Demo'})
+    raw=b'atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note\na,Demo,Uno,2012,si,referto,M,si,Nota\nb,Esempio,Due,2011,no,categoria,F,no,\n'
+    response=c.post('/api/v1/import/preview',data={'organization_id':org['id'],'profile':'atleti'},files={'file':('data.csv',raw)})
+    assert response.status_code==200,response.text
+    p=response.json()
+    assert p['errors']==[] and p['ready']==2
+    first,second=p['preview']
+    assert (first['surname'],first['name'],first['birth_year'],first['birth_confirmed'],first['birth_source'],first['sex'],first['status'],first['notes'])==('Demo','Uno',2012,True,'referto','M','active','Nota')
+    assert second['birth_confirmed'] is False and second['status']=='archived'
+    assert c.get('/api/v1/state').json()['athlete']==[]
+    post(c,'import/commit',{'organization_id':org['id'],'profile':'atleti','staged_hash':p['staged_hash']})
+    athletes=c.get('/api/v1/state').json()['athlete']
+    for row in p['preview']:
+        saved=next(a for a in athletes if a['external_id']==row['external_id'])
+        for key in ('surname','name','birth_year','birth_confirmed','birth_source','sex','status','notes'):
+            assert saved[key]==row[key]
+
+
 def test_trace_csv_units_and_timestamps():
     assert decode_trace_csv(b't,power,hr\n0,100,120\n1,110,121\n')['samples'][1]['power']==110
     with pytest.raises(ValueError):decode_trace_csv(b't,power\n0,100\n0,120\n')

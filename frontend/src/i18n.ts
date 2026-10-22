@@ -1,6 +1,11 @@
 export const language = localStorage.getItem('fuorigiri-language') || 'it';
 document.documentElement.lang=language==='en'?'en':'it';
 const translations:Record<string,string> = {
+ "Nessun errore rilevato.":"No errors found.",
+ "Anno di nascita":"Birth year",
+ "Sì":"Yes",
+ "Attivo":"Active",
+ "Archiviato":"Archived",
  'Comandi grafico':'Chart controls',
  "Apertura società…":"Opening club…",
  "Nessuna società aperta":"No club open",

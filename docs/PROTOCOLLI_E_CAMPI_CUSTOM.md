@@ -8,6 +8,12 @@
 
 Per gli anaerobici: riepilogo di durata/carico/finestre, scelta della sessione FIT, trattamento esplicito dei duplicati, click sul grafico per impostare l’inizio, zoom sullo sforzo e intervalli esclusi con motivo. La durata deriva dal protocollo. Inserimenti manuali e calcoli da file restano distinti; revisione con motivo e controllo della concorrenza. La nuova prova richiede atleta/protocollo attivi; una correzione può conservare i riferimenti archiviati del record originale.
 
+## Codice del protocollo
+
+Il campo **Codice** è visibile e modificabile per Incrementale aerobico (anche import ERG), Sprint breve, Wingate 15/30 s e Personalizzato. Alla creazione propone rispettivamente `incremental`, `sprint`, `wingate15`, `wingate30` o `custom`; sostituirlo con la sigla operativa, per esempio `ANA-15-070`. Nelle nuove versioni viene proposto il codice salvato. Per incrementali e personalizzati la revisione conserva lo stesso codice, come già richiesto dal contratto di versionamento.
+
+Per gli anaerobici l'API accetta `code` facoltativo, distinto da `family` (tipo tecnico). Il record conserva il codice in `family`, mentre `test_type` e `anaerobic_spec.family` mantengono il metodo. I client precedenti che omettono `code` conservano il valore tecnico come codice. Nessuna migrazione o riscrittura degli storici; il codice non modifica carico, durata o formule. Codice vuoto e duplicati codice/versione nella stessa società sono rifiutati.
+
 ## Schema estensibile, non codice eseguibile
 
 Ogni protocollo può definire fino a 50 campi facoltativi complessivi, con identificatore stabile, etichetta leggibile, tipo e unità. Tipi: numero finito, testo, sì/no, data ISO o scelta da elenco. Per i numeri si possono impostare minimo/massimo; per gli elenchi si dichiarano le scelte. Gli identificatori sono lettere minuscole, numeri e underscore e non coincidono con colonne fisiologiche del database.

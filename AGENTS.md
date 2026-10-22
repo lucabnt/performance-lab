@@ -88,6 +88,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 ## Interfaccia e report
 
+- Codice protocollo modificabile in tutte le famiglie, precompilato dal tipo o dalla versione precedente. API anaerobica: `code` operativo facoltativo distinto da `family` tecnico; record `family` conserva il codice e `test_type` il metodo. Non dedurre il metodo dal codice operativo; preservare client senza `code` e storici.
 - Protocolli si creano/versionano in Protocolli, anche manualmente o senza step. Un test può provenire da FIT/CSV o da soli dati manuali. Preservare campi custom tipizzati e facoltativi.
 - Etichette comprensibili e unità esplicite; non esporre nomi di colonne DB come testo utente. Preservare traduzioni IT/EN e accessibilità quando si aggiungono controlli.
 - Grafico temporale unico con segnali sovrapposti e scale fisiche indipendenti; lacune visibili e nessuna ricostruzione di tracciati da soli riepiloghi. Selezione esplicita delle serie confrontate, evitando legende ingestibili.

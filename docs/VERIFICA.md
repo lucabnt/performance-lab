@@ -1,5 +1,28 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 22 ottobre 2026 — build pilot-20261022-02
+
+- Suite Python completa: 210 passati, 1 saltato, warning preesistenti Starlette/httpx e ZIP con nome duplicato nel caso di corruzione intenzionale. Frontend corrente già compilato e 25 test modelli passati; versioni prodotto 0.10.0, UI 0.2.8 e core 0.1.2 coerenti.
+- Bundle Windows isolato in `output/build-pilot-20261022-02/bundle/Fuorigiri`: PyInstaller completato; smoke EXE congelato con PATH limitato ai percorsi Windows riuscito, backend HTTP/logo/dipendenze verificati su dati QA nuovi.
+- Installer Inno Setup compilato dal bundle corrente (129,969 s), destinazione isolata; 196062762 byte. Pacchetto finale in `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-02/`, con sorgenti e materiali di ricostruzione.
+- Android: Gradle 8.13 offline con JDK Temurin 21 ha completato assembleRelease e assembleDebug. ZIP, frontend corrente confrontato per SHA-256 e runtime Python di entrambe le ABI verificati; firma debug v2 valida, release non firmato confermato, zipalign con controllo 16 KB riuscito per entrambi. Allineamento non equivale a qualifica runtime su dispositivo 16 KB. Nessuna nuova chiave di firma generata.
+- Confezionamento finale completato: 13 checksum verificati, ZIP controllati dal packager, portabile estratto in directory nuova e smoke indipendente riuscito con PATH Windows. APK debug aggiuntivo e relative informazioni inclusi nel manifest finale; nessun artefatto precedente sovrascritto.
+- Nessuna installazione sopra dati operativi o prova su telefono/PC pulito in questa sessione; cloud reale e qualifica biologica restano gate separati. Consegne precedenti conservate.
+
+## 22 ottobre 2026 — anteprima anagrafica CSV
+
+- CSV fornito letto senza commit: 19 righe pronte, nessun errore; cognomi e anni presenti. Nessun dato personale aggiunto alla repository o agli archivi QA.
+- 10 test Python di tests/test_features.py passati, inclusa regressione anteprima/commit su identità, nascita, fonte, sesso, stato e note con dati sintetici; 25 test frontend passati e build riuscita. Warning preesistenti Starlette/httpx e dimensioni bundle.
+- Browser: componente ImportPanel reale in pagina QA temporanea con risposta API sintetica, due atleti attivo/archiviato e nascita confermata/non confermata; tabella e messaggio senza errori verificati visivamente. Non eseguito import del CSV personale nell’archivio operativo.
+
+## 22 ottobre 2026 — PROTOCOLLI-01, codice modificabile
+
+- Python: `pytest -q tests/test_features.py tests/test_custom_protocols.py tests/test_anaerobic.py`: **40 passati**. Regressioni Sprint/Wingate con codice personalizzato, metodo conservato, versione collegata, duplicati e codice vuoto rifiutati, inserimento manuale e compatibilità con payload senza codice. Avviso deprecazione Starlette/httpx preesistente.
+- Frontend: `npm --prefix frontend run test:signals`: **25 passati**; `npm --prefix frontend run build`: riuscita (avviso dimensione chunk Plotly). `scripts/verify_suite_ui.py`: UI comune 0.2.8 coerente. `git diff --check`: pulito.
+- Browser locale sul frontend compilato, archivio QA nuovo con soli dati sintetici: Codice iniziale visibile per incrementale, Sprint, Wingate 15/30 e personalizzato; modifica e salvataggio Wingate con `ANA-DEMO-15`, visualizzazione nel catalogo e codice ereditato in Nuova versione. Acquisizione reale verificata visivamente in `screenshots/protocollo-codice.png`. Import ERG aggiornato nei sorgenti e compilato, senza prova di caricamento file in questa sessione.
+- Nessuna modifica agli archivi reali, migrazione, metodo scientifico o pacchetto UI comune. Nessun EXE/APK/installer ricostruito; nessun collaudo Android implicito. Per incrementali e personalizzati restano i vincoli precedenti di codice invariato durante la revisione.
+
+
 ## 22 ottobre 2026 — DESKTOP-01, riapertura ultima società
 
 - Suite Python completa: **206 passati, 1 saltato**; nuovi casi di persistenza dopo ricreazione backend/cambio porta/token, preferenza malformata, ID incoerenti, autenticazione e visualizzatore. Restano i warning noti Starlette/httpx e ZIP duplicato intenzionale.

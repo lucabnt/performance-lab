@@ -86,3 +86,23 @@ def test_revision_preview_keeps_archived_references(tmp_path):
     assert c.post('/api/v1/custom/preview',json=correction).status_code==200
     assert c.post('/api/v1/custom/tests',json=payload).status_code==422
     assert c.put('/api/v1/custom/tests/'+t['id'],json=correction).status_code==200
+
+
+@pytest.mark.parametrize('kind', ['sprint', 'wingate15', 'wingate30'])
+def test_anaerobic_editable_code_preserves_method_and_revisions(tmp_path, kind):
+    c,post,org,a=client(tmp_path)
+    base={'organization_id':org['id'],'name':'Protocollo sintetico','family':kind,'version':'1'}
+    legacy=post('anaerobic/protocols',base)
+    assert legacy['family']==legacy['test_type']==kind
+    data={**base,'code':' ANA-DEMO '}
+    p=post('anaerobic/protocols',data)
+    assert p['family']=='ANA-DEMO'
+    assert p['test_type']==p['anaerobic_spec']['family']==kind
+    assert p['anaerobic_spec']==legacy['anaerobic_spec']
+    revised=post('anaerobic/protocols',{**data,'version':'2','parent_id':p['id'],'reason':'Revisione'})
+    assert revised['family']=='ANA-DEMO' and revised['parent_id']==p['id']
+    assert c.post('/api/v1/anaerobic/protocols',json={**data,'name':'Altro nome'}).status_code==422
+    for code in ('', '   '):
+        assert c.post('/api/v1/anaerobic/protocols',json={**data,'code':code}).status_code==422
+    t=post('anaerobic/tests',{'athlete_id':a['id'],'protocol_id':p['id'],'date':'2026-10-22','manual':{'peak_w':800},'settings':{}})
+    assert t['test_type']==kind and t['analysis']['peak_w']==800

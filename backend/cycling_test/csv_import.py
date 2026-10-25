@@ -6,6 +6,7 @@ from datetime import date
 from uuid import uuid5, NAMESPACE_URL
 
 SCHEMAS = {
+    'appartenenze': {'required':['atleta_id','nome','cognome','data_inizio','gruppo'], 'rule': 'ID, nome e cognome riconciliati. Date AAAA-MM-GG; fine vuota = in corso. Gruppo = categoria; sottogruppo = stagione (es. 2024). Anteprima dei gruppi da creare.'},
     'test_anaerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Sprint breve, Wingate 15 s o 30 s: indicare tipo_test (sprint, wingate15, wingate30) e durata_s. Il solo codice storico ANA-15-070 conserva la compatibilità a 15 s e 0,70 N·m/kg.'},
     'atleti': {'required':['atleta_id','cognome','nome'], 'rule':'Nome e cognome obbligatori; gli altri campi sono facoltativi.'},
     'antropometria': {'required':['atleta_id','data'], 'rule':'Almeno peso_kg oppure statura_cm; peso_fonte facoltativo (dichiarato).'},
@@ -17,6 +18,9 @@ SCHEMAS = {
 def import_columns(profile):
     if profile not in SCHEMAS:
         raise ValueError('Profilo CSV non supportato.')
+    if profile=='appartenenze':
+        from .membership_import import COLUMNS
+        return COLUMNS
     from .reports import CSV_HEADERS
     from .anaerobic import EXTENDED_HEADER
     return (EXTENDED_HEADER if profile=='test_anaerobico' else CSV_HEADERS[profile]).split(',')
@@ -78,6 +82,9 @@ def decode_trace_csv(raw):
 
 
 def plan_import(store, org, profile, raw):
+    if profile=='appartenenze':
+        from .membership_import import plan_memberships
+        return plan_memberships(store,org,raw)
     if profile=='test_anaerobico':
         from .anaerobic import historical_plan
         return historical_plan(store,org,raw)

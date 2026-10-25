@@ -55,10 +55,10 @@ export function HistoricalEditor({test,api,run,done,standalone=false}:{test:Row,
  return <section>{!standalone&&<button onClick={()=>setOpen(!open)}>{tr('Correggi risultato storico')}</button>}{open&&<><div className="form-grid"><label>{tr('Data')}<input type="date" value={draft.date} onChange={e=>change('date',e.target.value)}/></label>{['map_w','map_alt_w','fc_max_test_bpm','end_s','weight_kg','height_cm','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe','rest_hr','rest_after_s'].map(k=><label key={k}>{metricLabel(k)}<input type="number" step="any" value={draft[k]??''} onChange={e=>change(k,e.target.value)}/></label>)}</div><label>{tr('Note')}<textarea value={draft.notes||''} onChange={e=>change('notes',e.target.value)}/></label><label>{tr('Motivo della revisione')}<input value={draft.reason} onChange={e=>change('reason',e.target.value)}/></label><FormActions><button onClick={()=>run(async()=>{const settings={...test.settings,...Object.fromEntries(['weight_kg','height_cm','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe','rest_hr','rest_after_s'].map(k=>[k,draft[k]==null||draft[k]===''?null:Number(draft[k])])),end_s:Number(draft.end_s)||0,weight_source:test.settings.weight_source||'dichiarato',threshold_source:'dichiarato'};const saved=await api(`tests/${test.id}/historical`,{base:test.revision,reason:draft.reason,date:draft.date,map_w:draft.map_w==null||draft.map_w===''?null:Number(draft.map_w),map_alt_w:draft.map_alt_w==null||draft.map_alt_w===''?null:Number(draft.map_alt_w),fc_max_test_bpm:draft.fc_max_test_bpm==null||draft.fc_max_test_bpm===''?null:Number(draft.fc_max_test_bpm),settings,notes:draft.notes||''},'PUT');done(saved);setOpen(false)})}>{tr('Salva nuova revisione')}</button></FormActions></>}</section>
 }
 
-export function GroupTree({groups,memberships,onSelect,onAdd,onAddSeason,canEdit=false}:{groups:Row[],memberships:Row[],onSelect:(id:string)=>void,onAdd:(id:string)=>void,onAddSeason:(id:string)=>void,canEdit?:boolean}){
+export function GroupTree({groups,memberships,onSelect,onAdd,onAddSeason,onEdit,onRemove,canEdit=false}:{groups:Row[],memberships:Row[],onSelect:(id:string)=>void,onAdd:(id:string)=>void,onAddSeason:(id:string)=>void,onEdit:(record:Row,scope:'group'|'season')=>void,onRemove:(record:Row,scope:'group'|'season')=>void,canEdit?:boolean}){
  const today=localToday();
- return <>{groups.filter(g=>!g.parent_id).map(parent=><section className="panel protocol" key={parent.id}>
-  <div className="panel-head"><h2>{parent.name}</h2><button disabled={!canEdit} onClick={()=>onAddSeason(parent.id)}>{tr('Aggiungi stagione')}</button></div>
+ return <>{groups.filter(g=>!g.parent_id&&g.status!=='deleted').map(parent=><section className="panel protocol" key={parent.id}>
+  <div className="panel-head"><h2>{parent.name}</h2><div className="actions"><button disabled={!canEdit} onClick={()=>onAddSeason(parent.id)}>{tr('Aggiungi stagione')}</button><button disabled={!canEdit} onClick={()=>onEdit(parent,'group')}>{tr('Modifica categoria')}</button><button disabled={!canEdit} onClick={()=>onRemove(parent,'group')}>{tr('Elimina categoria')}</button></div></div>
   <button onClick={()=>onSelect(parent.id)}>{tr('Mostra gli atleti attuali della categoria')}</button>
   {!groupSeasons(parent,groups,memberships).length&&<p>{tr('Aggiungi una stagione per preparare la rosa.')}</p>}
   <div className="cards">{groupSeasons(parent,groups,memberships).map(season=>{
@@ -66,10 +66,11 @@ export function GroupTree({groups,memberships,onSelect,onAdd,onAddSeason,canEdit
    const count=new Set(memberships.filter(m=>matchesGroupMembership(m,filter,groups,today)).map(m=>m.athlete_id)).size;
    return <section className="zone-editor" key={season.id} aria-label={`${parent.name} - ${season.season||tr('Senza stagione')}`}>
     <h3>{season.season?`${tr('Stagione')} ${season.season}`:tr('Senza stagione')}{period.start>today&&` - ${tr('Futura')}`}</h3>
+    {season.id!==parent.id&&season.name!==parent.name&&<p>{season.name}</p>}
     <p>{tr(period.end?'Atleti nella stagione:':'Atleti attuali:')} {count}</p>
     {period.end&&<p className="hint">{tr('Appartenenze nel periodo:')} {period.start} / {period.end}</p>}
     <div className="actions"><button disabled={!canEdit} onClick={()=>onAdd(season.id)}>{tr('Aggiungi atleti')}</button>
-    <button onClick={()=>onSelect(filter)}>{tr('Mostra gli atleti')} ({count})</button></div>
+    <button onClick={()=>onSelect(filter)}>{tr('Mostra gli atleti')} ({count})</button><button disabled={!canEdit} onClick={()=>onEdit(season,season.id===parent.id&&season.season?'season':'group')}>{tr('Modifica stagione')}</button><button disabled={!canEdit} onClick={()=>onRemove(season,season.id===parent.id&&season.season?'season':'group')}>{tr('Elimina stagione')}</button></div>
    </section>;
   })}</div>
  </section>)}</>;

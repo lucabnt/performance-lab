@@ -1,6 +1,29 @@
 export const language = localStorage.getItem('fuorigiri-language') || 'it';
 document.documentElement.lang=language==='en'?'en':'it';
 const translations:Record<string,string> = {
+ "ID, nome e cognome riconciliati. Date AAAA-MM-GG; fine vuota = in corso. Gruppo = categoria; sottogruppo = stagione (es. 2024). Anteprima dei gruppi da creare.":"Match athlete ID, first and last name. Dates YYYY-MM-DD; blank end means ongoing. Group is the category; subgroup is the season (e.g. 2024). New groups are shown in the preview.",
+ "Appartenenze storiche e future":"Historical and future memberships",
+ "Data inizio":"Start date",
+ "Data fine":"End date",
+ "Sottogruppo / stagione":"Subgroup / season",
+ "Scarica CSV di esempio":"Download example CSV",
+ "Nuove categorie e stagioni:":"New categories and seasons:",
+ "Una riga per appartenenza: lo stesso atleta può comparire in più stagioni. Sottogruppo identifica la stagione; i gruppi mancanti vengono proposti in anteprima. Gli esempi sono sintetici: sostituisci ID, nomi e date con i tuoi dati.":"One row per membership: the same athlete can appear in several seasons. Subgroup identifies the season; missing groups are proposed in the preview. Examples are synthetic: replace IDs, names and dates with your own data.",
+
+ "Gruppo o stagione eliminati":"Deleted group or season",
+ "Modifica categoria":"Edit category",
+ "Elimina categoria":"Delete category",
+ "Modifica stagione":"Edit season",
+ "Elimina stagione":"Delete season",
+ "Mostra gruppi e stagioni eliminati":"Show deleted groups and seasons",
+ "Gruppi e stagioni eliminati":"Deleted groups and seasons",
+ "Se la categoria è eliminata, ripristinala prima delle sue stagioni.":"If the category is deleted, restore it before its seasons.",
+ "Modifica gruppo o stagione":"Edit group or season",
+ "Elimina gruppo o stagione":"Delete group or season",
+ "Verrà rimosso dalle scelte attive. Atleti, test e appartenenze storiche restano conservati. Potrai ripristinarlo.":"It will be removed from active choices. Athletes, tests and historical memberships are preserved. You can restore it.",
+ "Sposta o elimina prima le stagioni attive della categoria.":"Move or delete the category’s active seasons first.",
+ "Conferma eliminazione":"Confirm deletion",
+
  "Aggiungi stagione":"Add season",
  "Aggiungi una stagione per preparare la rosa.":"Add a season to prepare the roster.",
  "Mostra gli atleti attuali della categoria":"Show current athletes in the category",

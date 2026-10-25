@@ -3,11 +3,12 @@ import {DataTable} from '@cycling-suite/ui';
 import {tr} from './i18n';
 
 type Row=Record<string,any>;
-const profiles:Record<string,string>={atleti:'Anagrafiche atleti',antropometria:'Antropometria',test_aerobico:'Test aerobici',test_anaerobico:'Test anaerobici'};
+const profiles:Record<string,string>={appartenenze:'Appartenenze storiche e future',atleti:'Anagrafiche atleti',antropometria:'Antropometria',test_aerobico:'Test aerobici',test_anaerobico:'Test anaerobici'};
 const families:Record<string,string>={sprint:'Sprint breve',wingate15:'Wingate 15 s',wingate30:'Wingate 30 s'};
 const cell=(key:string,label:string,render?:(row:Row)=>any)=>({key,label:tr(label),...(render?{render}:{})});
 
 function columns(profile:string){
+ if(profile==='appartenenze')return [cell('athlete_external_id','ID esterno'),cell('athlete_name','Atleta'),cell('start','Data inizio'),cell('end','Data fine'),cell('group_name','Gruppo'),cell('subgroup','Sottogruppo / stagione'),cell('category_year','Anno di categoria'),cell('notes','Note')];
  if(profile==='atleti')return [cell('external_id','ID esterno'),cell('surname','Cognome'),cell('name','Nome'),cell('birth_year','Anno di nascita'),cell('birth_confirmed','Nascita confermata',r=>tr(r.birth_confirmed?'Sì':'No')),cell('birth_source','Fonte'),cell('sex','Sesso'),cell('status','Stato',r=>tr(r.status==='active'?'Attivo':'Archiviato')),cell('notes','Note')];
  const athlete=[cell('athlete_external_id','ID atleta'),cell('athlete_name','Atleta'),cell('date','Data')];
  if(profile==='antropometria')return [...athlete,cell('weight_kg','Peso · kg'),cell('height_cm','Statura · cm'),cell('source','Fonte del peso',r=>tr(r.source)),cell('origin','Origine')];
@@ -26,14 +27,16 @@ export function ImportPanel({org,api,run,refresh,download,readOnly=false}:{org:s
   <h2>{tr('Importazione in blocco da CSV')}</h2>
   <p>{tr('Importa prima le anagrafiche. Per associare i dati agli atleti usa atleta_id, non il nome.')}</p>
   <label>{tr('Tipo di importazione')}<select value={profile} onChange={e=>{setProfile(e.target.value);setResult(null)}}>{Object.entries(profiles).map(([key,label])=><option key={key} value={key}>{tr(label)}</option>)}</select></label>
-  <div className="actions"><button onClick={()=>run(()=>download('import/template/'+profile,profile+'-modello.csv'))}>{tr('Scarica modello CSV vuoto')}</button></div>
-  <p>{tr('Il modello contiene soltanto le intestazioni. Compila una riga per atleta, rilevazione o test; lascia vuoti i valori non disponibili.')}</p>
+  <div className="actions"><button onClick={()=>run(()=>download('import/template/'+profile,profile+'-modello.csv'))}>{tr('Scarica modello CSV vuoto')}</button>{profile==='appartenenze'&&<button onClick={()=>run(()=>download('import/example/appartenenze','appartenenze-esempio.csv'))}>{tr('Scarica CSV di esempio')}</button>}</div>
+  {profile==='appartenenze'&&<p>{tr('Una riga per appartenenza: lo stesso atleta può comparire in più stagioni. Sottogruppo identifica la stagione; i gruppi mancanti vengono proposti in anteprima. Gli esempi sono sintetici: sostituisci ID, nomi e date con i tuoi dati.')}</p>}
+  {profile!=='appartenenze'&&<p>{tr('Il modello contiene soltanto le intestazioni. Compila una riga per atleta, rilevazione o test; lascia vuoti i valori non disponibili.')}</p>}
   <p className="hint">{tr('Colonne obbligatorie:')} {schemas[profile]?.required.join(', ')}. {tr(schemas[profile]?.rule||'')}</p>
   {profile==='test_anaerobico'&&<p>{tr('Per nuovi protocolli compila tipo_test e durata_s: sprint (3–10 s), wingate15 (15 s), wingate30 (30 s). ANA-15-070 resta compatibile con i CSV storici. I risultati importati sono riepiloghi dichiarati, senza ricalcolo dai campioni.')}</p>}
   <details><summary>{tr('Colonne facoltative')}</summary><p>{schemas[profile]?.optional.join(', ')}</p></details>
   <input key={profile} aria-label={tr('CSV da importare')} disabled={readOnly} type="file" accept=".csv" onChange={e=>{const file=e.target.files?.[0];setResult(null);if(file)run(async()=>{const form=new FormData();form.append('file',file);form.append('organization_id',org);form.append('profile',profile);setResult(await api('import/preview',form))})}}/>
   {result&&<>
    <p>{result.rows} {tr('righe ·')} {ready} {tr('record pronti ·')} {result.skipped} {tr('già presenti')}</p>
+   {!!result.new_groups?.length&&<p>{tr('Nuove categorie e stagioni:')} {result.new_groups.map((g:Row)=>[g.name,g.season].filter(Boolean).join(' / ')).join(', ')}</p>}
    {!!result.new_protocols?.length&&<p>{tr('Nuovi protocolli di archivio:')} {result.new_protocols.map((p:Row)=>p.code).join(', ')}</p>}
    {result.errors.length>0?<DataTable rows={result.errors} columns={[cell('row','Riga'),cell('error','Errore')]}/>:<p role="status">{tr('Nessun errore rilevato.')}</p>}
    <DataTable rows={rows} columns={columns(profile)}/>

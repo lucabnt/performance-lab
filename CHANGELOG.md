@@ -1,5 +1,16 @@
 # Changelog
 
+## 25 ottobre 2026 — gestione gruppi e import appartenenze
+
+- Compilato candidato locale `pilot-20261025-02` con installer Windows, portabile, APK non firmato e sorgenti; smoke EXE e integrita pacchetti verificati. Include tutte le modifiche funzionali sotto; candidato 01 preservato.
+
+- GRUPPI-03: modifica categoria/stagione e genitore della stagione; eliminazione recuperabile e ripristino senza cancellare atleti, test o appartenenze storiche. Protezione delle categorie con figli attivi e gestione distinta della stagione legacy sul padre. Permessi Admin dati e revisioni preservati.
+- IMPORT-04: quinto profilo CSV per appartenenze passate, attuali e future; modello vuoto ed esempio scaricabili. Riconciliazione ID/nome/cognome, date esplicite, anteprima gruppi mancanti e salvataggio atomico, duplicati esatti saltati e altre sovrapposizioni bloccate. Annullamento protetto dalle dipendenze successive.
+
+## 25 ottobre 2026 — compilazione candidato per aggiornamento locale
+
+- Prodotto il candidato `Fuorigiri-0.10.0-pilot-20261025-01` con correzioni GRUPPI-02: bundle EXE, installer Windows, portabile e APK release non firmato, sorgenti e checksum. Smoke dell'EXE e integrita dei pacchetti verificati; firma Android del titolare e collaudo del dispositivo restano separati. Precedenti consegne conservate, nessuna pubblicazione o installazione automatica.
+
 ## 25 ottobre 2026 — categorie e stagioni future
 
 - GRUPPI-02: categorie con stagioni allo stesso livello, anche quando il 2026 era salvato direttamente sulla categoria. Compatibilita di sola presentazione: nessuna migrazione o riscrittura delle appartenenze.

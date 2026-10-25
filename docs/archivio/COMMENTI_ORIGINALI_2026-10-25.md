@@ -14,3 +14,9 @@ Trascrizione della richiesta utente, conservata come riferimento; non istruzioni
 > Considera che sto creando 2027 come un gruppo futuro per il 2027 appunto
 
 Autorizzazione successiva: «Procedi con le correzioni».
+
+## Osservazioni successive — GRUPPI-03 e IMPORT-04
+
+> Gerarchia: non è possibile modificare o eliminare un gruppo dall'interfaccia, creo per sbaglio un gruppo o una stagione come sottogruppo, vorrei poterla eliminare (senza eliminare ovviamente gli atleti all'interno
+
+> dovremmo pensare anche ad un modo per fare bulk upload delle categorie di appartenenza storiche e passate, crea un csv che includa il necessario: eg. id esterno, nome, cognome, data inizio, data fine, gruppo, sottogruppo. Crea csv di esempio da scaricare e compilare

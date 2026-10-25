@@ -1,0 +1,5 @@
+﻿atleta_id,nome,cognome,data_inizio,data_fine,gruppo,sottogruppo,anno_categoria,note
+DEMO-001,Giulia,Riva,2024-01-01,2024-12-31,Esordienti,2024,2,Esempio sintetico: sostituire con il proprio ID esterno
+DEMO-001,Giulia,Riva,2025-01-01,2025-12-31,Allievi,2025,1,Passaggio di categoria
+DEMO-001,Giulia,Riva,2026-01-01,2026-12-31,Allievi,2026,2,Stagione corrente
+DEMO-002,Marco,Demo,2027-01-01,2027-12-31,Allievi,2027,1,Pianificazione futura

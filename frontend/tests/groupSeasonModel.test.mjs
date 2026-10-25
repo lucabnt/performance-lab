@@ -38,3 +38,12 @@ test('undated memberships remain visible separately from named seasons',()=>{
  assert.deepEqual(groupSeasons(root,children,[{group_id:'root'}]).map(g=>g.id),['root','child']);
  assert.deepEqual(groupSeasons(root,[root],[]),[]);
 });
+test('deleted groups and legacy seasons disappear from active rosters without losing their data',()=>{
+ const hidden=[{...groups[0],season_status:'deleted'},{...groups[1],status:'deleted'}];
+ const membership={group_id:'allievi',start:'2026-01-01'};
+ assert.deepEqual(groupSeasons(hidden[0],hidden,[membership]),[]);
+ assert.equal(matchesGroupMembership(membership,'season:allievi',hidden,today),false);
+ assert.equal(matchesGroupMembership(membership,'allievi',hidden,today),false);
+ assert.equal(matchesGroupMembership({...membership,group_id:'2027'},'allievi',hidden,today),false);
+ assert.equal(membership.group_id,'allievi');
+});

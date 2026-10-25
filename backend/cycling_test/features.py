@@ -158,6 +158,8 @@ def install_features(app, store, require, download, preview):
         removed_ids={r['id'] for r in records}
         if any(t['athlete_id'] in removed_ids and t['id'] not in removed_ids for t in store.list('test')):
             raise ValueError('Atleti del lotto hanno test successivi: annullare prima i lotti dipendenti.')
+        if any(m['id'] not in removed_ids and m.get('status')!='deleted' and (m['group_id'] in removed_ids or m['athlete_id'] in removed_ids) for m in store.list('membership')) or any(g['id'] not in removed_ids and g.get('status')!='deleted' and g.get('parent_id') in removed_ids for g in store.list('group')):
+            raise ValueError('Gruppi o atleti del lotto hanno appartenenze o stagioni successive: riconciliare prima le dipendenze.')
         store.revise_batch(records,data.reason)
         return {'undone':len(records)}
 
@@ -174,6 +176,11 @@ def install_features(app, store, require, download, preview):
     def import_template(profile:str):
         from .csv_import import template_csv
         return download(template_csv(profile),'text/csv; charset=utf-8',profile+'-modello.csv')
+
+    @app.get('/api/v1/import/example/appartenenze')
+    def membership_example():
+        from .membership_import import sample_csv
+        return download(sample_csv(),'text/csv; charset=utf-8','appartenenze-esempio.csv')
 
     @app.get('/api/v1/zones/presets')
     def presets():
@@ -228,7 +235,9 @@ def install_features(app, store, require, download, preview):
         athletes={a['id']:a for a in store.list('athlete') if a['organization_id']==organization_id}
         protocols={p['id']:p for p in store.list('protocol')}
         protocols.update({p['id']:p for kind,p in result['entries'] if kind=='protocol'})
-        records=[(kind,p) for kind,p in result['entries'] if kind!='protocol']
+        groups={g['id']:g for g in store.list('group')}
+        groups.update({p['id']:p for kind,p in result['entries'] if kind=='group'})
+        records=[(kind,p) for kind,p in result['entries'] if kind not in ('protocol','group')]
         created=[p for kind,p in result['entries'] if kind=='protocol']
         preview=[]
         for kind,payload in records[:20]:
@@ -237,8 +246,12 @@ def install_features(app, store, require, download, preview):
             preview.append({'kind':kind,**payload,**({'athlete_name':(athlete.get('surname','')+' '+athlete.get('name','')).strip(),
                 'athlete_external_id':athlete.get('external_id',athlete.get('id',''))} if athlete else {}),
                 **({'protocol_code':protocol['family'],'protocol_name':protocol['name']} if protocol else {})})
+            if kind=='membership':
+                g=groups[payload['group_id']]
+                preview[-1].update(group_name=groups.get(g.get('parent_id'),g)['name'],subgroup=g.get('season',''))
         return {k:v for k,v in result.items() if k!='entries'} | {'staged_hash':digest,'ready':len(result['entries']),
-                'ready_rows':len(records),'new_protocols':[{'code':p['family'],'name':p['name']} for p in created],'preview':preview}
+                'ready_rows':len(records),'new_protocols':[{'code':p['family'],'name':p['name']} for p in created],
+                'new_groups':[{'name':p['name'],'season':p.get('season','')} for kind,p in result['entries'] if kind=='group'],'preview':preview}
 
     class Commit(Model):
         organization_id: str

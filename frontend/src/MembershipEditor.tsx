@@ -16,7 +16,7 @@ export function MembershipEditor({athletes,groups,memberships,athleteId,groupId,
  const selected=athleteId?(available.some(a=>a.id===athleteId)?[athleteId]:[]):picked.filter(id=>available.some(a=>a.id===id));
  const all=eligible.length>0&&eligible.every(a=>selected.includes(a.id));
  const toggle=(id:string)=>setPicked(ids=>ids.includes(id)?ids.filter(x=>x!==id):[...ids,id]);
- const label=(g:Row)=>[g.name,g.season].filter(Boolean).join(' · ');
+ const label=(g:Row)=>[groups.find(p=>p.id===g.parent_id)?.name||g.name,g.season].filter(Boolean).join(' · ');
  return <form onSubmit={e=>{e.preventDefault();run(async()=>{const result=await api('memberships/batch',{group_id:group,athlete_ids:selected,start,end:end||null,category_year:year?Number(year):null});await done(result)})}}>
   <h2>{tr(athleteId?'Aggiungi a un gruppo':'Aggiungi atleti')}</h2>
   {athleteId&&<p>{athletes.find(a=>a.id===athleteId)?.surname} {athletes.find(a=>a.id===athleteId)?.name}</p>}

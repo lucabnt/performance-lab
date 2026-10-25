@@ -82,3 +82,13 @@ Rinnovati android-atleti.png, android-menu.png e android-info.png: APK con commo
 Rinnovato `gruppi-aggiungi-atleti.png`: sostituisce la cattura del 22 ottobre per questo file. Dialogo Esordienti 2027 con date proposte 01/01/2027 e 31/12/2027, un atleta selezionato e quello gia assegnato disabilitato. La selezione della cattura non e stata salvata; il salvataggio reale e stato verificato separatamente su Allievi 2027.
 
 Immagini integrali del viewport del browser locale, nessun ritocco o dato reale. Nessuna provenienza APK o verifica del bridge/telefono implicita. Le altre immagini mantengono date e provenienze precedenti.
+
+## Gestione gruppi e CSV appartenenze — 25 ottobre 2026
+
+Fuorigiri web compilato 0.10.0, common UI 0.2.8, working tree con GRUPPI-03 e IMPORT-04, backend reale e archivio QA nuovo Societa DEMO appartenenze. Persone interamente sintetiche, nessun ritocco o token nelle immagini. Nessuna prova APK/IME/telefono implicita.
+
+- `gruppi-eliminazione-ripristino.png`: stagione 2026 sulla categoria rimossa dalle scelte attive e disponibile per Ripristina; 2027 rimasto attivo.
+- `import-csv-appartenenze.png`: quinto profilo, modello/esempio scaricabili, tre appartenenze storiche/future in anteprima e gruppi da creare separati dalle righe. Salvataggio verificato dopo la cattura.
+- Rinnovati `gruppi-stagioni.png` e `gruppi-aggiungi-atleti.png` nello stesso intervento: gerarchia dopo import con comandi Modifica/Elimina e dialogo assegnazione futura. Sostituiscono le precedenti catture per questi file; le altre mantengono la propria provenienza.
+
+Cattura finale `import-csv-appartenenze.png`: rigenerata dopo l'ultimo affinamento dei testi sul nuovo archivio QA Societa DEMO CSV storico, con il file esempio completo (4 appartenenze, 6 categorie/stagioni da creare). Sostituisce la precedente cattura del lotto da 3 righe per questo file; non mostra un salvataggio. Download reale del CSV verificato dal pulsante.

@@ -363,3 +363,12 @@ Richiesta: [osservazioni originali](archivio/COMMENTI_ORIGINALI_2026-10-25.md). 
 **Implementato e verificato localmente sul web.** Allievi/Esordienti sono contenitori; 2026 e 2027 hanno schede stagione sorelle, con indicazione Futura. La stagione gia salvata sul padre viene rappresentata senza cambiare ID, parent_id o appartenenze. Nuove categorie senza stagione incorporata; aggiunta stagione sotto una categoria esplicita. Gruppi senza stagione con appartenenze dirette ancora visibili.
 
 Accettazione: conteggio distinto degli atleti per appartenenze sovrapposte all'anno selezionato (confini inclusivi), elenco filtrato coerente e consultabile prima dell'inizio del 2027. Categoria attuale aggregata separatamente. Assegnazione proposta dal 1 gennaio al 31 dicembre della stagione, date modificabili anche dal profilo; cambio gruppo aggiorna il periodo. Le etichette legacy non annuali mantengono la vista odierna e richiedono date esplicite: nessuna interpretazione arbitraria di 2026/27. Nessuna modifica retroattiva o copia tra societa. Prove e limiti in VERIFICA.md.
+
+## 25 ottobre 2026 — GRUPPI-03 e IMPORT-04
+
+Richieste originali aggiunte in [COMMENTI_ORIGINALI_2026-10-25.md](archivio/COMMENTI_ORIGINALI_2026-10-25.md).
+
+- **GRUPPI-03 — implementato e verificato localmente sul web.** Modifica di nome categoria, nome/anno/categoria padre della stagione; stesso ID e appartenenze invariate. Eliminazione recuperabile e Ripristina visibili agli Admin dati. Niente eliminazione di atleti, test, misure o appartenenze storiche. Eliminare una categoria con stagioni attive richiede prima spostamento/eliminazione delle figlie; ripristinare prima il padre. Una stagione legacy sulla radice usa season_status separato e non elimina categoria o figlie.
+- **IMPORT-04 — implementato e verificato localmente sul web.** Quinto profilo CSV Appartenenze storiche e future, modello vuoto ed esempio scaricabili. Identita tramite atleta_id (ID esterno o ID interno), controllo nome/cognome e societa; date esplicite, fine facoltativa, gruppo categoria, sottogruppo stagione, anno di categoria e note. Anteprima di appartenenze e gruppi nuovi, salvataggio atomico, duplicati esatti saltati e sovrapposizioni diverse segnalate. Nessuna riscrittura dello storico o deduzione di date dalla stagione. Guida: IMPORT_CSV.md.
+
+Verifiche e consegna binaria aggiornate separatamente in VERIFICA.md; una schermata web non prova il bridge Android o il telefono.

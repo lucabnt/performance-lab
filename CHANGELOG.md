@@ -1,5 +1,12 @@
 # Changelog
 
+## 25 ottobre 2026 — categorie e stagioni future
+
+- GRUPPI-02: categorie con stagioni allo stesso livello, anche quando il 2026 era salvato direttamente sulla categoria. Compatibilita di sola presentazione: nessuna migrazione o riscrittura delle appartenenze.
+- Rosa annuale e conteggi basati sulla sovrapposizione inclusiva al periodo 1 gennaio / 31 dicembre, compresi gli inserimenti futuri. La vista attuale della categoria resta distinta. Date proposte per l'assegnazione coerenti con la stagione e modificabili; nuove categorie senza stagione incorporata, comando Aggiungi stagione dedicato. Traduzioni IT/EN.
+- Verifiche locali e limiti in docs/VERIFICA.md; nessun installer o APK aggiornato.
+
+
 ## 22 ottobre 2026 — assegnazione atleti ai gruppi
 
 - GRUPPI-01: comando visibile nel profilo atleta e Aggiungi atleti su gruppi, stagioni ed elenco filtrato. Ricerca e selezione multipla, periodo e anno di categoria, esclusione di appartenenze sovrapposte già presenti; salvataggio atomico e permessi Admin dati. Nessuna modifica retroattiva alle appartenenze esistenti.

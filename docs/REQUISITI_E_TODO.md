@@ -355,3 +355,11 @@ Implementato il consumo di `@cycling-suite/ui` 0.2.2, derivato dall'interfaccia 
 ## 20 ottobre 2026 — galleria dell’interfaccia
 
 **DOC-GALLERY-01 — Implementato.** README con schermate reali delle funzionalità principali, versionate in `docs/screenshots/`, testi alternativi e didascalie; esclusivamente dati sintetici. Sette viste acquisite e ispezionate: atleti, protocolli, incrementale, Wingate, storici con aggregati, crescita/maturazione, report ed esportazioni. [Procedura e provenienza](screenshots/README.md). Accettazione continuativa: aggiornare nello stesso intervento le immagini delle schermate modificate, comprese dipendenze UI comuni; revisione prima delle release, data/versione dichiarate, nessuna credenziale o dato personale. Non è automazione periodica né collaudo di piattaforme non distribuite.
+
+## 25 ottobre 2026 — GRUPPI-02: stagioni sorelle e pianificazione
+
+Richiesta: [osservazioni originali](archivio/COMMENTI_ORIGINALI_2026-10-25.md). L'utente riferisce collaudo personale di creazione societa/protocolli, import bulk anagrafica/antropometria/storici aerobici e anaerobici, assegnazioni ai gruppi: evidenza dichiarata dall'utente, distinta dalle prove automatiche.
+
+**Implementato e verificato localmente sul web.** Allievi/Esordienti sono contenitori; 2026 e 2027 hanno schede stagione sorelle, con indicazione Futura. La stagione gia salvata sul padre viene rappresentata senza cambiare ID, parent_id o appartenenze. Nuove categorie senza stagione incorporata; aggiunta stagione sotto una categoria esplicita. Gruppi senza stagione con appartenenze dirette ancora visibili.
+
+Accettazione: conteggio distinto degli atleti per appartenenze sovrapposte all'anno selezionato (confini inclusivi), elenco filtrato coerente e consultabile prima dell'inizio del 2027. Categoria attuale aggregata separatamente. Assegnazione proposta dal 1 gennaio al 31 dicembre della stagione, date modificabili anche dal profilo; cambio gruppo aggiorna il periodo. Le etichette legacy non annuali mantengono la vista odierna e richiedono date esplicite: nessuna interpretazione arbitraria di 2026/27. Nessuna modifica retroattiva o copia tra societa. Prove e limiti in VERIFICA.md.

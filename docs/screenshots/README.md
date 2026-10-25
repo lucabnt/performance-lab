@@ -74,3 +74,11 @@ Rinnovati android-atleti.png, android-menu.png e android-info.png: APK con commo
 ## Assegnazione gruppi del 22 ottobre 2026
 
 `gruppi-aggiungi-atleti.png`: app completa compilata 0.10.0, UI comune 0.2.8, backend reale e archivio QA sintetico. Dialogo Aggiungi atleti con due selezioni, atleta già assegnato disabilitato e conferma. Verificati salvataggio multiplo nella stagione e singolo dal profilo; non è collaudo Android nativo. Immagine reale senza ritocchi o dati personali.
+
+## Categorie e stagioni future — 25 ottobre 2026
+
+`gruppi-stagioni.png`: nuova cattura reale della build web Fuorigiri 0.10.0 con GRUPPI-02, common UI 0.2.8. Archivio QA nuovo interamente sintetico, categoria Esordienti con stagioni 2026 e 2027 affiancate, etichetta Futura, conteggi e periodi espliciti. Allievi sotto segue la stessa struttura; verificata anche la stagione 2028 creata nel browser.
+
+Rinnovato `gruppi-aggiungi-atleti.png`: sostituisce la cattura del 22 ottobre per questo file. Dialogo Esordienti 2027 con date proposte 01/01/2027 e 31/12/2027, un atleta selezionato e quello gia assegnato disabilitato. La selezione della cattura non e stata salvata; il salvataggio reale e stato verificato separatamente su Allievi 2027.
+
+Immagini integrali del viewport del browser locale, nessun ritocco o dato reale. Nessuna provenienza APK o verifica del bridge/telefono implicita. Le altre immagini mantengono date e provenienze precedenti.

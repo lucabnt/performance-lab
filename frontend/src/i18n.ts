@@ -1,6 +1,16 @@
 export const language = localStorage.getItem('fuorigiri-language') || 'it';
 document.documentElement.lang=language==='en'?'en':'it';
 const translations:Record<string,string> = {
+ "Aggiungi stagione":"Add season",
+ "Aggiungi una stagione per preparare la rosa.":"Add a season to prepare the roster.",
+ "Mostra gli atleti attuali della categoria":"Show current athletes in the category",
+ "Senza stagione":"Without a season",
+ "Futura":"Future",
+ "Atleti nella stagione:":"Athletes in the season:",
+ "Atleti attuali:":"Current athletes:",
+ "Appartenenze nel periodo:":"Memberships during:",
+ "Attuali":"Current",
+ "Crea la categoria, poi aggiungi le sue stagioni.":"Create the category, then add its seasons.",
  "Aggiungi a un gruppo":"Add to a group",
  "Aggiungi atleti":"Add athletes",
  "Atleta già assegnato al gruppo nel periodo indicato.":"Athlete already assigned to this group during the selected period.",

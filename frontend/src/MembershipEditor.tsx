@@ -1,10 +1,13 @@
+import {seasonPeriod} from './groupSeasonModel';
 import React,{useState} from 'react';
 import {DataTable,FormActions} from '@cycling-suite/ui';
 import {tr} from './i18n';
 type Row=Record<string,any>;
 const today=()=>new Date().toLocaleDateString('en-CA');
 export function MembershipEditor({athletes,groups,memberships,athleteId,groupId,api,run,done,busy=false}:{athletes:Row[],groups:Row[],memberships:Row[],athleteId?:string,groupId?:string,api:any,run:any,done:any,busy?:boolean}){
- const [group,setGroup]=useState(groupId||groups[0]?.id||''),[start,setStart]=useState(today()),[end,setEnd]=useState(''),[year,setYear]=useState(''),[query,setQuery]=useState(''),[picked,setPicked]=useState<string[]>([]);
+ const initialGroup=groupId||groups[0]?.id||'';
+ const initialPeriod=seasonPeriod(groups.find(g=>g.id===initialGroup)?.season,today());
+ const [group,setGroup]=useState(initialGroup),[start,setStart]=useState(initialPeriod.start),[end,setEnd]=useState(initialPeriod.end),[year,setYear]=useState(''),[query,setQuery]=useState(''),[picked,setPicked]=useState<string[]>([]);
  const active=athletes.filter(a=>(a.status||'active')==='active').sort((a,b)=>`${a.surname} ${a.name}`.localeCompare(`${b.surname} ${b.name}`));
  const assigned=(id:string)=>memberships.some(m=>m.athlete_id===id&&m.group_id===group&&m.status!=='deleted'&&m.start<=(end||'9999-12-31')&&(!m.end||m.end>=start));
  const available=active.filter(a=>!assigned(a.id));
@@ -18,7 +21,7 @@ export function MembershipEditor({athletes,groups,memberships,athleteId,groupId,
   <h2>{tr(athleteId?'Aggiungi a un gruppo':'Aggiungi atleti')}</h2>
   {athleteId&&<p>{athletes.find(a=>a.id===athleteId)?.surname} {athletes.find(a=>a.id===athleteId)?.name}</p>}
   <div className="form-grid">
-   <label>{tr('Gruppo')}<select required disabled={!!groupId||busy} value={group} onChange={e=>setGroup(e.target.value)}>{groups.map(g=><option key={g.id} value={g.id}>{label(g)}</option>)}</select></label>
+   <label>{tr('Gruppo')}<select required disabled={!!groupId||busy} value={group} onChange={e=>{const id=e.target.value;setGroup(id);const period=seasonPeriod(groups.find(g=>g.id===id)?.season,today());setStart(period.start);setEnd(period.end)}}>{groups.map(g=><option key={g.id} value={g.id}>{label(g)}</option>)}</select></label>
    <label>{tr('Dal')}<input required type="date" value={start} onChange={e=>setStart(e.target.value)}/></label>
    <label>{tr('Al (facoltativo)')}<input type="date" min={start} value={end} onChange={e=>setEnd(e.target.value)}/></label>
    <label>{tr('Anno di categoria (1, 2…)')}<input type="number" min="1" max="20" value={year} onChange={e=>setYear(e.target.value)}/></label>

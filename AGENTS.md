@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **22 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **25 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -89,6 +89,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 ## Interfaccia e report
 
 - Codice protocollo modificabile in tutte le famiglie, precompilato dal tipo o dalla versione precedente. API anaerobica: `code` operativo facoltativo distinto da `family` tecnico; record `family` conserva il codice e `test_type` il metodo. Non dedurre il metodo dal codice operativo; preservare client senza `code` e storici.
+- GRUPPI-02: categorie e stagioni distinte nella UI; stagione legacy sul padre esposta come sorella delle figlie senza migrazione. Filtro season:<id> diretto e rosa nell'anno (sovrapposizioni inclusive), categoria aggregata a oggi. Assegnazioni annuali proposte gennaio-dicembre con date modificabili; etichette legacy non annuali senza interpretazione automatica.
 - Appartenenze: aggiunta singola dal profilo e multipla da gruppi/stagioni tramite `memberships/batch`; validare tutti gli atleti prima del salvataggio atomico. Nessun trasferimento di società o riscrittura dello storico; sovrapposizioni inclusive nello stesso gruppo saltate, appartenenze a gruppi diversi ammesse. Comandi di scrittura solo per Admin dati.
 - CSV: modelli vuoti generati dalle intestazioni canoniche in `import/template/{profile}` e scaricabili dalla sezione import. Anteprime specifiche per quattro profili, protocolli separati dalle righe. Anaerobici generali con tipo/durata espliciti per Sprint e Wingate 15/30; solo ANA-15-070 mantiene la compatibilità implicita storica. Non dedurre il tipo da altri codici né ricalcolare campioni da riepiloghi.
 - Import antropometria: conservare fonte del peso (misurato, arrotondato, dichiarato, derivato, stimato) e origine anche in correzioni/export; fonte sconosciuta è errore. La preview mostra ID atleta e nome riconciliato, mai l’ID tecnico della rilevazione. Nessuna riclassificazione retroattiva degli import esistenti; i gate di crescita richiedono ancora misure misurate e valide.

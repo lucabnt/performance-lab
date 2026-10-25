@@ -380,3 +380,11 @@ Build pulita riuscita con PATH isolato. Eseguito `Fuorigiri.exe --smoke-test` su
 ## 20 ottobre 2026 — UI comune 0.2.2
 
 Riallineamento alla UI corrente di Fuorigiri e dipendenza condivisa da common. Verificati 8 test della libreria, 5 test frontend Ammiraglia e 19 frontend Fuorigiri; build TypeScript/Vite dei due prodotti e del catalogo, controlli standalone dei tarball e allineamento versione/impronta sorgenti comune. Browser su archivi QA nuovi e sintetici: shell/onboarding di entrambe, società/dashboard/liste e scarto protetto Ammiraglia, finestra licenza Fuorigiri. Catalogo a larghezza ridotta: focus iniziale, Esc con modifiche, continua a modificare, blocco della chiusura durante salvataggio. Resta il warning sul grande bundle Plotly. Nessun nuovo installer, prova Qt su PC pulito, collaudo completo di tutte le pagine o suite backend completa; backend invariato. Artefatti da checkout locale modificato (`source_dirty=true`).
+
+## 25 ottobre 2026 — GRUPPI-02
+
+- `npm --prefix frontend run test:signals`: 30 test superati, inclusi 5 casi stagioni (compatibilita radice, intervalli futuri/scaduti/confini, esclusione figli e record eliminati, aggregazione odierna, default e gruppi senza stagione).
+- `.venv/Scripts/python.exe -m pytest -q tests/test_memberships.py`: 5 superati; warning preesistente Starlette/httpx. API non modificata.
+- `npm --prefix frontend run build`: TypeScript e build Vite riusciti; avviso dimensione chunk Plotly. `scripts/verify_suite_ui.py`: UI comune 0.2.8 integra. `git diff --check`: riuscito.
+- Browser con app completa compilata, backend reale e archivio QA nuovo interamente sintetico: categorie Allievi/Esordienti con 2026 sul padre e 2027 figlio; schede sorelle. Assegnazione di un secondo atleta al 2027 salvata con date 2027-01-01 / 2027-12-31, conteggio aggiornato e due atleti visibili nel filtro 2027 prima dell'inizio della stagione. Esclusione della selezione gia assegnata preservata. Creata stagione 2028 sotto Allievi; modulo categoria principale privo di stagione incorporata. Screenshot in screenshots/README.md.
+- L'utente riferisce collaudi personali su creazione societa/protocolli, quattro import bulk e gruppi: non equivale a nuova esecuzione automatica di quei flussi. Nessun dato reale modificato, nessuna nuova distribuzione EXE/APK e nessun collaudo del bridge Android o telefono.

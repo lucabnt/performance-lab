@@ -669,3 +669,7 @@ Correzione TD-106, 21 ottobre 2026: testata Android con nome/tagline allineati a
 ## Candidato pilot — 21 ottobre 2026
 
 Identificativo separato dalla versione 0.10.0, sorgenti congelati del working tree e manifest/hash per file; non cambiare versioni dei motori o schemi per il candidato. Build Windows isolate con output-root e definizioni Inno per bundle/output; AppId conservato. Packager dedicato rifiuta output esistente, controlla ZIP/ABI/wheel e raccoglie sorgenti/native wheel senza chiavi o dati locali. Android release non firmato su scelta utente: firma e custodia chiave del titolare, senza sostituzione con chiave debug. Candidato locale non equivale a release o qualifica di PC pulito/telefono/provider; checklist separa prove automatiche, collaudi e promozione.
+
+## GRUPPI-02 — categorie e stagioni, 25 ottobre 2026
+
+La presentazione distingue categoria (contenitore) da stagione (rosa per periodo). Per compatibilita, un record radice con season conserva ID e appartenenze: groupSeasons lo espone come scheda stagione sorella delle figlie. Il filtro season:<id> seleziona soltanto le appartenenze dirette del record nel periodo annuale; il filtro categoria mantiene l'aggregazione odierna di radice e figli. Nessun nuovo record persistito, migrazione, revisione o modifica di sync/report implicita. Nuove categorie dalla UI senza season; stagioni create tramite parent_id. Etichette annuali a quattro cifre usano gennaio-dicembre, etichette legacy non annuali restano riferite a oggi. Date effettive delle appartenenze sempre esplicite e modificabili.

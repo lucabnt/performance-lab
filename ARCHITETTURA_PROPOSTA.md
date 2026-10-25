@@ -1,5 +1,11 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## 25 ottobre 2026 — report archivio archive-5
+
+`archive_pdf.py` possiede impaginazione dedicata, font DejaVu incorporati, tabelle a larghezza normalizzata e documento multipass con indice collegato e outline. `archive_report.py` conserva selezione, manifest schema 2 e confrontabilità per protocollo/metodo; cambia solo renderer (`archive-5`) e presentazione. Le metriche aggregate condividono una tabella per gruppo confrontabile; le schede atleta iniziano su pagina nuova e i grafici individuali richiedono almeno due osservazioni. Footer e branding restano quelli comuni ai PDF del prodotto.
+
+`ArchiveReports.tsx` mantiene attività locale e guardia sincrona contro doppi invii; riusa lo spinner della UI comune senza copiarne CSS. Stato ripristinato in finally. La navigazione da gruppo/stagione imposta lifecycle all e svuota la ricerca testuale per rendere coerenti conteggio e lista storica. Nessuna modifica dello storage o dei calcoli.
+
 ## 22 ottobre 2026 — preferenza di riapertura desktop
 
 L’origine HTTP desktop cambia porta a ogni avvio: sessionStorage/localStorage non sono una fonte persistente adeguata. `GET/PUT /api/v1/workspaces/last-selection` memorizza atomicamente `last-selection.json` nella radice dati del dispositivo, con soli ID workspace/organization, senza segreti né revisioni sincronizzate. La GUI desktop legge la preferenza prima dell’inventario e salva solo la selezione risolta; errori e archivi mancanti non portano all’apertura arbitraria di un altro archivio. Endpoint autenticati, scrittura ammessa anche ai visualizzatori come preferenza locale. Android mantiene la preferenza locale già adottata. Nessuna dipendenza da una porta fissa o dal profilo WebEngine.

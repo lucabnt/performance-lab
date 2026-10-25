@@ -1,5 +1,12 @@
 # Changelog
 
+## 25 ottobre 2026 — report archivio e accesso alle rose storiche
+
+- REPORT-ARCHIVE-01: feedback immediato con rotellina e testo durante anteprima, PDF e Markdown; comandi e filtri disabilitati fino al termine per evitare doppi invii.
+- Renderer archivio `archive-5`: indice cliccabile con pagine e segnalibri, capitoli distinti, nuova pagina per atleta, font incorporati e tabelle entro i margini. Metriche aggregate nella stessa tabella per protocollo/metodo; grafici individuali solo con almeno due osservazioni. Dati e criteri scientifici invariati.
+- GRUPPI-04: Mostra gli atleti imposta Tutti e azzera la ricerca precedente, conservando il gruppo/stagione selezionato.
+- DOC-DRIVE-01: guida al primo collegamento Google Drive, scope, OAuth Desktop/Android e collaudo con due dispositivi. Nessun account reale collegato.
+
 ## 25 ottobre 2026 — gestione gruppi e import appartenenze
 
 - Compilato candidato locale `pilot-20261025-02` con installer Windows, portabile, APK non firmato e sorgenti; smoke EXE e integrita pacchetti verificati. Include tutte le modifiche funzionali sotto; candidato 01 preservato.

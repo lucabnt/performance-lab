@@ -1,6 +1,20 @@
 export const language = localStorage.getItem('fuorigiri-language') || 'it';
 document.documentElement.lang=language==='en'?'en':'it';
 const translations:Record<string,string> = {
+ "Report completo dell’archivio":"Complete archive report",
+ "Società completa oppure una sua vista: gruppo, gruppo per anno/stagione, atleta con storico. Stessi criteri e sezioni; dati individuali riportati una sola volta.":"The entire club or a scoped view: group, group and season, or athlete history. The same criteria and sections apply; individual records appear once.",
+ "Intera società":"Entire club",
+ "Anno / stagione":"Year / season",
+ "Anteprima contenuto":"Preview contents",
+ "Esporta PDF":"Export PDF",
+ "Esporta Markdown + grafici":"Export Markdown and charts",
+ "Preparazione anteprima…":"Preparing preview…",
+ "Generazione PDF…":"Generating PDF…",
+ "Generazione Markdown e grafici…":"Generating Markdown and charts…",
+ "Preparazione del contenuto in corso.":"Preparing the report contents.",
+ "Elaborazione in corso. Il download partirà al termine: non serve premere nuovamente.":"Processing. The download will start when ready; there is no need to click again.",
+ "misure":"measurements",
+ "viste aggregate. L’export include le schede individuali e il catalogo dei protocolli usati.":"aggregate views. The export includes individual profiles and the protocols used.",
  "ID, nome e cognome riconciliati. Date AAAA-MM-GG; fine vuota = in corso. Gruppo = categoria; sottogruppo = stagione (es. 2024). Anteprima dei gruppi da creare.":"Match athlete ID, first and last name. Dates YYYY-MM-DD; blank end means ongoing. Group is the category; subgroup is the season (e.g. 2024). New groups are shown in the preview.",
  "Appartenenze storiche e future":"Historical and future memberships",
  "Data inizio":"Start date",

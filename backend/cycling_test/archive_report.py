@@ -12,8 +12,10 @@ from reportlab.lib.units import cm
 from .history import summarize, METRICS
 from .methods import comparison_key
 from .report_labels import metric_label
-from .pdf_style import document,styles,table,footer
+from .archive_pdf import ArchiveDocument,WIDTH,styles,table,contents
 from .branding import ATTRIBUTION,logo_path
+
+RENDERER = 'archive-5'
 
 
 def build(store,org,group='',season='',athlete=''):
@@ -66,7 +68,7 @@ def build(store,org,group='',season='',athlete=''):
                         'measurements':[m for m in measures if m['athlete_id']==a['id']],
                         'maturation':snapshots(store,a['id'],season+'-12-31' if season else None)})
     group_label=store.get(group)['name'] if group else ''
-    return {'schema':2,'renderer':'archive-4','generated_at':datetime.now(timezone.utc).isoformat(),
+    return {'schema':2,'renderer':RENDERER,'generated_at':datetime.now(timezone.utc).isoformat(),
         'scope':{'organization_id':org,'group':group,'season':season,'athlete':athlete},'organization':organization,
         'scope_label':' / '.join(filter(None,[group_label,season,(athletes[athlete]['surname']+' '+athletes[athlete]['name']) if athlete in athletes else ''])),
         'counts':{'athletes':len(athletes),'athletes_with_tests':len({t['athlete_id'] for t in tests}),'tests':len(tests),'measurements':len(measures),'protocols':len(protocols)},
@@ -83,7 +85,7 @@ def plot(rows,kind,label,metric="map_wkg"):
             if value is not None:
                 ax.scatter(i,value,color='#1a62b7',s=35)
                 ax.vlines(i,m['q1'],m['q3'],color='#1a62b7',linewidth=3)
-        ax.set_xticks(range(len(rows)),[g['label'] for g in rows],rotation=25,ha='right',fontsize=7)
+        ax.set_xticks(range(len(rows)),[g['label'] for g in rows],rotation=25,ha='right',fontsize=9)
         ax.set_ylabel(metric_label(metric)+' - mediana e IQR')
     else:
         buckets=defaultdict(list)
@@ -93,8 +95,8 @@ def plot(rows,kind,label,metric="map_wkg"):
             if valid:
                 ax.plot([datetime.fromisoformat(t['date']) for t in valid],[t['analysis'][metric] for t in valid],marker='o',linewidth=1.5,
                         label=valid[0].get('analysis',{}).get('preset',{}).get('name','Metodo storico')+' · '+valid[0].get('protocol_label','Protocollo'))
-        ax.set_ylabel(metric_label(metric));ax.tick_params(axis='x',rotation=25,labelsize=7)
-        if ax.lines:ax.legend(fontsize=6,loc='best')
+        ax.set_ylabel(metric_label(metric));ax.tick_params(axis='x',rotation=25,labelsize=9)
+        if ax.lines:ax.legend(fontsize=8,loc='best')
     ax.set_title(label,fontsize=10,loc='left');ax.grid(axis='y',alpha=.15);ax.spines[['top','right']].set_visible(False)
     out=io.BytesIO();fig.savefig(out,format='png',dpi=150);return out.getvalue()
 
@@ -104,7 +106,7 @@ def render(data,format='pdf'):
     metric_label=lambda key:data.get('metric_labels',{}).get(key) or base_label(key)
     available_metrics=list(data['coverage'])
     ss=styles();story=[];markdown=[];assets={};title='Archivio dei test - '+data['organization']['name']
-    def p(value,style='BodyText'):return Paragraph(escape(str(value)),ss[style])
+    def p(value,style='BodyText'):return Paragraph(escape(str(value).replace('—','-').replace('–','-')),ss[style])
     def text(value,style='BodyText'):
         story.append(p(value,style));markdown.append(('## ' if style=='Heading2' else '')+str(value)+'\n')
     def fmt(v):
@@ -113,57 +115,65 @@ def render(data,format='pdf'):
         return str(v)
     def grid(headers,rows,widths=None):
         if not rows:return
-        story.append(table([[p(c,'Small') for c in headers]]+[[p(fmt(c),'Small') for c in row] for row in rows],widths or [17.7*cm/len(headers)]*len(headers)))
+        story.append(table([[p(c,'TableHeader') for c in headers]]+[[p(fmt(c),'TableCell') for c in row] for row in rows],widths or [WIDTH/len(headers)]*len(headers)))
         esc=lambda v:str(v).replace('|','\\|').replace('\n',' ').replace('<','&lt;')
         markdown.extend(['| '+' | '.join(esc(c) for c in headers)+' |','|'+'---|'*len(headers)])
         markdown.extend('| '+' | '.join(esc(fmt(c)) for c in row)+' |' for row in rows);markdown.append('')
     def image(body,name):
-        assets[name]=body;story.extend([Spacer(1,.25*cm),Image(io.BytesIO(body),width=17.7*cm,height=7.08*cm)])
+        assets[name]=body;story.extend([Spacer(1,.25*cm),Image(io.BytesIO(body),width=WIDTH,height=7.08*cm)])
         markdown.append(f'![Grafico](assets/{name})\n')
+    def heading(label,level,key,new_page=False):
+        if new_page:story.append(PageBreak())
+        paragraph=p(label,'Chapter' if level==0 else 'Section')
+        paragraph.toc_level=level;paragraph.toc_key=key;paragraph.toc_title=label
+        story.append(paragraph);markdown.append(('## ' if level==0 else '### ')+label+'\n')
     text('FUORIGIRI PERFORMANCE LAB','Small');text(title,'Title')
     if data['scope_label']:text(data['scope_label'],'Heading2')
     c=data['counts'];text(f"{c['athletes']} atleti · {c['tests']} test · {c['measurements']} misure · {c['protocols']} versioni di protocollo")
     text('Documento riservato ai destinatari autorizzati. Risultati descrittivi; nessuna diagnosi o confronto con norme pediatriche implicito.','Small')
-    text('Indice','Heading2')
-    index=['Sintesi e copertura']+[s['title'] for s in data['sections']]+['Storico per atleta','Protocolli e metodi']
-    text(' · '.join(index),'Small')
-    text('Sintesi e copertura','Heading2')
+    text('Ambito: '+(data['scope_label'] or 'Intera società'))
+    text('Generato: '+data['generated_at'][:10],'Small')
+    if format=='pdf':
+        story.append(PageBreak());story.append(p('Indice','Chapter'))
+        story.append(p('Seleziona una voce per raggiungere il capitolo o la scheda atleta.','Small'))
+        story.append(contents(ss))
+    heading('1. Sintesi e copertura',0,'summary',new_page=True)
     text('Aggregati: ultimo test per atleta in ogni periodo e insieme confrontabile. Media e mediana affiancate; protocolli, preset, condizioni e origini della soglia separati. Masse stimate escluse dagli aggregati W/kg. Lo storico individuale conserva tutti i test.','Small')
     text('Età = anno del test meno anno di nascita, non età esatta; nascita non confermata segnalata nella scheda. Viste equivalenti accorpate quando selezionano esattamente le stesse revisioni.','Small')
     for warning in data.get('common_warnings',[]):text('Qualità comune ai test: '+warning,'Small')
     grid(['Dato','Presenti','Assenti applicabili'],[[metric_label(m),v['valid'],v['total']-v['valid']] for m,v in data['coverage'].items() if v['total'] and (v['valid'] or m in ('map_w','weight_kg','height_cm'))],[10*cm,3.85*cm,3.85*cm])
     protocols={p['id']:p for p in data['protocols']}
-    for section in data['sections']:
-        text(section['title'],'Heading2')
+    if data['sections']:heading('2. Viste aggregate',0,'aggregates',new_page=True)
+    for section_index,section in enumerate(data['sections'],1):
+        heading(f"2.{section_index} {section['title']}",1,'view-'+section['id'],new_page=section_index>1)
         if section['equivalent_views']:text('Stessa selezione anche per: '+', '.join(section['equivalent_views']),'Small')
-        # Wide archives are split by exact method/protocol to retain useful units.
         partitions=defaultdict(list)
         for g in section['groups']:partitions[(g['protocol_id'],g['method_key'],g['threshold_source'])].append(g)
         for (pid,_,source),groups in partitions.items():
-            protocol=protocols[pid];text(protocol['name']+' / '+protocol['version']+' · '+groups[0]['method_label']+('' if protocol.get('test_type') else ' · Soglia: '+str(source)),'Small')
-            if protocol.get('test_type'):
+            protocol=protocols[pid]
+            story.append(CondPageBreak(5*cm))
+            text(protocol['name']+' / '+protocol['version'],'Subsection')
+            text(groups[0]['method_label']+('' if protocol.get('test_type') else ' - Soglia: '+metric_label(str(source))),'Small')
+            for g in groups:
+                text(g['label']+f" - {g['athletes']} atleti / {g['tests_selected']} test selezionati",'Subsection')
                 compact=[]
-                for g in groups:
-                    for m in available_metrics:
-                        v=g['metrics'][m]
-                        if v['n']:compact.append([g['label'],metric_label(m),f"{v['n']} / {v['missing']}",v['mean'],v['median'],fmt(v['min'])+' - '+fmt(v['max'])])
-                grid(['Insieme','Metrica','n / assenti','Media','Mediana','Min - max'],compact,[2.2*cm,6*cm,2.1*cm,2.1*cm,2.1*cm,3.2*cm])
-            for metric in ([] if protocol.get('test_type') else available_metrics):
-                if not any(g['metrics'][metric]['n'] for g in groups):continue
-                text(metric_label(metric),'Small')
-                grid(['Insieme','Atleti / test','n / assenti','Media','Mediana','Min - max'],[
-                    [g['label'],f"{g['athletes']} / {g['tests_selected']}",f"{g['metrics'][metric]['n']} / {g['metrics'][metric]['missing']}",
-                     g['metrics'][metric]['mean'],g['metrics'][metric]['median'],fmt(g['metrics'][metric]['min'])+' - '+fmt(g['metrics'][metric]['max'])] for g in groups],
-                     [4.3*cm,2.4*cm,2.4*cm,2.2*cm,2.2*cm,4.2*cm])
+                for metric in available_metrics:
+                    value=g['metrics'][metric]
+                    if value['n']:
+                        compact.append([metric_label(metric),f"{value['n']} / {value['missing']}",value['mean'],value['median'],fmt(value['min'])+' - '+fmt(value['max'])])
+                grid(['Metrica','n / assenti','Media','Mediana','Min - max'],compact,[7*cm,2.1*cm,2.1*cm,2.1*cm,4.4*cm])
             chart_metric='peak_wkg' if protocol.get('test_type') else 'map_wkg'
             if len(groups)>1 and any(g['metrics'][chart_metric]['n'] for g in groups):image(plot(groups,'aggregate',section['title'],chart_metric),f'aggregate-{len(assets)}.png')
+    athlete_chapter=3 if data['sections'] else 2
+    heading(f'{athlete_chapter}. Schede individuali degli atleti',0,'athletes',new_page=True)
     for i,entry in enumerate(data['athletes']):
         a=entry['athlete'];tests=entry['tests']
-        story.append(CondPageBreak(10*cm));text(a['surname']+' '+a['name'],'Heading2')
+        heading(f"{athlete_chapter}.{i+1} {a['surname']} {a['name']}",1,'athlete-'+str(i),new_page=i>0)
         text('Nascita: '+str(a.get('birth_date') or a.get('birth_year') or 'n.d.')+' · '+('confermata' if a.get('birth_confirmed') else 'da confermare')+' · Sesso: '+str(a.get('sex') or 'n.d.')+' · Stato: '+str(a.get('status','active')),'Small')
         if not tests:text('Nessun test nell’ambito selezionato.')
         for chart_metric in ('map_wkg','peak_wkg','mean_wkg'):
-            if len(tests)>1 and any(t['analysis'].get(chart_metric) is not None for t in tests):image(plot([{**t,'protocol_label':protocols[t['protocol_id']]['family']+' / '+protocols[t['protocol_id']]['version']} for t in tests],'athlete','Evoluzione individuale - serie separate per metodo/protocollo',chart_metric),f'athlete-{i}-{chart_metric}.png')
+            if sum(t['analysis'].get(chart_metric) is not None for t in tests)>=2:image(plot([{**t,'protocol_label':protocols[t['protocol_id']]['family']+' / '+protocols[t['protocol_id']]['version']} for t in tests],'athlete','Evoluzione individuale - serie separate per metodo/protocollo',chart_metric),f'athlete-{i}-{chart_metric}.png')
+        if any(not t.get('test_type') for t in tests):text('Test aerobici - riepilogo','Subsection')
         grid(['Data','Protocollo','MAP W','W/kg','Soglia W','FC max'],[[t['date'],protocols[t['protocol_id']]['family']+' / '+protocols[t['protocol_id']]['version'],
             t['analysis'].get('map_w'),t['analysis'].get('map_wkg'),t['analysis'].get('threshold_w'),t['analysis'].get('fc_max_test_bpm')] for t in tests if not t.get('test_type')],
             [2.4*cm,5.3*cm,2.5*cm,2.5*cm,2.5*cm,2.5*cm])
@@ -172,8 +182,11 @@ def render(data,format='pdf'):
             from .custom_fields import display_rows
             text(t['date']+' - '+protocols[t['protocol_id']]['name'],'Small')
             grid(['Campo personalizzato','Valore'],display_rows(t),[10*cm,7.7*cm])
+        if any(t.get('test_type') in ('sprint','wingate15','wingate30') for t in tests):text('Test anaerobici - riepilogo','Subsection')
         grid(['Data','Protocollo','Picco W','Media W','Lavoro kJ','FC max'],[[t['date'],protocols[t['protocol_id']]['name'],t['analysis'].get('peak_w'),t['analysis'].get('mean_w'),t['analysis'].get('work_kj'),t['analysis'].get('fc_max_test_bpm')] for t in tests if t.get('test_type') in ('sprint','wingate15','wingate30')],[2.4*cm,5.3*cm,2.5*cm,2.5*cm,2.5*cm,2.5*cm])
+        if tests:text('Dettagli dei test e qualità dei dati','Subsection')
         for t in tests:
+            text(t['date']+' - '+protocols[t['protocol_id']]['name'],'Subsection')
             values={**t.get('historical_fields',{}),**{k:v for k,v in t['settings'].items() if k in ('weight_kg','height_cm','rest_hr','rest_after_s','rpe','rpe_scale','ftp_w','fthr_bpm','threshold_coefficient')}}
             for key in ('peak_w','peak_wkg','mean_w','mean_wkg','best_1s_w','best_5s_w','time_to_peak_s','end_power_w','fatigue_pct','decline_ws','declared_fatigue_ws','cadence_max_rpm','cadence_mean_rpm','map_alt_w','duration_s','duration_incremental_s','power_mean_w','work_kj','power_coverage','lactate_2_w','lactate_4_w','vo2peak_l_min','vo2peak_ml_kg_min','terminal_target_w','terminal_mean_w'):
                 if t['analysis'].get(key) is not None:values[key]=t['analysis'][key]
@@ -198,11 +211,11 @@ def render(data,format='pdf'):
             warnings=[w for w in t['analysis'].get('warnings',[]) if w not in data.get('common_warnings',[])]
             if warnings:text('Qualità: '+'; '.join(warnings),'Small')
         if entry['measurements']:
-            text('Antropometria datata','Heading2');grid(['Data','Massa kg','Statura cm','Fonte'],[[m['date'],m.get('weight_kg'),m.get('height_cm'),m.get('source','dichiarato')] for m in entry['measurements']])
+            text('Antropometria datata','Subsection');grid(['Data','Massa kg','Statura cm','Fonte'],[[m['date'],m.get('weight_kg'),m.get('height_cm'),m.get('source','dichiarato')] for m in entry['measurements']])
         from .maturation import report_section
         if entry.get('maturation'):story.append(CondPageBreak(7*cm))
         report_section(entry,text,grid,image)
-    text('Protocolli e metodi','Heading2')
+    heading(f'{athlete_chapter+1}. Protocolli e metodi',0,'protocols',new_page=True)
     grid(['Protocollo','Versione','Definizione'],[[p['name'],p['version'],str(len(p['definition'].get('segments',[])))+' fasi' if p['definition'].get('segments') else 'Solo catalogo'] for p in data['protocols']],[7*cm,2.7*cm,8*cm])
     for protocol in data['protocols']:
         if protocol.get('anaerobic_spec'):
@@ -219,7 +232,7 @@ def render(data,format='pdf'):
             for name,body in assets.items():z.writestr('assets/'+name,body)
             z.write(logo_path(),'assets/logo.png')
         return out.getvalue()
-    out=io.BytesIO();doc=document(out,title);doc.build(story,onFirstPage=footer,onLaterPages=footer)
+    out=io.BytesIO();doc=ArchiveDocument(out,title);doc.multiBuild(story)
     return out.getvalue()
 
 
@@ -234,6 +247,6 @@ def install_archive_reports(app,store,require,download):
         data=report_data(org,group,season,athlete);body=render(data,format)
         if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
             digest=store.object(body)
-            store.save('report',{'organization_id':org,'renderer_version':'archive-4','query':data['scope'],'source_revisions':data['source_revisions'],
+            store.save('report',{'organization_id':org,'renderer_version':RENDERER,'query':data['scope'],'source_revisions':data['source_revisions'],
                                 'format':format,'language':'it','objects':[digest]})
         return download(body,'application/pdf' if format=='pdf' else 'application/zip','fuorigiri-archivio.'+('pdf' if format=='pdf' else 'zip'))

@@ -12,7 +12,7 @@ dependencies = ["cycling-suite-core==0.1.2", "fastapi", "uvicorn", "python-multi
 
 [project.optional-dependencies]
 desktop = ["PySide6", "keyring==25.7.0"]
-dev = ["pytest", "httpx", "pyinstaller"]
+dev = ["pytest", "httpx", "pyinstaller", "pypdf"]
 
 [project.scripts]
 fuorigiri-performance-lab = "cycling_test.desktop:main"

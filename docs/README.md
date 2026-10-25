@@ -1,10 +1,11 @@
 # Documentazione di Fuorigiri Performance Lab
 
-Indice aggiornato al **21 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
+Indice aggiornato al **25 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
 
 ## Uso, avvio e distribuzione
 
-- [Importazione CSV e modelli vuoti](IMPORT_CSV.md): quattro profili, anteprime, fonti e protocolli anaerobici.
+- [Importazione CSV e modelli vuoti](IMPORT_CSV.md): cinque profili, comprese le appartenenze storiche e future.
+- [Primo collegamento Google Drive](GOOGLE_DRIVE_PRIMO_COLLEGAMENTO.md): progetto OAuth, cartella, collegamento dei dispositivi e collaudo prima dei dati operativi.
 
 - [Collaudo candidato pilot](COLLAUDO_PILOT.md): operazioni, risultati attesi, check di completamento e verbale Windows/Android.
 - [Firma Android](FIRMA_ANDROID.md): creazione/custodia chiave a cura del titolare e firma/verifica della copia release.

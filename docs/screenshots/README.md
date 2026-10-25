@@ -92,3 +92,11 @@ Fuorigiri web compilato 0.10.0, common UI 0.2.8, working tree con GRUPPI-03 e IM
 - Rinnovati `gruppi-stagioni.png` e `gruppi-aggiungi-atleti.png` nello stesso intervento: gerarchia dopo import con comandi Modifica/Elimina e dialogo assegnazione futura. Sostituiscono le precedenti catture per questi file; le altre mantengono la propria provenienza.
 
 Cattura finale `import-csv-appartenenze.png`: rigenerata dopo l'ultimo affinamento dei testi sul nuovo archivio QA Societa DEMO CSV storico, con il file esempio completo (4 appartenenze, 6 categorie/stagioni da creare). Sostituisce la precedente cattura del lotto da 3 righe per questo file; non mostra un salvataggio. Download reale del CSV verificato dal pulsante.
+
+## Report archivio e filtro storico — 25 ottobre 2026
+
+Build web compilata 0.10.0, common UI 0.2.8, backend reale e società QA interamente sintetica con 19 atleti, 89 test e 51 misure. Catture integrali senza ritocchi; nessuna verifica Android implicita.
+
+- `gruppi-stagione-tutti.png`: apertura Esordienti 2023 con Tutti, ricerca vuota e tre atleti archiviati visibili.
+- `report-esportazione-in-corso.png`: esportazione PDF effettiva, spinner e controlli disabilitati.
+- Rinnovato `report-esportazioni.jpg`: anteprima conclusa, conteggi e controlli nuovamente disponibili. Conversione del solo formato PNG/JPEG, contenuti immutati; sostituisce la precedente cattura di questo file.

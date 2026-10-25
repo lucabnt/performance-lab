@@ -4,7 +4,7 @@ Guida corrente ai trasporti. Per il formato e i limiti di spazio vedere [scalabi
 
 Implementati adapter WebDAV, Google Drive API v3, Dropbox API v2, Microsoft Graph OneDrive e client di predisposizione a un relay dedicato. Lo stesso database SQLite resta locale; sul cloud transitano pacchetti cifrati e controlli firmati, non il database aperto. Una destinazione per società su ciascun dispositivo: scegliere lo stesso provider/cartella fra collaboratori. Non è implementato il mirroring automatico fra cloud differenti.
 
-**Stato verificato:** test automatici con risposte API simulate e server WebDAV locale, UI desktop compilata. Nessun accesso ad account reali o registrazione OAuth creato in questa attività; disponibilità dei permessi e collaborazione con due account vanno collaudate sul provider. Android ha gli adapter condivisi e i flussi nativi nei sorgenti; compilazione APK e verifica su dispositivo restano rimandate, come Linux.
+**Stato verificato:** test automatici con risposte API simulate e server WebDAV locale, UI desktop compilata. Nessun accesso ad account reali o registrazione OAuth creato in questa attività; disponibilità dei permessi e collaborazione con due account vanno collaudate sul provider. Android ha gli adapter condivisi e i flussi nativi nei sorgenti; APK compilati e altre funzioni provate su emulatore non dimostrano il consenso Google o lo scambio cloud su un dispositivo reale. Le prove provider restano separate dalle build.
 
 Per attivare il formato v2, aggiornare prima tutti i dispositivi: [procedura e compatibilità](SYNC_V2_E_BACKUP.md). Tutti i trasporti usano lo stesso formato e archivio per società.
 
@@ -19,6 +19,8 @@ La distribuzione open source non contiene registrazioni OAuth di altri né segre
 Cartella server già condivisa, URL finale HTTPS, utente e password applicazione. Portachiavi di sistema, nessun fallback in chiaro; niente redirect con credenziali. Supporto condiviso desktop/mobile già presente dalla 0.6.
 
 ### Google Drive
+
+Per la procedura completa del pilot, con due dispositivi e limiti dello scope, seguire [Primo collegamento Google Drive](GOOGLE_DRIVE_PRIMO_COLLEGAMENTO.md).
 
 Abilitare Drive API nel progetto Google Cloud, configurare schermata consenso e utenti di test o pubblicazione secondo le regole Google. Desktop: client OAuth **Desktop app**, client ID e, quando richiesto dalla registrazione, client secret salvato nel portachiavi. Callback loopback `http://127.0.0.1:53682/oauth/callback`, PKCE S256, access_type offline; il listener esiste solo durante il consenso e scade dopo 5 minuti. Il segreto di una desktop app non è una credenziale di server confidenziale.
 

@@ -36,12 +36,7 @@ export function AnalysisResults({analysis:a,Plot}:{analysis:Row,Plot:any}){
  </section>
 }
 
-export function ArchiveReports({org,state,api,run,download}:{org:string,state:Row,api:any,run:any,download:any}){
- const [group,setGroup]=useState(''),[season,setSeason]=useState(''),[athlete,setAthlete]=useState(''),[preview,setPreview]=useState<Row|null>(null);
- useEffect(()=>{setGroup('');setSeason('');setAthlete('');setPreview(null)},[org]);
- const query=new URLSearchParams({group,season,athlete}).toString();
- return <section className="panel protocol"><h2>Report completo dell’archivio</h2><p>Società completa oppure una sua vista: gruppo, gruppo per anno/stagione, atleta con storico. Stessi criteri e sezioni; dati individuali riportati una sola volta.</p><div className="form-grid"><label>Gruppo<select value={group} onChange={e=>{setGroup(e.target.value);setPreview(null)}}><option value="">Intera società</option>{state.group.filter((g:Row)=>g.organization_id===org).map((g:Row)=><option key={g.id} value={g.id}>{g.name} {g.season}</option>)}</select></label><label>Anno / stagione<input value={season} onChange={e=>{setSeason(e.target.value);setPreview(null)}} placeholder="Tutti"/></label><label>Atleta<select value={athlete} onChange={e=>{setAthlete(e.target.value);setPreview(null)}}><option value="">Tutti</option>{state.athlete.filter((a:Row)=>a.organization_id===org&&a.status!=='deleted').map((a:Row)=><option key={a.id} value={a.id}>{a.surname} {a.name}</option>)}</select></label></div><div className="actions"><button onClick={()=>run(async()=>setPreview(await api(`archive/${org}/report-data?${query}`)))}>Anteprima contenuto</button>{['pdf','md'].map(f=><button key={f} onClick={()=>run(()=>download(`archive/${org}/report/${f}?${query}`,'fuorigiri-archivio.'+(f==='pdf'?'pdf':'zip')))}>Esporta {f==='pdf'?'PDF':'Markdown + grafici'}</button>)}</div>{preview&&<p>{preview.counts.athletes} atleti · {preview.counts.tests} test · {preview.counts.measurements} misure · {preview.sections.length} viste aggregate. L’export include le schede individuali e il catalogo dei protocolli usati.</p>}</section>
-}
+export {ArchiveReports} from './ArchiveReports';
 
 export function RepeatabilityPanel({org,state,api,run,download}:{org:string,state:Row,api:any,run:any,download:any}){
  const tests=state.test.filter((t:Row)=>t.organization_id===org&&t.status!=='deleted');

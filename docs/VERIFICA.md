@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 25 ottobre 2026 — report archivio e rose storiche
+
+- Python completo: 238 passati, 1 saltato; frontend: 31 test passati e build TypeScript/Vite riuscita. Versione prodotto 0.10.0 e UI comune 0.2.8 verificate. Warning Plotly sulla dimensione del chunk invariato.
+- Browser su build compilata e backend reale con dati sintetici: ricerca senza risultati e filtro Attivi precedenti, apertura Esordienti 2023 con 3 atleti archiviati; risultato Tutti, ricerca vuota e 3 righe. Esportazione PDF reale con spinner, messaggio accessibile, controlli disabilitati e ripristinati al termine; verificata anche anteprima.
+- PDF sintetico con 19 atleti, 89 test e 51 misure: 93 pagine renderizzate e ispezionate tramite cinque fogli di contatto; indice, aggregati, scheda atleta, dettagli e protocolli esaminati anche a risoluzione maggiore. Indice completo a pagina 2 con collegamenti e segnalibri; font incorporati, tabelle nei margini. Test automatici su indice/destinazioni, ambito individuale, dati invariati e tabelle lunghe. Il numero di pagine non è confrontabile con il PDF privato dell'utente, che contiene un altro dataset. Originale preservato.
+- Windows candidato 03: PyInstaller e Inno Setup completati, EXE congelato avviato in smoke con esito 0 (import, logo e backend HTTP). Android assembleRelease offline riuscito; nessuna firma generata o installazione operativa effettuata.
+- Guida Drive confrontata con documentazione ufficiale Google; nessun consenso reale o scambio fra account eseguito. Questi gate restano aperti.
+
 ## 22 ottobre 2026 — GRUPPI-01 assegnazioni
 
 - 9 test mirati appartenenze/workspace passati: aggiunta atomica, ripetizione senza duplicati, sovrapposizioni inclusive, periodi consecutivi, anno di categoria, gruppo/stagione, dati di altra società, atleti archiviati, date incoerenti, compatibilità con appartenenze singole precedenti e blocco viewer.

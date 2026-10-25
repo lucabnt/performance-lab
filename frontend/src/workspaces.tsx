@@ -1,4 +1,5 @@
 import {Synchronization} from './synchronization';
+import {SavedReports} from './SavedReports';
 import {tr} from './i18n';
 import {useState,useEffect,type FormEvent} from 'react';
 type Row=Record<string,any>;
@@ -59,9 +60,7 @@ function Sharing(props:Props){
 }
 
 export function WorkspacePanel(props:Props){
- const [reports,setReports]=useState<Row[]>([]);
- useEffect(()=>{if(props.section==='reports')props.run(async()=>setReports(await props.api('reports')))},[props.workspace,props.section]);
  if(props.section==='societies')return <SocietyManager {...props}/>;
- if(props.section==='reports')return <section className="panel protocol"><h2>{tr('Report conservati')}</h2>{!reports.length&&<p>{tr('I report esportati saranno disponibili anche qui.')}</p>}{reports.map(r=><div className="list-row" key={r.id}><span>{r.format.toUpperCase()} · {r.test_revision?.slice(0,8)||tr('Storico aggregato')}</span><button onClick={()=>props.run(()=>props.download(`reports/${r.id}/download`,`report.${r.format==='pdf'?'pdf':'zip'}`))}>{tr('Scarica')}</button></div>)}</section>;
+ if(props.section==='reports')return <SavedReports key={props.workspace} {...props}/>;
  return <Sharing {...props}/>;
 }

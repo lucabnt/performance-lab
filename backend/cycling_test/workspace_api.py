@@ -179,7 +179,26 @@ def install_workspaces(app,manager,store,download):
         with lock(store.root):revoke_member(store,id)
         return {'revoked':id,'note':'Revoca delle scritture recepita dai PC al prossimo scambio. Le copie già ricevute restano disponibili.'}
     @app.get('/api/v1/reports')
-    def reports():return [r for r in store.list('report') if r.get('analysis_type')!='maturation']
+    def reports():
+        # Display metadata only: never rewrite the signed report records.
+        with store.connect() as db:
+            records={r['id']:r for row in db.execute("SELECT data FROM records WHERE kind IN ('report','organization','group','athlete','test')") if (r:=json.loads(row[0]))}
+            dates={row[0]:json.loads(row[1]).get('created_at','') for row in db.execute(
+                "SELECT r.revision,c.body FROM records r LEFT JOIN changes c ON c.id=r.revision WHERE r.kind='report'") if row[1]}
+        result=[]
+        for r in records.values():
+            if r['kind']!='report' or r.get('analysis_type')=='maturation':continue
+            scope=r.get('query') or {}
+            test=records.get(r.get('test_id'),{})
+            athlete=records.get(scope.get('athlete') or test.get('athlete_id'),{})
+            group=records.get(scope.get('group'),{})
+            organization=records.get(r.get('organization_id'),{})
+            result.append({**r,'saved_at':dates.get(r['revision'],''),'context':{
+                'organization':organization.get('name',''),'group':group.get('name',''),
+                'season':scope.get('season') or group.get('season',''),
+                'athlete':' '.join(filter(None,[athlete.get('surname'),athlete.get('name')])),
+                'test_date':test.get('date','')}})
+        return sorted(result,key=lambda r:(r['saved_at'],r['id']),reverse=True)
     @app.get('/api/v1/reports/{id}/download')
     def report(id: str):
         r=store.get(id)

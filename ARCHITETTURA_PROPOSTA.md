@@ -1,5 +1,9 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## 25 ottobre 2026 — report conservati
+
+`SavedReports.tsx` adatta i report a RecordCards della UI comune con 5 elementi per pagina, ricerca e filtro formato. L'endpoint reports aggiunge solo metadati di presentazione: contesto dai record correnti e data dalla revisione immutabile associata; non riscrive i report firmati. Contesto non disponibile e date mancanti non vengono ricostruiti arbitrariamente. La paginazione è locale: l'API continua a restituire l'inventario completo.
+
 ## 25 ottobre 2026 — report archivio archive-5
 
 `archive_pdf.py` possiede impaginazione dedicata, font DejaVu incorporati, tabelle a larghezza normalizzata e documento multipass con indice collegato e outline. `archive_report.py` conserva selezione, manifest schema 2 e confrontabilità per protocollo/metodo; cambia solo renderer (`archive-5`) e presentazione. Le metriche aggregate condividono una tabella per gruppo confrontabile; le schede atleta iniziano su pagina nuova e i grafici individuali richiedono almeno due osservazioni. Footer e branding restano quelli comuni ai PDF del prodotto.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 25 ottobre 2026 — organizzazione report conservati
+
+- REPORT-SAVED-01: elenco con 5 report per pagina tramite RecordCards della UI comune, ricerca e filtro per formato; cambio filtri riporta alla prima pagina. Ordine dal più recente, data di creazione, società/gruppo/stagione/atleta quando disponibili e riferimento breve per distinguere le copie.
+- Metadati di presentazione ricavati dai record e dalle revisioni esistenti, senza riscritture degli originali firmati. Download JSON conservati come JSON. Modifica nei sorgenti; installer candidato 03 precedente invariato.
+
 ## 25 ottobre 2026 — report archivio e accesso alle rose storiche
 
 - REPORT-ARCHIVE-01: feedback immediato con rotellina e testo durante anteprima, PDF e Markdown; comandi e filtri disabilitati fino al termine per evitare doppi invii.

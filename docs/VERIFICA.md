@@ -1,5 +1,10 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 25 ottobre 2026 — REPORT-SAVED-01
+
+- 5 test backend mirati report/workspace passati: data e contesto con atleta archiviato, ordine, esclusione maturazione, originali invariati e download. 31 test frontend passati; build TypeScript/Vite riuscita dopo limite finale a 5. Warning dimensione chunk preesistente.
+- Browser sull'app compilata con backend reale e 25 report sintetici in archivio QA nuovo: 1–5 e 6–10, filtro MD con 9 risultati e ritorno a 1–5, ricerca senza risultati, download dalla scheda; date e ambiti leggibili anche nel viewport stretto. Paginazione locale; nessun benchmark su inventari remoti grandi. Nessun archivio operativo modificato, installer 03 non ricompilato.
+
 ## 25 ottobre 2026 — report archivio e rose storiche
 
 - Python completo: 238 passati, 1 saltato; frontend: 31 test passati e build TypeScript/Vite riuscita. Versione prodotto 0.10.0 e UI comune 0.2.8 verificate. Warning Plotly sulla dimensione del chunk invariato.

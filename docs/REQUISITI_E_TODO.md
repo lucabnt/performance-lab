@@ -1,5 +1,9 @@
 # Requisiti e to-do
 
+## REPORT-SAVED-01 — organizzare i report conservati, 25 ottobre 2026
+
+Richiesta: evitare una lista infinita; successiva indicazione esplicita: 5 report per pagina. Implementazione: RecordCards comune, ordine dal più recente, ricerca per ambito/data/riferimento e filtro formato; azzeramento pagina sui filtri e cambio archivio. Metadati di contesto per distinguere società, gruppo, stagione, atleta e data test; data di creazione ricavata dalla revisione, assenti mostrati senza inventare valori. Nessuna cancellazione o modifica dei report originali. Nessuna modifica al formato di sincronizzazione.
+
 ## REPORT-ARCHIVE-01, GRUPPI-04 e DOC-DRIVE-01 — 25 ottobre 2026
 
 Implementati e verificati nel browser: indicatore animato e stato accessibile per le tre azioni report, blocco invii concorrenti e ripristino dei controlli al termine; apertura delle rose stagionali con filtro Tutti e ricerca vuota, inclusi gli atleti archiviati. PDF con indice iniziale navigabile, numeri pagina, capitoli e schede atleta separate; dimensioni leggibili, intestazioni ripetute e larghezze entro i margini. Conservati dati, metodi e risultati. Test automatici su indice, ambito individuale e tabelle lunghe, più ispezione delle pagine renderizzate di un archivio sintetico. Guida Drive pronta; consenso reale e sincronizzazione fra account/dispositivi restano da collaudare con le registrazioni del titolare.

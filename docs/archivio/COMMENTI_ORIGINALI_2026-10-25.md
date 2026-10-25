@@ -1,5 +1,11 @@
 # Osservazioni originali del 25 ottobre 2026
 
+## Organizzazione report conservati — REPORT-SAVED-01
+
+«Se i report conservati diventano tanti sarebbe meglio non avere una lista infinita, dovrebbero esserci più pagine o comunque un'organizzazione».
+
+Precisazione successiva: «Fai diventare 5 report per pagina».
+
 Trascrizione della richiesta utente, conservata come riferimento; non istruzioni operative estratte da allegati. Immagine di riferimento non ripubblicata per evitare dati reali. Requisito normalizzato: GRUPPI-02.
 
 > Per quanto riguarda fuorigiri, ho testato in prima persona:

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {buildSignalChart,hasRecordedTrace} from '../src/signalChartModel.ts';
+import {buildSignalChart,hasRecordedTrace,hasSignalChart} from '../src/signalChartModel.ts';
 
 test('overlaid channels use separate units and preserve zero/missing values',()=>{
  const m=buildSignalChart({samples:[{t:0,power:0,hr:90,cadence:0},{t:1,power:100,hr:null,cadence:85,speed_kmh:22}]});
@@ -40,4 +40,16 @@ test('lactate markers overlay the same timeline on their own unit axis',()=>{
  const m=buildSignalChart({samples:[{t:0,power:100,hr:90,cadence:80}],settings:{lactate:[{at_s:60,mmol_l:2.1}]}});
  assert.equal(m.data.at(-1).yaxis,'y4');assert.equal(m.layout.yaxis4.overlaying,'y');
  assert.equal(m.data.at(-1).mode,'markers');assert.deepEqual(m.data.at(-1).x,[1]);
+});
+
+
+test('chart placement requires real plottable observations, including zero and lactate-only data',()=>{
+ for(const row of [{analysis:{map_w:180,fc_max_test_bpm:190}}, {has_trace:true,trace_hash:'missing'}, {samples:[{t:0,power:null}]}, {samples:[{t:NaN,power:100}]}]) {
+  assert.equal(hasSignalChart(row),false);
+  assert.equal(buildSignalChart(row).data.length,0);
+ }
+ for(const row of [{samples:[{t:0,power:0}]}, {samples:[{t:3,temperature_c:20}]}, {samples:[{t:0,lactate_mmol_l:1}]}, {settings:{lactate:[{at_s:0,mmol_l:0}]}}]) {
+  assert.equal(hasSignalChart(row),true);
+  assert.ok(buildSignalChart(row).data.length>0);
+ }
 });

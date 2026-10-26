@@ -144,6 +144,8 @@ def plan_import(store, org, profile, raw):
                         if p['id'] not in existing: entries.append(('protocol',p))
                     weight=number(r.get('peso_kg'))
                     if weight is not None and weight<=0: raise ValueError('Peso deve essere positivo.')
+                    coefficient=number(r.get('coeff_soglia'))
+                    if coefficient is not None and not 0<coefficient<=2:raise ValueError('Coefficiente soglia fuori intervallo: deve essere maggiore di 0 e non oltre 2.')
                     a={k:number(r.get(k)) for k in ('map_w','map_alt_w','fc_max_test_bpm','fthr_bpm')}
                     if any(v is not None and v<0 for v in a.values()):raise ValueError('Valori prestativi negativi non validi.')
                     if any(a.get(k) is not None and not 0<a[k]<=250 for k in ('fc_max_test_bpm','fthr_bpm')):raise ValueError('FC fuori intervallo.')
@@ -151,8 +153,10 @@ def plan_import(store, org, profile, raw):
                              steps=[],recovery=[],zones=[],warnings=['Risultati storici dichiarati: campioni non disponibili.'],method='Import CSV storico',engine='historical-1',power_coverage=None)
                     for m in ('map','threshold'): a[m+'_wkg']=round(a[m+'_w']/weight,3) if weight and a.get(m+'_w') is not None else None
                     payload={'organization_id':org,'athlete_id':athlete_id,'date':r['data'],'protocol_id':protocols[family]['id'],'historical':True,
-                             'trace_hash':None,'samples':[],'objects':[],'group_ids':[],'settings':{'weight_kg':weight,'weight_source':r.get('peso_fonte','dichiarato'),'offset_s':0,'end_s':a['duration_s'] or 0},
+                             'trace_hash':None,'samples':[],'objects':[],'group_ids':[],'settings':{'weight_kg':weight,'weight_source':r.get('peso_fonte','dichiarato'),'threshold_coefficient':coefficient,'offset_s':0,'end_s':a['duration_s'] or 0},
                              'analysis':a,'notes':r.get('note',''),'historical_fields':r}
+                    from .training_zones import for_test
+                    payload['analysis']['zones']=[{k:v for k,v in z.items() if k not in ('test_id','test_revision','test_date','definition_source')} for z in for_test(payload)]
                     kind='test';identity=r.get('test_id')
                     if not identity: raise ValueError('test_id obbligatorio.')
             id=str(uuid5(NAMESPACE_URL,org+'|'+kind+'|'+identity))

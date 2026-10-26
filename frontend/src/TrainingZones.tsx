@@ -1,0 +1,46 @@
+import {useEffect,useState} from 'react';
+import {DataTable,FormActions} from '@cycling-suite/ui';
+import {ZoneEditor} from './features';
+import {Dialog} from './Dialog';
+import {language} from './i18n';
+import {metricLabel,numberText} from './metrics';
+type Row=Record<string,any>;
+const copy=<T,>(v:T):T=>JSON.parse(JSON.stringify(v));
+
+export function ZoneBounds({zones,profile=false}:{zones:Row[];profile?:boolean}){
+ const en=language==='en';
+ return <>{zones.map((z,i)=><section key={i}>
+  <h3>{z.scheme.channel==='hr'?(en?'Heart rate zones':'Zone FC'):(en?'Power zones':'Zone watt')} · {z.scheme.name} · v{z.scheme.version}</h3>
+  <p>{metricLabel(z.scheme.reference)}: {numberText(z.reference_value)} {z.scheme.channel==='hr'?'bpm':'W'}{profile&&z.test_date&&<> · {en?'Test':'Test'} {z.test_date} · {en?'revision':'revisione'} {z.test_revision?.slice(0,8)}</>}</p>
+  {!z.zones.length?<p className="hint">{en?'Zones unavailable: enter the saved reference required by this scheme. No reference is inferred from MAP or another heart-rate measure.':'Zone non disponibili: manca il riferimento richiesto dallo schema. Non viene dedotto automaticamente dalla MAP o da un altro valore di frequenza cardiaca.'}</p>:<DataTable rows={z.zones.map((r:Row,index:number)=>({...r,percent:`${index?numberText(z.zones[index-1].upper):0} / ${r.upper==null?'∞':numberText(r.upper)} %`,range:`${r.lower_inclusive?'≥':'>'}${numberText(r.lower_value)} / ${r.upper_value==null?'∞':(r.inclusive?'≤':'<')+numberText(r.upper_value)} ${z.scheme.channel==='hr'?'bpm':'W'}`}))} columns={[{key:'name',label:en?'Zone':'Zona'},{key:'percent',label:en?'% of reference':'% del riferimento'},{key:'range',label:en?'Range':'Intervallo'},...(!profile?[{key:'seconds',label:en?'Seconds':'Secondi',render:(r:Row)=>numberText(r.seconds)}]:[])]}/>}
+ {!profile&&z.zones.some((r:Row)=>r.seconds!=null)&&<p className="muted">{en?'Unclassified time: ':'Tempo non classificato: '}{numberText(z.unclassified_s)} s</p>}
+ </section>)}</>;
+}
+
+export function TestZones({test,api,run}:{test:Row;api:any;run:any}){
+ const [zones,setZones]=useState<Row[]|null>(null);
+ const en=language==='en';
+ useEffect(()=>{let current=true;setZones(null);run(async()=>{const r=await api(`tests/${test.id}/zones`);if(current)setZones(r.zones)});return()=>{current=false}},[test.id,test.revision]);
+ return <section><h3>{en?'Training zones':'Zone di allenamento'}</h3>{zones?<><p className="muted">{en?'Bounds use the saved references. Archived schemes are preserved; missing schemes use the version shown below. Without samples, time spent in zones is unavailable.':'Gli intervalli usano i riferimenti salvati. Gli schemi archiviati vengono conservati; dove mancano si applica la versione mostrata sotto. Senza campioni non è disponibile il tempo trascorso nelle zone.'}</p>{zones.some(z=>z.definition_source==='saved_references')&&<p className="hint">{en?'Missing bounds reconstructed for display from the saved references; the archived test has not been rewritten.':'Intervalli mancanti ricavati per la visualizzazione dai riferimenti salvati; il test archiviato non è stato riscritto.'}</p>}<ZoneBounds zones={zones}/></>:<p role="status">{en?'Loading zones…':'Caricamento zone…'}</p>}</section>;
+}
+
+export function AthleteTrainingZones({athlete,api,run,refresh,canEdit}:{athlete:Row;api:any;run:any;refresh:any;canEdit:boolean}){
+ const [data,setData]=useState<Row|null>(null),[editing,setEditing]=useState(false),[mode,setMode]=useState('latest'),[testId,setTestId]=useState(''),[schemes,setSchemes]=useState<Row[]>([]),[references,setReferences]=useState<Row>({}),[saving,setSaving]=useState(false),[preview,setPreview]=useState<Row|null>(null);
+ const en=language==='en';
+ const modes:Row={latest:en?'Latest available zones':'Ultime zone disponibili',test:en?'Zones from a selected test':'Zone adottate da un test',custom:en?'Custom zones':'Zone personalizzate'};
+ useEffect(()=>{if(editing)return;let current=true;setData(null);run(async()=>{const r=await api(`athletes/${athlete.id}/training-zones`);if(current)setData(r)});return()=>{current=false}},[athlete.id,athlete.revision,editing]);
+ useEffect(()=>{let current=true;setPreview(null);if(editing&&mode==='test'&&testId)run(async()=>{const r=await api(`tests/${testId}/zones`);if(current)setPreview(r)});return()=>{current=false}},[editing,mode,testId]);
+ const edit=()=>{if(!data)return;setMode(data.mode);setTestId(data.selection.test_id||data.available_tests[0]?.id||'');setSchemes(copy(data.selection.schemes||data.zones.map((z:Row)=>z.scheme)));setReferences(data.selection.references||Object.fromEntries(data.zones.map((z:Row)=>[z.scheme.reference,z.reference_value??''])));setEditing(true)};
+ const save=()=>run(async()=>{
+  if(!data)return;setSaving(true);
+  try{const test=data.available_tests.find((t:Row)=>t.id===testId);await api(`athletes/${athlete.id}/training-zones`,{base:data.athlete_revision,mode,...(mode==='test'?{test_id:testId,test_revision:preview?.test_revision||test?.revision}:mode==='custom'?{schemes,references:Object.fromEntries(schemes.map(s=>[s.reference,Number(references[s.reference])]))}:{})},'PUT');await refresh();setEditing(false)}finally{setSaving(false)}
+ });
+ return <section className="panel protocol"><div className="panel-head"><h2>{en?'Profile training zones':'Zone di allenamento del profilo'}</h2><button disabled={!canEdit||!data||saving} onClick={edit}>{en?'Choose zones':'Scegli zone'}</button></div>
+ {!data?<p role="status">{en?'Loading zones…':'Caricamento zone…'}</p>:<><p><strong>{modes[data.mode]}</strong></p><p className="muted">{data.mode==='latest'?(en?'Uses the latest available reference for each channel, by test date. Heart-rate and power zones may come from different tests.':'Usa l’ultimo riferimento disponibile per ciascun canale, in ordine di data del test. FC e watt possono provenire da test diversi.'):data.mode==='test'?(en?'Saved copy of the selected test revision. Later test corrections do not automatically change profile zones.':'Copia salvata della revisione scelta. Correzioni successive del test non cambiano automaticamente le zone del profilo.'):(en?'References and bounds explicitly defined for this profile.':'Riferimenti e intervalli definiti esplicitamente per questo profilo.')}</p><div className="stats">{data.zones.map((z:Row)=><div className="stat" key={z.scheme.channel}><small>{z.scheme.channel==='hr'?(en?'Heart rate reference':'Riferimento FC'):(en?'Power reference':'Riferimento potenza')}</small><strong>{numberText(z.reference_value)} {z.scheme.channel==='hr'?'bpm':'W'}</strong><span>{metricLabel(z.scheme.reference)}{z.test_date?' · '+z.test_date:''}</span></div>)}</div><details><summary>{en?'HR/power ranges and percentages':'Intervalli e percentuali FC/potenza'}</summary><ZoneBounds zones={data.zones} profile/></details><p className="muted">{en?'To define percentages: Choose zones → Custom zones.':'Per definire le percentuali: Scegli zone → Zone personalizzate.'}</p>
+ {editing&&<Dialog title={en?'Choose zones and percentages':'Scegli zone e percentuali'} editor busy={saving} onClose={()=>setEditing(false)}><p>{en?'Select Custom zones to edit the HR and power percentages and their reference values. A test selection preserves that test’s scheme.':'Per modificare le percentuali FC e potenza e i valori di riferimento scegli Zone personalizzate. Adottando un test conservi lo schema di quel test.'}</p><fieldset disabled={saving} style={{border:0,padding:0,margin:0,minWidth:0}}><label>{en?'Zone source':'Origine delle zone'}<select value={mode} onChange={e=>setMode(e.target.value)}>{Object.entries(modes).map(([value,label])=><option key={value} value={value}>{String(label)}</option>)}</select></label>
+ {mode==='test'&&<label>{en?'Aerobic test':'Test aerobico'}<select value={testId} onChange={e=>setTestId(e.target.value)}><option value="">{en?'Choose a test':'Scegli un test'}</option>{data.available_tests.map((t:Row)=><option key={t.id} value={t.id}>{t.date} · {t.protocol_name} {t.protocol_version} · {t.id.slice(0,8)} · {t.available_channels.join(' / ')|| (en?'references unavailable':'riferimenti mancanti')}</option>)}</select></label>}
+ {mode==='test'&&preview&&<ZoneBounds zones={preview.zones} profile/>}
+ {mode==='custom'&&<><p>{en?'Define the reference and percentage limits for each channel; the last zone is open-ended.':'Definisci il valore di riferimento e i limiti percentuali per ciascun canale; l’ultima zona resta aperta.'}</p><ZoneEditor value={schemes} onChange={setSchemes}/><div className="form-grid">{schemes.map(s=><label key={s.channel}>{metricLabel(s.reference)}<input type="number" step="any" min="0.01" max={s.channel==='hr'?250:3000} value={references[s.reference]??''} onChange={e=>setReferences(r=>({...r,[s.reference]:e.target.value}))}/></label>)}</div></>}
+ <FormActions><button className="primary" disabled={!canEdit||saving||(mode==='test'&&(!testId||!preview))||(mode==='custom'&&schemes.some(s=>!Number(references[s.reference])))} onClick={save}>{en?'Save profile zones':'Salva zone del profilo'}</button><button disabled={saving} onClick={()=>setEditing(false)}>{en?'Cancel':'Annulla'}</button></FormActions></fieldset></Dialog>}</>}
+ </section>;
+}

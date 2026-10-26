@@ -82,7 +82,7 @@ def audit(store,result):
         db.execute('INSERT INTO sync_audit(body,digest) VALUES(?,?)',(body,hashlib.sha256(body.encode()).hexdigest()))
 
 
-def run_sync(store,verify_all=False):
+def run_sync(store,verify_all=False,progress=None):
     require_managed(store)
     with lock(store.root):
         config=configuration(store)
@@ -91,6 +91,9 @@ def run_sync(store,verify_all=False):
         try:
             from .sync import exchange
             connection=transport(store,config)
+            if progress:
+                from .sync_jobs import ObservedTransport
+                connection=ObservedTransport(connection,progress)
             protocol=store.identity.get('sync_protocol',1)
             if 'format2.json' in connection.list():
                 from .workspaces import verify
@@ -105,7 +108,7 @@ def run_sync(store,verify_all=False):
                 notice={'workspace':store.identity['workspace'],'protocol':2,'history_preserved':True}
                 connection.put('format2.json',encoded({**notice,'signature':sign(store.identity['authority_private'],notice)}).encode())
             result=exchange(store,None,store.identity['sync_key'],connection,verify_existing=verify_all,protocol=protocol)
-            state={'at':at,'ok':not result['errors'] and not result['pending'],'connection_fingerprint':connection_fingerprint(config),**result}
+            state={'at':at,'finished_at':datetime.now(timezone.utc).isoformat(),'ok':not result['errors'] and not result['pending'],'connection_fingerprint':connection_fingerprint(config),**result}
             write_json(store.root/'last-sync.json',state)
             audit(store,{'ok':state['ok'],**{k:result[k] for k in ('transport','published','received','pending','conflicts')},'invalid_packets':len(result['errors'])})
             return result

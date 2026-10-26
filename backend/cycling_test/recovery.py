@@ -184,10 +184,10 @@ def _restore_data(manager,data,mode,path='',operator='',recovery_raw=None,passwo
         if mode=='independent' and not operator.strip():raise ValueError('Indicare il nome del nuovo fondatore.')
     target=Path(path).resolve() if path else (manager.root/'workspaces'/id).resolve()
     with manager.lock:
-        if any(e['id']==id for e in manager.entries()):raise ValueError('Società già presente sul dispositivo. Usare un’altra installazione per il recupero; nessun archivio sovrascritto.')
+        if any(e['id']==id for e in manager.entries(include_detached=True)):raise ValueError('Società già presente sul dispositivo, anche se scollegata. Nessun archivio sovrascritto.')
         if target==manager.root.resolve() or target in manager.root.resolve().parents or target==manager.root.resolve()/'objects' or manager.root.resolve()/'objects' in target.parents:
             raise ValueError('La destinazione deve essere separata dall’archivio principale.')
-        for e in manager.entries():
+        for e in manager.entries(include_detached=True):
             other=Path(e['path']).resolve()
             if target==other or target in other.parents or other in target.parents:raise ValueError('Destinazione sovrapposta a una società esistente.')
         if target.exists() and (not target.is_dir() or any(target.iterdir())):raise ValueError('La destinazione deve essere vuota. Nessun archivio sovrascritto.')

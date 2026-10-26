@@ -1,5 +1,13 @@
 # Android: pratiche condivise e adozione in Fuorigiri
 
+## 26 ottobre 2026 — avvio e sincronizzazione
+
+Fuorigiri adotta job di scambio Python separati dalle richieste WebView. Runtime.lock protegge l'inizializzazione e le richieste brevi, non attese WebDAV del worker. Stato job selezionato nel root UI, persistente al cambio scheda, esiti e conteggi reali; la chiusura del processo è un'interruzione recuperabile, non un successo. I lock di archivio e le firme restano invariati.
+
+Preferenze bootstrap con limite 5 s e fallback, apertura dati con limite 30 s e retry, watchdog nativo a 30 s con AVVIO-03; errori runtime AVVIO-01 e chunk UI AVVIO-02. WebView non riutilizza cache HTML di un APK precedente; localStorage, archivi e credenziali non vengono puliti. Dialog zone dal common, dettagli percentuali richiudibili e MAP subito dopo il riepilogo. Build e test su backend non sostituiscono force-stop/riapertura durante scambio e cold start sul Pixel 9 fisico, ancora da eseguire.
+
+Le risposte asincrone non vengono consegnate a una Activity/WebView distrutta dopo ricreazione o chiusura, così una vecchia richiesta non tenta di usare la vista già distrutta durante il nuovo avvio.
+
 La guida canonica per le nuove app è `docs/ANDROID_BEST_PRACTICES.md` nella repository **cycling-suite-common**, aggiornata nello stesso intervento. [Percorso nei sorgenti comuni](https://github.com/lucabnt/cycling-suite-common/blob/main/docs/ANDROID_BEST_PRACTICES.md). Le modifiche sono locali finché non vengono committate/pubblicate dal titolare; il riferimento remoto non implica una pubblicazione eseguita dall’agente.
 
 Il documento raccoglie: confini tra app e common, navigazione hamburger/Indietro, cronologia limitata, preferenza persistente della società, schede/paginazione/filtri, azioni e validazioni dei moduli, tastiere e tempi, insets/IME, accessibilità, file privati/SAF, offline/sync/backup, dipendenze native e gate distinti di build/runtime/dispositivo. Contiene anche i problemi realmente scoperti in Fuorigiri (sessionStorage volatile, DT_NEEDED libpython, wheel non tracciate dalla cache Gradle).

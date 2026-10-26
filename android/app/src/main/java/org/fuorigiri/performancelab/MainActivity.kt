@@ -31,6 +31,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
+    private val startupHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var startupWatchdog: Runnable? = null
     private var chartPreviousOrientation: Int? = null
     private var chartPreviousBars: Int? = null
     private var chartPreviousBarsBehavior: Int? = null
@@ -112,13 +114,22 @@ class MainActivity : ComponentActivity() {
             isAppearanceLightNavigationBars = true
         }
         showStatus("Fuorigiri Performance Lab\nPreparazione del motore locale…")
+        startupWatchdog = Runnable {
+            if (!isFinishing && !isDestroyed) showStatus("Preparazione del motore locale più lenta del previsto. I dati sono conservati. Puoi riprovare; codice AVVIO-03.", failed = true)
+        }.also { startupHandler.postDelayed(it, 30000) }
         Runtime.executor.execute {
             try {
                 Runtime.get(applicationContext)
-                runOnUiThread { showStatus("Fuorigiri Performance Lab\nApertura dell’interfaccia…");setupWebView();handleOAuth(intent) }
+                runOnUiThread {
+                    startupWatchdog?.let { startupHandler.removeCallbacks(it) }
+                    if (!isFinishing && !isDestroyed) { showStatus("Fuorigiri Performance Lab\nApertura dell’interfaccia…");setupWebView();handleOAuth(intent) }
+                }
             } catch (error: Exception) {
                 if (BuildConfig.DEBUG) Log.e("FuorigiriStartup", "Offline runtime initialization failed", error)
-                runOnUiThread { showStatus("Avvio non riuscito. I dati locali sono conservati. Riavvia l’app; se il problema persiste, segnala il codice AVVIO-01.", failed = true) }
+                runOnUiThread {
+                    startupWatchdog?.let { startupHandler.removeCallbacks(it) }
+                    if (!isFinishing && !isDestroyed) showStatus("Avvio non riuscito. I dati locali sono conservati. Riavvia l’app; se il problema persiste, segnala il codice AVVIO-01.", failed = true)
+                }
             }
         }
     }
@@ -169,6 +180,8 @@ class MainActivity : ComponentActivity() {
         web = WebView(this)
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         web.settings.apply {
+            // Assets are already local: never reuse an old bootstrap after an APK update.
+            cacheMode = WebSettings.LOAD_NO_CACHE
             javaScriptEnabled = true; domStorageEnabled = true
             allowFileAccess = false; allowContentAccess = true
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
@@ -220,7 +233,7 @@ class MainActivity : ComponentActivity() {
                         val result = synchronized(Runtime.lock) { Runtime.get(applicationContext).callAttr("request", command.getJSONObject("payload").toString()).toString() }
                         JSONObject().put("id", id).put("response", JSONObject(result))
                     } catch (_: Exception) { JSONObject().put("id", id).put("error", "Operazione non completata. I dati locali sono conservati.") }
-                    runOnUiThread { if (!isFinishing) web.evaluateJavascript("window.fuorigiriNativeResponse(${response});", null) }
+                    runOnUiThread { if (!isFinishing && !isDestroyed && ::web.isInitialized) web.evaluateJavascript("window.fuorigiriNativeResponse(${response});", null) }
                 }
                 "export" -> {
                     if (exportBytes != null) { Toast.makeText(this,"Completa prima l’esportazione aperta",Toast.LENGTH_SHORT).show(); return@addWebMessageListener }
@@ -274,5 +287,5 @@ class MainActivity : ComponentActivity() {
         })
     }
     private fun blocked() = WebResourceResponse("text/plain", "UTF-8", 403, "Blocked", emptyMap(), "Contenuto non disponibile".byteInputStream())
-    override fun onDestroy() { chartLandscape(false);pickerCallback?.onReceiveValue(null);pickerCallback=null;if(::web.isInitialized) web.destroy();super.onDestroy() }
+    override fun onDestroy() { startupWatchdog?.let { startupHandler.removeCallbacks(it) };chartLandscape(false);pickerCallback?.onReceiveValue(null);pickerCallback=null;if(::web.isInitialized) web.destroy();super.onDestroy() }
 }

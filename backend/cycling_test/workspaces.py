@@ -151,12 +151,39 @@ class Workspaces:
         self.legacy=legacy
         self.proxy=StoreProxy(legacy)
         self.lock=threading.RLock()
-    def entries(self):
-        return json.loads(self.registry.read_text(encoding='utf-8')) if self.registry.exists() else []
+    def entries(self,include_detached=False):
+        rows=json.loads(self.registry.read_text(encoding='utf-8')) if self.registry.exists() else []
+        return rows if include_detached else [r for r in rows if not r.get('detached')]
+
+    def set_detached(self,id,detached):
+        from .sync_service import lock
+        with self.lock:
+            rows=self.entries(include_detached=True)
+            entry=next((r for r in rows if r['id']==id),None)
+            if entry is None:raise ValueError('Società non associata al dispositivo.')
+            if not Path(entry['path']).is_dir():raise ValueError('Copia locale non disponibile: nessun nuovo archivio è stato creato.')
+            if detached:
+                from .sync_jobs import status
+                if status(Path(entry['path']))['status']=='running':
+                    raise ValueError('Sincronizzazione in corso: attendere il termine prima di scollegare la società.')
+            if not detached:
+                if not (Path(entry['path'])/'archive.sqlite').is_file():raise ValueError('Database locale non disponibile: ripristino del collegamento annullato.')
+                if entry.get('mode')!='snapshot':
+                    try:validate_identity(json.loads((Path(entry['path'])/'identity.json').read_text(encoding='utf-8')))
+                    except (ValueError,OSError,KeyError):raise ValueError('Accessi locali non validi: ripristino del collegamento annullato.') from None
+            with lock(Path(entry['path'])):
+                entry['detached']=detached
+                write_json(self.registry,rows)
+                selection=self.root/'last-selection.json'
+                if detached and selection.exists():
+                    try:saved=json.loads(selection.read_text(encoding='utf-8'))
+                    except (ValueError,OSError):saved={}
+                    if saved.get('workspace')==id:write_json(selection,{'workspace':'','organization':''})
+            return {k:v for k,v in entry.items()}
     def register(self,entry):
         with self.lock:self._register(entry)
     def _register(self,entry):
-        entries=self.entries()
+        entries=self.entries(include_detached=True)
         if any(e['id']==entry['id'] for e in entries):raise ValueError('Workspace già presente sul dispositivo.')
         target=Path(entry['path']).resolve()
         for e in entries:
@@ -185,10 +212,10 @@ class Workspaces:
         """Publish only a complete new archive; never overwrite an existing one."""
         with self.lock:
             root=Path(path).resolve() if path else (self.root/'workspaces'/id).resolve()
-            if any(e['id']==id for e in self.entries()):raise ValueError('Società già collegata: per rinnovare usa Applica nuovo invito.')
+            if any(e['id']==id for e in self.entries(include_detached=True)):raise ValueError('Società già presente, anche se scollegata: ripristinare il collegamento o rinnovare gli accessi.')
             if root==self.root.resolve() or root in self.root.resolve().parents or root==self.root.resolve()/'objects' or self.root.resolve()/'objects' in root.parents:
                 raise ValueError('La cartella deve essere separata dall’archivio principale.')
-            for e in self.entries():
+            for e in self.entries(include_detached=True):
                 other=Path(e['path']).resolve()
                 if root==other or root in other.parents or other in root.parents:raise ValueError('Cartella sovrapposta a una società esistente.')
             if root.exists() and (not root.is_dir() or any(root.iterdir())):raise ValueError('Usare una cartella vuota.')

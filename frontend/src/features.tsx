@@ -5,6 +5,7 @@ import {DataTable,SortableTable} from '@cycling-suite/ui';
 export {DataTable,SortableTable};
 import {FieldSchemaEditor,FieldValues,TestExtensions} from './customFields';
 import {metricLabel,numberText} from './metrics';
+import {thresholdCoefficient} from './thresholdReference';
 import {tr} from './i18n';
 import React,{useState,useEffect} from 'react';
 type Row=Record<string,any>;
@@ -50,7 +51,7 @@ export function DefaultsPanel({org,api,run}:{org:string,api:any,run:any}){
 }
 
 export function HistoricalEditor({test,api,run,done,standalone=false}:{test:Row,api:any,run:any,done:(r:Row)=>void,standalone?:boolean}){
- const [open,setOpen]=useState(standalone),[draft,setDraft]=useState<Row>({...test.settings,map_w:test.analysis.map_w,map_alt_w:test.analysis.map_alt_w,threshold_w:test.analysis.threshold_w,fthr_bpm:test.analysis.fthr_bpm,fc_max_test_bpm:test.analysis.fc_max_test_bpm,date:test.date,notes:test.notes,reason:''});
+ const [open,setOpen]=useState(standalone),[draft,setDraft]=useState<Row>({...test.settings,threshold_coefficient:thresholdCoefficient(test),map_w:test.analysis.map_w,map_alt_w:test.analysis.map_alt_w,threshold_w:test.analysis.threshold_w,fthr_bpm:test.analysis.fthr_bpm,fc_max_test_bpm:test.analysis.fc_max_test_bpm,date:test.date,notes:test.notes,reason:''});
  const change=(key:string,value:string)=>setDraft(d=>({...d,[key]:value}));
  return <section>{!standalone&&<button onClick={()=>setOpen(!open)}>{tr('Correggi risultato storico')}</button>}{open&&<><div className="form-grid"><label>{tr('Data')}<input type="date" value={draft.date} onChange={e=>change('date',e.target.value)}/></label>{['map_w','map_alt_w','fc_max_test_bpm','end_s','weight_kg','height_cm','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe','rest_hr','rest_after_s'].map(k=><label key={k}>{metricLabel(k)}<input type="number" step="any" value={draft[k]??''} onChange={e=>change(k,e.target.value)}/></label>)}</div><label>{tr('Note')}<textarea value={draft.notes||''} onChange={e=>change('notes',e.target.value)}/></label><label>{tr('Motivo della revisione')}<input value={draft.reason} onChange={e=>change('reason',e.target.value)}/></label><FormActions><button onClick={()=>run(async()=>{const settings={...test.settings,...Object.fromEntries(['weight_kg','height_cm','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe','rest_hr','rest_after_s'].map(k=>[k,draft[k]==null||draft[k]===''?null:Number(draft[k])])),end_s:Number(draft.end_s)||0,weight_source:test.settings.weight_source||'dichiarato',threshold_source:'dichiarato'};const saved=await api(`tests/${test.id}/historical`,{base:test.revision,reason:draft.reason,date:draft.date,map_w:draft.map_w==null||draft.map_w===''?null:Number(draft.map_w),map_alt_w:draft.map_alt_w==null||draft.map_alt_w===''?null:Number(draft.map_alt_w),fc_max_test_bpm:draft.fc_max_test_bpm==null||draft.fc_max_test_bpm===''?null:Number(draft.fc_max_test_bpm),settings,notes:draft.notes||''},'PUT');done(saved);setOpen(false)})}>{tr('Salva nuova revisione')}</button></FormActions></>}</section>
 }

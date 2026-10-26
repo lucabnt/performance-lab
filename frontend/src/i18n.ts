@@ -1,4 +1,9 @@
-export const language = localStorage.getItem('fuorigiri-language') || 'it';
+import {rememberedLanguage,type Preferences} from './devicePreferences';
+export let language = localStorage.getItem('fuorigiri-language')==='en'?'en':'it';
+export async function initializeLanguage(load:()=>Promise<Preferences>){
+ language=await rememberedLanguage(load,language);
+ localStorage.setItem('fuorigiri-language',language);document.documentElement.lang=language;
+}
 document.documentElement.lang=language==='en'?'en':'it';
 const translations:Record<string,string> = {
  "Report completo dell’archivio":"Complete archive report",
@@ -279,4 +284,7 @@ Object.assign(translations,{
  "allegati": "attachments"
 });
 export function tr(text:string){return language==='en'?(translations[text]||text):text}
-export function setLanguage(value:string){localStorage.setItem('fuorigiri-language',value);location.reload()}
+export async function setLanguage(value:string,save:(language:string)=>Promise<unknown>){
+ if(value!=='it'&&value!=='en')return;
+ await save(value);localStorage.setItem('fuorigiri-language',value);location.reload();
+}

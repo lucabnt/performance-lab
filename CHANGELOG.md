@@ -1,5 +1,50 @@
 # Changelog
 
+## 26 ottobre 2026 — ordine delle pagine e riepilogo test
+
+- UI-ORDER-01: KPI aerobici riuniti in un solo riepilogo, MAP senza duplicati e fonti/coefficiente conservati. Grafico in apertura quando ci sono osservazioni rappresentabili, poi KPI/zone e approfondimenti; senza grafico, riepilogo in alto. Stessa sintesi KPI nell’anteprima.
+- Anaerobici con indicatori principali in apertura e Altri risultati richiudibile, senza ripetere i KPI nella tabella.
+- Profilo con elenco test dopo zone/MAP, misure e grafico antropometrico adiacenti. Elenco prove prima della guida richiudibile; storico principale prima della ripetibilità; report conservati vicini alla generazione.
+- Modifiche ai sorgenti/frontend compilato; installer e APK `20261026-01` precedenti non contengono questo riordino.
+
+## 26 ottobre 2026 — editor zone, stato sync e avvio Android
+
+- Compilati installer Windows `pilot-20261026-01` e APK debug `pixel9-test-20261026-01`, con smoke Windows, asset correnti, firma e allineamento Android verificati. Stessa versione 0.10.0 e firma debug precedente; collaudo sul telefono ancora da eseguire.
+
+- ZONE-03: Scegli zone apre un Dialog visibile, con indicazioni per modificare percentuali e riferimenti; tabelle con percentuali esplicite. Riepilogo zone compatto e MAP storiche subito dopo, con metrica iniziale MAP indipendente dagli altri storici.
+- SYNC-UX-02: avvio/polling di job locali, deduplicazione degli avvii, progressi da operazioni reali, stato persistente al cambio scheda e riepilogo esito/incrementale vs verifica completa. I job interrotti dalla chiusura del processo non vengono mostrati riusciti.
+- AND-START-01: attese di rete fuori dal lock di avvio/interfaccia, anche per WorkManager; preferenze con deadline, caricamento dati con retry, bootstrap con messaggio di errore e watchdog nativo con codice AVVIO. Asset WebView letti dall'APK senza cache HTML obsoleta. Nessun reset degli archivi o delle credenziali.
+
+## 25 ottobre 2026 — zone aerobiche e scelta sul profilo
+
+- Compilati candidato Windows `pilot-20261025-06` e APK debug personale `pixel9-test-20261025-03`, mantenendo versione prodotto 0.10.0 e firma debug precedente; smoke Windows, asset correnti, firma/allineamento Android verificati. Pacchetti precedenti preservati, nessuna installazione automatica.
+
+- ZONE-02: zone FC/watt anche per i vecchi CSV senza FIT, derivate in lettura solo da riferimenti disponibili; nuovi import conservano lo snapshot. Schemi e tempi già archiviati preservati, nessun tempo inventato senza campioni. Canali privi di riferimento esplicitamente non disponibili.
+- Profilo atleta con ultime zone disponibili per canale, adozione con anteprima di un preciso test/revisione oppure schemi e riferimenti custom. Scelta versionata nel record atleta, sincronizzata, modificabile da Admin dati e conservata nelle modifiche anagrafiche.
+- Report individuale renderer `0.10-training-zones-1` con intervalli compatibili per gli import precedenti, senza riscrivere i test o cancellare i report già conservati.
+
+## 25 ottobre 2026 — sincronizzazione, preferenze e società locali
+
+- SYNC-UX-01: spinner e stato accessibile per l'intera sincronizzazione, protezione invii concorrenti e blocco configurazione; orari con fuso esplicito, selezione Fuso del dispositivo/Europe-Rome/UTC e conversione coerente anche nel registro.
+- DEVICE-PREF-01: lingua e fuso persistono nella radice dati del dispositivo, indipendenti da porta HTTP e società; lingua caricata prima dell'interfaccia, preferenze fuori dai dati sincronizzati.
+- SOCIETY-LOCAL-01: Gestisci società permette scollegamento recuperabile locale e ripristino, senza cancellare file, accessi o dati remoti; esclusione da inventario attivo e background, protezione percorsi delle copie scollegate.
+- Guida WebDAV Windows/Android con invito personale e password applicazione Koofr. Nessuna connessione ad account reali eseguita dall'agente.
+
+## 25 ottobre 2026 — report richiudibili e prova Pixel 9
+
+- REPORT-SAVED-02: Report conservati richiudibile con details/summary, inizialmente chiuso come Condivisione e collaboratori; ricerca, filtro e pagina conservati durante chiusura/riapertura. Verificato nel browser.
+- APK debug aggiornato per test personale su Pixel 9, firma debug esistente e allineamento verificati. Nessuna chiave release creata né installazione fisica eseguita. Il candidato Windows 04 precedente non include la sezione richiudibile.
+- Guida installazione Android e distinzione fra trasferimento APK via Drive, cartella cloud desktop e sincronizzazione tramite API/WebDAV; con solo Drive e senza GCP lo scambio Windows/Android non è configurabile con la cartella desktop.
+
+## 25 ottobre 2026 — coefficiente della soglia aerobica
+
+- Candidato Windows `pilot-20261025-04`: bundle aggiornato con coefficiente e tutte le modifiche precedenti, inclusa paginazione a 5 report; smoke EXE riuscito. Versione prodotto 0.10.0 invariata; nessun APK aggiornato in questa consegna.
+
+- Correggi test precompila anche il coefficiente dei vecchi import; per ricalcolare la soglia occorre svuotare il valore dichiarato, che ha precedenza. Verificata revisione esplicita da 0,8 a 0,75 con MAP 250 W e soglia 187,5 W.
+
+- AEROBIC-REF-01: il dettaglio mostra esplicitamente coefficiente MAP → soglia e percentuale; per import CSV precedenti legge il valore originale `coeff_soglia` quando manca nelle impostazioni. Assenza esplicita se non disponibile, nessuna deduzione dal rapporto tra watt arrotondati. Un coefficiente conservato su soglia dichiarata è indicato come non applicato.
+- Nuovi import aerobici conservano il coefficiente nelle impostazioni con validazione coerente con l'inserimento manuale; potenza di soglia storica invariata. Nessuna migrazione o riscrittura dei test esistenti. Installer precedente invariato.
+
 ## 25 ottobre 2026 — organizzazione report conservati
 
 - REPORT-SAVED-01: elenco con 5 report per pagina tramite RecordCards della UI comune, ricerca e filtro per formato; cambio filtri riporta alla prima pagina. Ordine dal più recente, data di creazione, società/gruppo/stagione/atleta quando disponibili e riferimento breve per distinguere le copie.

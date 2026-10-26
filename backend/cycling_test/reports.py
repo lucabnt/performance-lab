@@ -17,7 +17,7 @@ from .report_labels import metric_label
 from .scientific_labels import reason as scientific_reason, METHODS
 
 from .anaerobic import CSV_HEADER as ANAEROBIC_HEADER
-RENDERER_VERSION='0.8-lactate-2'
+RENDERER_VERSION='0.10-training-zones-1'
 CSV_HEADERS = {
     'test_anaerobico': ANAEROBIC_HEADER,
     "atleti": "atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note",
@@ -100,7 +100,8 @@ def report(test, athlete, protocol, format, language='it'):
     if is_anaerobic(test):
         from .anaerobic_report import render
         return render(test,athlete,protocol,format,language)
-    a = test["analysis"]
+    from .training_zones import for_test
+    a = {**test["analysis"], 'zones':for_test(test)}
     title = f"{athlete['surname']} {athlete['name']}"
     metrics = [("Data", test["date"]), ("Protocollo", f"{protocol['name']} - {protocol['version']}"),
                ("Peso (kg)", val(test["settings"].get("weight_kg"))),

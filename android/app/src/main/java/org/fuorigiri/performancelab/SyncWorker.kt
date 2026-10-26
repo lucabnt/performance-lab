@@ -6,7 +6,8 @@ import java.util.concurrent.TimeUnit
 
 class SyncWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
     override fun doWork(): Result = try {
-        val success = synchronized(Runtime.lock) { Runtime.get(applicationContext).callAttr("sync_all").toBoolean() }
+        // Network waits must not hold the lock used by startup and UI requests.
+        val success = Runtime.get(applicationContext).callAttr("sync_all").toBoolean()
         if (success) Result.success() else if (runAttemptCount < 4) Result.retry() else Result.failure()
     } catch (_: Exception) { if (runAttemptCount < 4) Result.retry() else Result.failure() }
 

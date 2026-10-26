@@ -24,6 +24,36 @@ def install_workspaces(app,manager,store,download):
     def list_workspaces():
         return manager.entries()
 
+    class DevicePreferences(BaseModel):
+        language: Literal['it','en'] | None = None
+        time_zone: Literal['local','Europe/Rome','UTC'] | None = None
+
+    def preferences():
+        try:
+            value=DevicePreferences.model_validate_json((manager.root/'device-preferences.json').read_text(encoding='utf-8'))
+            return {'language':value.language,'time_zone':value.time_zone or 'local'}
+        except (OSError,ValueError):return {'language':None,'time_zone':'local'}
+
+    @app.get('/api/v1/device/preferences')
+    def device_preferences():return preferences()
+
+    @app.put('/api/v1/device/preferences')
+    def save_device_preferences(data:DevicePreferences):
+        from .workspaces import write_json
+        with manager.lock:
+            value={**preferences(),**data.model_dump(exclude_none=True)}
+            write_json(manager.root/'device-preferences.json',value)
+        return value
+
+    @app.get('/api/v1/workspaces/detached')
+    def detached_workspaces():return [e for e in manager.entries(include_detached=True) if e.get('detached')]
+
+    @app.post('/api/v1/workspaces/{id}/detach')
+    def detach_workspace(id:str):return manager.set_detached(id,True)
+
+    @app.post('/api/v1/workspaces/{id}/reattach')
+    def reattach_workspace(id:str):return manager.set_detached(id,False)
+
     class LastSelection(BaseModel):
         workspace: str=Field(max_length=100)
         organization: str=Field(max_length=100)

@@ -1,5 +1,33 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## 26 ottobre 2026 — sincronizzazione non bloccante e recupero avvio
+
+sync_jobs.py cattura lo Store selezionato prima di avviare un thread daemon, senza trasferire il proxy ContextVar fuori dalla richiesta. POST sync/start e GET sync/job, idempotenza mentre attivo, stato device-local sync-job.json e dati sanitizzati; i job running senza thread nella nuova istanza sono interrotti. Wrapper dei trasporti segnala operazioni reali senza alterare pacchetti, firme, controlli o criteri incrementali. La pagina non possiede più l'attività: useSyncJob nel root alimenta riepilogo globale e pannello. Il processo deve restare vivo; non è un servizio Windows o garanzia di esecuzione Android dopo force-stop.
+
+MobileRuntime.sync_all usa gli stessi job e attende fuori dal lock UI; SyncWorker mantiene Runtime.get sincronizzato per l'inizializzazione, senza Runtime.lock durante la rete. Chaquopy documenta le chiamate multi-thread come thread-safe, con GIL ([documentazione primaria](https://chaquo.com/chaquopy/doc/current/cross.html#multi-threading)); conservare i lock di archivio e SQLite. Nessuna rete sotto il lock di avvio. Bootstrap preferenze limitato a 5 s, letture di apertura a 30 s con retry; watchdog nativo dopo 30 s conserva dati e consente nuovo tentativo, senza istanze Python concorrenti. WebView usa asset locali senza cache bootstrap persistente.
+
+TrainingZones usa Dialog comune per l'editor e schemi/riferimenti esistenti, senza cambiare formule o versioni delle zone. La vista principale mostra riferimenti compatti e MAP, tabelle dettagliate richiudibili. La bozza aperta conserva la base originale anche se arriva una revisione remota, per lasciare al server il controllo dei conflitti.
+
+## 25 ottobre 2026 — definizioni delle zone e profilo
+
+`training_zones.py` separa definizioni dei limiti da tempi osservati: for_test conserva snapshot esistenti e completa canali assenti da riferimenti salvati/preset mostrato, senza riscrivere lo storico. Il CSV salva questi snapshot nei nuovi record. Endpoint GET test/zones e athletes/training-zones e PUT della scelta profilo. Nessun coefficiente implicito MAP/FTHR.
+
+`training_zone_selection` nel record atleta: mode latest, test o custom. Latest risolve per canale in ordine di data, test conserva revisione e snapshot adottati, custom assegna versione propria a schemi/riferimenti espliciti. Salvataggio con base e revisione del test controllate; update anagrafico conserva metadati della scelta. Normali firme, backup e sync si applicano al record atleta, senza cambi di formato. Renderer individuale 0.10-training-zones-1 invalida la sola cache di generazione precedente. Componenti prodotto in TrainingZones.tsx, tabelle e comandi dal common esistente.
+
+## 25 ottobre 2026 — preferenze dispositivo e scollegamento locale
+
+`device-preferences.json` nella radice dati conserva lingua e fuso con merge validato tramite API autenticata /device/preferences, indipendente dalla società e dal ruolo. `bootstrap.ts` installa il bridge mobile, recupera la lingua e carica main dinamicamente, prima della valutazione dei moduli tradotti. localStorage rimane cache/fallback, non autorità Windows fra porte diverse. I timestamp UTC non sono riscritti; syncTime applica solo la visualizzazione nel fuso selezionato e segnala timestamp senza offset.
+
+`workspaces.json` conserva le voci detached senza spostare o cancellare archivi. entries() e get() escludono queste voci, entries(include_detached=True) serve per ripristino e controlli anti-sovrapposizione in creazione/recupero. Lo scollegamento serializza con lo scambio locale, azzera la selezione ricordata se pertinente e non revoca identità. Il ripristino controlla disponibilità di database e accessi. Nessuna condivisione di preferenze, dati o credenziali col common.
+
+## 25 ottobre 2026 — sezione report e consegna Android QA
+
+SavedReports usa details/summary nativi e stili comuni esistenti, chiuso inizialmente; il contenuto resta montato per conservare filtri/pagina. Consegna Android debug separata dal pilot release: certificato debug già esistente, nessuna modifica a firma/versioni prodotto o API di sincronizzazione. La modalità cartella client cloud resta desktop; nessun bridge SAF/Drive aggiunto. Guida corrente: INSTALLARE_ANDROID_PER_TEST.md.
+
+## 25 ottobre 2026 — coefficiente soglia storico
+
+`thresholdReference.ts` legge il coefficiente dalle impostazioni, oppure dal campo originale CSV `historical_fields.coeff_soglia` solo se la chiave non è mai stata salvata nelle impostazioni. Non dedurre coefficienti dai watt, non sostituire una rimozione esplicita (null). `ReferenceSummary` mostra coefficiente, percentuale e formula con approssimazione quando il risultato storico è arrotondato. Import CSV futuri conservano il valore nelle impostazioni, con intervallo 0 < coefficiente ≤ 2; nessun ricalcolo o migrazione dello storico.
+
 ## 25 ottobre 2026 — report conservati
 
 `SavedReports.tsx` adatta i report a RecordCards della UI comune con 5 elementi per pagina, ricerca e filtro formato. L'endpoint reports aggiunge solo metadati di presentazione: contesto dai record correnti e data dalla revisione immutabile associata; non riscrive i report firmati. Contesto non disponibile e date mancanti non vengono ricostruiti arbitrariamente. La paginazione è locale: l'API continua a restituire l'inventario completo.
@@ -689,3 +717,8 @@ La presentazione distingue categoria (contenitore) da stagione (rosa per periodo
 Gruppi modificabili con PUT /groups/{id}, revisione base obbligatoria, identita/societa preservate e validazione di genitore/gerarchia. POST /groups/{id}/lifecycle applica status active/deleted senza toccare atleti, test o memberships; figli attivi impediscono la cancellazione del padre e padre eliminato impedisce il ripristino del figlio. Per la sola stagione legacy sul padre scope=season usa season_status: il contenitore e i figli restano disponibili. Stato eliminato non equivale a cancellazione fisica; revisioni, riferimenti e firme seguono lo Store esistente. Le viste attive e le nuove assegnazioni escludono questi elementi; profilo e report conservano i riferimenti storici. Aggiornare tutti i client interessati prima di usare i nuovi comandi su un archivio sincronizzato: vecchi frontend potrebbero ignorare i nuovi stati dei gruppi.
 
 membership_import.py pianifica appartenenze su atleti esistenti nella societa selezionata, inclusi archiviati, esclusi eliminati. Nome/cognome verificano l'ID senza identificare l'atleta da soli. Categorie/stagioni mancanti pianificate con ID deterministici e mostrate separatamente in anteprima; save_batch conserva gruppi, membership e lotto nella stessa transazione con outbox. Una stagione uguale a quella legacy del padre riusa il suo ID. Nessuna inferenza di date, modifica di membership esistenti, cambio societa o ricalcolo di test/report. Commit rilegge lo staging e ripete la riconciliazione. Annullamento del lotto protetto anche da membership o figli creati successivamente.
+
+
+## Ordine delle pagine — 26 ottobre 2026 (UI-ORDER-01)
+
+Presentare prima il contesto e le azioni della pagina, poi risultati o elenchi principali, infine dettagli specialistici, guide ed esportazioni. Il dettaglio aerobico usa ReferenceSummary come unica sintesi anche nell’anteprima: MAP operativa e relativa, soglia con fonte/coefficiente, FTHR e FC massima. La MAP prima ripetuta in Metrics è rimossa; nessun ricalcolo. Nota integrativa utente: il grafico temporale con dati effettivamente rappresentabili viene subito dopo testata/comandi, prima della sintesi, in tutte le famiglie. hasSignalChart riconosce campioni validi e prelievi temporizzati; non deduce curve da valori riassuntivi o riferimenti ad allegati. Senza grafico, la spiegazione sull’assenza dei campioni segue i risultati. Zone, recupero e metodo seguono la sintesi. Anaerobici mantengono i propri indicatori dopo il grafico quando disponibile, con gli altri risultati in un dettaglio richiudibile che non ripete i quattro KPI principali. Il profilo mantiene zone e MAP storiche vicine, seguite dai test; tabella/grafico antropometrico sono contigui prima della maturazione. I report conservati seguono la generazione nell’Archivio. Layout di pagina nel prodotto, componenti e stili riutilizzabili nel common; nessuna nuova copia di CSS comune.

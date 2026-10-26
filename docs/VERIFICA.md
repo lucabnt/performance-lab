@@ -1,5 +1,37 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 26 ottobre 2026 — ZONE-03, SYNC-UX-02, AND-START-01
+
+- Suite completa Python: 256 passati, 1 saltato, 2 warning; frontend 35 test passati e build TypeScript/Vite riuscita. Test concorrenti con scambio bloccato su un evento QA: preferenze/stato rispondono, avvio duplicato restituisce lo stesso job, scollegamento durante sync rifiutato senza attesa. Secondo scambio ordinario: zero pacchetti riscaricati, già noti saltati. Job interrotto distinto dal successo, errori sanitizzati; MobileRuntime risponde al bridge durante il proprio sync_all background. Deadline bootstrap testata su successo, errore e promessa bloccata.
+- Browser con build reale, archivio gestito e dati sintetici: Scegli zone apre immediatamente il Dialog; percentuali custom visibili, annullamento e ritorno al profilo, MAP storiche subito dopo riepilogo compatto. Avvio scambio con ritardo QA, passaggio da Archivio ad Atleti con stato e rotellina ancora visibili, successivo esito completato. Nessun account remoto reale o archivio operativo utilizzato.
+- Windows candidato 20261026-01: PyInstaller completato, smoke EXE riuscito (import, logo, backend HTTP), 19 file frontend correnti; Inno Setup completato in 115,281 s. Android assembleDebug offline finale riuscito in 47 s, ZIP integro, runtime ARM64 e sync_jobs.pyc inclusi, 19 asset frontend correnti e watchdog AVVIO-03 presente. Firma APK v2 valida con lo stesso certificato debug precedente, zipalign -P16 superato. Pacchetti con sorgenti, licenze e checksum separati dalle consegne precedenti. Nessuna prova su Pixel fisico o account Koofr reale, né diagnosi dei log del telefono dell'utente.
+
+## 25 ottobre 2026 — ZONE-02
+
+- Python completo: 252 passati, 1 saltato, 2 warning; frontend 34 test passati e build TypeScript/Vite riuscita. 17 test mirati zone/import ripetuti dopo la pulizia dei metadati degli snapshot CSV. Prove su limiti numerici, riferimenti assenti senza deduzioni MAP/FTHR, tempi non inventati, snapshot esistenti preservati, latest per canale, adozione della revisione, conflitti di base/sorgente, custom e modifica anagrafica conservativa, scambio firmato e divieto di modifica per viewer.
+- Browser su build compilata, backend reale e tre test storici sintetici senza FIT: dettaglio del 4 aprile con FTHR 178 e potenza 141 W, intervalli FC e watt visibili; profilo automatico con FC dal 4 aprile e watt dal 5 maggio (FTHR assente in quest'ultimo). Adottata esplicitamente la revisione del 4 aprile per entrambi. Salvate poi zone custom con FTHR 180, potenza 250 W e primo limite watt al 60%, intervallo fino a 150 W; nuova versione custom mostrata dopo riapertura. Nessun test originale riscritto.
+- Windows candidato 06: PyInstaller completato, smoke EXE riuscito (import, logo, backend HTTP), 19 file frontend corrispondenti; Inno Setup riuscito in 122,656 s. Android assembleDebug offline riuscito in 23 s, ZIP integro, ARM64 incluso, 19 asset frontend correnti e modulo training_zones.pyc presente nel runtime. APK test 03 separato, firma v2 valida con lo stesso certificato debug dei test 01/02, zipalign -P16 superato. Nessuna installazione operativa o prova su Pixel fisico eseguita in questo passaggio.
+
+## 25 ottobre 2026 — SYNC-UX-01, DEVICE-PREF-01, SOCIETY-LOCAL-01
+
+- Suite Python completa: 242 passati, 1 saltato, 2 warning; frontend 34 passati e build TypeScript/Vite riuscita. Test preferenze fra origini/porte diverse, merge lingua/fuso, validazione e autenticazione; scollegamento/ripristino con identità e dati preservati, altra società invariata e protezione ID; fuso Roma in estate/inverno e timestamp senza offset.
+- Browser, backend reale e società sintetiche: scambio in cartella con ritardo QA, stato animato Sincronizzazione in corso e comandi disabilitati; conversione UTC 16:23 → Europe/Rome 17:23 CET; selezione lingua inglese e riapertura su nuova porta senza cache precedente, correttamente in inglese. Gestione società rende i comandi locali e la conferma; roundtrip scollegamento/ripristino verificato via test API, non completato nel browser per limite dell'automazione sul confirm nativo. Nessun archivio operativo o account cloud reale utilizzato.
+- Android assembleDebug offline riuscito in 1m9s; firma v2 valida con lo stesso certificato debug del test 01 (impronta 89d904a5…09e160b3), zipalign -P16 e ZIP integri, runtime ARM64 presente, 19 asset frontend identici alla build. APK test 02 separato, nessuna nuova chiave. Windows candidato 05: build completata, smoke EXE riuscito (import, logo, backend HTTP), 19 file frontend corrispondenti; Inno Setup completato in 119,735 s. Nessuna installazione fisica o prova Koofr reale eseguita.
+
+## 25 ottobre 2026 — REPORT-SAVED-02 e APK per Pixel 9
+
+- Build TypeScript/Vite riuscita; browser su archivio sintetico con 25 report: sezione inizialmente chiusa, apertura, ricerca 2023, chiusura e riapertura con filtro conservato e paginazione a 5.
+- Gradle assembleDebug offline riuscito in 33 s, con JDK 21 e SDK 35; firma APK v2 valida (Android Debug esistente), zipalign -P 16 superato, ZIP integro, libpython ARM64 presente, 18 asset frontend identici alla build corrente. APK di test in dist/android-tests/Fuorigiri-0.10.0-pixel9-test-20261025-01/. Nessuna chiave release generata, installazione su Pixel fisico o scambio Google Drive reale effettuato. Installer Windows 04 precedente invariato.
+
+## 25 ottobre 2026 — AEROBIC-REF-01
+
+- Windows candidato 04: bundle PyInstaller completato; smoke EXE congelato riuscito (import, logo, backend HTTP) e 18 file frontend identici alla build corrente. Inno Setup completato in 126,875 s: installer in `dist/candidates/Fuorigiri-0.10.0-pilot-20261025-04/`. Nessun APK ricompilato in questo passaggio, nessuna installazione operativa effettuata.
+
+- Modifica verificata anche nel browser: Correggi test precompila 0,8 dal CSV storico; cambiando a 0,75, svuotando Watt Soglia e salvando il motivo, nuova revisione con MAP 176 W e soglia 132 W, zone aggiornate. Test backend verifica separatamente MAP 250 W → 187,5 W con coefficiente 0,75 ed export coerente. Build Windows candidata 04 in preparazione; nessuna installazione sull'archivio operativo.
+
+- 7 test backend in test_fuorigiri passati, incluso import coefficiente 0,8 con soglia originale 141 W conservata e rifiuto del coefficiente fuori intervallo. 32 test frontend passati, inclusi precedenza impostazioni, compatibilità CSV con virgola decimale, null esplicito e divieto di deduzione dai watt. Build TypeScript/Vite riuscita.
+- Browser su build compilata, backend reale e archivio sintetico nuovo: test storico con coefficiente solo nei campi originali mostra 0,8 (80%) e 176 W × 0,8 ≈ 141 W; caso senza coefficiente segnala dato non disponibile. Nessun dato privato modificato. Installer precedente non ricompilato.
+
 ## 25 ottobre 2026 — REPORT-SAVED-01
 
 - 5 test backend mirati report/workspace passati: data e contesto con atleta archiviato, ordine, esclusione maturazione, originali invariati e download. 31 test frontend passati; build TypeScript/Vite riuscita dopo limite finale a 5. Warning dimensione chunk preesistente.
@@ -428,3 +460,11 @@ Nuovo candidato locale `dist/candidates/Fuorigiri-0.10.0-pilot-20261025-02`, ver
 - Android assembleRelease offline con JDK 21 riuscito; APK ZIP integro, frontend finale identico e membership_import.pyc incluso. zipalign -c -P 16 riuscito e apksigner conferma assenza firma. Nessuna chiave generata, APK da firmare dal titolare; nessuna qualifica aggiuntiva su telefono.
 - Consegna completa con installer, portabile, APK, sorgenti e wheel native; checksum di tutti i file ricontrollati. Sorgenti funzionali e CSV di esempio nel pacchetto confrontati con i file finali. Nessuna pubblicazione. Registro e screenshot finali aggiornati successivamente al congelamento della consegna; i binari comprendono tutte le modifiche funzionali.
 - Ultimo controllo browser su archivio QA sintetico nuovo: download reale del CSV di esempio riuscito; caricamento del file completo da 4 righe, anteprima 4 appartenenze e 6 gruppi/stagioni nuovi senza errori. Screenshot import-csv-appartenenze.png aggiornato ai testi finali. Il salvataggio reale del lotto da 3 righe resta la prova precedente, distinta dalla cattura finale.
+
+
+## UI-ORDER-01 — 26 ottobre 2026
+
+- Frontend: 36 test passati (`.local/test-ui-order-20261026.log`), TypeScript/Vite build completata (`.local/build-ui-order-20261026.log`); warning noto sulla dimensione del chunk Plotly. Verifica standalone common UI 0.2.8 passata. Nessun cambio backend, calcolo o protocollo di scambio: suite Python non rieseguita per questo riordino.
+- Nuova regressione sul posizionamento del grafico: riepiloghi e soli riferimenti file non bastano; campioni con tempo/canale validi, zeri reali e prelievi lattato temporizzati sono rappresentabili, coerenti con il modello del grafico.
+- Browser su frontend compilato/backend reale: aerobico con 2.571 campioni e Wingate con 166 campioni, grafico prima dei KPI; test manuale senza FIT con riepilogo in alto, cinque KPI e MAP una sola volta. Altri risultati anaerobici apre/chiude la tabella complementare senza ripetere i quattro KPI. Verificato ordine zone/MAP/test/antropometria/maturazione nel profilo, elenco test prima della guida, storico principale prima della ripetibilità e report conservati fra generazione e import CSV.
+- Controllo visivo desktop 1280 × 900 e KPI su viewport stretto 412 × 915; catture reali in docs/screenshots, dati interamente sintetici. Nessuna prova su telefono fisico, nessuna compilazione di nuovi installer o APK in questo intervento. I candidati 20261026-01 precedenti restano invariati.

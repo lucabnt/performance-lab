@@ -70,13 +70,16 @@ class MobileRuntime:
         """WorkManager entry. No UI, no automatic configuration or new access."""
         from .workspaces import Workspaces
         from .store import Store
-        from .sync_service import configuration,run_sync
+        from .sync_service import configuration
+        from .sync_jobs import start,wait
         manager=Workspaces(self.root,Store(self.root));failed=0
         for entry in manager.entries():
             store=manager.get(entry['id'])
             if entry.get('mode')=='snapshot' or configuration(store)['transport'] not in ('webdav','drive','dropbox','onedrive','service'):continue
             try:
-                result=run_sync(store)
-                failed+=int(bool(result['errors'] or result['pending']))
+                start(store)
+                job=wait(store)
+                result=job.get('result',{})
+                failed+=int(job['status']!='completed' or bool(result.get('errors') or result.get('pending')))
             except (ValueError,OSError):failed+=1
         return failed==0

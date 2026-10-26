@@ -1,9 +1,9 @@
 import {Synchronization} from './synchronization';
 import {SavedReports} from './SavedReports';
-import {tr} from './i18n';
+import {tr,language} from './i18n';
 import {useState,useEffect,type FormEvent} from 'react';
 type Row=Record<string,any>;
-type Props={api:any,run:any,refresh:any,download:any,token:string,workspace:string,activate?:(entry:Row)=>Promise<void>,section?:'societies'|'sharing'|'reports'};
+type Props={api:any,run:any,refresh:any,download:any,token:string,workspace:string,sync?:any,activate?:(entry:Row)=>Promise<void>,section?:'societies'|'sharing'|'reports'};
 const roleName=(role:string,owner=false)=>owner?tr('Fondatore'):role==='admin'?tr('Admin dati'):tr('Visualizzatore');
 
 async function secretDownload(path:string,data:Row,props:Props,name:string){
@@ -20,6 +20,7 @@ function SocietyManager(props:Props){
  const finish=async(entry:Row)=>{setPassword('');setFile(null);setRecovery(null);setPreview(null);await refresh();if(activate)await activate(entry);else setMessage(tr('Società disponibile nel selettore laterale.'))};
  const submit=(task:()=>Promise<void>)=>(e:FormEvent)=>{e.preventDefault();execute(task)};
  return <section className="society-manager"><h2>{tr('Gestisci società')}</h2><p>{tr('Scegli come aggiungere la società su questo computer. I dati rimangono disponibili offline.')}</p>
+ <LocalSocieties {...props}/>
  <div className="flow-tabs" role="tablist" aria-label={tr('Operazione società')}>{[['create','Crea nuova società'],['join','Collega tramite invito'],['restore','Ripristina da backup']].map(([id,label])=><button role="tab" aria-selected={tab===id} key={id} onClick={()=>{setTab(id);setFile(null);setPreview(null);setPassword('');setMessage('')}}>{tr(label)}</button>)}</div>
  <div role="tabpanel">
  {tab==='create'&&<form onSubmit={submit(async()=>finish(await api('workspaces',{name,operator,path})))}><h3>{tr('Un nuovo archivio, con te come fondatore')}</h3><p>{tr('Usa questa scelta per iniziare una società nuova. Non serve una password d’invito.')}</p><div className="form-grid"><label>{tr('Nome società')}<input required value={name} onChange={e=>setName(e.target.value)}/></label><label>{tr('Il tuo nome (fondatore)')}<input required value={operator} onChange={e=>setOperator(e.target.value)}/></label></div><LocalPath value={path} change={setPath}/><button className="primary" disabled={working}>{tr('Crea e apri società')}</button></form>}
@@ -34,6 +35,18 @@ function SocietyManager(props:Props){
  </div>{message&&<p role="status">{message}</p>}</section>
 }
 
+function LocalSocieties(props:Props){
+ const [active,setActive]=useState<Row[]>([]),[detached,setDetached]=useState<Row[]>([]),[working,setWorking]=useState(false);
+ const en=language==='en';
+ const load=async()=>{const [a,d]=await Promise.all([props.api('workspaces',undefined,'GET',''),props.api('workspaces/detached',undefined,'GET','')]);setActive(a);setDetached(d)};
+ useEffect(()=>{props.run(load)},[props.workspace]);
+ const change=(entry:Row,detach:boolean)=>{
+  if(detach&&!confirm(en?'Disconnect this club on this device? The recoverable local copy and other devices will be preserved.':'Scollegare questa società su questo dispositivo? La copia locale recuperabile e gli altri dispositivi saranno conservati.'))return;
+  props.run(async()=>{setWorking(true);try{await props.api(`workspaces/${entry.id}/${detach?'detach':'reattach'}`,{},'POST','');await props.refresh();await load()}finally{setWorking(false)}});
+ };
+ return <details><summary>{en?'Clubs on this device':'Società su questo dispositivo'}</summary><p>{en?'Disconnecting keeps the local files and credentials for recovery; it does not free disk space or delete cloud data.':'Lo scollegamento conserva file e credenziali locali per il ripristino; non libera spazio e non elimina i dati sul cloud.'}</p>{active.map(e=><div className="list-row" key={e.id}><span>{e.name}</span><button disabled={working||props.sync?.running} onClick={()=>change(e,true)}>{en?'Disconnect from this device':'Scollega dal dispositivo'}</button></div>)}{!active.length&&<p>{en?'No linked clubs.':'Nessuna società collegata.'}</p>}{!!detached.length&&<><h3>{en?'Disconnected clubs':'Società scollegate'}</h3>{detached.map(e=><div className="list-row" key={e.id}><span>{e.name}</span><button disabled={working} onClick={()=>change(e,false)}>{en?'Restore link':'Ripristina collegamento'}</button></div>)}</>}</details>;
+}
+
 function LocalPath({value,change}:{value:string,change:(v:string)=>void}){if((window as any).FuorigiriNative)return null;return <details className="local-path"><summary>{tr('Scegli cartella locale (facoltativo)')}</summary><p>{tr('Lascia vuoto per usare la cartella dell’app. Una cartella scelta deve essere vuota; non usare quella sincronizzata dal cloud.')}</p><label>{tr('Cartella dati locale')}<input value={value} onChange={e=>change(e.target.value)}/></label></details>}
 
 function Sharing(props:Props){
@@ -46,7 +59,7 @@ function Sharing(props:Props){
  {members.snapshot?<p className="hint">{tr('Copia di consultazione: per modificare i dati crea una copia indipendente dal backup, oppure recupera la società originale con il file di recupero accessi.')}</p>:!members.managed?<p>{tr('Per condividere un archivio precedente crea una copia indipendente da backup in Gestisci società. La copia avrà un fondatore e un canale propri.')}</p>:<>
  <div className="identity-card"><strong>{members.current?.name} · {roleName(members.current?.role,members.owner)}</strong><p>{tr('Questo accesso è associato all’operatore su questo dispositivo; non è un login online.')}</p><small>{tr('Identità dispositivo')}: {members.current?.id}</small><small>{tr('Archivio locale')}: {members.path}</small></div>
  {members.revoked?.includes(members.current?.id)&&<p className="alert error">{tr('Accesso revocato: puoi consultare i dati già ricevuti. Per modificare richiedi e applica un nuovo invito.')}</p>}
- {members.scope_error?<p className="hint" role="alert">{members.scope_error}</p>:<Synchronization key={props.workspace} api={api} run={run} refresh={async()=>{await refresh();await load()}} owner={!!members.owner}/>}
+ {members.scope_error?<p className="hint" role="alert">{members.scope_error}</p>:<Synchronization key={props.workspace} sync={props.sync} api={api} run={run} refresh={async()=>{await refresh();await load()}} owner={!!members.owner}/>}
  <details className="access-help"><summary>{tr('Cosa possono fare i ruoli?')}</summary><ul><li>{tr('Fondatore: modifica dati, crea inviti, rinnova e revoca accessi, esporta il recupero delle credenziali.')}</li><li>{tr('Admin dati: consulta, esporta e modifica i dati; non gestisce gli accessi.')}</li><li>{tr('Visualizzatore: consulta ed esporta; non modifica i dati.')}</li></ul></details>
  <h3>{tr('Operatori e dispositivi')}</h3><p className="muted">{tr('Gli inviti emessi non confermano che il destinatario li abbia già utilizzati. Genera un invito distinto per ciascun dispositivo.')}</p>
  {members.members.map((m:Row)=><div className="list-row" key={m.id}><div><strong>{m.name} · {roleName(m.role,m.id===members.founder_id)}</strong><small>{m.id===members.current?.id?tr('Questo dispositivo'):tr('Invito emesso / identità associata')} · {members.revoked?.includes(m.id)?tr('Revocato'):tr('Non revocato')} · {m.id.slice(0,8)}</small></div>{members.owner&&m.id!==members.current?.id&&!members.revoked?.includes(m.id)&&<div className="actions"><button type="button" disabled={working} onClick={()=>{setReplaceId(m.id);setName(m.name);setRole(m.role)}}>{tr('Rinnova / cambia ruolo')}</button><button type="button" disabled={working} onClick={()=>execute(async()=>{await api('workspace/revoke/'+m.id,{});await load();setMessage(tr('Revoca registrata. Esegui uno scambio per propagarla agli altri PC.'))})}>{tr('Revoca accesso')}</button></div>}</div>)}

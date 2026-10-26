@@ -11,6 +11,11 @@ export const signalChannels=[
 const finite=(v:unknown):v is number=>typeof v==='number'&&Number.isFinite(v);
 export const hasRecordedTrace=(test:SignalRow)=>!!(test.has_trace||test.trace_hash||test.samples?.length);
 
+/** A file reference or summary alone does not make a displayable chart. */
+export const hasSignalChart=(test:SignalRow)=>
+ (test.samples||[]).some((r:SignalRow)=>finite(r.t)&&(signalChannels.some(c=>finite(r[c.key]))||finite(r.lactate_mmol_l)))||
+ (test.settings?.lactate||[]).some((r:SignalRow)=>finite(r.at_s)&&finite(r.mmol_l));
+
 export function buildSignalChart(test:SignalRow,protocol?:SignalRow,selectedChannels?:string[]){
  const samples:SignalRow[]=(test.samples||[]).filter((r:SignalRow)=>finite(r.t));
  const availableChannels=signalChannels.filter(c=>samples.some((r:SignalRow)=>finite(r[c.key])));

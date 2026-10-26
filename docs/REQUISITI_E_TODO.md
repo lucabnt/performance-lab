@@ -1,5 +1,29 @@
 # Requisiti e to-do
 
+## UI-ORDER-01 — ordine delle informazioni, 26 ottobre 2026
+
+Richiesta: razionalizzare la presentazione delle pagine e riunire i KPI del dettaglio test. Implementato nei sorgenti: un solo riepilogo aerobico (MAP operativa, MAP relativa, soglia, FTHR, FC massima), senza doppione MAP, seguito da zone, recupero e approfondimenti. Nota integrativa recepita: quando esiste un grafico temporale con osservazioni effettive, viene prima del riepilogo, subito dopo testata/comandi; senza campioni/valori rappresentabili il riepilogo rimane in alto e la spiegazione sul tracciato mancante segue i risultati. Vale per tutte le famiglie e anche per soli prelievi lattato temporizzati. Un semplice allegato non basta a produrre un grafico. Fonte e coefficiente conservati, stessa sintesi nell’anteprima. Anaerobici: quattro indicatori principali senza ripetizioni nella tabella Altri risultati richiudibile. Profilo: riepilogo, zone, MAP storiche, elenco test, antropometria con grafico adiacente, maturazione, appartenenze. Pagina test: elenco prima della guida richiudibile. Storici: analisi principale prima della ripetibilità. Archivio: report conservati accanto alla generazione. Atleti, protocolli e gruppi conservano contesto/comandi/filtri prima degli elenchi, già coerenti con il criterio. Nessuna modifica a calcoli, dati, filtri o autorizzazioni. Verifiche e limiti in VERIFICA.md; queste modifiche non sono negli installer precedenti.
+
+## ZONE-03, SYNC-UX-02, AND-START-01 — 26 ottobre 2026
+
+Richiesta: Scegli zone apparentemente inattivo, MAP storiche subito dopo le zone, percentuali poco chiare; spinner scompare cambiando scheda e durata/esito/incrementalità dello scambio non comprensibili; blocchi Android sia Preparazione motore locale sia Apertura interfaccia. Implementati Dialog editor, riepilogo compatto e colonna percentuali; stato job globale con fase, tempo, conteggi ed esiti, backend non bloccante, recupero dello stato al reload. Android background non trattiene Runtime.lock sulle attese di rete; deadline/retry e watchdog espliciti. La causa concreta identificata nel codice è un percorso di blocco tra rete e UI/avvio, non una diagnosi completa del telefono senza log. Prova Pixel fisico e provider reale rimangono distinta qualificazione.
+
+## ZONE-02 — zone su tutti i test aerobici e adozione sul profilo, 25 ottobre 2026
+
+Richiesta: mostrare le zone FC/watt anche senza FIT, ultime versioni sul profilo e scelta fra zone di un test o custom. Implementato: lettura compatibile degli storici senza modifica degli originali, snapshot sui nuovi import, nessun tempo di permanenza senza campioni; dati mancanti espliciti. Profilo automatico per ultimo canale disponibile oppure snapshot da test/revisione scelti con anteprima, oppure schemi percentuali/riferimenti personalizzati con nuova versione. Persistenza nel record atleta, controlli concorrenza/atleta/società e ruolo, modifica anagrafica conservativa. Renderer individuale aggiornato per gli stessi intervalli.
+
+## SYNC-UX-01, DEVICE-PREF-01 e SOCIETY-LOCAL-01 — 25 ottobre 2026
+
+Richieste: configurazione WebDAV Android, dubbio sul fuso degli orari, spinner fino al termine della sincronizzazione, riapertura nell'ultima lingua e rimozione della società dal solo dispositivo. L'utente sceglie scollegamento con ripristino, senza cancellare file locali. Implementazione: stato operativo e blocco richieste/configurazione; fuso esplicito e preferenze locali persistenti; bootstrap della lingua prima dei moduli UI; registro locale con flag detached, ripristino senza nuova identità e protezione dei percorsi riservati. Nessuna modifica ai formati di sync, revoca remota o cancellazione dati. Guida WebDAV con invito e password applicazione, distinta dalla password dell'invito.
+
+## REPORT-SAVED-02 e AND-TEST-01 — 25 ottobre 2026
+
+Richiesta: rendere Report conservati richiudibile come Condivisione e collaboratori; installare l'app sul telefono per testare la sincronizzazione. Telefono indicato: Android Google Pixel 9; disponibile solo Google Drive, senza WebDAV. Implementata sezione inizialmente chiusa con stato dei filtri e pagina conservato. Preparato APK debug personale e guida; firma/allineamento verificati, installazione fisica e sincronizzazione cloud non eseguite. La cartella del client cloud è solo desktop: per lo scambio con Android occorrono WebDAV oppure registrazioni OAuth dei provider API; il vincolo Drive senza GCP resta irrisolto e non va dichiarato supportato.
+
+## AEROBIC-REF-01 — coefficiente della potenza di soglia, 25 ottobre 2026
+
+Richiesta: mostrare nel dettaglio aerobico il coefficiente usato per la potenza di soglia. Causa nei CSV: `coeff_soglia` conservato nei campi storici ma assente nelle impostazioni lette dal riepilogo. Lettura compatibile con originali, senza inferenze dai watt; impostazioni corrette esplicitamente (anche null) prevalgono sull'import originale. Coefficiente e percentuale visibili, assenza dichiarata, soglia dichiarata distinta da stima MAP. Nuovi import copiano il coefficiente valido nelle impostazioni senza ricalcolare risultati storici.
+
 ## REPORT-SAVED-01 — organizzare i report conservati, 25 ottobre 2026
 
 Richiesta: evitare una lista infinita; successiva indicazione esplicita: 5 report per pagina. Implementazione: RecordCards comune, ordine dal più recente, ricerca per ambito/data/riferimento e filtro formato; azzeramento pagina sui filtri e cambio archivio. Metadati di contesto per distinguere società, gruppo, stagione, atleta e data test; data di creazione ricavata dalla revisione, assenti mostrati senza inventare valori. Nessuna cancellazione o modifica dei report originali. Nessuna modifica al formato di sincronizzazione.

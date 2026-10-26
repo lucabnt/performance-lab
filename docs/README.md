@@ -1,8 +1,14 @@
 # Documentazione di Fuorigiri Performance Lab
 
-Indice aggiornato al **25 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
+Indice aggiornato al **26 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
 
 ## Uso, avvio e distribuzione
+
+- [Zone FC/watt dei test e del profilo](ZONE_TEST_E_PROFILO.md): import senza FIT, ultime zone disponibili, adozione di una revisione e zone personalizzate.
+
+- [Primo scambio WebDAV Windows/Android](WEBDAV_ANDROID_PRIMO_SCAMBIO.md): Koofr, invito personale, orari, lingua e scollegamento recuperabile della società.
+
+- [Installare Android per un test sul Pixel 9](INSTALLARE_ANDROID_PER_TEST.md): APK debug installabile, primo avvio e limiti Drive senza GCP.
 
 - [Importazione CSV e modelli vuoti](IMPORT_CSV.md): cinque profili, comprese le appartenenze storiche e future.
 - [Primo collegamento Google Drive](GOOGLE_DRIVE_PRIMO_COLLEGAMENTO.md): progetto OAuth, cartella, collegamento dei dispositivi e collaudo prima dei dati operativi.

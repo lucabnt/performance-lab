@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **25 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **26 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -66,6 +66,10 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 ## Dati, società e sincronizzazione
 
+- Sync UI: job device-local in sync_jobs.py e root useSyncJob; catturare lo Store reale prima dei thread, preservare ContextVar, lock e firme. Non eseguire rete sotto Runtime.lock Android. Running senza thread dopo riavvio significa interrotto, mai successo. Non confondere conteggi di operazioni con percentuale totale o ricezione su altri dispositivi. Deadline/bootstrap e watchdog non autorizzano reset dati.
+
+- Lingua/fuso in device-preferences.json, API autenticata indipendente dalla società e bootstrap prima di main; non affidare la lingua Windows al solo localStorage per porta. Società scollegate: entries() include solo attive; usare include_detached=True per protezione percorsi/ID e recupero. Lo scollegamento è locale e recuperabile, non cancella file o accessi né revoca dati remoti.
+
 - Riapertura desktop: ultima coppia workspace/società in `last-selection.json` nella radice dati del dispositivo, tramite API autenticata; non dipendere da localStorage perché la porta HTTP cambia a ogni avvio. Solo ID, fuori da sync/backup societari; validare contro inventario e non scegliere altre società se manca quella ricordata. Android conserva la preferenza locale già esistente.
 
 - Un archivio gestito contiene **una sola società**, con database/oggetti, identità, chiave/canale, connessione e inviti separati. La selezione UI non filtra la condivisione di un archivio multi-società.
@@ -80,6 +84,8 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 ## Metodi scientifici e confrontabilità
 
+- Zone aerobiche: training_zones.py conserva snapshot dei test e completa solo definizioni mancanti in lettura, da riferimenti salvati e schema mostrato; senza campioni niente tempi. Scelta profilo in training_zone_selection sul record atleta (latest/test/custom), da preservare negli aggiornamenti anagrafici; adozione conserva la revisione, custom ha versione propria. Non introdurre coefficienti impliciti MAP/FTHR. Guida ZONE_TEST_E_PROFILO.md.
+
 - Separare misurato, dichiarato, calcolato, interpolato e stimato; null non è zero. Conservare input risolti, fonte, metodo/versione e revisione. Nessun ricalcolo silenzioso degli storici.
 - Incrementale: riferimento primario ultimo step completo; durata/copertura potenza almeno 95% separate dall'aderenza al target. Interpolazione distinta. Nessun coefficiente automatico universale verso Watt Soglia, FTP o FTHR.
 - Lattato: livelli configurabili, interpolazione locale senza estrapolazione; FC dalla finestra valida dello step associato, non dal battito al prelievo. Concentrazioni fisse non equivalgono automaticamente a LT1/LT2/FTP/MLSS. Consultare metodi e snapshot nel codice prima di cambiare formule.
@@ -89,6 +95,8 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 - Per nuovi metodi verificare fonti scientifiche primarie, dominio, input, incertezza e vettori numerici indipendenti. Non inventare un consenso unico o classificazioni automatiche per selezionare/escludere atleti.
 
 ## Interfaccia e report
+
+- UI-ORDER-01: contesto/comandi prima dei risultati o elenchi; dettagli e guide dopo. Nel dettaglio test il grafico, se realmente rappresentabile (hasSignalChart), precede i KPI; senza grafico il riepilogo resta in alto. Riepilogo aerobico unico in ReferenceSummary (anche anteprima), senza ripetere MAP in un secondo blocco. Profilo: zone → MAP storiche → test; tabella e grafico antropometrico adiacenti. Preservare fonte/coefficiente e separazione dei metodi.
 
 - Codice protocollo modificabile in tutte le famiglie, precompilato dal tipo o dalla versione precedente. API anaerobica: `code` operativo facoltativo distinto da `family` tecnico; record `family` conserva il codice e `test_type` il metodo. Non dedurre il metodo dal codice operativo; preservare client senza `code` e storici.
 - GRUPPI-03 / IMPORT-04: gruppi modificabili per revisione ed eliminabili/ripristinabili senza cancellare atleti o appartenenze; stagione legacy usa season_status separato. Padre con figli attivi non eliminabile; ripristinare prima il padre. Import appartenenze con ID/nome/cognome verificati, date esplicite, gruppo e sottogruppo/stagione; gruppi nuovi solo dopo anteprima e commit atomico. Duplicati esatti saltati, altre sovrapposizioni segnalate. Modello ed esempio da intestazioni canoniche, guida IMPORT_CSV.md.

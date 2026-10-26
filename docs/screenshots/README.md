@@ -100,3 +100,10 @@ Build web compilata 0.10.0, common UI 0.2.8, backend reale e società QA interam
 - `gruppi-stagione-tutti.png`: apertura Esordienti 2023 con Tutti, ricerca vuota e tre atleti archiviati visibili.
 - `report-esportazione-in-corso.png`: esportazione PDF effettiva, spinner e controlli disabilitati.
 - Rinnovato `report-esportazioni.jpg`: anteprima conclusa, conteggi e controlli nuovamente disponibili. Conversione del solo formato PNG/JPEG, contenuti immutati; sostituisce la precedente cattura di questo file.
+
+
+## Ordine delle pagine e KPI — 26 ottobre 2026
+
+Fuorigiri 0.10.0, UI comune 0.2.8, build web con UI-ORDER-01 e nota integrativa sul grafico in apertura. Backend reale e soli dati sintetici. Rinnovati `test-incrementale.jpg` e `test-wingate.jpg`: grafico temporale prima dei KPI quando ci sono campioni rappresentabili; test Ferri Matteo 18/03/2026 e Moretti Elena 10/06/2026 del corpus completo. Rinnovato `storici-confronti.jpg`: pannello principale prima degli approfondimenti di ripetibilità. Catture del viewport circa 1280 × 900, sola conversione PNG/JPEG, nessun ritocco.
+
+Nuovi `test-riepilogo-unificato.png` e `test-riepilogo-stretto.png`: test manuale sintetico Ada Esempio, cinque KPI in un solo blocco, MAP senza duplicato; nessun grafico ricostruito dai riepiloghi. Seconda cattura con viewport 412 × 915 per il layout stretto. È una prova web responsive, non del bridge Android né di un APK/telefono. Queste catture sostituiscono la provenienza precedente solo per i file nominati; gli altri mantengono le proprie date.

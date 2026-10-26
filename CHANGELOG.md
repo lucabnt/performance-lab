@@ -1,5 +1,10 @@
 # Changelog
 
+## 27 ottobre 2026 — pacchetti con pagine e KPI riordinati
+
+- Nuovi candidato Windows `pilot-20261027-01` e APK debug `pixel9-test-20261027-01`, versione prodotto 0.10.0: includono UI-ORDER-01, grafico del test in alto quando disponibile, KPI unificati e tutte le correzioni precedenti. Firma debug Android esistente, aggiornamento senza disinstallazione; pacchetti precedenti conservati.
+- Verifiche dei pacchetti in VERIFICA.md; nessuna installazione o pubblicazione automatica, prova sul Pixel fisico ancora da eseguire.
+
 ## 26 ottobre 2026 — ordine delle pagine e riepilogo test
 
 - UI-ORDER-01: KPI aerobici riuniti in un solo riepilogo, MAP senza duplicati e fonti/coefficiente conservati. Grafico in apertura quando ci sono osservazioni rappresentabili, poi KPI/zone e approfondimenti; senza grafico, riepilogo in alto. Stessa sintesi KPI nell’anteprima.

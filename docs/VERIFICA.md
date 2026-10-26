@@ -468,3 +468,12 @@ Nuovo candidato locale `dist/candidates/Fuorigiri-0.10.0-pilot-20261025-02`, ver
 - Nuova regressione sul posizionamento del grafico: riepiloghi e soli riferimenti file non bastano; campioni con tempo/canale validi, zeri reali e prelievi lattato temporizzati sono rappresentabili, coerenti con il modello del grafico.
 - Browser su frontend compilato/backend reale: aerobico con 2.571 campioni e Wingate con 166 campioni, grafico prima dei KPI; test manuale senza FIT con riepilogo in alto, cinque KPI e MAP una sola volta. Altri risultati anaerobici apre/chiude la tabella complementare senza ripetere i quattro KPI. Verificato ordine zone/MAP/test/antropometria/maturazione nel profilo, elenco test prima della guida, storico principale prima della ripetibilità e report conservati fra generazione e import CSV.
 - Controllo visivo desktop 1280 × 900 e KPI su viewport stretto 412 × 915; catture reali in docs/screenshots, dati interamente sintetici. Nessuna prova su telefono fisico, nessuna compilazione di nuovi installer o APK in questo intervento. I candidati 20261026-01 precedenti restano invariati.
+
+
+## Preparazione pacchetti UI-ORDER-01 — 27 ottobre 2026
+
+- Ripetuti 36 test frontend, tutti passati; suite Python completa: 256 passati, 1 saltato e 2 warning in 84,59 s. Integrità/versioni prodotto 0.10.0, UI comune 0.2.8 e core 0.1.2 verificate.
+- APK debug `pixel9-test-20261027-01` compilato offline: firma v2 valida, certificato SHA256 identico ai test precedenti, zipalign con pagine 16 KB valido, ZIP integro, ARM64 e tutti i 19 file frontend identici alla build corrente. Include UI-ORDER-01 e tutte le correzioni precedenti; nessun dato reale usato. Collaudo su Pixel fisico e provider reale rimangono distinti.
+
+- Windows: bundle PyInstaller isolato `candidate-windows-20261027-01` completato, tutti i 19 file frontend identici alla build corrente; eseguibile finale --smoke-test su archivio QA nuovo con exit 0 e marker import/logo/backend. Installer Inno Setup costruito dal medesimo bundle; nessuna installazione sui dati dell’utente e nessuna prova su Windows pulito.
+- Consegne in nuove cartelle con sorgenti GPL del working tree, guide, manifest e SHA256; pacchetti precedenti invariati. Gli artefatti 20261027-01 includono il riordino, quelli 20261026-01 no.

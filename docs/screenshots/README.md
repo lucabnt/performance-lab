@@ -107,3 +107,8 @@ Build web compilata 0.10.0, common UI 0.2.8, backend reale e società QA interam
 Fuorigiri 0.10.0, UI comune 0.2.8, build web con UI-ORDER-01 e nota integrativa sul grafico in apertura. Backend reale e soli dati sintetici. Rinnovati `test-incrementale.jpg` e `test-wingate.jpg`: grafico temporale prima dei KPI quando ci sono campioni rappresentabili; test Ferri Matteo 18/03/2026 e Moretti Elena 10/06/2026 del corpus completo. Rinnovato `storici-confronti.jpg`: pannello principale prima degli approfondimenti di ripetibilità. Catture del viewport circa 1280 × 900, sola conversione PNG/JPEG, nessun ritocco.
 
 Nuovi `test-riepilogo-unificato.png` e `test-riepilogo-stretto.png`: test manuale sintetico Ada Esempio, cinque KPI in un solo blocco, MAP senza duplicato; nessun grafico ricostruito dai riepiloghi. Seconda cattura con viewport 412 × 915 per il layout stretto. È una prova web responsive, non del bridge Android né di un APK/telefono. Queste catture sostituiscono la provenienza precedente solo per i file nominati; gli altri mantengono le proprie date.
+
+
+### Soglia relativa ripristinata — 27 ottobre 2026
+
+Rinnovati test-riepilogo-unificato.png e test-riepilogo-stretto.png: stesso archivio QA sintetico e build web corrente con sei KPI, inclusa Soglia relativa 2,66 W/kg accanto a 141 W. Valore salvato nel solo record QA con peso test 53 kg; nessun dato reale. Sostituiscono le due catture del 26 ottobre per questi file. Nessuna prova nativa Android implicita.

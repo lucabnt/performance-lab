@@ -1,5 +1,14 @@
 # Changelog
 
+## 27 ottobre 2026 — pacchetti con soglia relativa ripristinata
+
+- Nuovi candidato Windows `pilot-20261027-02` e APK debug `pixel9-test-20261027-02`, versione prodotto 0.10.0: includono il KPI Soglia relativa (W/kg) nel dettaglio aerobico e nell’anteprima, insieme a tutte le correzioni precedenti. Firma Android debug invariata; pacchetti precedenti conservati.
+
+## 27 ottobre 2026 — soglia relativa nel riepilogo test
+
+- Ripristinato il KPI Soglia relativa (W/kg) accanto alla potenza di soglia in watt, nel dettaglio aerobico e nell’anteprima. Usa il risultato salvato, con peso associato al test; nessun ricalcolo dello storico o modifica all’ordine del grafico.
+- Correzione successiva ai pacchetti `20261027-01`, che non la includono.
+
 ## 27 ottobre 2026 — pacchetti con pagine e KPI riordinati
 
 - Nuovi candidato Windows `pilot-20261027-01` e APK debug `pixel9-test-20261027-01`, versione prodotto 0.10.0: includono UI-ORDER-01, grafico del test in alto quando disponibile, KPI unificati e tutte le correzioni precedenti. Firma debug Android esistente, aggiornamento senza disinstallazione; pacchetti precedenti conservati.

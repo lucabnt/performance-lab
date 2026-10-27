@@ -477,3 +477,16 @@ Nuovo candidato locale `dist/candidates/Fuorigiri-0.10.0-pilot-20261025-02`, ver
 
 - Windows: bundle PyInstaller isolato `candidate-windows-20261027-01` completato, tutti i 19 file frontend identici alla build corrente; eseguibile finale --smoke-test su archivio QA nuovo con exit 0 e marker import/logo/backend. Installer Inno Setup costruito dal medesimo bundle; nessuna installazione sui dati dell’utente e nessuna prova su Windows pulito.
 - Consegne in nuove cartelle con sorgenti GPL del working tree, guide, manifest e SHA256; pacchetti precedenti invariati. Gli artefatti 20261027-01 includono il riordino, quelli 20261026-01 no.
+
+
+## KPI soglia relativa — 27 ottobre 2026
+
+Ripristinato Soglia relativa in W/kg nel riepilogo comune a dettaglio aerobico e anteprima, accanto alla soglia in watt. TypeScript/Vite build riuscita; 36 test frontend passati. Browser su backend reale e dati sintetici: 141 W, soglia relativa salvata 2,66 W/kg, peso associato al test. Schermate desktop e strette rinnovate, senza modifiche ai calcoli, ai dati reali o al posizionamento del grafico. Nessun nuovo installer/APK per questa correzione; i pacchetti 20261027-01 restano invariati.
+
+
+## Pacchetti con soglia relativa — 27 ottobre 2026, build 02
+
+- Aggiornati installer Windows `pilot-20261027-02` e APK debug `pixel9-test-20261027-02`: includono Soglia relativa in W/kg nel dettaglio e nell’anteprima. Versione prodotto 0.10.0, pacchetti precedenti conservati.
+- Windows: nuovo bundle autonomo ottenuto dal runtime del candidato 01, dopo confronto byte per byte di 53 sorgenti/dipendenze Python con lo snapshot consegnato; solo frontend e documentazione aggiornati. Nessuna dipendenza esterna dal vecchio bundle. Tutti i 19 asset frontend correnti inclusi; eseguibile --smoke-test con archivio QA nuovo, exit 0 e marker import/logo/backend. Installer Inno Setup compilato dal nuovo bundle.
+- Android assembleDebug offline completato; 19 asset frontend identici, ZIP integro e runtime ARM64 incluso, firma v2 valida e certificato debug identico al precedente, allineamento pagine 16 KB valido. Nessuna chiave nuova, nessuna installazione o prova sul Pixel fisico.
+- Restano valide le verifiche funzionali del KPI nel browser e i 36 test frontend; backend/runtime invariati rispetto alla suite Python completa di 256 test superati del candidato 01. Consegne con sorgenti GPL, guide, manifest e SHA256 verificati.

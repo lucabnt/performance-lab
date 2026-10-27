@@ -14,3 +14,5 @@ Alla domanda se il blocco rimane su Preparazione motore locale o Apertura interf
 «cerchiamo di razionalizzare l’ordine di presentazione degli elementi in ogni pagina del sw. Per esempio, riunisci i kpi nella scheda del test singolo (righe di MAP e di quella di MAP operativa.»
 
 Nota integrativa: «se del test esiste un grafico, questo dovrebbe stare in alto».
+
+Integrazione del 27 ottobre: «Hai tolto watt/kg soglia, inseriscili nuovamente tra i kpi».

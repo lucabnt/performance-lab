@@ -1,5 +1,9 @@
 # Requisiti e to-do
 
+## UI-ORDER-01 — integrazione del 27 ottobre 2026
+
+Ripristinare Soglia relativa in W/kg fra i KPI aerobici, accanto alla soglia in W, anche nell’anteprima. Implementato in ReferenceSummary usando analysis.threshold_wkg già salvato; valore mancante esplicito, senza deduzione dal peso corrente del profilo. Il grafico disponibile resta in apertura. Correzione ai sorgenti successiva ai pacchetti 20261027-01.
+
 ## UI-ORDER-01 — ordine delle informazioni, 26 ottobre 2026
 
 Richiesta: razionalizzare la presentazione delle pagine e riunire i KPI del dettaglio test. Implementato nei sorgenti: un solo riepilogo aerobico (MAP operativa, MAP relativa, soglia, FTHR, FC massima), senza doppione MAP, seguito da zone, recupero e approfondimenti. Nota integrativa recepita: quando esiste un grafico temporale con osservazioni effettive, viene prima del riepilogo, subito dopo testata/comandi; senza campioni/valori rappresentabili il riepilogo rimane in alto e la spiegazione sul tracciato mancante segue i risultati. Vale per tutte le famiglie e anche per soli prelievi lattato temporizzati. Un semplice allegato non basta a produrre un grafico. Fonte e coefficiente conservati, stessa sintesi nell’anteprima. Anaerobici: quattro indicatori principali senza ripetizioni nella tabella Altri risultati richiudibile. Profilo: riepilogo, zone, MAP storiche, elenco test, antropometria con grafico adiacente, maturazione, appartenenze. Pagina test: elenco prima della guida richiudibile. Storici: analisi principale prima della ripetibilità. Archivio: report conservati accanto alla generazione. Atleti, protocolli e gruppi conservano contesto/comandi/filtri prima degli elenchi, già coerenti con il criterio. Nessuna modifica a calcoli, dati, filtri o autorizzazioni. Verifiche e limiti in VERIFICA.md; queste modifiche non sono negli installer precedenti.

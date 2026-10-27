@@ -1,6 +1,6 @@
 # Installare Fuorigiri sul Pixel 9 per un test
 
-27 ottobre 2026. APK debug locale di Fuorigiri 0.10.0, compilato con le modifiche correnti e firma debug già esistente. Nessuna chiave release creata. Ultima destinazione: `dist/android-tests/Fuorigiri-0.10.0-pixel9-test-20261027-01/Fuorigiri-0.10.0-android-test.apk`, con la stessa firma dei test precedenti, grafico dei test in apertura quando disponibile, KPI unificati, pagine riordinate, editor zone visibile, stato sync persistente e correzioni di avvio. Questa è una prova personale, distinta dal pilot operativo con firma del titolare descritto in [FIRMA_ANDROID.md](FIRMA_ANDROID.md). Per il servizio Koofr ora disponibile vedere [primo scambio WebDAV](WEBDAV_ANDROID_PRIMO_SCAMBIO.md).
+27 ottobre 2026. APK debug locale di Fuorigiri 0.10.0, compilato con le modifiche correnti e firma debug già esistente. Nessuna chiave release creata. Ultima destinazione: `dist/android-tests/Fuorigiri-0.10.0-pixel9-test-20261027-02/Fuorigiri-0.10.0-android-test.apk`, con la stessa firma dei test precedenti, grafico dei test in apertura quando disponibile, KPI unificati con soglia relativa in W/kg, pagine riordinate, editor zone visibile, stato sync persistente e correzioni di avvio. Questa è una prova personale, distinta dal pilot operativo con firma del titolare descritto in [FIRMA_ANDROID.md](FIRMA_ANDROID.md). Per il servizio Koofr ora disponibile vedere [primo scambio WebDAV](WEBDAV_ANDROID_PRIMO_SCAMBIO.md).
 
 ## Installazione
 

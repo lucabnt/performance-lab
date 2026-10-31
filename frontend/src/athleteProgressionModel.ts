@@ -5,7 +5,7 @@ export function progressionSeries(tests:Row[],protocols:Row[],metric:string){
   const a=t.analysis;
   const valid=typeof a[metric]==='number'&&Number.isFinite(a[metric])&&!(metric.endsWith('wkg')&&t.settings?.weight_source==='stimato');
   const source=a.threshold_source||'n.d.';
-  const method=a.comparison_key||JSON.stringify([a.preset?.hash,a.engine,a.source,t.settings?.conditions||{}]);
+  const method=a.comparison_key||JSON.stringify([a.preset?.hash,a.engine,a.source,a.gas?.source,a.gas?.vo2peak?.method_id,t.settings?.conditions||{}]);
   const id=JSON.stringify([t.protocol_id,method,source]);
   if(!buckets.has(id)){
    const p=protocols.find(p=>p.id===t.protocol_id);

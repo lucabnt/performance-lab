@@ -1,5 +1,11 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## VO₂ integrato — 31 ottobre 2026
+
+Il supporto gas dell’incrementale mantiene il motore `gas.vo2peak-time-mean/1`. Le nuove analisi risolvono una sola fonte: `gas_hash` (CSV separato con `gas_offset_s`), `settings.vo2` (osservazioni `{at_s, vo2_l_min, note}` già sull’asse del tracciato), oppure canali con unità esplicite nel CSV temporale. Fonti concorrenti sono rifiutate. L’offset gas si applica solo al file separato. Osservazioni normalizzate e fonte restano nello snapshot `analysis.gas`; gli originali allegati rimangono oggetti immutabili. Le revisioni esistenti non vengono aggiornate automaticamente.
+
+VO₂peak usa fase incrementale, media temporale, copertura e intervallo massimo del preset; normalizzazione tramite peso della prova, con fonte preservata. Nessun nuovo criterio fisiologico e nessuna equivalenza automatica con VO₂max o soglie lattato. I confronti distinguono fonte gas e metodo. La UI mostra VO₂ sul tempo comune con scala L/min propria; osservazioni manuali puntuali, senza ricostruire una curva da un riepilogo. I report leggono lo snapshot; CSV lunghi dedicati conservano risultati e osservazioni senza cambiare il formato CSV aerobico legacy.
+
 ## 26 ottobre 2026 — sincronizzazione non bloccante e recupero avvio
 
 sync_jobs.py cattura lo Store selezionato prima di avviare un thread daemon, senza trasferire il proxy ContextVar fuori dalla richiesta. POST sync/start e GET sync/job, idempotenza mentre attivo, stato device-local sync-job.json e dati sanitizzati; i job running senza thread nella nuova istanza sono interrotti. Wrapper dei trasporti segnala operazioni reali senza alterare pacchetti, firme, controlli o criteri incrementali. La pagina non possiede più l'attività: useSyncJob nel root alimenta riepilogo globale e pannello. Il processo deve restare vivo; non è un servizio Windows o garanzia di esecuzione Android dopo force-stop.

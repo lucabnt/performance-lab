@@ -1,5 +1,11 @@
 # Requisiti e to-do
 
+## VO2-01 — consumo di ossigeno, 31 ottobre 2026
+
+Richiesta originale: «fuorigiri dovrebbe supportare anche i dati di VO2 oltre al lattato. Implementa.»
+
+Integrazione del supporto gas già esistente: inserimento di osservazioni VO₂ temporizzate con fonte/nota, import nello stesso CSV dei segnali, mantenimento dell’import gas dedicato. Unità esplicite L/min; normalizzazione mL/kg/min dal peso associato al test. Non si ricava VO₂ da watt o FC. Un’unica fonte per prova evita la fusione accidentale di misure incompatibili. Analisi VO₂peak con finestre/copertura/esclusioni del preset; dati isolati visibili senza fabbricare un picco medio. VO₂max resta distinto e richiede verifica dichiarata con evidenze. Grafico comune, selettore nello storico del profilo, report/CSV estesi con provenienza, osservazioni e revisioni. Implementato e incluso nel candidato Windows pilot-20261031-01 e nell’APK debug pixel9-test-20261031-01; prove e limiti in VERIFICA.md. Nessuna pubblicazione o qualifica su dispositivi fisici.
+
 ## UI-ORDER-01 — integrazione del 27 ottobre 2026
 
 Ripristinare Soglia relativa in W/kg fra i KPI aerobici, accanto alla soglia in W, anche nell’anteprima. Implementato in ReferenceSummary usando analysis.threshold_wkg già salvato; valore mancante esplicito, senza deduzione dal peso corrente del profilo. Il grafico disponibile resta in apertura. Correzione ai sorgenti successiva ai pacchetti 20261027-01.

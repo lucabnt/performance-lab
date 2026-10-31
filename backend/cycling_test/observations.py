@@ -53,7 +53,10 @@ def enrich(analysis, samples, settings):
                 key=metric_key(level,channel);a[key]=value
                 a['metric_details'][key]={**result,'value':value,'unit':unit,'reason':reason,'status':'estimated' if value is not None else 'unavailable','source':'lactate_load_curve','coverage':None}
         if a.get('gas'):
-            a['metric_details']['vo2peak_l_min']={**a['gas']['vo2peak'],'source':'gas_sensor','coverage':(a['gas']['vo2peak'].get('window') or {}).get('coverage')}
+            peak=a['gas']['vo2peak']
+            for key,value,unit in [('vo2peak_l_min',peak['value'],'L/min'),('vo2peak_ml_kg_min',peak['ml_kg_min'],'mL/kg/min')]:
+                a['metric_details'][key]={**peak,'value':value,'unit':unit,'source':a['gas'].get('source','gas_sensor'),
+                    'weight_source':settings.get('weight_source'),'coverage':(peak.get('window') or {}).get('coverage')}
         for k,unit in [('threshold_w','W'),('threshold_wkg','W/kg'),('fthr_bpm','bpm'),('ftp_w','W')]:
             value=a.get(k);source=a.get('threshold_source') if k.startswith('threshold') else 'dichiarato'
             a['metric_details'][k]={'value':value,'unit':unit,'source':source,'status':'unavailable' if value is None else 'estimated' if source=='stimata_da_map' else 'declared',

@@ -112,3 +112,8 @@ Nuovi `test-riepilogo-unificato.png` e `test-riepilogo-stretto.png`: test manual
 ### Soglia relativa ripristinata — 27 ottobre 2026
 
 Rinnovati test-riepilogo-unificato.png e test-riepilogo-stretto.png: stesso archivio QA sintetico e build web corrente con sei KPI, inclusa Soglia relativa 2,66 W/kg accanto a 141 W. Valore salvato nel solo record QA con peso test 53 kg; nessun dato reale. Sostituiscono le due catture del 26 ottobre per questi file. Nessuna prova nativa Android implicita.
+
+
+## VO₂ integrato — 31 ottobre 2026
+
+Rinnovato `test-incrementale.jpg`: Fuorigiri web compilato 0.10.0, UI comune 0.2.8, working tree VO2-01, backend reale e nuovo corpus QA ridotto interamente sintetico. Test Riva Giulia 15/03/2026, AER-RULLO-ALL laboratorio: revisione QA esplicita per associare al grafico principale le osservazioni del CSV gas originale, senza modificare i valori. VO₂ selezionato insieme a potenza/FC/cadenza e prelievi lattato; cinque scale fisiche indipendenti. Cattura reale 1280 × 720, scorrimento del dialogo per inquadrare grafico completo e comandi, sola conversione PNG/JPEG senza ritocchi. Sostituisce la cattura del 26 ottobre per questo file. Nessun APK o dispositivo fisico collaudato.

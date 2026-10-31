@@ -53,3 +53,15 @@ test('chart placement requires real plottable observations, including zero and l
   assert.ok(buildSignalChart(row).data.length>0);
  }
 });
+
+
+test('VO2 shares the timeline with an independent axis, preserving manual times and gaps',()=>{
+ const testRow={samples:[{t:0,power:100},{t:1,power:110}],settings:{vo2:[{at_s:0,vo2_l_min:2},{at_s:60,vo2_l_min:3}]}};
+ const m=buildSignalChart(testRow);
+ assert.equal(hasSignalChart(testRow),true);
+ const gas=m.data.find(r=>r.name==='VO₂ · L/min');
+ assert.equal(gas.yaxis,'y2');assert.deepEqual(gas.y,[2,null,3]);assert.equal(gas.mode,'markers');
+ const shifted=buildSignalChart({analysis:{gas:{samples:[{t:20,vo2:3},{t:21,vo2:4}]}}});
+ assert.deepEqual(shifted.data[0].x,[20/60,21/60]);
+ assert.equal(hasSignalChart({analysis:{vo2peak_l_min:3}}),false);
+});

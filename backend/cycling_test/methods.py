@@ -63,4 +63,6 @@ def comparison_key(test):
     p=a.get('preset')
     lactate_method=a.get('lactate_analysis',{}).get('method_snapshot')
     specialist='|lactate='+encoded(lactate_method) if lactate_method else ''
+    if a.get('gas'):
+        specialist+='|gas='+encoded({'method':a['gas']['vo2peak']['method_id'],'source':a['gas'].get('source','gas_csv')})
     return specialist+(p['hash']+'|engine='+a.get('engine','unknown') if p else 'legacy_unknown:'+a.get('engine','unknown'))+'|'+encoded(test.get('settings',{}).get('conditions',{}))+'|fields='+encoded(a.get('custom_fields',[]))

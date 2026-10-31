@@ -109,11 +109,33 @@ def decode_gas(raw):
     for line,row in enumerate(reader,2):
         try:
             record={dest:float(row[src].replace(',','.')) if row.get(src,'').strip() else None for src,dest in fields.items()}
-            if record['t'] is None or not all(v is None or math.isfinite(v) for v in record.values()):raise ValueError()
+            if record['t'] is None or record['t']<0 or not all(v is None or math.isfinite(v) and v>=0 for v in record.values()):raise ValueError()
+            if record['vo2'] is not None and record['vo2']<=0:raise ValueError()
         except (ValueError,AttributeError):raise ValueError(f'Gas CSV, riga {line}: numero non valido.')
         rows.append(record)
     if not 2<=len(rows)<=20000 or any(b['t']<=a['t'] for a,b in zip(rows,rows[1:])):raise ValueError('Gas: 2–20000 righe ordinate, senza timestamp duplicati.')
     return rows
+
+
+def attach_gas(analysis, samples, settings, gas=None):
+    """Use one explicit source; never merge incompatible gas observations."""
+    embedded=any(r.get('vo2_l_min') is not None for r in samples)
+    manual=settings.get('vo2',[])
+    if sum((bool(gas),bool(manual),embedded))>1:
+        raise ValueError('Scegliere una sola fonte VO2: CSV temporale, file gas o misure manuali.')
+    channels={'vo2_l_min':'vo2','vco2_l_min':'vco2','ve_l_min':'ve','peto2_mmhg':'peto2','petco2_mmhg':'petco2'}
+    if gas:
+        rows=gas['samples'];source='gas_csv';offset=settings.get('gas_offset_s',0)
+    elif manual:
+        rows=[{'t':r['at_s'], 'vo2':r['vo2_l_min']} for r in manual];source='manual_observations';offset=0
+    elif embedded:
+        rows=[{'t':r['t'],**{dest:r.get(src) for src,dest in channels.items()},'paused':r.get('paused',False)} for r in samples]
+        source='trace_csv';offset=0
+    else:
+        return
+    result=gas_analysis(rows,{**settings,'gas_offset_s':offset},analysis)
+    result.update(source=source, samples=[{**r,'t':r['t']+offset} for r in rows], offset_s=offset)
+    analysis['gas']=result
 
 
 def gas_analysis(samples,settings,analysis):

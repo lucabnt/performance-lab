@@ -1,5 +1,18 @@
 # Changelog
 
+## 31 ottobre 2026 — pacchetti con supporto VO₂
+
+- Nuovo installer Windows `pilot-20261031-01` e APK debug `pixel9-test-20261031-01`, versione prodotto 0.10.0: includono VO2-01 e tutte le correzioni precedenti. Build in directory nuove; consegne precedenti conservate.
+- Bundle Windows con dipendenze e smoke EXE riuscito; installer Inno Setup non firmato Authenticode. APK con la stessa firma debug dei test precedenti, senza generare una chiave release.
+- Sorgenti del working tree, licenze, guide, manifest e SHA-256 accompagnano entrambe le consegne. Nessuna installazione automatica, pubblicazione, prova su Windows pulito o telefono fisico.
+
+## 31 ottobre 2026 — supporto VO₂ integrato
+
+- VO2-01: misure VO₂ temporizzate nell’editor incrementale (L/min, istante e fonte/nota), CSV temporale con VO₂ e gas opzionali accanto a potenza/FC/lattato; conservato l’import gas separato con offset esplicito.
+- Una sola fonte gas per analisi, validazione di valori/tempi, grafico temporale con asse VO₂ indipendente e lacune visibili. Misure manuali visualizzate come punti. VO₂peak usa il motore e le finestre già esistenti; VO₂max richiede conferma/evidenze del laboratorio.
+- VO₂peak assoluto/relativo nel selettore del profilo; fonti manuali e importate separate nei confronti. CSV estesi `vo2.csv` e `vo2_osservazioni.csv`, report con provenienza e numerosità, revisioni conservate. Nessun ricalcolo degli storici; nuova versione del renderer individuale per la cache dei report.
+- Modifiche ai sorgenti e frontend compilato; nessun nuovo EXE/APK prodotto o pubblicato.
+
 ## 27 ottobre 2026 — pacchetti con soglia relativa ripristinata
 
 - Nuovi candidato Windows `pilot-20261027-02` e APK debug `pixel9-test-20261027-02`, versione prodotto 0.10.0: includono il KPI Soglia relativa (W/kg) nel dettaglio aerobico e nell’anteprima, insieme a tutte le correzioni precedenti. Firma Android debug invariata; pacchetti precedenti conservati.

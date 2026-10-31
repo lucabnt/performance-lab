@@ -4,6 +4,7 @@ export const signalChannels=[
  {key:'power',label:'Potenza',unit:'W',color:'#1a62b7'},
  {key:'hr',label:'FC',unit:'bpm',color:'#bf523e'},
  {key:'cadence',label:'Cadenza',unit:'rpm',color:'#7952a3'},
+ {key:'vo2_l_min',label:'VO₂',unit:'L/min',color:'#168866'},
  {key:'speed_kmh',label:'Velocità',unit:'km/h',color:'#248777'},
  {key:'temperature_c',label:'Temperatura',unit:'°C',color:'#ad7419'},
  {key:'altitude_m',label:'Quota',unit:'m',color:'#63734b'},
@@ -14,21 +15,30 @@ export const hasRecordedTrace=(test:SignalRow)=>!!(test.has_trace||test.trace_ha
 /** A file reference or summary alone does not make a displayable chart. */
 export const hasSignalChart=(test:SignalRow)=>
  (test.samples||[]).some((r:SignalRow)=>finite(r.t)&&(signalChannels.some(c=>finite(r[c.key]))||finite(r.lactate_mmol_l)))||
- (test.settings?.lactate||[]).some((r:SignalRow)=>finite(r.at_s)&&finite(r.mmol_l));
+ (test.settings?.lactate||[]).some((r:SignalRow)=>finite(r.at_s)&&finite(r.mmol_l))||
+ vo2Samples(test).some(r=>finite(r.t)&&finite(r.vo2_l_min));
+
+function vo2Samples(test:SignalRow):SignalRow[]{
+ if(test.analysis?.gas?.samples)return test.analysis.gas.samples.map((r:SignalRow)=>({t:r.t,vo2_l_min:r.vo2}));
+ if(test.settings?.vo2?.length)return test.settings.vo2.map((r:SignalRow)=>({t:r.at_s,vo2_l_min:r.vo2_l_min}));
+ return (test.samples||[]).filter((r:SignalRow)=>finite(r.t));
+}
 
 export function buildSignalChart(test:SignalRow,protocol?:SignalRow,selectedChannels?:string[]){
  const samples:SignalRow[]=(test.samples||[]).filter((r:SignalRow)=>finite(r.t));
- const availableChannels=signalChannels.filter(c=>samples.some((r:SignalRow)=>finite(r[c.key])));
+ const gasSamples=vo2Samples(test);
+ const availableChannels=signalChannels.filter(c=>(c.key==='vo2_l_min'?gasSamples:samples).some((r:SignalRow)=>finite(r[c.key])));
  const channels=availableChannels.filter(c=>!selectedChannels||selectedChannels.includes(c.key));
- const timeline:SignalRow[]=[];
- const maxGap=test.settings?.preset?.max_gap_s??test.analysis?.protocol_snapshot?.max_gap_s??5;
- for(const row of samples){const previous=timeline.at(-1);if(previous&&row.t-previous.t>maxGap)timeline.push({t:(previous.t+row.t)/2});timeline.push(row)}
+ const maxGap=test.analysis?.preset?.parameters?.max_gap_s??5;
  const data:SignalRow[]=[],layout:SignalRow={height:440,hovermode:'x unified',margin:{l:65,r:65,t:65,b:55},legend:{orientation:'h',y:1.16},xaxis:{title:{text:'Tempo dal file · min'}},shapes:[]};
  const axisFor=(key:string)=>{const i=channels.findIndex(c=>c.key===key);return i<0?null:i===0?'y':'y'+(i+1)};
  channels.forEach((c,i)=>{
   const axis=i===0?'y':'y'+(i+1);
   layout[i===0?'yaxis':'yaxis'+(i+1)]={title:{text:c.label+' · '+c.unit,font:{color:c.color}},tickfont:{color:c.color},zeroline:false,...(i===0?{anchor:'x',gridcolor:'#e9edf3'}:{overlaying:'y',side:'right',anchor:'free',autoshift:true,showgrid:false})};
-  data.push({x:timeline.map((r:SignalRow)=>r.t/60),y:timeline.map((r:SignalRow)=>finite(r[c.key])?r[c.key]:null),customdata:timeline.map((r:SignalRow)=>[r.t,`${Math.floor(r.t/60)}:${(r.t%60).toFixed(1).padStart(4,'0')}`]),hovertemplate:'%{customdata[1]} · %{customdata[0]:.3f} s<br>%{y} '+c.unit+'<extra>'+c.label+'</extra>',yaxis:axis,type:'scatter',mode:samples.length<50?'lines+markers':'lines',name:c.label+' · '+c.unit,line:{color:c.color,width:1.5},connectgaps:false});
+  const series=c.key==='vo2_l_min'?gasSamples:samples;
+  const points:SignalRow[]=[];
+  for(const row of series){const previous=points.at(-1);if(previous&&row.t-previous.t>maxGap)points.push({t:(previous.t+row.t)/2});points.push(row)}
+  data.push({x:points.map((r:SignalRow)=>r.t/60),y:points.map((r:SignalRow)=>finite(r[c.key])?r[c.key]:null),customdata:points.map((r:SignalRow)=>[r.t,`${Math.floor(r.t/60)}:${(r.t%60).toFixed(1).padStart(4,'0')}`]),hovertemplate:'%{customdata[1]} · %{customdata[0]:.3f} s<br>%{y} '+c.unit+'<extra>'+c.label+'</extra>',yaxis:axis,type:'scatter',mode:c.key==='vo2_l_min'&&test.settings?.vo2?.length?'markers':points.length<50?'lines+markers':'lines',name:c.label+' · '+c.unit,line:{color:c.color,width:1.5},connectgaps:false});
  });
  const settings=test.settings||{},start=settings.offset_s??0;
  const end=finite(settings.end_s)?settings.end_s:finite(test.analysis?.protocol_snapshot?.duration_s)?start+test.analysis.protocol_snapshot.duration_s:null;

@@ -1,5 +1,11 @@
 # Collaudo del candidato pilot — Windows e Android
 
+## Aggiornamento VO₂ — 31 ottobre 2026
+
+Nuovo installer Windows `dist/candidates/Fuorigiri-0.10.0-pilot-20261031-01/` e APK di test `dist/android-tests/Fuorigiri-0.10.0-pixel9-test-20261031-01/`, versione prodotto 0.10.0. Includono VO2-01 e le correzioni precedenti. Windows: bundle completo e smoke verificati, installer non firmato Authenticode. Android: APK debug con firma invariata per l’aggiornamento dei test precedenti; nessuna nuova chiave release. La sezione storica sotto sull’APK release non firmato riguarda il candidato del 21 ottobre, non questo APK di test.
+
+Ripetere F-03/F-09/F-10 usando VO₂ temporizzato in L/min, CSV temporale o gas separato (una sola fonte), asse indipendente e VO₂peak assoluto/relativo, esportazioni risultati/osservazioni e conservazione delle revisioni. Un punto isolato non deve produrre VO₂peak; VO₂max richiede evidenze esplicite del laboratorio. I nuovi binari non ricalcolano gli storici automaticamente. Prima di aggiornare conservare backup e chiudere l’app; non disinstallare Android per applicare il nuovo APK di test. Windows pulito, telefono e provider reali restano da collaudare, come riportato in VERIFICA.md. Non marcare completati i check per analogia con compilazione o smoke.
+
 Candidato **Fuorigiri 0.10.0 · pilot-20261021-02**. Preparato il **21 ottobre 2026**. Versione prodotto invariata; identificativo candidato e digest distinguono questa consegna dalle build precedenti. Non è una release pubblicata né un’accettazione per la produzione.
 
 La cartella di consegna è `dist/candidates/Fuorigiri-0.10.0-pilot-20261021-02/`; `candidate.json` identifica sorgenti, artefatti e limitazioni, `SHA256SUMS.txt` contiene i digest. Il sorgente congelato proviene dal working tree con modifiche locali: il commit base da solo non identifica tutti i byte. Non sostituire file dopo aver iniziato il collaudo; una correzione produce un nuovo candidato.

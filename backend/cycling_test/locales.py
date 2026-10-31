@@ -1,5 +1,7 @@
 """Presentation translations; never translate athlete data or scientific identifiers."""
 LABELS={
+ 'Fonte VO2':'VO2 source','Osservazioni VO2 conservate':'Stored VO2 observations',
+ 'Misure manuali temporizzate':'Timed manual measurements','CSV temporale':'Trace CSV','CSV gas separato':'Separate gas CSV',
  'Data':'Date','Protocollo':'Protocol','Peso (kg)':'Weight (kg)','Statura (cm)':'Height (cm)',
  'Ultimo step completo / MAP operativa (W)':'Last completed stage / operational MAP (W)',
  'Interpolazione separata (W)':'Separate interpolation (W)','MAP / peso (W/kg)':'MAP / weight (W/kg)',

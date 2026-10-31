@@ -6,7 +6,7 @@ import {buildSignalChart,hasRecordedTrace,type SignalRow} from './signalChartMod
 export function TestSignals({test,protocol,Plot,onPick}:{test:SignalRow;protocol?:SignalRow;Plot:any;onPick?:(t:number)=>void}){
  const [selected,setSelected]=useState<string[]|null>(null);
  const available=buildSignalChart(test,protocol).availableChannels;
- const core=available.filter(c=>['power','hr','cadence'].includes(c.key));
+ const core=available.filter(c=>['power','hr','cadence','vo2_l_min'].includes(c.key));
  const keys=selected??(core.length?core:available).map(c=>c.key);
  const model=buildSignalChart(test,protocol,keys);
  return <section className="test-signals" aria-label={tr("Grafici del test")}>

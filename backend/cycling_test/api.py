@@ -102,6 +102,12 @@ class LactateObservation(Model):
     delay_s: float = Field(default=0,ge=0,le=600)
 
 
+class VO2Observation(Model):
+    at_s: float = Field(ge=0)
+    vo2_l_min: float = Field(gt=0)
+    note: str = Field(default='', max_length=1000)
+
+
 class Exclusion(Model):
     start_s: float = Field(ge=0)
     end_s: float = Field(gt=0)
@@ -150,6 +156,7 @@ class Settings(Model):
     excluded_intervals: list[Exclusion] = Field(default_factory=list,max_length=100)
     alignment_markers: list[Alignment] = Field(default_factory=list,max_length=1000)
     conditions: dict[str,str] = Field(default_factory=dict,max_length=30)
+    vo2: list[VO2Observation] = Field(default_factory=list, max_length=20000)
     gas_hash: str | None = None
     gas_offset_s: float = Field(default=0,ge=-86400,le=86400)
     ventilatory_markers: dict[Literal['vt1','vt2'],VentilatoryMarker] = Field(default_factory=dict)
@@ -176,6 +183,12 @@ class Settings(Model):
                 channels.append(scheme['channel'])
             if len(set(channels)) != len(channels):
                 raise ValueError('Canale duplicato negli schemi zone.')
+        if self.vo2:
+            times = [r.at_s for r in self.vo2]
+            if any(b <= a for a,b in zip(times,times[1:])):
+                raise ValueError('VO2: istanti crescenti, senza duplicati.')
+            if self.gas_hash:
+                raise ValueError('Scegliere una sola fonte VO2: misure manuali oppure file gas.')
         times = [r.after_s for r in self.recovery_manual]
         if len(times) != len(set(times)):
             raise ValueError('Tempi di recupero duplicati.')
@@ -461,11 +474,12 @@ def create_app(root=None, token=None, frontend=None):
         analysis['protocol_snapshot']={'id':protocol['id'],'version':protocol['version'],'hash':hashlib.sha256(encoded(protocol['definition']).encode()).hexdigest()}
         analysis['input_provenance']={'trace_hash':data.trace_hash,'original_hash':trace.get('original_hash'),'decoder':trace.get('decoder','legacy_unknown'),
                                      'session':trace.get('session_index',0),'exclusions':settings['excluded_intervals'],'alignment':settings['alignment_markers']}
+        from .specialist import attach_gas
+        gas=None
         if settings.get('gas_hash'):
-            from .specialist import gas_analysis
             gas=json.loads(store.read_object(settings['gas_hash']))
             if gas.get('kind')!='gas':raise ValueError('Allegato gas non valido.')
-            analysis['gas']=gas_analysis(gas['samples'],settings,analysis)
+        attach_gas(analysis,trace['samples'],settings,gas)
         from .custom_fields import attach
         return attach(enrich(analysis,trace['samples'],settings),protocol,settings)
 

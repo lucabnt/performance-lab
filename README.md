@@ -41,7 +41,7 @@ Schermate reali della versione **0.10.0**, aggiornate il **20 ottobre 2026**, co
 
 | Protocolli ripetibili | Analisi incrementale |
 |---|---|
-| [![Protocolli versionati, definizioni manuali e importazione ERG](docs/screenshots/protocolli.jpg)](docs/screenshots/protocolli.jpg) | [![Test incrementale con potenza, frequenza cardiaca, cadenza e prelievi di lattato sovrapposti](docs/screenshots/test-incrementale.jpg)](docs/screenshots/test-incrementale.jpg) |
+| [![Protocolli versionati, definizioni manuali e importazione ERG](docs/screenshots/protocolli.jpg)](docs/screenshots/protocolli.jpg) | [![Test incrementale con potenza, frequenza cardiaca, cadenza, VO₂ e prelievi di lattato sovrapposti](docs/screenshots/test-incrementale.jpg)](docs/screenshots/test-incrementale.jpg) |
 | Creazione manuale o da ERG, famiglie e versioni conservate. | Tracciato unico con scale indipendenti e misure di lattato. |
 | **Sprint e Wingate** | **Storici e confronti** |
 | [![Wingate 30 secondi con tracciato e risultati della prova](docs/screenshots/test-wingate.jpg)](docs/screenshots/test-wingate.jpg) | [![Evoluzione stagionale della MAP con mediana, media e numerosità](docs/screenshots/storici-confronti.jpg)](docs/screenshots/storici-confronti.jpg) |

@@ -17,7 +17,7 @@ from .report_labels import metric_label
 from .scientific_labels import reason as scientific_reason, METHODS
 
 from .anaerobic import CSV_HEADER as ANAEROBIC_HEADER
-RENDERER_VERSION='0.10-training-zones-1'
+RENDERER_VERSION='0.10-vo2-1'
 CSV_HEADERS = {
     'test_anaerobico': ANAEROBIC_HEADER,
     "atleti": "atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note",
@@ -130,7 +130,10 @@ def report(test, athlete, protocol, format, language='it'):
                 metrics += [('Lattato - '+val(level)+' mmol/L (W/kg)',val(result['wkg'])+(' / '+scientific_reason(result['weight_reason']) if result.get('weight_reason') else '')),
                             ('Lattato - '+val(level)+' mmol/L (bpm)',val(result['hr_bpm'])+(' / '+scientific_reason(result['hr_reason']) if result.get('hr_reason') else ''))]
         if a.get('gas'):
-            g=a['gas'];metrics += [('VO2peak (L/min)',val(g['vo2peak']['value'])),('VO2peak (mL/kg/min)',val(g['vo2peak']['ml_kg_min'])),('VO2peak - finestra (s)',g['vo2peak']['window_s']),('VO2max verificato (L/min)',val(g['vo2max']['value']))]
+            g=a['gas']
+            sources={'manual_observations':'Misure manuali temporizzate','trace_csv':'CSV temporale','gas_csv':'CSV gas separato'}
+            metrics += [('Fonte VO2',tr(sources.get(g.get('source','gas_csv'),g.get('source')),language)),('Osservazioni VO2 conservate',len(g.get('samples',[])) or 'legacy')]
+            metrics += [('VO2peak (L/min)',val(g['vo2peak']['value'])),('VO2peak (mL/kg/min)',val(g['vo2peak']['ml_kg_min'])),('VO2peak - finestra (s)',g['vo2peak']['window_s']),('VO2max verificato (L/min)',val(g['vo2max']['value']))]
             for key in ('vt1','vt2'):
                 metrics.append((key.upper()+' - marker confermato (s)',val(g['markers'].get(key,{}).get('at_s'))))
                 metrics.append((key.upper()+' - suggerimento da rivedere (s)',val(g['suggestions'][key]['value'])))
@@ -230,12 +233,18 @@ def export_csv(store, organization_id):
     for m in store.list("measurement"):
         if m["athlete_id"] in ids and m.get('status') != 'deleted':
             rows["antropometria"].append({"atleta_id":m["athlete_id"],"data":m["date"],"peso_kg":m.get("weight_kg"),"statura_cm":m.get("height_cm"),"peso_fonte":m.get("source", ""),"origine":m.get("origin","inserimento manuale")})
-    versions = [];anaerobic_rows=[];lactate_rows=[]
+    versions = [];anaerobic_rows=[];lactate_rows=[];vo2_rows=[]
     for t in store.list("test"):
         if t["athlete_id"] not in ids or t.get('status')=='deleted':
             continue
         a,s = t["analysis"],t["settings"]
         protocol = store.get(t["protocol_id"])
+        if a.get('gas'):
+            g=a['gas'];peak=g['vo2peak']
+            vo2_rows.append({'test_id':t['id'],'test_revision':t['revision'],'atleta_id':t['athlete_id'],'data':t['date'],
+                'source':g.get('source','gas_csv'),'vo2peak_l_min':peak['value'],'vo2peak_ml_kg_min':peak['ml_kg_min'],
+                'window_s':peak['window_s'],'coverage':(peak.get('window') or {}).get('coverage'),'method_id':peak['method_id'],
+                'weight_source':s.get('weight_source'),'vo2max_l_min':g['vo2max']['value'],'verification_evidence':g['vo2max'].get('evidence','')})
         for result in a.get('lactate_analysis',{}).get('results',{}).values():
             if result.get('concentration_mmol_l') is None:continue
             lactate_rows.append({'test_id':t['id'],'test_revision':t['revision'],'atleta_id':t['athlete_id'],'data':t['date'],'protocol_id':t['protocol_id'],
@@ -270,6 +279,18 @@ def export_csv(store, organization_id):
         lactate_csv=io.StringIO(newline='')
         lw=csv.DictWriter(lactate_csv,fieldnames=['test_id','test_revision','atleta_id','data','protocol_id','mmol_l','power_w','power_wkg','hr_bpm','method_id','hr_window_s','status','power_reason','hr_reason','weight_reason']);lw.writeheader();lw.writerows(lactate_rows)
         z.writestr('extended/lattato_livelli.csv',lactate_csv.getvalue())
+        vo2_csv=io.StringIO(newline='')
+        vw=csv.DictWriter(vo2_csv,fieldnames=['test_id','test_revision','atleta_id','data','source','vo2peak_l_min','vo2peak_ml_kg_min','window_s','coverage','method_id','weight_source','vo2max_l_min','verification_evidence'])
+        vw.writeheader();vw.writerows(vo2_rows)
+        z.writestr('extended/vo2.csv',vo2_csv.getvalue())
+        observations_csv=io.StringIO(newline='');ow=csv.writer(observations_csv)
+        ow.writerow(['test_id','test_revision','atleta_id','t_s','vo2_l_min','source','note'])
+        for t in store.list('test'):
+            if t['athlete_id'] not in ids or t.get('status')=='deleted':continue
+            g=t['analysis'].get('gas',{});notes={r['at_s']:r.get('note','') for r in t['settings'].get('vo2',[])}
+            for r in g.get('samples',[]):
+                ow.writerow([t['id'],t['revision'],t['athlete_id'],r['t'],r.get('vo2'),g.get('source','gas_csv'),notes.get(r['t'],'')])
+        z.writestr('extended/vo2_osservazioni.csv',observations_csv.getvalue())
         from .custom_fields import display_rows
         custom_csv=io.StringIO(newline='');cw=csv.writer(custom_csv);cw.writerow(['test_id','protocol_id','scope','field_key','label','type','unit','value_json'])
         for t in store.list('test'):

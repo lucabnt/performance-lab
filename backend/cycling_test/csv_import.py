@@ -75,6 +75,11 @@ def decode_trace_csv(raw):
                 values[key]=number(r.get(key,r.get(alias)))
                 if key in ('lactate_mmol_l','speed_kmh') and values[key] is not None and values[key]<0:
                     raise ValueError(f'Riga {i}: {key} negativo.')
+        for key in ('vo2_l_min','vco2_l_min','ve_l_min','peto2_mmhg','petco2_mmhg'):
+            if key in r:
+                values[key]=number(r[key])
+                if values[key] is not None and (values[key]<0 or key=='vo2_l_min' and values[key]==0):
+                    raise ValueError(f'Riga {i}: {key} deve essere positivo (VO2) o non negativo.')
         samples.append({'t':t,**values,'paused':r.get('paused','').lower() in ('true','1','si')})
     if len(samples)<2:
         raise ValueError('Servono almeno due campioni.')

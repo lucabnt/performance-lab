@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **26 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **31 ottobre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -88,6 +88,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 - Separare misurato, dichiarato, calcolato, interpolato e stimato; null non è zero. Conservare input risolti, fonte, metodo/versione e revisione. Nessun ricalcolo silenzioso degli storici.
 - Incrementale: riferimento primario ultimo step completo; durata/copertura potenza almeno 95% separate dall'aderenza al target. Interpolazione distinta. Nessun coefficiente automatico universale verso Watt Soglia, FTP o FTHR.
+- VO₂: una sola fonte gas per analisi (CSV temporale, CSV gas separato con offset, oppure settings.vo2 temporizzate in L/min). Conservare fonte/campioni e revisioni; VO₂peak usa finestre/copertura del preset esistente, VO₂max richiede evidenze del laboratorio. Non ricavare gas da watt/FC né picchi da punti isolati. Guida TESTARE_IL_PROGETTO.md.
 - Lattato: livelli configurabili, interpolazione locale senza estrapolazione; FC dalla finestra valida dello step associato, non dal battito al prelievo. Concentrazioni fisse non equivalgono automaticamente a LT1/LT2/FTP/MLSS. Consultare metodi e snapshot nel codice prima di cambiare formule.
 - Sprint breve, Wingate 30 s e Wingate 15 s non sono automaticamente confrontabili fra loro. Preservare carico, partenza, dispositivo, finestre e metodo. Lo storico ANA-15-070 indica 15 s con frenata 0,70 N·m/kg; gli altri dettagli non verificati non vanno inventati.
 - Non fondere aggregati di protocolli, versioni, metodi/condizioni o origini incompatibili. Un affiancamento grafico descrittivo non implica equivalenza fisiologica.

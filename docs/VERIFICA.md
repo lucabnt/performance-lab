@@ -512,3 +512,29 @@ Ripristinato Soglia relativa in W/kg nel riepilogo comune a dettaglio aerobico e
 - Windows: nuovo bundle autonomo ottenuto dal runtime del candidato 01, dopo confronto byte per byte di 53 sorgenti/dipendenze Python con lo snapshot consegnato; solo frontend e documentazione aggiornati. Nessuna dipendenza esterna dal vecchio bundle. Tutti i 19 asset frontend correnti inclusi; eseguibile --smoke-test con archivio QA nuovo, exit 0 e marker import/logo/backend. Installer Inno Setup compilato dal nuovo bundle.
 - Android assembleDebug offline completato; 19 asset frontend identici, ZIP integro e runtime ARM64 incluso, firma v2 valida e certificato debug identico al precedente, allineamento pagine 16 KB valido. Nessuna chiave nuova, nessuna installazione o prova sul Pixel fisico.
 - Restano valide le verifiche funzionali del KPI nel browser e i 36 test frontend; backend/runtime invariati rispetto alla suite Python completa di 256 test superati del candidato 01. Consegne con sorgenti GPL, guide, manifest e SHA256 verificati.
+
+## UI-SUITE-001 — organizzazione contestuale, 1 novembre 2026
+
+Audit delle funzioni omologhe con Ammiraglia/A Ruota; aggiunti accessi CSV in Atleti/Gruppi/Test/Antropometria, con lo stesso ImportPanel e tracciati pertinenti. Archivio conserva tutti e cinque i tracciati in una sezione espandibile. Modello/file prima delle istruzioni estese; nessun glossario dei protocolli nei flussi CSV anagrafici. Nessuna modifica backend, scientifica, ai formati o ai permessi.
+
+- `npm.cmd --prefix frontend run build` finale riuscita; avviso Vite sui chunk oltre 500 kB (Plotly), nessuna nuova ottimizzazione o qualifica prestazionale dichiarata. La prima esecuzione sandbox non poteva scrivere copie legali/cache TypeScript/Vite (`EPERM`); build ordinaria completata con l'esecuzione autorizzata. Licenze conservate dal normale script, nessuna modifica al build script.
+- `npm.cmd --prefix frontend run test:signals`: **37 test superati** sulla versione finale.
+- Browser sulla build finale, corpus nuovo esclusivamente sintetico `.local/ui-coherence-20261101-01`: anagrafiche dal contesto Atleti, appartenenze da Gruppi, due soli tracciati da Test, sole rilevazioni da Antropometria. Punto completo in Archivio con cinque opzioni. CSV sintetico arrivato all'anteprima con una riga pronta e nessun errore, poi scartato senza commit; protezione delle modifiche verificata. Finestra compatta 390×844 senza fuoriuscite (larghezza/contenuto 390 px). Console acquisita senza errori/avvisi. [Catture](screenshots/README.md), [guida](IMPORT_CSV.md).
+
+Non rieseguite suite backend per il solo riallineamento UI. Nessun provider reale, Qt/Android, nuovo installer/APK o rilascio qualificato. I test scientifici e gli archivi reali restano fuori da questo collaudo. Verifiche documentali/UI comune riportate nella chiusura sotto.
+
+Chiusura UI-SUITE-001: `verify_suite_ui.py` superato (UI comune 0.2.8); controllo UTF-8 e link degli 8 documenti interessati superato (172 link locali), `git diff --check` senza errori. Servizio/browser QA chiusi; nessun commit del CSV di anteprima.
+
+## Preparazione installer UI-SUITE-001 — 1 novembre 2026
+
+Richiesta esplicita di nuova consegna Windows, ID `pilot-20261101-01`, versione 0.10.0 invariata. Previsti snapshot del working tree, build isolata in `.local/candidate-windows-20261101-01`, smoke del binario su radice QA nuova e installer Inno in `dist/candidates/Fuorigiri-0.10.0-pilot-20261101-01`. Packaging solo Windows, senza riutilizzare un APK precedente per dichiarare una nuova consegna Android. Risultati e digest effettivi da registrare dopo la compilazione.
+
+### Esito installer Windows UI-SUITE-001 — 1 novembre 2026
+
+- Destinazione nuova `dist/candidates/Fuorigiri-0.10.0-pilot-20261101-01`, versione prodotto invariata. Frontend ricompilato; snapshot di 328 sorgenti del working tree creato e verificato prima della build, senza segreti/dati QA. Controllo dopo compilazione di sorgenti invariati e 19 asset frontend identici nel bundle.
+- `scripts/build.py --output-root .local/candidate-windows-20261101-01` completato; core/UI/versioni verificati. Compilazione isolata con PyInstaller 6.22.3, nessun bundle precedente sostituito. Avviso QML sul plugin opzionale assetdownloader mancante, non bloccante per lo smoke effettuato; nessuna qualifica delle funzioni QML non usate dichiarata.
+- EXE congelato, `--smoke-test --data .local/smoke-windows-20261101-01`: **passato in 5,504 s**, PATH ristretto alle directory Windows e variabili Python/Qt di sviluppo rimosse. Marker import/logo/backend HTTP coerente con 0.10.0; hash dell'eseguibile in SMOKE/BUNDLE_MANIFEST. Non è una prova della finestra Qt o di tutti i flussi del congelato; le verifiche browser dei sorgenti restano distinte.
+- Installer Inno Setup 6.7.3 compilato da ISS/licenza/icona estratti dallo snapshot, AppId/destinazione preservati. Setup `Fuorigiri-0.10.0-windows-x64-setup.exe`, **196823276 byte**, SHA-256 **0169b82c3d3431c97131d7c6ff70bb2acf6a3497712220ea404f970c162d9219**. Installer non firmato Authenticode, nessuna installazione operativa.
+- SOURCE_MANIFEST, BUNDLE_MANIFEST, candidate.json, SMOKE, sorgenti ZIP e **12 checksum** verificati nuovamente dopo il confezionamento. Controllati inventario e tutti i 328 sorgenti nello ZIP. Preparazione Windows-only tramite supporto locale `.local/build_windows_suite_20261101.py`, senza usare un vecchio APK per attestare una nuova build Android. Predecessori conservati.
+
+Documentazione live aggiornata dopo il congelamento: la copia nella consegna fotografa la preparazione e i manifest attestano gli esiti effettivi. Nessuna modifica agli artefatti congelati o riscrittura dei loro checksum. Restano aperti installazione/upgrade/disinstallazione su copia QA/PC pulito, provider reali e accettazione staff. Nessun APK nuovo o pubblicazione.

@@ -6,6 +6,9 @@ export async function initializeLanguage(load:()=>Promise<Preferences>){
 }
 document.documentElement.lang=language==='en'?'en':'it';
 const translations:Record<string,string> = {
+ "Importa CSV":"Import CSV",
+ "Importazioni CSV":"CSV imports",
+ "Istruzioni e formato CSV":"CSV format and instructions",
  "Report completo dell’archivio":"Complete archive report",
  "Società completa oppure una sua vista: gruppo, gruppo per anno/stagione, atleta con storico. Stessi criteri e sezioni; dati individuali riportati una sola volta.":"The entire club or a scoped view: group, group and season, or athlete history. The same criteria and sections apply; individual records appear once.",
  "Intera società":"Entire club",

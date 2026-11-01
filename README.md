@@ -37,7 +37,7 @@ Schermate reali della versione **0.10.0**, aggiornate il **20 ottobre 2026**, co
 
 **Atleti e squadra** — profili, ricerca, gruppi e riepilogo dell’archivio della società.
 
-[![Panoramica atleti di Fuorigiri con ricerca, filtri e risultati recenti](docs/screenshots/atleti.jpg)](docs/screenshots/atleti.jpg)
+[![Panoramica atleti di Fuorigiri con ricerca, filtri e risultati recenti](docs/screenshots/ui-coherence-010/atleti.png)](docs/screenshots/ui-coherence-010/atleti.png)
 
 | Protocolli ripetibili | Analisi incrementale |
 |---|---|
@@ -47,7 +47,7 @@ Schermate reali della versione **0.10.0**, aggiornate il **20 ottobre 2026**, co
 | [![Wingate 30 secondi con tracciato e risultati della prova](docs/screenshots/test-wingate.jpg)](docs/screenshots/test-wingate.jpg) | [![Evoluzione stagionale della MAP con mediana, media e numerosità](docs/screenshots/storici-confronti.jpg)](docs/screenshots/storici-confronti.jpg) |
 | Esempio Wingate 30 s; metodi e durate rimangono distinti. | Serie selezionate esplicitamente, aggregati e dati mancanti. |
 | **Crescita e maturazione** | **Report ed esportazioni** |
-| [![Profilo atleta con velocità di crescita, PHV esplorativo e stime datate](docs/screenshots/crescita-maturazione.jpg)](docs/screenshots/crescita-maturazione.jpg) | [![Report filtrabili per società, gruppo, stagione o atleta e importazione CSV](docs/screenshots/report-esportazioni.jpg)](docs/screenshots/report-esportazioni.jpg) |
+| [![Profilo atleta con velocità di crescita, PHV esplorativo e stime datate](docs/screenshots/crescita-maturazione.jpg)](docs/screenshots/crescita-maturazione.jpg) | [![Report filtrabili per società, gruppo, stagione o atleta e importazione CSV](docs/screenshots/ui-coherence-010/archivio.png)](docs/screenshots/ui-coherence-010/archivio.png) |
 | HV, analisi conservate e stime con metodo e limiti espliciti. | PDF e Markdown della società o delle sue sottosezioni; scambio CSV. |
 
 ### Android: navigazione compatta
@@ -103,3 +103,7 @@ L’[indice completo](docs/README.md) distingue guide attuali, specifiche e docu
 Codice distribuito sotto [GPL-3.0-or-later](LICENSE), con [avvisi delle dipendenze](THIRD_PARTY.md). Il marchio della società è distinto dalla licenza del codice.
 
 Non pubblicare archivi locali, FIT personali, backup, inviti, token o chiavi. Sincronizzazione e backup hanno scopi distinti; conservare copie di recupero e verificarne il ripristino. Limiti attuali e qualifiche ancora necessarie sono descritti nella documentazione.
+
+## Candidato Windows del 1 novembre 2026
+
+Nuova consegna verificata `dist/candidates/Fuorigiri-0.10.0-pilot-20261101-01/`, con accessi CSV contestuali per Atleti/Gruppi/Test/Antropometria e punto completo espandibile in Archivio. Versione prodotto 0.10.0 invariata; ID candidato e checksum identificano i binari. Build e smoke del binario con PATH Windows superati; installer, 328 sorgenti congelati e 12 checksum verificati. Installer non firmato Authenticode; installazione su PC pulito e accettazione restano da eseguire. Nessun APK nuovo o aggiornamento operativo automatico.

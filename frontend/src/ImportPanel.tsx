@@ -17,23 +17,26 @@ function columns(profile:string){
  return [...test,cell('test_type','Tipo di test',r=>tr(families[r.test_type]||r.test_type||'Non documentato')),cell('duration_s','Durata · s',r=>r.analysis?.duration_s??'—'),cell('peak_w','Picco · W',r=>r.analysis?.peak_w??'—'),cell('mean_w','Media · W',r=>r.analysis?.mean_w??'—')];
 }
 
-export function ImportPanel({org,api,run,refresh,download,readOnly=false}:{org:string,api:any,run:any,refresh:any,download:any,readOnly?:boolean}){
- const [profile,setProfile]=useState('atleti');
+export function ImportPanel({org,api,run,refresh,download,readOnly=false,allowedProfiles}:{org:string,api:any,run:any,refresh:any,download:any,readOnly?:boolean,allowedProfiles?:readonly string[]}){
+ const choices=Object.entries(profiles).filter(([key])=>!allowedProfiles||allowedProfiles.includes(key));
+ const [profile,setProfile]=useState(()=>allowedProfiles?.[0]??'atleti');
  const [result,setResult]=useState<Row|null>(null),[schemas,setSchemas]=useState<Row>({});
  useEffect(()=>{run(async()=>setSchemas(await api('import/schemas')))},[]);
  const ready=result?.ready_rows??result?.ready??0;
  const rows=(result?.preview||[]).map((r:Row)=>({...r,...(r.analysis?Object.fromEntries(['map_w','threshold_w','fc_max_test_bpm','duration_s','peak_w','mean_w'].map(k=>[k,r.analysis[k]])): {})}));
  return <section className="panel protocol">
   <h2>{tr('Importazione in blocco da CSV')}</h2>
-  <p>{tr('Importa prima le anagrafiche. Per associare i dati agli atleti usa atleta_id, non il nome.')}</p>
-  <label>{tr('Tipo di importazione')}<select value={profile} onChange={e=>{setProfile(e.target.value);setResult(null)}}>{Object.entries(profiles).map(([key,label])=><option key={key} value={key}>{tr(label)}</option>)}</select></label>
+  {choices.length>1?<label>{tr('Tipo di importazione')}<select value={profile} onChange={e=>{setProfile(e.target.value);setResult(null)}}>{choices.map(([key,label])=><option key={key} value={key}>{tr(label)}</option>)}</select></label>:<p>{tr(profiles[profile])}</p>}
   <div className="actions"><button onClick={()=>run(()=>download('import/template/'+profile,profile+'-modello.csv'))}>{tr('Scarica modello CSV vuoto')}</button>{profile==='appartenenze'&&<button onClick={()=>run(()=>download('import/example/appartenenze','appartenenze-esempio.csv'))}>{tr('Scarica CSV di esempio')}</button>}</div>
+  <input key={profile} aria-label={tr('CSV da importare')} disabled={readOnly} type="file" accept=".csv" onChange={e=>{const file=e.target.files?.[0];setResult(null);if(file)run(async()=>{const form=new FormData();form.append('file',file);form.append('organization_id',org);form.append('profile',profile);setResult(await api('import/preview',form))})}}/>
+  <details><summary>{tr('Istruzioni e formato CSV')}</summary>
+  <p>{tr('Importa prima le anagrafiche. Per associare i dati agli atleti usa atleta_id, non il nome.')}</p>
   {profile==='appartenenze'&&<p>{tr('Una riga per appartenenza: lo stesso atleta può comparire in più stagioni. Sottogruppo identifica la stagione; i gruppi mancanti vengono proposti in anteprima. Gli esempi sono sintetici: sostituisci ID, nomi e date con i tuoi dati.')}</p>}
   {profile!=='appartenenze'&&<p>{tr('Il modello contiene soltanto le intestazioni. Compila una riga per atleta, rilevazione o test; lascia vuoti i valori non disponibili.')}</p>}
   <p className="hint">{tr('Colonne obbligatorie:')} {schemas[profile]?.required.join(', ')}. {tr(schemas[profile]?.rule||'')}</p>
   {profile==='test_anaerobico'&&<p>{tr('Per nuovi protocolli compila tipo_test e durata_s: sprint (3–10 s), wingate15 (15 s), wingate30 (30 s). ANA-15-070 resta compatibile con i CSV storici. I risultati importati sono riepiloghi dichiarati, senza ricalcolo dai campioni.')}</p>}
   <details><summary>{tr('Colonne facoltative')}</summary><p>{schemas[profile]?.optional.join(', ')}</p></details>
-  <input key={profile} aria-label={tr('CSV da importare')} disabled={readOnly} type="file" accept=".csv" onChange={e=>{const file=e.target.files?.[0];setResult(null);if(file)run(async()=>{const form=new FormData();form.append('file',file);form.append('organization_id',org);form.append('profile',profile);setResult(await api('import/preview',form))})}}/>
+  </details>
   {result&&<>
    <p>{result.rows} {tr('righe ·')} {ready} {tr('record pronti ·')} {result.skipped} {tr('già presenti')}</p>
    {!!result.new_groups?.length&&<p>{tr('Nuove categorie e stagioni:')} {result.new_groups.map((g:Row)=>[g.name,g.season].filter(Boolean).join(' / ')).join(', ')}</p>}

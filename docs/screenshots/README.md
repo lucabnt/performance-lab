@@ -1,5 +1,22 @@
 # Schermate dell’interfaccia
 
+## Aggiornamento organizzazione schede — 1 novembre 2026
+
+Build finale Fuorigiri 0.10.0/UI 0.2.8, nuovo corpus locale esclusivamente sintetico `.local/ui-coherence-20261101-01` (una società, un atleta, un gruppo e una appartenenza; nessun test/provider reale). Atleti e Archivio nel README puntano alle nuove catture; le altre immagini storiche rimangono disponibili. Nessuna nuova build nativa qualificata.
+
+| Cattura | Scenario |
+|---|---|
+| [Atleti](ui-coherence-010/atleti.png) | Import CSV secondario nella testata, vicino alla creazione |
+| [Anagrafica CSV](ui-coherence-010/import-atleti.png) | Solo anagrafiche, modello/file prima della guida |
+| [Gruppi](ui-coherence-010/gruppi.png) | Import appartenenze nella testata |
+| [Appartenenze CSV](ui-coherence-010/import-appartenenze.png) | Solo appartenenze, modello ed esempio disponibili |
+| [Test CSV](ui-coherence-010/import-test.png) | Solo test aerobici/anaerobici |
+| [Antropometria CSV](ui-coherence-010/import-antropometria.png) | Solo rilevazioni, accesso dal profilo |
+| [Archivio](ui-coherence-010/archivio.png) | Punto completo conservato nella sezione espandibile |
+| [Compatta](ui-coherence-010/responsive.png) | Finestra a 390×844; contenuto/larghezza 390 px |
+
+Provati file → anteprima anagrafica valida e scarto protetto senza commit; tutti i percorsi contestuali e i cinque tracciati del punto completo. Console senza errori o avvisi. Le istruzioni sotto descrivono la precedente galleria del 20 ottobre; le immagini aggiornate qui prevalgono per le viste coinvolte.
+
 Galleria incorporata nel [README principale](../../README.md). Acquisizione: **20 ottobre 2026**, Fuorigiri **0.10.0**, sorgenti al commit `50d242b`, UI comune `@cycling-suite/ui` **0.2.2**. Immagini JPEG reali del browser locale (circa 1230 × 950 pixel), senza ritocchi ai contenuti. L’interfaccia è la stessa inclusa nella finestra desktop; queste immagini non documentano una build Linux o Android.
 
 Sono stati usati soltanto archivi sintetici già disponibili: corpus completo per le funzioni prestative e corpus ridotto con casi crescita per la maturazione. I conteggi fotografano quelle demo e non sono requisiti del prodotto. Non sono stati rigenerati archivi, corretti risultati o eseguite sincronizzazioni per realizzare le immagini.

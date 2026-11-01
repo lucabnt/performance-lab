@@ -414,3 +414,7 @@ Richieste originali aggiunte in [COMMENTI_ORIGINALI_2026-10-25.md](archivio/COMM
 - **IMPORT-04 — implementato e verificato localmente sul web.** Quinto profilo CSV Appartenenze storiche e future, modello vuoto ed esempio scaricabili. Identita tramite atleta_id (ID esterno o ID interno), controllo nome/cognome e societa; date esplicite, fine facoltativa, gruppo categoria, sottogruppo stagione, anno di categoria e note. Anteprima di appartenenze e gruppi nuovi, salvataggio atomico, duplicati esatti saltati e sovrapposizioni diverse segnalate. Nessuna riscrittura dello storico o deduzione di date dalla stagione. Guida: IMPORT_CSV.md.
 
 Verifiche e consegna binaria aggiornate separatamente in VERIFICA.md; una schermata web non prova il bridge Android o il telefono.
+
+## UI-SUITE-001 — coerenza organizzativa, 1 novembre 2026
+
+Richiesta: verificare e allineare la collocazione delle funzionalità omologhe fra Ammiraglia, Fuorigiri e A Ruota. Implementati accessi contestuali CSV da Atleti/Gruppi/Test/Antropometria, con tracciati limitati al contesto; punto completo in Archivio espandibile e istruzioni dopo i comandi. Appartenenze collettive in Gruppi, individuali nel profilo; responsabilità e permessi preservati. [Uso](IMPORT_CSV.md), [verifiche](VERIFICA.md). Nessun nuovo installer/APK né qualifica provider.

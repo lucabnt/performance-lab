@@ -97,6 +97,8 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 ## Interfaccia e report
 
+- UI-SUITE-001: creazione primaria e import/export contestuali nella testata; filtri ed elenco dopo. Aprire modello/file/anteprima e istruzioni estese su richiesta; appartenenze collettive in Gruppi, operazioni individuali nel profilo. Gli import contestuali limitano i tracciati, mentre Archivio conserva il punto completo espandibile. Non aggiungere funzioni o menu per una parità soltanto nominale. [Guida](docs/IMPORT_CSV.md).
+
 - UI-ORDER-01: contesto/comandi prima dei risultati o elenchi; dettagli e guide dopo. Nel dettaglio test il grafico, se realmente rappresentabile (hasSignalChart), precede i KPI; senza grafico il riepilogo resta in alto. Riepilogo aerobico unico in ReferenceSummary (anche anteprima), senza ripetere MAP in un secondo blocco. Profilo: zone → MAP storiche → test; tabella e grafico antropometrico adiacenti. Preservare fonte/coefficiente e separazione dei metodi.
 
 - Codice protocollo modificabile in tutte le famiglie, precompilato dal tipo o dalla versione precedente. API anaerobica: `code` operativo facoltativo distinto da `family` tecnico; record `family` conserva il codice e `test_type` il metodo. Non dedurre il metodo dal codice operativo; preservare client senza `code` e storici.

@@ -1,6 +1,6 @@
 # Importazione in blocco da CSV
 
-Da Archivio e scambio, nella sezione Importazione in blocco da CSV, scegliere il tipo e premere **Scarica modello CSV vuoto**. Ogni modello contiene soltanto la riga delle intestazioni; non contiene persone o misure dimostrative. Compilare e salvare in CSV UTF-8, poi scegliere il file dalla stessa sezione. Importare prima le anagrafiche: le associazioni usano gli ID, non i nomi.
+Aprire **Importa CSV** nella testata di **Atleti**, **Società e gruppi** o **Test e analisi**; per le rilevazioni usare lo stesso comando nel riquadro **Antropometria** del profilo. Ogni finestra propone solo i tracciati pertinenti (nei test, aerobico/anaerobico). Tutti e cinque i tracciati restano disponibili in **Archivio e scambio → Importazioni CSV**, sezione espandibile. Premere **Scarica modello CSV vuoto**. Ogni modello contiene soltanto la riga delle intestazioni; non contiene persone o misure dimostrative. Compilare e salvare in CSV UTF-8, poi scegliere il file dalla stessa sezione. Importare prima le anagrafiche: le associazioni usano gli ID, non i nomi.
 
 | Tipo | Campi sempre obbligatori | Contenuto |
 |---|---|---|
@@ -48,3 +48,7 @@ Le categorie e stagioni mancanti vengono proposte in anteprima, senza scritture 
 I duplicati con stesso atleta, gruppo, periodo e anno_categoria vengono saltati anche al reimport. Sovrapposizioni inclusive nello stesso gruppo con periodi o anni di categoria diversi sono errori da riconciliare: non riscrivere automaticamente i dati esistenti. Gruppi diversi possono avere periodi sovrapposti. Gruppi/stagioni eliminati non vengono ricreati o ripristinati implicitamente. Una data finale vuota puo sovrapporsi a periodi successivi: controllarla con attenzione. Le date non sono dedotte dal nome della stagione e cambiare la stagione non riscrive le date gia registrate.
 
 Annullamento lotto: conserva gli originali e marca eliminati i soli record del lotto; bloccato se sono stati modificati o se altri record dipendono dai gruppi/atleti creati nel lotto. Test e report preesistenti non vengono riscritti dall'import.
+
+## Organizzazione della suite — 1 novembre 2026
+
+Comandi contestuali prima di elenchi/risultati, creazione come azione primaria e import come secondaria; modello/scelta file prima delle istruzioni estese espandibili. Le appartenenze collettive si gestiscono in Società e gruppi e quelle individuali dal profilo. A Ruota adotta lo stesso schema di disposizione per i suoi import anagrafici/appartenenze; Ammiraglia conserva gli import KSport di Persone/Eventi. Tracciati e responsabilità rimangono distinti. Le scorciatoie Fuorigiri riusano `ImportPanel`, API e conferma atomica esistenti; non sono parser nuovi o un filtro di sicurezza diverso. [Esiti](VERIFICA.md).

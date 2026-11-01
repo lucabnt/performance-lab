@@ -137,3 +137,9 @@ Le precedenti prove emulatore x86_64 sono in VERIFICA.md. Questi check sul telef
 | Eccezioni/funzionalità escluse dal pilot | |
 | Esito: da correggere / ammesso al pilot / promuovibile | |
 | Responsabile della decisione | |
+
+## Candidato Windows UI-SUITE-001 — 1 novembre 2026
+
+Consegna prevista `dist/candidates/Fuorigiri-0.10.0-pilot-20261101-01/`, separata dai predecessori. Ripetere F-08 dai nuovi accessi contestuali: Atleti per anagrafiche, Gruppi per appartenenze, Test per aerobici/anaerobici, Antropometria per rilevazioni; Archivio conserva tutti i tracciati. Confermare annullamento/scarto e isolamento della società. Versione 0.10.0 invariata, ID e digest distinguono la consegna; nessun nuovo APK, installazione operativa o qualifica PC pulito impliciti. Gli esiti effettivi sono in VERIFICA e nei manifest della consegna.
+
+Consegna Windows UI-SUITE-001 completata il 1 novembre: build isolata, 19 asset frontend identici nel bundle, smoke EXE con PATH Windows e installer Inno riusciti. Setup 196823276 byte, SHA-256 `0169b82c3d3431c97131d7c6ff70bb2acf6a3497712220ea404f970c162d9219`. Questo non completa W-01/W-04/W-05: nessuna installazione sul profilo operativo o PC pulito eseguita. Sorgenti e 12 checksum della consegna verificati; nessun nuovo APK.

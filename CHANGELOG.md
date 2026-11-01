@@ -1,5 +1,10 @@
 # Changelog
 
+## 1 novembre 2026 — trasferimento del checkout locale
+
+- Checkout operativo in `performance-lab`: trasferiti dalla precedente cartella `test-analysis` i file locali mancanti, inclusi dati, ambiente di sviluppo e consegne già prodotte, senza sostituire i file presenti. Nessuna modifica alla versione prodotto o nuova build di distribuzione.
+- Aggiornati i percorsi nelle guide operative; ripristinati nell'ambiente locale i riferimenti Python e i collegamenti dello staging comune. Residui originali e metadati Git conservati sotto `.local/repo-migration-2026-11-01/`, esclusi dal versionamento.
+
 ## 31 ottobre 2026 — pacchetti con supporto VO₂
 
 - Nuovo installer Windows `pilot-20261031-01` e APK debug `pixel9-test-20261031-01`, versione prodotto 0.10.0: includono VO2-01 e tutte le correzioni precedenti. Build in directory nuove; consegne precedenti conservate.

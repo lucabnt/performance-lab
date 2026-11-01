@@ -44,7 +44,7 @@ Aprire http://127.0.0.1:8782. Testare nomi applicativi, branding fisso, filtri, 
 
 Ammiraglia e Fuorigiri dipendono dal medesimo pacchetto UI 0.2.2. Shell, finestre e tempi non hanno implementazioni indipendenti nelle app; `Dialog.tsx`, `time.tsx` e `timeModel.ts` sono adattatori. I contenuti scientifici, traduzioni, menu e layout delle pagine restano specifici.
 
-Per un cambiamento condiviso: modificare common, incrementare la versione, verificare catalogo/test, eseguire `npm run sync:ui -- --app ../club-lab --app ../test-analysis` dalla repository comune, quindi test/build di ogni app. `--check` richiede versione e impronta sorgenti correnti; il verificatore standalone dell'app continua a controllare soltanto il proprio pacchetto fissato. Non duplicare CSS o comportamenti comuni per una correzione locale.
+Per un cambiamento condiviso: modificare common, incrementare la versione, verificare catalogo/test, eseguire `npm run sync:ui -- --app ../club-lab --app ../performance-lab` dalla repository comune, quindi test/build di ogni app. `--check` richiede versione e impronta sorgenti correnti; il verificatore standalone dell'app continua a controllare soltanto il proprio pacchetto fissato. Non duplicare CSS o comportamenti comuni per una correzione locale.
 
 Contratti dati/client e servizi Python richiedono ancora un'estrazione separata con prove di compatibilità.
 

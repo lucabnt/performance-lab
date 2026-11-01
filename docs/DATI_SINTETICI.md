@@ -12,7 +12,7 @@ Archivio di una generazione precedente (per i nuovi casi maturativi rigenerarlo 
 .venv/Scripts/python.exe scripts/serve.py --data .local/demo-fuorigiri-completo --port 8771
 ```
 
-Aprire l’URL **completo con token** stampato dal comando e selezionare Velodromo Aurora - SIMULAZIONE oppure Pedale del Lago - SIMULAZIONE. Anche l’eseguibile può aprire questo corpus senza Python/Node: `Fuorigiri.exe --data "F:\GitHub\test-analysis\.local\demo-fuorigiri-completo"` (adattare il percorso al proprio checkout).
+Aprire l’URL **completo con token** stampato dal comando e selezionare Velodromo Aurora - SIMULAZIONE oppure Pedale del Lago - SIMULAZIONE. Anche l’eseguibile può aprire questo corpus senza Python/Node: `Fuorigiri.exe --data "F:\GitHub\performance-lab\.local\demo-fuorigiri-completo"` (adattare il percorso al proprio checkout).
 
 Per creare un’altra copia usare una destinazione **nuova**:
 

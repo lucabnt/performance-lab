@@ -1,5 +1,12 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 1 novembre 2026 — trasferimento locale in performance-lab
+
+- Entrambi i checkout inizialmente puliti, stesso commit `0b397a5` e remoto `performance-lab`. Inventario comprendente i file ignorati: 125.139 file nella sorgente, esclusa `.git`; 124.819 mancanti trasferiti tramite spostamenti sullo stesso volume. Verifica finale dell'inventario: nessun file mancante. Le 97 differenze iniziali tra file presenti in entrambe le cartelle erano esclusivamente fine riga CRLF/LF.
+- Originali residui e `.git` conservati in `.local/repo-migration-2026-11-01/old-checkout/`; inventario, esito e copie dei file di ambiente corretti nella stessa area locale, non versionata. Dati e consegne precedenti conservati; nessuna rigenerazione degli archivi. La cartella `test-analysis` è vuota, ma la rimozione è impedita da un processo che la mantiene aperta, anche con esecuzione fuori sandbox.
+- Ripristinati i percorsi di attivazione, installazioni editable, metadati locali e 53 launcher Python; corretti i due junction dello staging comune. Import di `cycling_test`, pip e pytest risolvono il nuovo percorso. `verify_core.py`, `verify_suite_ui.py`, `verify_versions.py` e `git diff --check` superati.
+- Test mirati `tests/test_core.py` e `tests/test_desktop.py`: **16 passati**, un warning di deprecazione Starlette/httpx; comprendono lo smoke HTTP desktop. Test frontend: **37 passati**. Nessuna nuova build EXE/APK, prova grafica completa, suite Python completa o prova su dispositivo: trasferimento locale, senza modifiche funzionali ai sorgenti.
+
 ## 31 ottobre 2026 — installer e APK VO₂, candidato 01
 
 - Versioni prodotto 0.10.0, common UI 0.2.8, core 0.1.2 e gate delle sei wheel Android verificati. Nessuna modifica a versioni o firme. Valgono i risultati funzionali VO2-01 sotto: 263 test Python passati, 1 saltato; 37 test frontend passati; build TypeScript/Vite riuscita.

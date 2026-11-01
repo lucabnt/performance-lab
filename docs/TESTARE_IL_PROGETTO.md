@@ -71,7 +71,7 @@ Per la finestra desktop, con dipendenze desktop installate:
 .venv/Scripts/python.exe desktop_entry.py --data .local/demo-fuorigiri-completo
 ```
 
-In alternativa l’eseguibile distribuito accetta `Fuorigiri.exe --data "F:\GitHub\test-analysis\.local\demo-fuorigiri-completo"`, adattando il percorso. Usare lo stesso percorso di dati nei comandi di generazione e avvio. Il programma senza `--data` potrebbe aprire il normale archivio personale anziché la demo.
+In alternativa l’eseguibile distribuito accetta `Fuorigiri.exe --data "F:\GitHub\performance-lab\.local\demo-fuorigiri-completo"`, adattando il percorso. Usare lo stesso percorso di dati nei comandi di generazione e avvio. Il programma senza `--data` potrebbe aprire il normale archivio personale anziché la demo.
 
 ## Trovare e verificare i grafici del singolo test
 
@@ -310,7 +310,7 @@ Servono Python 3.12 o successivo e Node.js 22 o successivo. Per la finestra desk
 Windows PowerShell:
 
 ```powershell
-cd F:\GitHub\test-analysis
+cd F:\GitHub\performance-lab
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -e ".[desktop,dev]"
 Set-Location frontend

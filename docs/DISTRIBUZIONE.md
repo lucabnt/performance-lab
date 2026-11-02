@@ -1,5 +1,9 @@
 # Distribuzione desktop e prerequisiti mobile
 
+## Preparazione alpha — 2 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-alpha-prep-20261102-01/`, prodotto 0.10.0: installer Windows del 1 novembre verificato e riusato senza ricompilazione, nuovi APK debug e release non firmato, sorgenti, wheel native e checksum. Il debug è solo per le prove; per distribuire il release seguire [FIRMA_ANDROID.md](FIRMA_ANDROID.md). Nessuna pubblicazione, firma release o accettazione operativa implicita: [checklist](COLLAUDO_PILOT.md), [prove effettive](VERIFICA.md). Le sezioni datate precedenti restano come riferimento storico.
+
 Guida di packaging; conserva anche il dettaglio della prima implementazione 0.6. Il prodotto nei sorgenti dichiara 0.10.0: ricompilare prima di collaudare le novità. Windows e sorgenti erano il perimetro iniziale; Fedora resta rimandato, il collaudo Android è stato riaperto e il candidato Windows/Android è stato preparato il 21 ottobre. Gli adapter cloud oggi sono implementati: per il loro stato usare la [guida sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md), che supera le indicazioni storiche sotto.
 
 **Consegna concordata il 18 ottobre 2026:** Windows e sorgenti; l’utente ha rimandato le build Linux/Android. I gate e i collaudi sotto restano documentati, senza avviare CI o pubblicazioni.

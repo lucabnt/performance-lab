@@ -164,6 +164,8 @@ def inspect_file(path):
     try:
         if path.stat().st_size>MAX_COMPRESSED:raise ValueError('Backup oltre 64 GB.')
         with zipfile.ZipFile(path) as z:
+            from .recovery import validate_zip_members
+            validate_zip_members(z)
             if z.getinfo('manifest.json').file_size>4_000_000:raise ValueError('Manifest troppo grande.')
             manifest=json.loads(z.read('manifest.json'))
             if manifest.get('schema') in (1,2):

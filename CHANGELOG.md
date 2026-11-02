@@ -1,5 +1,22 @@
 # Changelog
 
+## 2 novembre 2026 — preparazione Pillow Android
+
+- Verificata disponibilità: nessuna wheel Android PyPI, Chaquopy cp313 fermo a 11.0.0. Kit sorgenti con Pillow 13.0.0, libjpeg-turbo 3.2.0 e FreeType 2.14.3, provenienza/digest e builder Fedora sperimentale per ABI separate.
+- Preparato controllo runtime Android immagini/font/Matplotlib/ReportLab; quattro regressioni sugli strumenti di build. Ricetta ancora da eseguire dall'utente su Fedora, nessuna nuova wheel/APK, firma o modifica ai dati e ai pin dell'app. [Procedura](docs/ANDROID_PILLOW.md).
+
+## 2 novembre 2026 — revisione pre-alpha ALPHA-REVIEW-01
+
+- Ripristino: ZIP cifrati o con compressione non supportata rifiutati prima della lettura; regressioni legacy/v3/API, senza archivi parziali.
+- Aggiornati Vite, certifi, Pillow Windows, pypdf e setuptools per gli avvisi di sicurezza; lock e minimi allineati. Android: python-multipart 0.0.32 nei requisiti, Pillow nativo ancora da aggiornare e qualificare.
+- [Revisione e limiti](docs/REVISIONE_ALPHA.md): nessun nuovo EXE/APK o rilascio. Il candidato precedente richiede un successore; versione prodotto invariata.
+
+## 2 novembre 2026 — allineamento pacchetti per la prima alpha
+
+- Verificato l'installer Windows `pilot-20261101-01`: codice corrente, 19 asset frontend ricompilati identici e nuovo smoke EXE riuscito. Riutilizzato senza ricompilazione, conservando provenienza e consegna originale.
+- Ricompilati APK debug e release con i sorgenti correnti, inclusi gli import contestuali UI-SUITE-001. Firma debug esistente confermata; release intenzionalmente non firmato, senza generazione di chiavi.
+- Preparazione locale `alpha-prep-20261102-01`, versione prodotto 0.10.0 invariata: manifest, sorgenti, wheel native e checksum. Non è una release pubblicata; firma release, Windows pulito, telefono e flussi operativi restano gate distinti. Guida firma aggiornata con alternativa Android Studio.
+
 ## 1 novembre 2026 — trasferimento del checkout locale
 
 - Checkout operativo in `performance-lab`: trasferiti dalla precedente cartella `test-analysis` i file locali mancanti, inclusi dati, ambiente di sviluppo e consegne già prodotte, senza sostituire i file presenti. Nessuna modifica alla versione prodotto o nuova build di distribuzione.

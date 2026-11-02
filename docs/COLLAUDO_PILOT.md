@@ -1,5 +1,15 @@
 # Collaudo del candidato pilot — Windows e Android
 
+## Revisione pre-alpha — 2 novembre 2026
+
+ALPHA-REVIEW-01 è successivo alla preparazione sotto: correzione backup e dipendenze aggiornate richiedono un nuovo candidato e nuove verifiche T-02–T-07. Non promuovere `alpha-prep-20261102-01` come comprensivo delle correzioni. Prima della distribuzione Android risolvere Pillow nativo e qualificare il parser multipart aggiornato: [riscontri e gate](REVISIONE_ALPHA.md). I check storici restano riferiti ai rispettivi artefatti.
+
+## Preparazione prima alpha — 2 novembre 2026
+
+Cartella `dist/candidates/Fuorigiri-0.10.0-alpha-prep-20261102-01/`: installer Windows originale `pilot-20261101-01`, verificato contro il codice attuale e riusato senza ricompilazione; nuovi APK debug di test e release non firmato. Versione prodotto 0.10.0 invariata. Il debug conserva la firma dei test precedenti; il release richiede la [firma del titolare](FIRMA_ANDROID.md). Manifest e checksum distinguono questi file e la provenienza Windows. Questa preparazione non pubblica Alpha 1 e non completa i check operativi sotto.
+
+Prima della distribuzione alpha, completare firma release e prove Windows pulito/telefono, installazione e aggiornamento, backup/ripristino e flussi inclusi nel perimetro dei tester. Per la UI corrente ripetere F-08 dagli import contestuali (Atleti, Gruppi, Test, Antropometria e punto completo in Archivio). Se si distribuisce la sincronizzazione, qualificare provider e due account reali. Esiti tecnici e limiti in VERIFICA.md; nessuna installazione automatica.
+
 ## Aggiornamento VO₂ — 31 ottobre 2026
 
 Nuovo installer Windows `dist/candidates/Fuorigiri-0.10.0-pilot-20261031-01/` e APK di test `dist/android-tests/Fuorigiri-0.10.0-pixel9-test-20261031-01/`, versione prodotto 0.10.0. Includono VO2-01 e le correzioni precedenti. Windows: bundle completo e smoke verificati, installer non firmato Authenticode. Android: APK debug con firma invariata per l’aggiornamento dei test precedenti; nessuna nuova chiave release. La sezione storica sotto sull’APK release non firmato riguarda il candidato del 21 ottobre, non questo APK di test.

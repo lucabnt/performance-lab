@@ -1,5 +1,15 @@
 # Requisiti e to-do
 
+## ALPHA-REVIEW-01 — revisione generale pre-alpha, 2 novembre 2026
+
+Aggiornamento Pillow: verificati PyPI (13.0.0, nessuna wheel Android) e Chaquopy (cp313 11.0.0 nelle due ABI). Preparati kit sorgenti e builder sperimentale Pillow/libjpeg/FreeType; l'utente eseguirà i comandi Fedora. [Procedura e criteri](ANDROID_PILLOW.md). Ancora aperti prima compilazione, revisione ELF/provenienza, adozione nell'app, APK, runtime/emulatore/telefono e firma. Nessun pin Pillow o manifest nativo modificato.
+
+Richiesta: verificare problemi, errori e vulnerabilità prima della prima alpha e correggere quanto riscontrato. Implementati rifiuto esplicito dei ZIP cifrati/non supportati e aggiornamenti di sicurezza delle dipendenze Windows/frontend; aggiornato python-multipart Android nei requisiti. Verifiche automatiche e smoke riusciti, dettagli in [REVISIONE_ALPHA.md](REVISIONE_ALPHA.md). **Parziale per la distribuzione**: Pillow Android 11.0.0 con avvisi noti richiede wheel corrette/backport verificato per entrambe le ABI e collaudo; audit nativo più ampio ancora aperto. Occorre un nuovo candidato, poi i gate operativi del pilot. Nessuna pubblicazione o modifica dei pacchetti esistenti.
+
+## PILOT-01 — preparazione prima alpha, 2 novembre 2026
+
+Richiesta: verificare installer e APK rispetto al codice e allinearli in preparazione della prima alpha. Il confronto dello snapshot e del frontend ricompilato conferma il codice dell'installer `pilot-20261101-01`; l'APK del 31 ottobre precede UI-SUITE-001 e viene ricompilato. Versione prodotto 0.10.0 e candidato di preparazione separato, nessuna pubblicazione. Conservare un APK debug per il percorso di test esistente e un release non firmato per la successiva firma del titolare. Criteri: integrità, asset correnti, ABI, firma debug invariata, release non firmato, allineamento e manifest/checksum; esiti effettivi in VERIFICA.md. Restano i gate operativi della checklist COLLAUDO_PILOT.md prima della distribuzione alpha.
+
 ## VO2-01 — consumo di ossigeno, 31 ottobre 2026
 
 Richiesta originale: «fuorigiri dovrebbe supportare anche i dati di VO2 oltre al lattato. Implementa.»
@@ -137,7 +147,7 @@ TD-57 resta aperto: builder Fedora autorizzato per wheel Android, sei artefatti 
 - **SYNC-V2-01 — implementato nei sorgenti:** blocchi cifrati riutilizzabili, campioni separati nell’involucro remoto, pagine leggere, ricevute/cursore locale e checkpoint di bootstrap; attivazione esplicita del fondatore con avviso firmato, lettura v1/v2 e storico conservato. Il database locale resta canonico; inventario remoto ancora completo e nessuna pulizia automatica. [Contratto e limiti](SYNC_V2_E_BACKUP.md).
 - **BACKUP-SCALE-01 — implementato nei sorgenti:** ZIP64 schema 3 con snapshot SQLite, inventario JSONL, hash e file elaborati su disco; upload/anteprima/ripristino progressivi, pubblicazione atomica e lettura dei backup precedenti. Prova effettiva oltre 100 MB; limiti superiori non qualificati in produzione. Salvataggio diretto desktop evita il buffering del download nel browser.
 - **SYNC-MIG-01 — implementato nei sorgenti:** anteprima e impronta, estrazione per società con dipendenze e tutte le revisioni, conflitti e file propri, nuova autorità/canale/inviti e originale intatto. Riferimenti incoerenti o non attribuibili bloccano la procedura; editor di riconciliazione dei casi ambigui non implementato.
-- **QA-RELEASE-01 — da completare:** flusso GUI automatizzato completo, FIT reali anonimizzati, account cloud distinti, interruzioni/revoche/conflitti; candidato Windows su VM pulita. Fedora/Android restano rinviati al builder disponibile. Traduzione e accessibilità da completare.
+- **QA-RELEASE-01 — da completare:** flusso GUI automatizzato completo, FIT reali anonimizzati, account cloud distinti, interruzioni/revoche/conflitti; candidato Windows su VM pulita. Fedora resta rinviato; Android dispone di build locali e precedenti prove emulatore, con firma release e collaudo fisico ancora distinti. Traduzione e accessibilità da completare.
 
 Dettagli: [revisione generale](archivio/REVISIONE_GENERALE_2026-10-19.md), [dimensioni e strategia sync](SYNC_DIMENSIONI_E_SCALABILITA.md). Le stime derivano da registrazioni sintetiche misurate, non da un archivio reale pluriennale.
 

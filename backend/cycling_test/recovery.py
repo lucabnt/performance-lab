@@ -24,6 +24,15 @@ OPTIONAL_TABLES={'sync_audit':('seq','body','digest')}
 TABLES={'records':('id','kind','revision','data'),'changes':('id','body'),'conflicts':('id','body'),'config':('key','value')}
 
 
+def validate_zip_members(archive):
+    supported = {zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED, zipfile.ZIP_BZIP2, zipfile.ZIP_LZMA}
+    if hasattr(zipfile, 'ZIP_ZSTANDARD'):
+        supported.update((20, zipfile.ZIP_ZSTANDARD))
+    for member in archive.infolist():
+        if member.flag_bits & (1 | 32 | 64) or member.compress_type not in supported:
+            raise ValueError('Backup ZIP cifrato o con formato di compressione non supportato.')
+
+
 def backup_bytes(store):
     with tempfile.TemporaryDirectory() as tmp:
         target=sqlite3.connect(Path(tmp)/'archive.sqlite')
@@ -64,6 +73,7 @@ def inspect_backup(raw):
 def _inspect(raw):
     if len(raw)>MAX_UPLOAD:raise ValueError('Backup oltre il limite di 100 MB compressi.')
     with zipfile.ZipFile(io.BytesIO(raw)) as z:
+        validate_zip_members(z)
         infos=z.infolist();names=[i.filename for i in infos]
         if len(infos)>10002 or len(set(names))!=len(names) or sum(i.file_size for i in infos)>MAX_EXPANDED:
             raise ValueError('Backup troppo grande o con voci duplicate.')

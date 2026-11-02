@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **1 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **2 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -10,6 +10,7 @@ Ultima revisione: **1 novembre 2026**. Ambito: tutta questa repository, salvo is
 - Stack: Python/FastAPI, SQLite e oggetti locali; React/TypeScript/Vite e Plotly; desktop PySide6/Qt WebEngine.
 - Android: sorgenti Kotlin/WebView con Python incorporato tramite Chaquopy, API in-process e servizi nativi. Non descriverlo come app esclusivamente Python; distinguere APK debug generato, collaudo runtime e distribuzione pubblica.
 - Procedura del builder Fedora Kinoite/Toolbox: [ANDROID_WHEEL_FEDORA.md](docs/ANDROID_WHEEL_FEDORA.md). Ripristinare sempre l’ambiente rustup separato; non usare le librerie host come target.
+- Pillow Android: kit sorgenti e ricetta sperimentale in [ANDROID_PILLOW.md](docs/ANDROID_PILLOW.md), preparazione con `scripts/prepare_android_pillow.py`, build Fedora con `scripts/build_android_pillow.py`. Output sempre nuovo; la ricetta non è ancora collaudata. Non aggiornare pin/manifest dell'app prima delle wheel e della revisione ELF; controllo Python runtime distinto da export/apertura PDF e aggiornamento su dispositivo.
 - Wheel cryptography ABI3: i primi binari Fedora mancavano di DT_NEEDED libpython3.so. Riparazione esplicita con scripts/repair_android_abi3.py, originali conservati e provenienza in android/wheels/ABI3_REPAIR.json; non modificare hash senza verifica. Gradle deve tracciare i file wheel come input.
 - Android TD-99–101: Indietro usa dialog cancel e poi cronologia di schermate limitata, svuotata al cambio archivio. Ultima coppia workspace/società persistente di soli ID, verificata contro inventario; non aprire un’altra società se manca quella ricordata. Componenti mobili nel common e guida in [ANDROID_PRATICHE_SUITE.md](docs/ANDROID_PRATICHE_SUITE.md); mantenere stato di filtri e paginazione quando si torna da un profilo. Componenti mobili disponibili dalla UI comune 0.2.4; elenco e modulo Android nella galleria hanno provenienza distinta dalle schermate desktop.
 - Android TD-106–107: testata Android con scritta allineata a destra e logo alla destra del nome (correzione esplicita dell’utente, UI comune 0.2.8); fullscreen grafico senza testata/cornice, X flottante e pannello comandi/dati chiuso inizialmente (common UI 0.2.7). Conservare nome accessibile e ripristino delle barre native oltre all’orientamento; Back esce dal modo, poi chiude pannello e vista.
@@ -137,6 +138,10 @@ Selezionare i test pertinenti alla modifica; usare la suite completa per cambi t
 Il server non popola automaticamente l'archivio: per dati sintetici e URL con token seguire [TESTARE_IL_PROGETTO.md](docs/TESTARE_IL_PROGETTO.md). Scegliere percorsi QA dedicati; non riutilizzare dati dell'utente per prove distruttive. Lo smoke verifica l'avvio, non sostituisce il collaudo grafico o su PC pulito. Non fissare qui conteggi di test: appartengono a VERIFICA.md con data e contesto.
 
 ## Distribuzione e accettazione
+
+- Revisione pre-alpha ALPHA-REVIEW-01 del 2 novembre: correzione backup e aggiornamenti dipendenze successivi ad `alpha-prep-20261102-01`; generare un nuovo candidato. Prima della distribuzione Android risolvere Pillow 11.0.0 con wheel corrette/backport verificati per entrambe le ABI e completare l'audit nativo; non cambiare solo il pin con una versione indisponibile su Chaquopy. Riscontri e gate in [REVISIONE_ALPHA.md](docs/REVISIONE_ALPHA.md).
+
+- Priorità del 2 novembre: preparazione della prima alpha Windows/Android, versione prodotto 0.10.0 e identificativo candidato separato. Usare PROSSIMI_PASSI.md e COLLAUDO_PILOT.md per i gate; preparazione locale non equivale a pubblicazione o accettazione. Conservare firma debug dei test e firma release del titolare come percorsi distinti, senza generare chiavi implicitamente.
 
 - Il programma finale deve funzionare senza installare Python/Node/Qt a mano. Usare gli script di packaging e verificare che frontend, risorse e dipendenze siano inclusi; non consegnare il solo EXE se richiede il resto del bundle.
 - Stato concordato: **Windows e sorgenti; build Linux/Fedora rimandate**. Il 20 ottobre l’utente ha riaperto il collaudo Android con Android Studio: preparazione e verifiche locali autorizzate, con ricetta toolchain/wheel documentata e primi collaudi su emulatore nel registro verifiche; telefono e qualifica completa rimangono distinti. Nessuna build remota implicita né APK/Flatpak dichiarato collaudato senza ambiente e prove adeguate.

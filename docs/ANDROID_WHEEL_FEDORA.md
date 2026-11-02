@@ -2,6 +2,8 @@
 
 Procedura consolidata il **20 ottobre 2026**, per Fuorigiri **0.10.0**. Questa è la ricetta operativa; i tentativi intermedi e le prove effettive restano in [VERIFICA.md](VERIFICA.md). Per la shell e i requisiti applicativi vedere [ANDROID.md](ANDROID.md).
 
+**2 novembre 2026 — Pillow:** disponibilità verificata e kit sorgenti preparato nella [guida dedicata](ANDROID_PILLOW.md). La nuova ricetta Pillow è sperimentale e attende esecuzione nella Toolbox; non confonderla con le sei wheel già prodotte sotto.
+
 ## Risultato e limiti
 
 Sul PC dell’utente, Fedora Kinoite 44 x86_64 con Toolbox, sono state prodotte sei wheel: pydantic-core 2.41.4, CFFI 2.0.0 e cryptography 50.0.2, ciascuna per Android API 26 **x86_64** (emulatore) e **arm64-v8a** (telefono). Cryptography x86_64 ha superato abi3audit strict. Per ARM64 abbiamo elenco file e checksum, non il log completo di audit. I digest comunicati sono in [SHA256.json](../android/wheels/SHA256.json).

@@ -1,5 +1,17 @@
 # Prossimi passi
 
+## Esito revisione pre-alpha — 2 novembre 2026
+
+Prima di promuovere la preparazione precedente, risolvere il gate Pillow Android e l'audit nativo descritto in [REVISIONE_ALPHA.md](REVISIONE_ALPHA.md), poi generare un nuovo candidato con correzione backup e dipendenze aggiornate. Non riusare l'installer precedente come equivalente ai sorgenti: l'allineamento verificato prima della revisione è ora storico. Restano firma e gate operativi della checklist pilot.
+
+Pillow: primo passo eseguito, kit sorgenti pronto; prossima azione dell'utente nella Toolbox Fedora, prima ABI x86_64 e poi ARM64. [Comandi](ANDROID_PILLOW.md). Riprendere l'integrazione dopo i log e le wheel; non avviare nuove build APK con la vecchia Pillow per dichiarare risolto il gate.
+
+## Priorità aggiornata — preparazione prima alpha, 2 novembre 2026
+
+Preparare la prima release alpha di Fuorigiri, verificando prima che installer e APK corrispondano ai sorgenti. Versione prodotto 0.10.0 invariata: l'identificativo del candidato distingue questa preparazione, senza dichiarare una release pubblicata. L'installer `pilot-20261101-01` contiene già il codice corrente; Android richiede una nuova build con UI-SUITE-001. Esiti effettivi e provenienza in [VERIFICA.md](VERIFICA.md).
+
+Prima della distribuzione: firma Android stabile del titolare, installazione/aggiornamento su telefono ARM64 e Windows pulito, backup/ripristino e verifica dei flussi previsti per i tester. Qualificare provider e collaborazione reale se inclusi nel perimetro alpha; dichiarare esplicitamente le funzioni non qualificate. La [checklist pilot](COLLAUDO_PILOT.md) resta il registro di accettazione; preparare i pacchetti non completa i suoi gate. Nessuna pubblicazione automatica o generazione di chiavi.
+
 Stato dei sorgenti **0.10.0** al **21 ottobre 2026**. Le funzioni sviluppate e le prove eseguite sono tracciate in [requisiti](REQUISITI_E_TODO.md) e [verifiche](VERIFICA.md). Il [piano precedente](archivio/PIANO_STORICO_2026-10-19.md) resta disponibile come cronologia.
 
 Incrementale, Sprint/Wingate, protocolli custom, report gerarchici e maturazione sono già implementati con i limiti documentati: non sono attività da ricominciare. Sync v2, backup streaming v3 e separazione assistita sono stati aggiunti: [contratto](SYNC_V2_E_BACKUP.md). Il prossimo obiettivo è qualificarli con dati/ambienti reali e rendere distribuibile il prodotto attuale.

@@ -1,10 +1,12 @@
-# Firma dell’APK Android per il pilot
+# Firma dell’APK Android per alpha e pilot
 
 Il candidato contiene un **APK release non firmato**. Per scelta dell’utente non è stata creata alcuna chiave: questo file non si installa finché non viene firmato. Non sostituire la firma release con quella debug per avviare un pilot operativo.
 
 La chiave identifica il titolare degli aggiornamenti. Conservarne una copia di recupero distinta dal PC e custodire la password separatamente. Non inserirla nella repository, negli allegati o nei log. Scegliere il canale futuro (APK diretto/Google Play) prima della prima distribuzione: con Play App Signing distinguere chiave di caricamento e chiave di firma applicativa. Fonti: [firma Android](https://developer.android.com/studio/publish/app-signing), [apksigner](https://developer.android.com/tools/apksigner), [zipalign](https://developer.android.com/tools/zipalign).
 
 ## 1. Creare una chiave stabile — solo il titolare, una volta
+
+Android Studio è facoltativo. La procedura sotto firma con `apksigner` l'APK già compilato e verificato, senza ricostruirlo. In alternativa, aprire il progetto `android/` in Android Studio e usare **Build → Generate Signed Bundle / APK → APK**, selezionare o creare la chiave del titolare e scegliere `release`: questa procedura produce una nuova build firmata, da verificare e identificare con un proprio digest. Per questo progetto usare JDK 21 con Gradle 8.13; non sostituire automaticamente il JDK con quello più recente incluso nell'IDE. Conservare keystore e password fuori dalla repository. Il debug già firmato serve al percorso di test e non sostituisce la firma release.
 
 PowerShell, con JDK configurato. I comandi seguenti **non sono stati eseguiti dall’agente**. Le password vanno digitate nei prompt locali, senza passarle sulla riga di comando.
 
@@ -25,7 +27,7 @@ Verificare alias e impronta SHA-256 del certificato. Fare e verificare una copia
 Dalla radice del progetto; se si usa una copia della consegna su un altro PC, impostare `$candidate` sulla sua cartella. Installare soltanto gli strumenti di firma sul PC del titolare, non sui PC dei tester.
 
 ```powershell
-$candidate = (Resolve-Path 'dist/candidates/Fuorigiri-0.10.0-pilot-20261021-01').Path
+$candidate = (Resolve-Path 'dist/candidates/Fuorigiri-0.10.0-alpha-prep-20261102-01').Path
 $sdk = $env:ANDROID_HOME
 if (-not $sdk) { $sdk = Join-Path $env:LOCALAPPDATA 'Android/Sdk' }
 $tools = Join-Path $sdk 'build-tools/35.0.0'

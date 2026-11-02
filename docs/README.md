@@ -35,6 +35,9 @@ Le specifiche conservano fonte, versione e limiti: una stima non diventa una mis
 
 ## Sviluppo e stato del prodotto
 
+- [Revisione prima alpha](REVISIONE_ALPHA.md): correzioni del 2 novembre 2026, audit dipendenze e gate Android ancora aperti.
+- [Pillow Android](ANDROID_PILLOW.md): disponibilità, kit sorgenti e prima compilazione Fedora; ricetta sperimentale e gate runtime distinti.
+
 - [Requisiti e to-do](REQUISITI_E_TODO.md): registro con ID e tracciabilità; gli aggiornamenti più recenti prevalgono sulle sezioni storiche.
 - [Prossimi passi](PROSSIMI_PASSI.md): priorità attuali, dipendenze e criteri di completamento.
 - [Verifiche](VERIFICA.md): prove eseguite e limiti, in ordine cronologico inverso.

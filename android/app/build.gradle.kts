@@ -18,8 +18,18 @@ android {
     sourceSets.getByName("main") {
         assets.srcDir("../../frontend/dist")
     }
+    sourceSets.getByName("androidTest") {
+        assets.srcDir(layout.buildDirectory.dir("generated/pillowRuntimeCheck"))
+    }
     packaging { jniLibs { useLegacyPackaging = false } }
     buildTypes { getByName("release") { isMinifyEnabled = false } }
+}
+val preparePillowRuntimeCheck by tasks.registering(Copy::class) {
+    from("../../scripts/check_android_pillow_runtime.py")
+    into(layout.buildDirectory.dir("generated/pillowRuntimeCheck"))
+}
+tasks.matching { it.name.startsWith("merge") && it.name.endsWith("AndroidTestAssets") }.configureEach {
+    dependsOn(preparePillowRuntimeCheck)
 }
 chaquopy {
     defaultConfig {

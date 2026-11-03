@@ -3,6 +3,8 @@
   "cffi-2.0.0-cp313-cp313-android_26_x86_64.whl": "c950835e10bd2dd0bb3ab970503e0c75cfe4364f682bdb7c0a8cfe0be24c8e6e",
   "cryptography-50.0.2-cp313-abi3-android_26_arm64_v8a.whl": "5c6a34bd459b7200120dc6c65ac73e8b2cd6f7201320024beac5b8ab4275e8a2",
   "cryptography-50.0.2-cp313-abi3-android_26_x86_64.whl": "c853153a3e49776a51967167c0cf9e728dcda2f47d14b2b19729abafcaf6ea69",
+  "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl": "620f3697ff2801d2092d4d84c3e842c9f223bd559aa30cd4f0e4b7e217220323",
+  "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl": "3588d293e34c299c6ad71f71613454d71a6a55947a73c645ec46eefa444c4969",
   "pydantic_core-2.41.4-cp313-cp313-android_26_arm64_v8a.whl": "34dbd1267ddd193122c9361333f1e1446990cd09b558899a27dc3c3a8cf579ae",
   "pydantic_core-2.41.4-cp313-cp313-android_26_x86_64.whl": "9d5b792e1d46177e247514adb3cf8fbf803b83656cb6618105e837b4211e1518"
 }

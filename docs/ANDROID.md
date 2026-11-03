@@ -1,5 +1,9 @@
 # Android — requisito e architettura proposta
 
+## Aggiornamento Pillow — 2 novembre 2026
+
+Wheel Pillow 13.0.0 Fedora ARM64/x86_64 trasferite e verificate localmente: otto wheel nel gate corrente, inclusa CFFI; pin, manifest e provenienza aggiornati. La procedura delle sei wheel sotto descrive il primo builder del 20 ottobre: per Pillow usare [la guida dedicata](ANDROID_PILLOW.md). Stato delle nuove build e dei test nel [registro](VERIFICA.md). Controllo strumentale immagini/font/PDF distinto da telefono, export/apertura tramite UI e qualifica 16 KB dell'intero APK.
+
 ## Ripresa del collaudo con Android Studio — 20 ottobre 2026
 
 **TD-99–101:** navigazione Indietro tra schermate, filtri/pagine conservati, schede atleti/test, azioni dei moduli raggiungibili e ultima società persistente dopo chiusura del processo. UI comune 0.2.4 consegnata soltanto a Fuorigiri. Vedere [pratiche Android della suite](ANDROID_PRATICHE_SUITE.md) per riuso e limiti.
@@ -15,7 +19,7 @@ L’utente ha ripreso il collaudo Android locale: **prima emulatore, poi telefon
 Percorso corrente con Android Studio su Windows:
 
 1. Aprire la cartella `android/`. Configurare Gradle JDK 21, SDK platform 35 e Python host 3.13; non sostituire la venv desktop.
-2. Trasferire le sei wheel in `android/wheels/` e verificarle contro SHA256.json come descritto nella guida Fedora. Il gate include CFFI 2.0.0. I file binari non sono inclusi automaticamente dal clone Git.
+2. Trasferire le otto wheel in `android/wheels/` e verificarle contro SHA256.json come descritto nelle guide Fedora/Pillow. Il gate include CFFI 2.0.0 e Pillow 13.0.0. I file binari non sono inclusi automaticamente dal clone Git.
 3. Compilare il frontend dalla radice con `npm --prefix frontend ci` e `npm --prefix frontend run build`. Questo passaggio serve a includere l’interfaccia corrente negli asset dell’APK.
 4. Con SDK/JDK nella sessione, eseguire dalla radice `python scripts/build_android.py --check --gradle <percorso-wrapper>`. In alternativa, dopo il controllo esplicito delle wheel, eseguire `gradlew.bat :app:assembleDebug --stacktrace` dalla cartella android. La chiamata Gradle diretta non esegue il gate Python.
 5. Solo con APK prodotto passare all’installazione su emulatore e telefono, test strumentali e prove offline/import/report, poi WebDAV e OAuth con account QA. Usare dati sintetici.

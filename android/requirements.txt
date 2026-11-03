@@ -9,5 +9,6 @@ fitdecode==0.11.0
 numpy==1.26.2
 matplotlib==3.8.4
 reportlab==4.4.4
+pillow==13.0.0
 cryptography==50.0.2
 cffi==2.0.0

@@ -1,5 +1,11 @@
 # Wheel native Android
 
+## Pillow — 2 novembre 2026
+
+Ricevute e verificate localmente due wheel Pillow 13.0.0 cp313/API 26, ARM64 e x86_64, prodotte sulla Toolbox Fedora. Ora il gate richiede **otto wheel**, con Pillow fissata in `android/requirements.txt`. Provenienza di sorgenti/libjpeg-turbo 3.2.0/FreeType 2.14.3, digest del trasferimento e rapporto dei dieci moduli ELF in [PILLOW_BUILD.json](PILLOW_BUILD.json). Verificati checksum, CRC, RECORD, macchine, DT_NEEDED libpython3.13.so e allineamento/congruenza dei segmenti LOAD a 16 KB. Questa è una verifica strutturale, distinta da runtime e APK. Non applicare la riparazione ABI3 di cryptography a queste wheel cp313.
+
+Ricetta e stato aggiornato in [ANDROID_PILLOW.md](../../docs/ANDROID_PILLOW.md). Gli avvisi originali delle librerie statiche sono inclusi nel documento canonico THIRD_PARTY.md e quindi negli asset legali dell'app. Il manifest nativo non qualifica tutte le altre librerie Chaquopy o le pagine 16 KB del dispositivo.
+
 ## Stato al 20 ottobre 2026
 
 **Aggiornamento runtime:** le due wheel cryptography originali richiedono riparazione DT_NEEDED libpython3.so tramite scripts/repair_android_abi3.py; originali conservati, provenienza in [ABI3_REPAIR.json](ABI3_REPAIR.json), manifest SHA256 aggiornato ai binari corretti. LIEF è solo uno strumento di build. La variante x86_64 è stata caricata sull’emulatore API 35 e il test nativo import/Fernet/Ed25519/Keystore/API è passato; ARM64 riparata ma non eseguita. La guida include questa fase obbligatoria per i binari originali ricevuti. Gradle traccia ora file wheel e manifest come input.

@@ -1,5 +1,21 @@
 # Collaudo del candidato pilot — Windows e Android
 
+## Candidato Windows alpha review — 2 novembre 2026
+
+`dist/candidates/Fuorigiri-0.10.0-windows-alpha-review-20261102-01/`: bundle/installer ricompilati con correzione backup e dipendenze aggiornate dopo alpha-prep. Regressione 271 Python passati/1 skip e 37 frontend; smoke dell'EXE con sole directory Windows nel PATH e archivio QA nuovo riuscito. Installer/portabile/sorgenti separati dagli APK; 13 checksum verificati, non firmato Authenticode. [Esiti e limiti](VERIFICA.md).
+
+Restano Windows pulito, aggiornamento/dati e operazioni backup/ripristino sui PC destinatari, provider reali se inclusi e accettazione. Il kit Fedora nativo 16 KB è pronto ma attende compilazione/revisione: nessun nuovo APK qualificato da questa fase. Il report con grafico sul telefono rimane rimandato per scelta dell'utente. Nessuna pubblicazione o firma implicita.
+
+## Candidato Android Pillow — 2 novembre 2026
+
+Decisione dell'utente: **report con grafico sul telefono rimandato per il momento**; per questa fase è accettato il test positivo sull'emulatore. Non richiedere ora un nuovo corpus QA o debug USB per questa prova e non marcarla come eseguita sul telefono. Rimangono distinti il riscontro manuale dell'export PDF ricevuto e gli altri gate pilot.
+
+Riscontro manuale successivo: utente riferisce aggiornamento/avvio apparentemente riusciti e export PDF riuscito sul telefono; PDF ricevuto di due pagine verificato strutturalmente e visivamente sul PC, con logo/tabelle/testi leggibili. Report storico privo di campioni, quindi senza grafici. Restano conferma del lettore PDF sul telefono, report sintetico con tracciato/grafico, controllo completo dei dati e test ARM64 strumentali; non marcare questi ultimi completati dal solo allegato. Dati personali del documento non inclusi nel registro o nella galleria.
+
+`dist/candidates/Fuorigiri-0.10.0-android-pillow-20261102-01/`: debug installabile con firma abituale, release non firmato e APK dei test separati; sorgenti, wheel e checksum inclusi. Pillow 13.0.0 e multipart 0.0.32 verificati in entrambi gli APK. Emulatore API35 x86_64/pagine 4 KB: due test passati, logo/immagini/font/Matplotlib/PDF e apertura Android PdfRenderer; aggiornamento senza disinstallazione, dati dei workspace invariati. Dettagli e limiti in [VERIFICA.md](VERIFICA.md).
+
+Prima di distribuire: telefono ARM64 e conservazione dei suoi dati, export PDF tramite UI/app esterna, firma release del titolare, audit nativo e altri gate pilot. Sei moduli ulteriori non soddisfano il controllo LOAD 16 KB: non qualificare l'intero APK dal solo zipalign o dai moduli Pillow corretti. Il candidato Windows precedente rimane storico e non viene aggiornato da questa consegna Android.
+
 ## Revisione pre-alpha — 2 novembre 2026
 
 ALPHA-REVIEW-01 è successivo alla preparazione sotto: correzione backup e dipendenze aggiornate richiedono un nuovo candidato e nuove verifiche T-02–T-07. Non promuovere `alpha-prep-20261102-01` come comprensivo delle correzioni. Prima della distribuzione Android risolvere Pillow nativo e qualificare il parser multipart aggiornato: [riscontri e gate](REVISIONE_ALPHA.md). I check storici restano riferiti ai rispettivi artefatti.

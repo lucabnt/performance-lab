@@ -1,6 +1,10 @@
 # Pillow Android: sorgenti, build e qualifica
 
-Stato del **2 novembre 2026**, **ALPHA-REVIEW-01**, prodotto 0.10.0. Primo passo completato: disponibilità verificata e kit sorgenti preparato. **Ricetta sperimentale, non ancora eseguita su Fedora; nessuna nuova wheel/APK qualificata.** Il builder sarà operato dall'utente. Formule, archivi e dati degli atleti non sono coinvolti.
+Stato del **2 novembre 2026**, **ALPHA-REVIEW-01**, prodotto 0.10.0. **Pillow 13.0.0 compilata su Fedora per entrambe le ABI, trasferita e verificata localmente su Windows**: checksum, CRC, RECORD, dieci moduli ELF, libpython3.13.so esplicita, LOAD a 16 KB. Pin e gate dell'app aggiornati; provenienza in [PILLOW_BUILD.json](../android/wheels/PILLOW_BUILD.json). Stato delle nuove build e prove runtime nel [registro verifiche](VERIFICA.md). Formule, archivi e dati degli atleti non sono coinvolti.
+
+Nuovi APK debug/release non firmato prodotti; due test strumentali passati su emulatore API35 x86_64 a pagine 4 KB, inclusi versione codecs, logo, PNG/JPEG, Matplotlib, scrittura PDF e apertura/rendering Android PdfRenderer. Telefono e export tramite UI/app esterna ancora aperti. Audit dell'intero APK: sei oggetti ELF ulteriori non superano il controllo LOAD 16 KB (pydantic-core e FreeType nelle due ABI; OpenBLAS/libpng x86_64), pur con zipalign valido. Non promuovere questi APK come qualificati 16 KB o pronti alla distribuzione alpha.
+
+**Primo riscontro Fedora:** ambiente ripristinato, FreeType statica compilata; cibuildwheel 4.3.1 ha rifiutato `--platform` insieme a `--only`, prima della compilazione Pillow. Script corretto rimuovendo `--platform`; usare il comando corretto anche nei kit già preparati, che restano immutati. Nessuna wheel Pillow qualificata; dettagli e limiti nel [registro](VERIFICA.md).
 
 ## Disponibilità verificata
 
@@ -8,6 +12,8 @@ Stato del **2 novembre 2026**, **ALPHA-REVIEW-01**, prodotto 0.10.0. Primo passo
 - [Chaquopy](https://chaquo.com/pypi-13.1/pillow/): per cp313 soltanto Pillow 11.0.0, Android API 24, arm64-v8a e x86_64. Non inserire subito un pin 13.0.0 nell'app.
 - [Chaquopy: compilazione](https://github.com/chaquo/chaquopy/blob/master/server/pypi/README.md): cibuildwheel su Linux/macOS per Python 3.13+. La Toolbox Fedora già usata è un candidato adatto; la fattibilità effettiva richiede una prima compilazione e revisione dei log.
 - [Vecchia ricetta](https://github.com/chaquo/chaquopy/blob/master/server/pypi/packages/pillow/meta.yaml): libjpeg 1.5.3 e FreeType 2.9.1. Aggiornare Pillow da solo non completa l'audit delle librerie distribuite.
+
+La nuova Pillow incorpora libjpeg/FreeType statiche aggiornate; Matplotlib continua a richiedere separatamente chaquopy-freetype 2.9.1 e altre librerie native Chaquopy. L'aggiornamento Pillow non le sostituisce e non chiude l'audit nativo complessivo.
 
 Il kit propone Pillow **13.0.0**, libjpeg-turbo **3.2.0** e FreeType **2.14.3**, le ultime due versioni corrispondenti al [file dipendenze di Pillow 13](https://github.com/python-pillow/Pillow/blob/13.0.0/.github/dependencies.json). FreeType 2.15.0 è successiva: la scelta 2.14.3 segue la combinazione upstream, non afferma che sia l'ultima disponibile o priva di avvisi. Audit e licenze di tutte le librerie restano da completare.
 

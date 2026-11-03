@@ -84,7 +84,7 @@ def main():
             path=wheels/name
             if Path(name).name!=name or not path.is_file() or digest(path)!=expected:raise ValueError('Manifest wheel incoerente')
             archive.write(path,arcname='android/wheels/'+name)
-        for name in ['SHA256.json','ABI3_REPAIR.json','README.md']:
+        for name in ['SHA256.json','ABI3_REPAIR.json','PILLOW_BUILD.json','README.md']:
             archive.write(wheels/name,arcname='android/wheels/'+name)
     for name in ['COLLAUDO_PILOT.md','FIRMA_ANDROID.md']:
         shutil.copy2(ROOT/'docs'/name,output/name)

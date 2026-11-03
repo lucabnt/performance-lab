@@ -1,0 +1,257 @@
+{
+  "package": "pillow",
+  "version": "13.0.0",
+  "status": "local-ELF-and-x86_64-emulator-runtime-verified-arm64-pending",
+  "transfer": {
+    "file": "pillow-fedora-20261102-01.zip",
+    "sha256": "49479885c5ce6c313ddbc2c684605ff3e13d0f729ed0add10b4c70db3548dc5e"
+  },
+  "sources": {
+    "pillow": {
+      "version": "13.0.0",
+      "url": "https://files.pythonhosted.org/packages/ce/a4/9cc30690a394a8305e8be4c9036aa16d0dfddadd09079860b582f562496d/pillow-13.0.0.tar.gz",
+      "sha256": "cdcd1ba258178f7356d74170c9a81ba4eab6a5d55748bc402a5a2a6fe6be3510",
+      "checksum_source": "https://pypi.org/pypi/pillow/13.0.0/json",
+      "filename": "pillow.tar.gz",
+      "checksum_kind": "publisher-PyPI"
+    },
+    "jpeg": {
+      "version": "3.2.0",
+      "commit": "c85e6b905bf237038faa936dab160ebfc5da0344",
+      "url": "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.2.0/libjpeg-turbo-3.2.0.tar.gz",
+      "sha256": "6f30092cef9fb839779646608f4ee14ae3cbac989c47fa05e841b0841f09878e",
+      "checksum_source": "https://api.github.com/repos/libjpeg-turbo/libjpeg-turbo/releases/tags/3.2.0",
+      "filename": "jpeg.tar.gz",
+      "checksum_kind": "publisher-GitHub-release"
+    },
+    "freetype": {
+      "version": "2.14.3",
+      "commit": "0a0221a1347e2f1e07c395263540026e9a0aa7c7",
+      "url": "https://codeload.github.com/freetype/freetype/tar.gz/0a0221a1347e2f1e07c395263540026e9a0aa7c7",
+      "filename": "freetype.tar.gz",
+      "sha256": "11cd478953fc1d382f20a233b8e2aed6c31b47cbf0568c4bdb3334bcc1550698",
+      "checksum_kind": "observed-download-pinned-commit"
+    }
+  },
+  "builder": {
+    "host_python": "3.14.8",
+    "cibuildwheel": "4.3.1",
+    "ndk": "27.3.13750724",
+    "api": 26,
+    "target_python": "3.13"
+  },
+  "wheels": {
+    "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl": "3588d293e34c299c6ad71f71613454d71a6a55947a73c645ec46eefa444c4969",
+    "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl": "620f3697ff2801d2092d4d84c3e842c9f223bd559aa30cd4f0e4b7e217220323"
+  },
+  "local_checks": [
+    "transfer-sha256",
+    "wheel-sha256",
+    "ZIP-CRC",
+    "RECORD-sha256-and-size",
+    "ELF64-machine",
+    "DT_NEEDED",
+    "LOAD-alignment-and-congruence-16384"
+  ],
+  "modules": [
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl",
+      "module": "PIL/_imaging.cpython-313-aarch64-linux-android.so",
+      "machine": 183,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libz.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl",
+      "module": "PIL/_imagingft.cpython-313-aarch64-linux-android.so",
+      "machine": 183,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl",
+      "module": "PIL/_imagingmath.cpython-313-aarch64-linux-android.so",
+      "machine": 183,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl",
+      "module": "PIL/_imagingmorph.cpython-313-aarch64-linux-android.so",
+      "machine": 183,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl",
+      "module": "PIL/_imagingtk.cpython-313-aarch64-linux-android.so",
+      "machine": 183,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl",
+      "module": "PIL/_imaging.cpython-313-x86_64-linux-android.so",
+      "machine": 62,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libz.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl",
+      "module": "PIL/_imagingft.cpython-313-x86_64-linux-android.so",
+      "machine": 62,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl",
+      "module": "PIL/_imagingmath.cpython-313-x86_64-linux-android.so",
+      "machine": 62,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl",
+      "module": "PIL/_imagingmorph.cpython-313-x86_64-linux-android.so",
+      "machine": 62,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "wheel": "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl",
+      "module": "PIL/_imagingtk.cpython-313-x86_64-linux-android.so",
+      "machine": 62,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ],
+      "needed": [
+        "libm.so",
+        "libpython3.13.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    }
+  ],
+  "limitations": [
+    "x86_64 build.json remained incomplete after CLI failure; pillow-retry-01.log records successful manual continuation",
+    "Binary integrity and ELF checks do not qualify Android import or device operation",
+    "Static libjpeg/FreeType do not replace other Chaquopy native dependencies",
+    "Full native dependency audit still pending"
+  ],
+  "runtime": {
+    "device": "Pixel_9 emulator",
+    "device_api": 35,
+    "page_size": 4096,
+    "tests_passed": 2,
+    "pillow": "13.0.0",
+    "libjpeg_turbo": "3.2.0",
+    "freetype": "2.14.3",
+    "checks": [
+      "PNG",
+      "JPEG",
+      "TrueType font",
+      "fixed logo",
+      "Matplotlib Agg",
+      "ReportLab PDF",
+      "Android PdfRenderer"
+    ],
+    "limits": [
+      "No physical ARM64",
+      "No UI export/external viewer test",
+      "No 16KB runtime qualification"
+    ]
+  },
+  "whole_apk_16k_issues": [
+    "assets/chaquopy/requirements-arm64-v8a.imy/chaquopy/lib/libfreetype.so",
+    "assets/chaquopy/requirements-arm64-v8a.imy/pydantic_core/_pydantic_core.cpython-313-aarch64-linux-android.so",
+    "assets/chaquopy/requirements-x86_64.imy/chaquopy/lib/libfreetype.so",
+    "assets/chaquopy/requirements-x86_64.imy/chaquopy/lib/libopenblas.so",
+    "assets/chaquopy/requirements-x86_64.imy/chaquopy/lib/libpng16.so",
+    "assets/chaquopy/requirements-x86_64.imy/pydantic_core/_pydantic_core.cpython-313-x86_64-linux-android.so"
+  ]
+}

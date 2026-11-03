@@ -1,6 +1,23 @@
 # Changelog
 
+## 2 novembre 2026 — seguito native 16 KB e candidato Windows
+
+- Nuovo auditor ELF legge anche la stdlib nelle `.imy` Chaquopy: 222 oggetti nel candidato Pillow e sei problemi confermati. Contratto dei simboli richiesti da Matplotlib/NumPy, verifica wheel native e test degli strumenti.
+- Kit sorgenti e ricette Fedora per pydantic-core 2.41.4 ricompilato, FreeType 2.15.0, libpng 1.6.59 e OpenBLAS 0.3.34 con LAPACK/LP64; controllo runtime numerico predisposto. Nessuna nuova wheel di questa fase adottata, nessun pin o formula cambiato. [Procedura](docs/ANDROID_NATIVE_16KB.md).
+- Ricompilazione Windows isolata dopo regressione completa; [prove e limiti](docs/VERIFICA.md). Nessuna pubblicazione, firma implicita o build Linux desktop.
+
+## 2 novembre 2026 — integrazione Pillow Android 13
+
+- Candidato Android separato `android-pillow-20261102-01`: debug con firma abituale, release non firmato e test; emulatore API35 x86_64, **2 test passati**, immagini/logo/font, PDF scritto e renderizzato da Android. Telefono, export tramite UI e firma ancora aperti. Audit di 106 ELF/APK: sei moduli ulteriori non qualificati LOAD 16 KB; Pillow supera il controllo. Nessuna pubblicazione o nuova build Windows.
+
+- Ricevute e verificate localmente le due wheel Fedora cp313/API26: SHA-256, ZIP/RECORD e dieci moduli ELF con dipendenza Python e LOAD a 16 KB. Pin Pillow 13.0.0 e gate aggiornato a otto wheel; provenienza in android/wheels/PILLOW_BUILD.json, inclusa nella confezione native.
+- Avvisi originali Pillow/libjpeg-turbo/FreeType nel documento legale canonico; aggiunto test strumentale da script unico per PNG/JPEG, font, Matplotlib Agg e PDF ReportLab. [Esiti effettivi build/runtime e limiti](docs/VERIFICA.md); altre dipendenze native Matplotlib/Chaquopy rimangono da qualificare.
+
 ## 2 novembre 2026 — preparazione Pillow Android
+
+- Primo risultato Fedora comunicato dall'utente: wheel Pillow 13.0.0 cp313/API26 x86_64 prodotta; digest e CRC confermati sul builder, cinque moduli ELF con libpython3.13.so e LOAD a 16 KB. Trasferimento, ARM64, runtime e APK restano aperti; manifest dell'app invariato.
+
+- Corretto il primo errore riscontrato su Fedora con cibuildwheel 4.3.1: `--only` determina la piattaforma e non può essere combinato con `--platform`. Compilazione Pillow e qualifica ancora aperte; log del primo tentativo conservato.
 
 - Verificata disponibilità: nessuna wheel Android PyPI, Chaquopy cp313 fermo a 11.0.0. Kit sorgenti con Pillow 13.0.0, libjpeg-turbo 3.2.0 e FreeType 2.14.3, provenienza/digest e builder Fedora sperimentale per ABI separate.
 - Preparato controllo runtime Android immagini/font/Matplotlib/ReportLab; quattro regressioni sugli strumenti di build. Ricetta ancora da eseguire dall'utente su Fedora, nessuna nuova wheel/APK, firma o modifica ai dati e ai pin dell'app. [Procedura](docs/ANDROID_PILLOW.md).

@@ -1,10 +1,20 @@
 # Prossimi passi
 
+## Seguito operativo native e Windows — 2 novembre 2026
+
+Auditor esteso a tutte le `.imy` (222 ELF nel candidato Pillow, stessi sei problemi), contratto simboli e kit sorgenti Fedora preparati: [guida](ANDROID_NATIVE_16KB.md). Prima azione sul builder: pydantic-core x86_64 con output nuovo e revisione del log; poi seconda ABI e i tre provider condivisi, un componente alla volta. Non aggiornare i pin finché non arrivano binari verificati. Nuovi APK dipendono da questo passaggio. Prova grafico sul telefono rimandata come concordato.
+
+Nel frattempo regressione Python Windows completa e nuova build isolata eseguite; esiti e consegna corrente in [VERIFICA.md](VERIFICA.md). Preparazione locale distinta da Windows pulito, firma e distribuzione. Non sostituire le consegne precedenti.
+
+Consegna Windows corrente per questa revisione: `windows-alpha-review-20261102-01`, installer/portabile/sorgenti nuovi e checksum verificati; non riusare alpha-prep come equivalente. Android attende il kit Fedora `native16k-kit-20261102-02`: prima pydantic-core x86_64 e riscontro, poi gli altri binari. Nessuna nuova firma o pubblicazione.
+
 ## Esito revisione pre-alpha — 2 novembre 2026
 
 Prima di promuovere la preparazione precedente, risolvere il gate Pillow Android e l'audit nativo descritto in [REVISIONE_ALPHA.md](REVISIONE_ALPHA.md), poi generare un nuovo candidato con correzione backup e dipendenze aggiornate. Non riusare l'installer precedente come equivalente ai sorgenti: l'allineamento verificato prima della revisione è ora storico. Restano firma e gate operativi della checklist pilot.
 
-Pillow: primo passo eseguito, kit sorgenti pronto; prossima azione dell'utente nella Toolbox Fedora, prima ABI x86_64 e poi ARM64. [Comandi](ANDROID_PILLOW.md). Riprendere l'integrazione dopo i log e le wheel; non avviare nuove build APK con la vecchia Pillow per dichiarare risolto il gate.
+Pillow: entrambe le ABI Fedora ricevute e verificate su Windows; pin 13.0.0, gate, provenienza e test strumentale integrati. [Procedura](ANDROID_PILLOW.md), [esiti correnti di APK e runtime](VERIFICA.md). Completare telefono ARM64, flussi operativi e audit delle altre dipendenze native Chaquopy; non qualificare l'intero stack dal solo aggiornamento Pillow.
+
+Candidato Android `android-pillow-20261102-01` pronto, due test su emulatore passati. Sul telefono l'utente riferisce aggiornamento/avvio ed export PDF riusciti; allegato senza grafici verificato sul PC. **Prova del report con grafico sul telefono rimandata per scelta dell'utente**, che accetta per questa fase il riscontro dell'emulatore: non preparare ora un corpus QA aggiuntivo né richiedere debug USB per questa prova. Release ancora non firmato. Audit ELF ha individuato sei moduli non qualificati LOAD 16 KB (pydantic-core/FreeType entrambe le ABI, OpenBLAS/libpng x86_64): risolvere questa matrice prima di dichiarare compatibilità 16 KB. Restano audit di sicurezza nativo e altri gate pilot.
 
 ## Priorità aggiornata — preparazione prima alpha, 2 novembre 2026
 

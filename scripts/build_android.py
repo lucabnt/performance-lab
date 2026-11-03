@@ -13,7 +13,7 @@ import tomllib
 from pathlib import Path
 
 root=Path(__file__).resolve().parents[1]
-NATIVE_REQUIRED={'pydantic_core':'2.41.4','cryptography':'50.0.2','cffi':'2.0.0'}
+NATIVE_REQUIRED={'pydantic_core':'2.41.4','cryptography':'50.0.2','cffi':'2.0.0','pillow':'13.0.0'}
 ABIS=('arm64_v8a','x86_64')
 
 

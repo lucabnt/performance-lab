@@ -2,6 +2,8 @@
 
 Verifica del **2 novembre 2026**, requisito **ALPHA-REVIEW-01**, prodotto **0.10.0**. Esito: correzioni nei sorgenti e nell'ambiente Windows; **il candidato `alpha-prep-20261102-01` richiede un successore e la risoluzione dei punti Android sotto**. Artefatti precedenti conservati.
 
+**Successore Windows prodotto:** `windows-alpha-review-20261102-01`, nuove build bundle/installer, regressioni e smoke riusciti; [riscontri](VERIFICA.md). Non è una pubblicazione o prova Windows pulito. Android rimane separato: candidato Pillow esistente e kit sorgenti native 16 KB ancora da eseguire su Fedora, senza nuove wheel/APK di quest'ultima fase.
+
 ## Problemi e correzioni
 
 | Area | Riscontro | Intervento |
@@ -16,6 +18,10 @@ Fonti: [Vite](https://github.com/advisories/GHSA-8g5g-mxqh-grgj), [certifi](http
 Vite riguarda il server di sviluppo esposto in rete; Fuorigiri distribuisce asset statici e lo sviluppo locale usa loopback. Setuptools riguarda installazione legacy di wheel; pypdf è una dipendenza di test. Una dipendenza segnalata non dimostra che ogni percorso degli avvisi sia raggiungibile nell'app.
 
 ## Punto aperto Android
+
+**Seguito native 16 KB:** auditor completo di tutte le `.imy` conferma sei moduli non qualificati su 222 ELF (il precedente conteggio 106 non includeva la stdlib). Sorgenti candidati e builder Fedora preparati in [ANDROID_NATIVE_16KB.md](ANDROID_NATIVE_16KB.md); libpng 1.6.59 scelta anche per la correzione CVE-2026-46675 dichiarata upstream. Non è una nuova build nativa riuscita, né un audit di sicurezza completo; adozione, APK e runtime attendono i binari.
+
+**Aggiornamento dopo il builder Fedora:** ricevute Pillow 13.0.0 ARM64/x86_64, verificate localmente integrità, RECORD, architetture, DT_NEEDED e LOAD 16 KB; pin/gate/provenienza e avvisi nativi integrati. [Registro build e runtime corrente](VERIFICA.md). Le nuove librerie statiche Pillow non sostituiscono chaquopy-freetype 2.9.1 e libpng 1.6.34 ancora richieste separatamente da Matplotlib: l'audit nativo globale rimane un gate. Le descrizioni sotto del vecchio candidato restano storiche.
 
 **Aggiornamento operativo del 2 novembre:** completata l'interrogazione degli indici e preparato un kit sorgenti Pillow 13.0.0/libjpeg-turbo 3.2.0/FreeType 2.14.3, con builder Fedora sperimentale. L'utente eseguirà i comandi sulla Toolbox; nessuna nuova wheel o APK prodotto. [Comandi, provenienza e gate](ANDROID_PILLOW.md). I pin e i digest dell'app restano invariati in attesa delle prove.
 

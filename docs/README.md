@@ -37,6 +37,7 @@ Le specifiche conservano fonte, versione e limiti: una stima non diventa una mis
 
 - [Revisione prima alpha](REVISIONE_ALPHA.md): correzioni del 2 novembre 2026, audit dipendenze e gate Android ancora aperti.
 - [Pillow Android](ANDROID_PILLOW.md): disponibilità, kit sorgenti e prima compilazione Fedora; ricetta sperimentale e gate runtime distinti.
+- [Dipendenze native Android e pagine 16 KB](ANDROID_NATIVE_16KB.md): auditor completo delle `.imy`, contratto ABI, sorgenti e ricette Fedora per pydantic-core, FreeType, libpng e OpenBLAS/LAPACK.
 
 - [Requisiti e to-do](REQUISITI_E_TODO.md): registro con ID e tracciabilità; gli aggiornamenti più recenti prevalgono sulle sezioni storiche.
 - [Prossimi passi](PROSSIMI_PASSI.md): priorità attuali, dipendenze e criteri di completamento.

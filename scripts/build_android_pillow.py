@@ -111,7 +111,7 @@ config-settings = { platform-guessing="disable", jpeg="enable", zlib="enable", f
             del env[key]
     env.update(ANDROID_API_LEVEL='26', CIBW_ENVIRONMENT="LDFLAGS='-Wl,-z,max-page-size=16384' PKG_CONFIG=/bin/false")
     wheelhouse = output / 'wheelhouse'
-    run([sys.executable, '-m', 'cibuildwheel', sources['pillow'], '--platform', 'android',
+    run([sys.executable, '-m', 'cibuildwheel', sources['pillow'],
          '--only', f'cp313-android_{abi}', '--config-file', config, '--output-dir', wheelhouse], output, log, env)
     wheels = list(wheelhouse.glob(f'pillow-13.0.0-cp313-cp313-android_*_{abi}.whl'))
     if len(wheels) != 1:

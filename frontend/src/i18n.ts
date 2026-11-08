@@ -6,11 +6,14 @@ export async function initializeLanguage(load:()=>Promise<Preferences>){
 }
 document.documentElement.lang=language==='en'?'en':'it';
 const translations:Record<string,string> = {
+ "Avvisi non bloccanti: conservati i dati descrittivi precedenti.":"Non-blocking warnings: previous descriptive data retained.",
+ "Valore conservato":"Retained value",
+ "Valore nel CSV":"CSV value",
  "Operazione":"Operation",
  "Integra rilevazione":"Complete existing observation",
  "Nuova rilevazione":"New observation",
  "Campi da integrare":"Fields to add",
- "Per atleta e data, integra soltanto i campi mancanti di una rilevazione compatibile e univoca. I campi vuoti non cancellano dati. Discordanze o abbinamenti ambigui richiedono una correzione dal profilo; le integrazioni sono indicate in anteprima.":"For each athlete and date, fill only missing fields in one unambiguously compatible observation. Empty fields do not delete data. Conflicting values or ambiguous matches require editing from the profile; additions are shown in the preview.",
+ "L’import completa solo le misure mancanti. Fonte e origine aiutano a riconoscere le rilevazioni: se differiscono, i valori precedenti sono conservati con un avviso non bloccante. Misure discordanti o integrazioni ambigue richiedono una correzione dal profilo.":"Only missing measurements are added. Source and origin help identify observations: differences retain the previous values and produce a non-blocking warning. Conflicting measurements or ambiguous additions require editing from the profile.",
  "Altezza perineale · cm":"Perineal height · cm",
  "Perineale/statura · %":"Perineal height/height · %",
  "Elimina rilevazione":"Delete measurement",

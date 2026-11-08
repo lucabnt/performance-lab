@@ -1,5 +1,9 @@
 # Librerie condivise con Ammiraglia
 
+## Aggiornamento UI 0.2.9 — 8 novembre 2026
+
+Nuova consegna locale versionata dal common per il ripristino dello scorrimento dopo la chiusura di dialoghi annidati. Fuorigiri, Ammiraglia e A Ruota consumano lo stesso tarball 0.2.9 con sorgenti/licenza/provenienza e lock aggiornati tramite sync:ui; nessuna dipendenza dal clone fratello nella build. Nessuna pubblicazione o ricompilazione dei candidati nativi. Il comportamento e le prove Fuorigiri sono registrati in [VERIFICA.md](VERIFICA.md).
+
 ## Decisione confermata
 
 Fuorigiri, Ammiraglia e il codice comune hanno repository separate. La repository locale delle librerie è `F:\GitHub\cycling-suite-common`, ramo main, primo tag `ui-v0.1.0`. Non è stata pubblicata su GitHub e non ha un remote configurato. Non sono stati creati account o scope su npm.

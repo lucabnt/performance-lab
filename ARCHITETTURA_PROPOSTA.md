@@ -1,5 +1,11 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## Import incrementale: duplicati e metadati — 8 novembre 2026
+
+ANTRO-IMPORT-AVVISI-01 supera il rifiuto delle differenze descrittive nella prima versione dell’import incrementale. I candidati restano attivi, della stessa persona/data e senza conflitti numerici. Se una rilevazione contiene già tutte le misure compilate nel CSV, non serve aggiornare una destinazione: riga saltata anche con più record compatibili. Per integrazioni effettive fonte/origine discriminano prima con corrispondenza congiunta, poi singolarmente in ordine fonte/origine se restringono i candidati. Nessuna scelta arbitraria di una destinazione per aggiungere misure.
+
+`warnings` separato da `errors`, con contesto e valori precedente/CSV. I metadati non sono mai sovrascritti nell’integrazione; sul nuovo record restano validati. Avvisi visibili anche per righe saltate e senza effetto sul pulsante di conferma. Revisione, firma, piano di conferma e atomicità conservati.
+
 ## Import antropometrico incrementale — 8 novembre 2026
 
 ANTRO-INCREMENTALE-01 sostituisce la precedente creazione di record arricchiti in ANTRO-PERINEALE-01. Matching per atleta/data, un solo candidato attivo senza valori numerici discordanti; nessun candidato o più candidati in una data già occupata produce errore da riconciliare. Riempimento solo dei campi numerici assenti, preservando gli altri attributi e la provenienza; righe complementari simulate nel piano e una sola scrittura finale per record. Nessuna fusione retroattiva di record distinti.
@@ -760,3 +766,8 @@ ANTRO-IMC-01 introduce una vista frontend calcolata dai record antropometrici co
 ## Eliminazione recuperabile negli editor — 8 novembre 2026
 
 RECORD-LIFECYCLE-01 usa gli stati revisionati esistenti: test e misure eliminati restano nel database e negli eventi/backup. `records/{id}/status` ammette ora anche measurement (active/deleted); `/state` conserva measurement filtrato e aggiunge deleted_measurement, evitando regressioni nei consumatori attivi e rendendo esplicito il recupero. Nessun nuovo schema di persistenza o formato di sync. Conferma con Dialog comune fuori dai form di correzione: eliminazione indipendente dai campi incompleti della bozza. Rilevazioni eliminate nel profilo e Test eliminati nel profilo/archivio test consentono ripristino con base aggiornata. I test mantengono misure e analisi salvate anche se una misura di origine viene eliminata; gli snapshot di maturazione rimangono immutati.
+
+
+## Dialoghi annidati e scorrimento — 8 novembre 2026
+
+UI-SCROLL-01 corregge il blocco residuo dopo l’eliminazione: il Dialog comune UI 0.2.9 possiede il contatore per documento, preserva lo stile overflow iniziale e lo ripristina solo all’ultimo rilascio idempotente. L’ordine di cleanup React non decide più quale stile resta sulla pagina. Fuorigiri adotta il tarball versionato, senza workaround in RecordLifecycle o CSS locale e senza modificare dati, API, motori o candidati già prodotti.

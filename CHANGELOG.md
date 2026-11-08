@@ -1,5 +1,15 @@
 # Changelog
 
+## 8 novembre 2026 — duplicati CSV e avvisi descrittivi
+
+- Corretta l’ambiguità al reimport di misure già acquisite con uguali data/valori e fonte diversa. Fonte e origine aiutano a distinguere le rilevazioni da integrare.
+- Le differenze di fonte/origine sono avvisi non bloccanti: si mostrano valori precedenti e CSV, conservando quelli salvati. Misure discordanti e integrazioni realmente ambigue restano errori. GUI sintetica e regressioni verificate; nessun nuovo EXE/APK.
+
+## 8 novembre 2026 — ripristino dello scorrimento dopo eliminazione
+
+- Adottata UI comune 0.2.9: corretta la chiusura simultanea di editor e conferma che poteva lasciare la pagina bloccata. Nessun cambiamento ai dati o al flusso di eliminazione/ripristino.
+- Verificati annullamento, eliminazione e scorrimento su/giù anche dopo cambio pagina. Frontend ricompilato; nessun nuovo EXE/APK.
+
 ## 8 novembre 2026 — candidato antro-incrementale-20261108-01
 
 - Nuove build Windows e Android 0.10.0 con import antropometrico incrementale, altezza perineale e rapporto nel profilo, oltre a eliminazione/ripristino e aggiornamenti precedenti. Installer/portabile, APK debug, release non firmato, supporto strumentale, sorgenti/wheel e 25 checksum verificati in nuova consegna locale.

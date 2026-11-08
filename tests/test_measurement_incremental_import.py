@@ -60,8 +60,6 @@ def test_batch_merges_complementary_rows_and_is_idempotent(tmp_path):
 
 @pytest.mark.parametrize('row',[
     '2026-01-01,,161,76,misurato,QA',
-    '2026-01-01,,,76,stimato,QA',
-    '2026-01-01,,,76,misurato,Altra origine',
     '2026-01-01,,,170,,',
 ])
 def test_conflicts_block_entire_batch_without_writes(tmp_path,row):
@@ -71,6 +69,54 @@ def test_conflicts_block_entire_batch_without_writes(tmp_path,row):
     assert p['errors']
     assert commit(p).status_code==422
     assert c.get('/api/v1/state').json()['measurement']==[old]
+
+
+@pytest.mark.parametrize('source',['derivato','sconosciuto'])
+def test_metadata_differences_warn_but_do_not_block_or_overwrite(tmp_path,source):
+    c,a,preview,commit=setup(tmp_path)
+    old=post(c,'measurements',{'athlete_id':a['id'],'date':'2026-01-01','height_cm':160,'source':'misurato','origin':'Originale'})
+    p=preview([f'2026-01-01,,,76,{source},Altra origine','2026-02-01,,165,,misurato,QA'])
+    assert not p['errors'] and p['ready']==2
+    assert [(w['column'],w['previous'],w['incoming']) for w in p['warnings']]==[('peso_fonte','misurato',source),('origine','Originale','Altra origine')]
+    assert all(w['row']==2 and w['athlete_external_id']==a['id'] and w['date']=='2026-01-01' for w in p['warnings'])
+    assert commit(p).status_code==200
+    rows=c.get('/api/v1/state').json()['measurement']
+    assert len(rows)==2
+    saved=next(m for m in rows if m['id']==old['id'])
+    assert saved['source']=='misurato' and saved['origin']=='Originale' and saved['perineal_height_cm']==76
+    again=preview([f'2026-01-01,,,76,{source},Altra origine'])
+    assert not again['errors'] and again['skipped']==1 and len(again['warnings'])==2
+
+
+def test_same_measures_different_sources_are_skipped_without_ambiguity(tmp_path):
+    c,a,preview,commit=setup(tmp_path)
+    for source in ('dichiarato','derivato'):
+        post(c,'measurements',{'athlete_id':a['id'],'date':'2026-01-01','weight_kg':70,'source':source,'origin':'da test'})
+    p=preview(['2026-01-01,70,,,derivato,da test'])
+    assert not p['errors'] and not p['warnings'] and p['skipped']==1 and p['ready']==0
+    before=c.get('/api/v1/state').json()['measurement']
+    assert commit(p).status_code==200
+    assert c.get('/api/v1/state').json()['measurement']==before
+
+
+def test_metadata_can_disambiguate_an_actual_addition(tmp_path):
+    c,a,preview,commit=setup(tmp_path)
+    records={source:post(c,'measurements',{'athlete_id':a['id'],'date':'2026-01-01','height_cm':160,'source':source,'origin':'QA'}) for source in ('dichiarato','derivato')}
+    p=preview(['2026-01-01,,160,76,derivato,QA'])
+    assert not p['errors'] and not p['warnings'] and p['preview'][0]['id']==records['derivato']['id']
+    assert commit(p).status_code==200
+    rows=c.get('/api/v1/state').json()['measurement']
+    assert next(m for m in rows if m['source']=='dichiarato')['perineal_height_cm'] is None
+    assert next(m for m in rows if m['source']=='derivato')['perineal_height_cm']==76
+
+
+def test_covered_row_is_skipped_even_without_matching_metadata(tmp_path):
+    c,a,preview,commit=setup(tmp_path)
+    for source in ('misurato','dichiarato'):
+        post(c,'measurements',{'athlete_id':a['id'],'date':'2026-01-01','weight_kg':70,'source':source})
+    p=preview(['2026-01-01,70,,,derivato,da test'])
+    assert not p['errors'] and p['skipped']==1 and len(p['warnings'])==2
+    assert commit(p).status_code==200
 
 
 def test_ambiguity_and_deleted_records_are_not_merged(tmp_path):

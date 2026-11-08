@@ -32,7 +32,7 @@ export function ImportPanel({org,api,run,refresh,download,readOnly=false,allowed
   <details><summary>{tr('Istruzioni e formato CSV')}</summary>
   <p>{tr('Importa prima le anagrafiche. Per associare i dati agli atleti usa atleta_id, non il nome.')}</p>
   {profile==='appartenenze'&&<p>{tr('Una riga per appartenenza: lo stesso atleta può comparire in più stagioni. Sottogruppo identifica la stagione; i gruppi mancanti vengono proposti in anteprima. Gli esempi sono sintetici: sostituisci ID, nomi e date con i tuoi dati.')}</p>}
-  {profile==='antropometria'&&<p>{tr('Per atleta e data, integra soltanto i campi mancanti di una rilevazione compatibile e univoca. I campi vuoti non cancellano dati. Discordanze o abbinamenti ambigui richiedono una correzione dal profilo; le integrazioni sono indicate in anteprima.')}</p>}
+  {profile==='antropometria'&&<p>{tr('L’import completa solo le misure mancanti. Fonte e origine aiutano a riconoscere le rilevazioni: se differiscono, i valori precedenti sono conservati con un avviso non bloccante. Misure discordanti o integrazioni ambigue richiedono una correzione dal profilo.')}</p>}
   {profile!=='appartenenze'&&<p>{tr('Il modello contiene soltanto le intestazioni. Compila una riga per atleta, rilevazione o test; lascia vuoti i valori non disponibili.')}</p>}
   <p className="hint">{tr('Colonne obbligatorie:')} {schemas[profile]?.required.join(', ')}. {tr(schemas[profile]?.rule||'')}</p>
   {profile==='test_anaerobico'&&<p>{tr('Per nuovi protocolli compila tipo_test e durata_s: sprint (3–10 s), wingate15 (15 s), wingate30 (30 s). ANA-15-070 resta compatibile con i CSV storici. I risultati importati sono riepiloghi dichiarati, senza ricalcolo dai campioni.')}</p>}
@@ -43,6 +43,7 @@ export function ImportPanel({org,api,run,refresh,download,readOnly=false,allowed
    {!!result.new_groups?.length&&<p>{tr('Nuove categorie e stagioni:')} {result.new_groups.map((g:Row)=>[g.name,g.season].filter(Boolean).join(' / ')).join(', ')}</p>}
    {!!result.new_protocols?.length&&<p>{tr('Nuovi protocolli di archivio:')} {result.new_protocols.map((p:Row)=>p.code).join(', ')}</p>}
    {result.errors.length>0?<DataTable rows={result.errors} columns={[cell('row','Riga'),cell('error','Errore')]}/>:<p role="status">{tr('Nessun errore rilevato.')}</p>}
+   {!!result.warnings?.length&&<><p role="status">{tr('Avvisi non bloccanti: conservati i dati descrittivi precedenti.')}</p><DataTable rows={result.warnings} columns={[cell('row','Riga'),cell('athlete_external_id','ID atleta'),cell('athlete_name','Atleta'),cell('date','Data'),cell('column','Campo',r=>tr(r.column==='peso_fonte'?'Fonte del peso':'Origine')),cell('previous','Valore conservato',r=>tr(r.previous||'—')),cell('incoming','Valore nel CSV',r=>tr(r.incoming||'—'))]}/></>}
    <DataTable rows={rows} columns={columns(profile)}/>
    <p>{tr('Record mostrati nell’anteprima:')} {result.preview.length} / {ready}</p>
    <button disabled={readOnly||result.errors.length>0||!ready} onClick={()=>run(async()=>{await api('import/commit',{organization_id:org,profile,staged_hash:result.staged_hash,plan_hash:result.plan_hash});setResult(null);await refresh()})}>{tr('Conferma importazione atomica')}</button>

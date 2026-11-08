@@ -1,5 +1,17 @@
 # Requisiti e to-do
 
+## ANTRO-IMPORT-AVVISI-01 — metadati non bloccanti, 8 novembre 2026
+
+Richiesta originale: «Correggi la logica, non dovrebbero esserci problemi per incongruenze nella colonna che non contenga una misura, nel caso segnalarlo mantenendo la versione precedente ma non limitare l’importazione».
+
+Implementato nei sorgenti: date/peso identici su due rilevazioni con fonte dichiarato/derivato non generano più ambiguità al reimport di dati già presenti. Si riconoscono prima i sottoinsiemi numerici acquisiti, poi le corrispondenze di fonte/origine aiutano a distinguere le destinazioni delle integrazioni. Le differenze di fonte/origine producono avvisi con riga, atleta, data, campo, precedente e CSV; il dato precedente resta invariato e il lotto può essere confermato. Anche una fonte CSV sconosciuta su una rilevazione esistente viene ignorata con avviso; per nuove rilevazioni serve una fonte valida. Identità atleta e data restano necessarie per riconciliare i record; misure discordanti, record eliminati e aggiunte con più destinazioni realmente ambigue restano errori atomici. Nessuna fusione/cancellazione delle rilevazioni storiche. Supera la precedente regola bloccante sui metadati di ANTRO-INCREMENTALE-01. Prove in VERIFICA.md. Nessun nuovo candidato nativo.
+
+## UI-SCROLL-01 — scorrimento dopo eliminazione, 8 novembre 2026
+
+Richiesta originale: «Dopo eliminazione di un record di antropometria, la pagina successiva non scorre più su e giù, verifica e correggi».
+
+Riprodotto nel browser: chiusura simultanea di editor e conferma ⇒ nessun dialogo aperto ma `body.style.overflow=hidden`. Corretto nel Dialog di `@cycling-suite/ui` 0.2.9: blocco condiviso per documento, stile iniziale ripristinato soltanto alla chiusura dell’ultima finestra, senza dipendere dall’ordine dei cleanup; rilascio idempotente e recupero anche se showModal fallisce. Nessun reset CSS locale nel prodotto. Dopo annullamento resta bloccato solo lo sfondo dell’editor; dopo eliminazione confermata scorrimento libero in entrambe le direzioni e nelle pagine successive. Prove automatiche e GUI in [VERIFICA.md](VERIFICA.md). Candidati EXE/APK esistenti invariati.
+
 ## Consegna antro-incrementale — 8 novembre 2026
 
 ANTRO-INCREMENTALE-01, ANTRO-PERINEALE-01 e RECORD-LIFECYCLE-01 inclusi nel nuovo candidato locale `antro-incrementale-20261108-01`: Windows installer/portabile e APK debug/release non firmato prodotti, contenuti e checksum verificati. Smoke/scansioni Windows riusciti; runtime Android e accettazione esterna restano distinti. Questa consegna supera le note «nessuna nuova build» riferite alle precedenti fasi di implementazione, senza cancellarne la cronologia. [Prove](VERIFICA.md).

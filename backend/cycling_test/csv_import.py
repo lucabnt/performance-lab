@@ -104,6 +104,7 @@ def plan_import(store, org, profile, raw):
     if len(rows)>100000:
         raise ValueError('Troppe righe nel lotto.')
     entries, errors, skipped = [], [], 0
+    warnings = []
     bases = {}
     integrated_fields = {}
     existing = {r['id']:r for k in ('athlete','measurement','test','protocol') for r in store.list(k)}
@@ -131,7 +132,8 @@ def plan_import(store, org, profile, raw):
                 date.fromisoformat(r['data'])
                 if profile=='antropometria':
                     payload=Measurement(athlete_id=athlete_id,date=r['data'],weight_kg=number(r.get('peso_kg')),height_cm=number(r.get('statura_cm')),perineal_height_cm=number(r.get('altezza_perineale_cm')),
-                                        source=r.get('peso_fonte','').strip() or 'dichiarato',origin=r.get('origine','')).model_dump(mode='json')
+                                        source='dichiarato',origin='').model_dump(mode='json')
+                    payload.update(source=r.get('peso_fonte','').strip() or 'dichiarato',origin=r.get('origine',''))
                     if all(payload[k] is None for k in ('weight_kg','height_cm','perineal_height_cm')):
                         raise ValueError('Rilevazione priva di misure.')
                     measures=('weight_kg','height_cm','perineal_height_cm')
@@ -139,21 +141,38 @@ def plan_import(store, org, profile, raw):
                     active=[m for m in same_day if m.get('status','active')=='active']
                     compatible=[m for m in active if all(payload[k] is None or m.get(k) is None or payload[k]==m[k] for k in measures)]
                     if same_day:
-                        if len(compatible)>1:
-                            raise ValueError('Più rilevazioni compatibili per atleta e data: integrazione ambigua. Correggere la rilevazione dal profilo.')
                         if not compatible:
                             raise ValueError('Misure discordanti o rilevazione eliminata per atleta e data: correggere o ripristinare dal profilo.')
-                        old=compatible[0]
-                        if r.get('peso_fonte','').strip() and payload['source']!=old.get('source'):
-                            raise ValueError('Fonte discordante dalla rilevazione esistente: correggere dal profilo.')
-                        if payload['origin'].strip() and payload['origin'].strip()!=old.get('origin','').strip():
-                            raise ValueError('Origine discordante dalla rilevazione esistente: correggere dal profilo.')
+                        metadata=[(key,payload[key]) for key,column in (('source','peso_fonte'),('origin','origine')) if r.get(column,'').strip()]
+                        # Already acquired measurements need no target to be updated, even
+                        # when multiple historical observations contain those same values.
+                        covered=[m for m in compatible if all(payload[k] is None or m.get(k)==payload[k] for k in measures)]
+                        candidates=covered or compatible
+                        matching=[m for m in candidates if all(str(m.get(k) or '').strip()==str(v).strip() for k,v in metadata)]
+                        if matching:
+                            candidates=matching
+                        else:
+                            for key,value in metadata:
+                                matches=[m for m in candidates if str(m.get(key) or '').strip()==str(value).strip()]
+                                if matches:
+                                    candidates=matches
+                        if not covered and len(candidates)>1:
+                            raise ValueError('Più rilevazioni compatibili per atleta e data: integrazione ambigua. Correggere la rilevazione dal profilo.')
+                        old=candidates[0]
+                        athlete=athletes[external]
+                        context={'row':i,'athlete_external_id':external,'athlete_name':(athlete.get('surname','')+' '+athlete.get('name','')).strip(),'date':payload['date']}
+                        row_warnings=[]
+                        for key,column in (('source','peso_fonte'),('origin','origine')):
+                            if r.get(column,'').strip() and str(payload[key]).strip()!=str(old.get(key) or '').strip():
+                                row_warnings.append({**context,'column':column,'previous':old.get(key,'') or '', 'incoming':payload[key]})
                         added=[k for k in measures if payload[k] is not None and old.get(k) is None]
                         if not added:
+                            warnings.extend(row_warnings)
                             skipped+=1;continue
                         merged={**old,**{k:payload[k] for k in added}}
                         # Revalidate the combined observation, preserving advanced data and provenance.
                         Measurement(**{k:v for k,v in merged.items() if k in Measurement.model_fields})
+                        warnings.extend(row_warnings)
                         if old.get('revision'):
                             bases[old['id']]=old['revision']
                             merged['reason']='Integrazione CSV di misure mancanti'
@@ -167,6 +186,9 @@ def plan_import(store, org, profile, raw):
                             entries.append(('measurement',merged))
                         existing[old['id']]=merged
                         continue
+                    # New observations still require a valid source; only existing
+                    # observations can retain a previous value instead of an invalid one.
+                    payload=Measurement(**payload).model_dump(mode='json')
                     kind='measurement';identity=external+'|'+r['data']+'|'+str(r)
                 else:
                     source_id=r.get('test_id','')
@@ -205,7 +227,7 @@ def plan_import(store, org, profile, raw):
             if kind=='athlete': athletes[external]=payload
         except (ValueError,KeyError,TypeError) as exc:
             errors.append({'row':i,'error':str(exc)})
-    return {'entries':entries,'bases':bases,'integrated_fields':integrated_fields,'errors':errors,'skipped':skipped,'rows':len(rows),'hash':batch}
+    return {'entries':entries,'bases':bases,'integrated_fields':integrated_fields,'warnings':warnings,'errors':errors,'skipped':skipped,'rows':len(rows),'hash':batch}
 
 
 def plan_digest(result):

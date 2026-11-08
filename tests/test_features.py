@@ -142,7 +142,10 @@ def test_measurement_csv_preview_commit_export_and_revision_preserve_provenance(
     assert next(r for r in rows if r['data']=='2026-01-04')['peso_fonte']=='derivato'
     assert all(r['origine']=='da test' for r in rows)
     bad=preview(raw.replace(b'misurato',b'sconosciuto'))
-    assert len(bad['errors'])==1
+    assert not bad['errors'] and len(bad['warnings'])==1
+    assert bad['warnings'][0]['previous']=='misurato'
+    # Unknown sources are still rejected when no previous observation exists.
+    assert len(preview(raw.replace(b'2026-01-01',b'2027-01-01').replace(b'misurato',b'sconosciuto'))['errors'])==1
 
 
 def test_trace_csv_units_and_timestamps():

@@ -1,5 +1,13 @@
 # Schermate dell’interfaccia
 
+## Avvisi import antropometrico — 8 novembre 2026
+
+[import-perineale.png](import-perineale.png) aggiornata dopo ANTRO-IMPORT-AVVISI-01: frontend compilato 0.10.0, UI comune 0.2.9 già consegnata separatamente, backend reale e nuovo archivio `.local/qa-import-avvisi-20261108-01`. Dati interamente sintetici, viewport 1280 × 720, nessun ritocco. Mostra 2 righe / 1 record pronto / 1 già presente, zero errori e avvisi non bloccanti di fonte/origine con confronto dei valori. Conferma GUI poi verificata nel profilo. Sostituisce le precedenti catture dello stesso file, che restano descritte nelle sezioni storiche sotto; nessuna qualifica EXE/APK implicita.
+
+## Scorrimento dopo eliminazione — 8 novembre 2026
+
+`scorrimento-dopo-eliminazione.png`: frontend compilato Fuorigiri 0.10.0 con common UI 0.2.9, backend reale e nuovo archivio sintetico `.local/qa-scroll-delete-20261108-01`. Profilo Ada Esempio DEMO riaperto dall’elenco dopo eliminazione confermata: cattura reale a scrollTop 720, senza dialoghi aperti e con overflow iniziale ripristinato. Provati anche movimento verso il basso e verso l’alto dopo l’eliminazione; le posizioni misurate sono nel registro verifiche. Nessun ritocco, dato personale o token; nessun nuovo EXE/APK o collaudo Android implicito. Le catture precedenti mantengono provenienza e contenuto.
+
 ## Import incrementale — 8 novembre 2026
 
 Fuorigiri web compilato 0.10.0, UI comune 0.2.8, backend reale e nuovo archivio `.local/qa-incrementale-20261108-01`, dati esclusivamente sintetici. Viewport 1280 × 720, catture senza ritocchi.

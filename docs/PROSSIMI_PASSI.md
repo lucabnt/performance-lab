@@ -1,5 +1,13 @@
 # Prossimi passi
 
+## Consegna locale aggiornata — 8 novembre 2026
+
+Disponibile `dist/candidates/Fuorigiri-0.10.0-sync-intervals-20261107-01/`, con nuove build Windows/Android e SYNC-AUTO-01 / INT-ICU-01. Scansioni correnti e smoke Windows riusciti, firma debug/allineamento/contenuti APK verificati. Non promuovere il candidato precedente bloccato né dichiarare chiuso WIN-AV-01: restano revisione e accettazione Windows con protezioni attive. Restano firma release Android, prova runtime della nuova build, provider reali e i sei moduli non qualificati 16 KB. [Registro](VERIFICA.md), [checklist](COLLAUDO_PILOT.md).
+
+## Blocco Windows — 7 novembre 2026
+
+Risolvere WIN-AV-01 prima di qualificare il candidato Windows: Defender rimuove l'EXE di `windows-alpha-review-20261102-01`. [Diagnosi e criteri](WINDOWS_DEFENDER.md). Gli altri lavori Android rimangono distinti.
+
 ## Seguito operativo native e Windows — 2 novembre 2026
 
 Auditor esteso a tutte le `.imy` (222 ELF nel candidato Pillow, stessi sei problemi), contratto simboli e kit sorgenti Fedora preparati: [guida](ANDROID_NATIVE_16KB.md). Prima azione sul builder: pydantic-core x86_64 con output nuovo e revisione del log; poi seconda ABI e i tre provider condivisi, un componente alla volta. Non aggiornare i pin finché non arrivano binari verificati. Nuovi APK dipendono da questo passaggio. Prova grafico sul telefono rimandata come concordato.

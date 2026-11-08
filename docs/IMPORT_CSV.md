@@ -28,6 +28,8 @@ Per antropometria sono conservate le fonti misurato, arrotondato, dichiarato, de
 
 ## Appartenenze storiche e future
 
+Per assegnare atleti già presenti senza CSV: **Società e gruppi → Aggiungi atleti** nella stagione, oppure **Mostra gli atleti → Aggiungi atleti al gruppo** nell’elenco filtrato. Il comando resta disponibile anche per rose già popolate. Nel filtro di categoria occorre scegliere esplicitamente il gruppo/stagione; nel filtro di stagione la destinazione è già impostata. Selezionare gli atleti, verificare Dal/Al e premere **Conferma assegnazione**. Il dialogo comprende tutti gli atleti attivi della società e disabilita quelli già assegnati nel periodo; richiede Admin dati. La ricerca e il filtro dell’elenco restano conservati dopo il salvataggio.
+
 In Archivio e scambio selezionare **Appartenenze storiche e future**. Sono disponibili **Scarica modello CSV vuoto** e **Scarica CSV di esempio**. Copie nei sorgenti: [modello](../examples/import-appartenenze/appartenenze-modello.csv) e [esempio sintetico](../examples/import-appartenenze/appartenenze-esempio.csv).
 
 | Colonna | Significato |

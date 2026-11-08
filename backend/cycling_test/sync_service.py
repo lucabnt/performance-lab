@@ -110,6 +110,7 @@ def run_sync(store,verify_all=False,progress=None):
             result=exchange(store,None,store.identity['sync_key'],connection,verify_existing=verify_all,protocol=protocol)
             state={'at':at,'finished_at':datetime.now(timezone.utc).isoformat(),'ok':not result['errors'] and not result['pending'],'connection_fingerprint':connection_fingerprint(config),**result}
             write_json(store.root/'last-sync.json',state)
+            if state['ok']:write_json(store.root/'last-successful-sync.json',state)
             audit(store,{'ok':state['ok'],**{k:result[k] for k in ('transport','published','received','pending','conflicts')},'invalid_packets':len(result['errors'])})
             return result
         except (ValueError,OSError):
@@ -176,9 +177,12 @@ def install_sync_api(app,store):
                 account_status='connected' if value.get('access_token') or value.get('token') else 'disconnected'
             except ValueError:account_status='vault_unavailable'
         last_sync=json.loads(last.read_text(encoding='utf-8')) if last.exists() else None
+        successful_path=store.root/'last-successful-sync.json'
+        successful=json.loads(successful_path.read_text(encoding='utf-8')) if successful_path.exists() else last_sync if last_sync and last_sync.get('ok') else None
+        if successful and successful.get('connection_fingerprint')!=connection_fingerprint(config):successful=None
         same=bool(last_sync and last_sync.get('connection_fingerprint')==connection_fingerprint(config))
         access='verified_at_last_sync' if same and last_sync.get('ok') else 'last_sync_failed' if same else 'not_verified'
-        return {'connection':config,'account_status':account_status,'last_sync':last_sync,'folder_access':access,'protocol':store.identity.get('sync_protocol',last_sync.get('protocol',1) if last_sync else 1)}
+        return {'connection':config,'account_status':account_status,'last_sync':last_sync,'last_successful_sync':successful,'folder_access':access,'protocol':store.identity.get('sync_protocol',last_sync.get('protocol',1) if last_sync else 1)}
 
     class UpgradeFormat(BaseModel):
         all_devices_updated: bool

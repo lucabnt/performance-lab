@@ -1,5 +1,30 @@
 # Requisiti e to-do
 
+## SYNC-AUTO-01 e INT-ICU-01 — 7 novembre 2026
+
+Richiesta: «quando avviene la sincronizzazione con webdav? […] fuorigiri windows non sincronizzava il contenuto locale se non triggerato. Scegliamo la strategia migliore per risolvere»; «feature […] attivabile e disattivabile […] id intervals.icu (eg. i000000) […] vedi su Intervals.icu». Approvata l’implementazione della proposta combinata. Correzione esplicita successiva: «gli id dovrebbero essere sincronizzati insieme a tutti i dati» e «lascia il campo, togli il pulsante alla disattivazione».
+
+**SYNC-AUTO-01, implementato nei sorgenti:** una società gestita con destinazione configurata avvia lo stesso motore incrementale all’apertura, dopo circa 10 secondi di raggruppamento delle modifiche e ogni 5 minuti. Automatismo predefinito attivo, disattivabile per dispositivo/archivio, conservato in `sync-automatic.json` fuori dagli eventi e dai backup. Retry progressivo 30 s–30 min; una sola operazione per archivio; lavori manuali e verifica completa restano distinti. Ultimo scambio riuscito separato dall’ultimo tentativo. Nessun servizio Windows ad app chiusa; il background Android esistente resta una scelta separata.
+
+**INT-ICU-01, implementato nei sorgenti:** campo `intervals_icu_id` facoltativo, vuoto oppure `i` seguito da cifre (massimo 40 caratteri), sempre presente nell’editor atleta per Admin dati. Interruttore `intervals_icu_enabled` nella società, inizialmente falso; revisione con conflitto ottimistico e stessi permessi. Con opzione attiva e ID valido il profilo mostra “Vedi su Intervals.icu”, URL HTTPS fisso `https://intervals.icu/athlete/{id}/activities`. Spegnimento conserva campo e valore, nascondendo soltanto il pulsante. ID e opzione condivisi con eventi/backup; aggiornamenti di vecchi client senza ID non lo cancellano. Nessun accesso alle API Intervals.icu.
+
+Accettazione: debounce/ricezione periodica/retry con orologio controllato; isolamento preferenze; scambio e ripristino degli ID/opzione; validazione, conflitti e ruolo viewer; GUI con funzione disattiva/attiva e invio senza comando. Prove e limiti in [VERIFICA.md](VERIFICA.md). Non rilasciato in un nuovo pacchetto nativo.
+
+## WIN-AV-01 — EXE Windows rimosso dopo installazione, 7 novembre 2026
+
+Richiesta: «installando l'ultimo candidato su windows […] dice che exe non esiste più. Verifica e in caso correggi». Diagnosi completata sul PC destinatario: Defender rimuove l'EXE e blocca anche l'originale di build con `Trojan:Win32/Bearfoos.A!ml`; nessun errore di destinazione individuato nell'installer. **Risoluzione aperta**, falso positivo non confermato. Richiesti revisione del campione, risposta documentata e nuova prova installazione/avvio/riapertura con protezioni attive senza rilevamenti. [Dettagli e criteri](WINDOWS_DEFENDER.md), [prove](VERIFICA.md). Nessuna correzione del binario o accettazione dichiarata.
+
+## GRUPPI-05 e ANTRO-IMC-01 — elenco filtrato e IMC, 7 novembre 2026
+
+Richieste originali: «Se qui apro mostra atleti mi porta all'elenco filtrato, senza possibilità di aggiungere»; «Procedi con le due feature suggerite», riferite al comando collettivo nell’elenco filtrato e all’IMC descrittivo.
+
+- **GRUPPI-05:** Aggiungi atleti al gruppo disponibile nell’elenco filtrato per categoria o stagione, anche con rosa già popolata o senza risultati di ricerca. Una stagione è preimpostata; dalla categoria si sceglie esplicitamente la destinazione, limitata alla categoria e alle sue stagioni attive. Il dialogo usa tutti gli atleti attivi della società, non solo quelli visibili nel filtro. Date modificabili, doppioni e permessi Admin dati restano governati dal flusso atomico esistente.
+- **ANTRO-IMC-01:** colonna IMC (BMI) in kg/m² nelle rilevazioni datate del profilo, formula kg/(cm/100)² solo con peso e statura numerici, finiti e positivi dello stesso record. Nessun abbinamento fra date o record diversi. Fonte originale conservata, — se incompleto; grafico storico facoltativo con almeno due valori. Nessuna classificazione, percentile, stima di composizione corporea o obiettivo prestativo. Calcolo descrittivo frontend senza modifica di record, snapshot o versioni del motore di maturazione. Fonti e uso in [MATURAZIONE.md](MATURAZIONE.md), prove in [VERIFICA.md](VERIFICA.md).
+
+## ANTRO-CHART-01 — collegare le misure disponibili, 7 novembre 2026
+
+Richiesta originale: «correggiamo per far si che si connettano», riferita alle interruzioni delle linee peso e statura nel profilo atleta. Implementato il collegamento visivo dei punti disponibili di ciascuna serie, anche in presenza di rilevazioni intermedie della sola altra misura. Criteri: peso e statura mantengono date, valori, unità e scale indipendenti; i mancanti restano tali nella tabella e nei dati; nessun punto sintetico, ricalcolo o modifica al motore di maturazione. Prove e limiti in [VERIFICA.md](VERIFICA.md).
+
 ## ALPHA-REVIEW-01 — revisione generale pre-alpha, 2 novembre 2026
 
 Seguito autorizzato: preparati auditor dell'intero APK (incluse stdlib Chaquopy), contratto ABI dei consumatori e ricette sorgenti per risolvere i sei moduli a 4 KB: pydantic-core 2.41.4 con linker 16 KB, FreeType 2.15.0, libpng 1.6.59, OpenBLAS 0.3.34 con LAPACK e LP64. [Procedura e gate](ANDROID_NATIVE_16KB.md). Ancora da eseguire sul builder e qualificare; pin e manifest nativi dell'app invariati in questa fase, nessun nuovo APK con le dipendenze candidate.

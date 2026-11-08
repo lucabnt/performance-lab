@@ -2,7 +2,7 @@ import {language} from './i18n';
 type Row=Record<string,any>;
 export function SyncJobStatus({sync,compact=false}:{sync:Row;compact?:boolean}){
  const {job,error}=sync,en=language==='en';
- if(!job||job.status==='idle')return null;
+ if(!job||job.status==='idle')return error?<p className="hint" role="alert">{error}</p>:null;
  const phases:Row={preparing:en?'Preparing exchange':'Preparazione dello scambio',inventory:en?'Checking remote inventory':'Controllo inventario remoto',receiving:en?'Reading and checking files':'Lettura e verifica dei file',publishing:en?'Publishing and checking files':'Pubblicazione e verifica dei file'};
  const result=job.result,problem=result&&(result.errors?.length||result.pending),conflicts=result?.conflicts;
  const outcome=job.status==='interrupted'?(en?'Synchronization interrupted':'Sincronizzazione interrotta'):job.status==='failed'?(en?'Synchronization failed':'Sincronizzazione non riuscita'):problem?(en?'Exchange requires attention':'Scambio da completare'):conflicts?(en?'Exchange finished with conflicts':'Scambio terminato con conflitti'):(en?'Synchronization completed':'Sincronizzazione completata');

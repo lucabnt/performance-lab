@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **2 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **8 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -68,6 +68,9 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 ## Dati, società e sincronizzazione
 
+- SYNC-AUTO-01: `useSyncJob` coordina apertura società, scritture UI raggruppate a 10 s e ricezione a 5 min sul motore job esistente; retry 30 s–30 min, senza sovrapposizioni. `sync-automatic.json` è preferenza locale per archivio/dispositivo (default attiva), fuori da eventi e backup. Windows richiede UI aperta; background Android separato. Conservare bozze connessione e ultima riuscita distinta dall’ultimo tentativo/impronta destinazione.
+- INT-ICU-01: `intervals_icu_id` revisionato sull’atleta e `intervals_icu_enabled` sulla società, entrambi sincronizzati e inclusi nei backup. Campo ID sempre disponibile nell’editor; disattivazione nasconde soltanto il pulsante. URL a dominio fisso, nessuna credenziale/API; preservare ID quando omesso da client precedenti.
+
 - Sync UI: job device-local in sync_jobs.py e root useSyncJob; catturare lo Store reale prima dei thread, preservare ContextVar, lock e firme. Non eseguire rete sotto Runtime.lock Android. Running senza thread dopo riavvio significa interrotto, mai successo. Non confondere conteggi di operazioni con percentuale totale o ricezione su altri dispositivi. Deadline/bootstrap e watchdog non autorizzano reset dati.
 
 - Lingua/fuso in device-preferences.json, API autenticata indipendente dalla società e bootstrap prima di main; non affidare la lingua Windows al solo localStorage per porta. Società scollegate: entries() include solo attive; usare include_detached=True per protezione percorsi/ID e recupero. Lo scollegamento è locale e recuperabile, non cancella file o accessi né revoca dati remoti.
@@ -99,7 +102,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 ## Interfaccia e report
 
-- UI-SUITE-001: creazione primaria e import/export contestuali nella testata; filtri ed elenco dopo. Aprire modello/file/anteprima e istruzioni estese su richiesta; appartenenze collettive in Gruppi, operazioni individuali nel profilo. Gli import contestuali limitano i tracciati, mentre Archivio conserva il punto completo espandibile. Non aggiungere funzioni o menu per una parità soltanto nominale. [Guida](docs/IMPORT_CSV.md).
+- UI-SUITE-001: creazione primaria e import/export contestuali nella testata; filtri ed elenco dopo. Aprire modello/file/anteprima e istruzioni estese su richiesta; appartenenze collettive in Gruppi e nel relativo elenco Atleti filtrato (categoria o stagione), operazioni individuali nel profilo. Dal filtro categoria scegliere esplicitamente la destinazione; non assegnare automaticamente alla stagione legacy. Gli import contestuali limitano i tracciati, mentre Archivio conserva il punto completo espandibile. Non aggiungere funzioni o menu per una parità soltanto nominale. [Guida](docs/IMPORT_CSV.md).
 
 - UI-ORDER-01: contesto/comandi prima dei risultati o elenchi; dettagli e guide dopo. Nel dettaglio test il grafico, se realmente rappresentabile (hasSignalChart), precede i KPI; senza grafico il riepilogo resta in alto. Riepilogo aerobico unico in ReferenceSummary (anche anteprima), senza ripetere MAP in un secondo blocco. Profilo: zone → MAP storiche → test; tabella e grafico antropometrico adiacenti. Preservare fonte/coefficiente e separazione dei metodi.
 
@@ -110,6 +113,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 - CSV: modelli vuoti generati dalle intestazioni canoniche in `import/template/{profile}` e scaricabili dalla sezione import. Anteprime specifiche per cinque profili, protocolli separati dalle righe. Anaerobici generali con tipo/durata espliciti per Sprint e Wingate 15/30; solo ANA-15-070 mantiene la compatibilità implicita storica. Non dedurre il tipo da altri codici né ricalcolare campioni da riepiloghi.
 - Import antropometria: conservare fonte del peso (misurato, arrotondato, dichiarato, derivato, stimato) e origine anche in correzioni/export; fonte sconosciuta è errore. La preview mostra ID atleta e nome riconciliato, mai l’ID tecnico della rilevazione. Nessuna riclassificazione retroattiva degli import esistenti; i gate di crescita richiedono ancora misure misurate e valide.
 - Protocolli si creano/versionano in Protocolli, anche manualmente o senza step. Un test può provenire da FIT/CSV o da soli dati manuali. Preservare campi custom tipizzati e facoltativi.
+- IMC (BMI) descrittivo nel profilo: solo peso e statura positivi della stessa rilevazione, senza abbinare record/date. Fonte conservata; nessuna classificazione automatica per adulti o giovani. Vista frontend distinta dagli snapshot/report di maturazione; guida MATURAZIONE.md.
 - Etichette comprensibili e unità esplicite; non esporre nomi di colonne DB come testo utente. Preservare traduzioni IT/EN e accessibilità quando si aggiungono controlli.
 - Grafico temporale unico con segnali sovrapposti e scale fisiche indipendenti; lacune visibili e nessuna ricostruzione di tracciati da soli riepiloghi. Selezione esplicita delle serie confrontate, evitando legende ingestibili.
 - Report società/gruppo/gruppo-stagione/atleta come viste dello stesso modello, con filtri, numerosità, mancanti e provenienza. Logo e attribuzione fissi nel footer PDF; evitare informazioni ridondanti.
@@ -140,6 +144,10 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 
 ## Distribuzione e accettazione
 
+- Candidato corrente con SYNC-AUTO-01 / INT-ICU-01: `sync-intervals-20261107-01`, build del 7 e confezionamento verificato l’8 novembre. Installer/portabile Windows e APK debug/release non firmato, sorgenti e wheel; riscontri in VERIFICA.md. Scansioni correnti e smoke Windows riusciti **non chiudono WIN-AV-01 del candidato precedente**. Nessuna nuova prova runtime Android, qualifica 16 KB o accettazione Windows pulito implicita.
+
+- Windows, 7 novembre: il candidato `windows-alpha-review-20261102-01` è bloccato da Defender con `Trojan:Win32/Bearfoos.A!ml`, che rimuove l'EXE installato e blocca anche l'originale di build. Non qualificarlo dal solo smoke precedente né dichiarare confermato un falso positivo. Non aggirare il rilevamento con esclusioni o ricompilazioni prive di diagnosi.
+
 - Revisione pre-alpha ALPHA-REVIEW-01 del 2 novembre: correzione backup e aggiornamenti dipendenze successivi ad `alpha-prep-20261102-01`; i vecchi candidati contengono ancora Pillow 11.0.0. Nuove wheel Pillow 13.0.0 integrate e test strumentale x86_64 superato; telefono e firma restano distinti. Audit ELF dell'intero APK: sei moduli ulteriori non soddisfano il controllo LOAD a 16 KB (pydantic-core entrambe le ABI, FreeType Chaquopy entrambe le ABI, OpenBLAS/libpng x86_64); zipalign non li corregge. Riscontri e gate in [REVISIONE_ALPHA.md](docs/REVISIONE_ALPHA.md) e VERIFICA.md.
 
 - Priorità del 2 novembre: preparazione della prima alpha Windows/Android, versione prodotto 0.10.0 e identificativo candidato separato. Usare PROSSIMI_PASSI.md e COLLAUDO_PILOT.md per i gate; preparazione locale non equivale a pubblicazione o accettazione. Conservare firma debug dei test e firma release del titolare come percorsi distinti, senza generare chiavi implicitamente.
@@ -158,7 +166,6 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 - Quando un requisito aperto qui citato viene implementato/verificato, aggiornare o rimuovere l'avvertenza obsoleta e mantenere i riferimenti corretti. Nuove priorità approvate devono sostituire quelle superate senza cancellare la cronologia nei documenti di progetto.
 - Controllare i link locali e i comandi dopo modifiche strutturali. Se emerge una contraddizione, risolverla con codice, requisiti più recenti e istruzioni dell'utente, documentando il risultato; non perpetuare stati storici errati.
 - Non memorizzare segreti, dati degli atleti, percorsi personali assoluti o conversazioni complete in questo file.
-
 
 ## Fonte unica della UI comune
 

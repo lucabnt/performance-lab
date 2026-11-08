@@ -35,6 +35,8 @@ Anteprima di sviluppo: versione dichiarata nei sorgenti **0.10.0**, con modifich
 
 Schermate reali della versione **0.10.0**, aggiornate il **20 ottobre 2026**, con persone e risultati interamente sintetici. Mostrano l’interfaccia web condivisa con la finestra desktop; non rappresentano un collaudo Android. Cliccare un’immagine per aprirla a dimensione originale.
 
+Aggiornamento del **7 novembre 2026**: [configurazione Intervals.icu](docs/screenshots/intervals-configurazione.png), [pulsante nel profilo](docs/screenshots/intervals-profilo.png) e [ID nell’anagrafica](docs/screenshots/intervals-id.png), catture responsive con soli dati sintetici. [Provenienza e verifiche](docs/screenshots/README.md).
+
 **Atleti e squadra** — profili, ricerca, gruppi e riepilogo dell’archivio della società.
 
 [![Panoramica atleti di Fuorigiri con ricerca, filtri e risultati recenti](docs/screenshots/ui-coherence-010/atleti.png)](docs/screenshots/ui-coherence-010/atleti.png)

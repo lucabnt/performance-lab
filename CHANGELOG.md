@@ -1,5 +1,29 @@
 # Changelog
 
+## 8 novembre 2026 — nuovi candidati Windows e Android
+
+- Confezionato `sync-intervals-20261107-01` (prodotto 0.10.0), con sincronizzazione automatica, Intervals.icu e modifiche locali correnti: installer, portabile completo, debug Android con firma di test invariata, release non firmato, sorgenti e wheel native. Build del 7, consegna verificata l’8; nessuna pubblicazione.
+- Scansioni correnti Defender e smoke Windows riusciti; il precedente rilevamento resta aperto e Windows pulito non collaudato. Firma/debug/allineamento e contenuti APK verificati, nessun nuovo runtime su emulatore/telefono; sei moduli nativi ancora non qualificati 16 KB. Manifest e 24 checksum inclusi. [Riscontri e limiti](docs/VERIFICA.md).
+
+## 7 novembre 2026 — sincronizzazione automatica e Intervals.icu
+
+- SYNC-AUTO-01: avvio automatico dello scambio configurato all’apertura della società, circa 10 secondi dopo le modifiche e ogni 5 minuti mentre l’interfaccia è aperta. Preferenza locale per dispositivo/archivio (predefinita attiva), tentativi da 30 secondi fino a 30 minuti, nessuna sovrapposizione con i lavori manuali. Ultimo scambio riuscito distinto dall’ultimo tentativo; le bozze della connessione non sono sostituite dal completamento automatico.
+- INT-ICU-01: ID facoltativo Intervals.icu nel profilo, sempre modificabile; interruttore condiviso della società in Archivio e scambio, predefinito disattivato. Nasconde soltanto il collegamento esterno. ID e opzione seguono revisioni, sincronizzazione e backup; client precedenti che omettono il campo lo preservano. Nessuna API o credenziale Intervals.icu.
+- Modifiche ai sorgenti e frontend compilato; nessun nuovo EXE/APK o pubblicazione.
+
+## 7 novembre 2026 — diagnosi blocco antivirus Windows
+
+- WIN-AV-01: confermata rimozione dell'EXE da Microsoft Defender sul PC destinatario; candidato `windows-alpha-review-20261102-01` bloccato in attesa di revisione. Documentati rilevamento e criteri per risolverlo in `docs/WINDOWS_DEFENDER.md`. Nessuna modifica al binario, esclusione antivirus o nuova consegna.
+
+## 7 novembre 2026 — aggiunta collettiva dal filtro e IMC
+
+- Aggiungi atleti al gruppo anche nell’elenco filtrato per categoria, oltre alla stagione; scelta esplicita della destinazione nella categoria, rosa già popolata supportata e flusso atomico/permessi invariati.
+- IMC (BMI) descrittivo nella tabella antropometrica e grafico storico espandibile da due valori: solo peso e statura nella stessa rilevazione, fonte conservata, nessuna classificazione automatica. Aggiornate guide e catture QA; frontend compilato, nessun nuovo EXE/APK o rilascio.
+
+## 7 novembre 2026 — collegamenti dell’andamento antropometrico
+
+- Nel profilo atleta peso e statura collegano le rispettive misure disponibili anche quando una rilevazione intermedia contiene soltanto l’altra grandezza. Nessun valore mancante viene sostituito o salvato come interpolazione; modifica al frontend, senza nuova build EXE/APK.
+
 ## 2 novembre 2026 — seguito native 16 KB e candidato Windows
 
 - Nuovo auditor ELF legge anche la stdlib nelle `.imy` Chaquopy: 222 oggetti nel candidato Pillow e sei problemi confermati. Contratto dei simboli richiesti da Matplotlib/NumPy, verifica wheel native e test degli strumenti.

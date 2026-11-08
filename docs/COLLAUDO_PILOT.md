@@ -1,5 +1,15 @@
 # Collaudo del candidato pilot — Windows e Android
 
+## Candidato sync-intervals — consegna 8 novembre 2026
+
+`dist/candidates/Fuorigiri-0.10.0-sync-intervals-20261107-01/`: nuove build del 7 con SYNC-AUTO-01 / INT-ICU-01 e modifiche correnti. Installer e portabile completi, APK debug già firmato per i test, release non firmato per il titolare, sorgenti/wheel, manifest e 24 checksum verificati. [Prove](VERIFICA.md). Nessuna pubblicazione o modifica ai vecchi pacchetti.
+
+Nuovo bundle e installer senza rilevamenti nelle scansioni Defender correnti, smoke su QA nuovo riuscito. Non chiude WIN-AV-01 del candidato precedente e non sostituisce installazione/riapertura con protezioni attive su Windows pulito. APK: firma debug invariata e zipalign riuscito, ma audit 222 ELF con sei problemi LOAD 16 KB invariati. Nessuna prova runtime di questa build su emulatore/telefono o provider reale; gli altri gate e la firma release rimangono aperti.
+
+## Blocco Windows — 7 novembre 2026
+
+**WIN-AV-01 aperto:** Defender rimuove l'EXE del candidato `windows-alpha-review-20261102-01` con `Trojan:Win32/Bearfoos.A!ml`. Sospendere la qualificazione di questo candidato; gli smoke precedenti non risolvono il blocco. [Riscontri e criteri per ripetere installazione e riapertura](WINDOWS_DEFENDER.md). Falso positivo non confermato, nessuna esclusione o nuova build in questa diagnosi.
+
 ## Candidato Windows alpha review — 2 novembre 2026
 
 `dist/candidates/Fuorigiri-0.10.0-windows-alpha-review-20261102-01/`: bundle/installer ricompilati con correzione backup e dipendenze aggiornate dopo alpha-prep. Regressione 271 Python passati/1 skip e 37 frontend; smoke dell'EXE con sole directory Windows nel PATH e archivio QA nuovo riuscito. Installer/portabile/sorgenti separati dagli APK; 13 checksum verificati, non firmato Authenticode. [Esiti e limiti](VERIFICA.md).

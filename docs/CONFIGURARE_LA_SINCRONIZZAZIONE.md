@@ -8,6 +8,20 @@ Implementati adapter WebDAV, Google Drive API v3, Dropbox API v2, Microsoft Grap
 
 Per attivare il formato v2, aggiornare prima tutti i dispositivi: [procedura e compatibilità](SYNC_V2_E_BACKUP.md). Tutti i trasporti usano lo stesso formato e archivio per società.
 
+## Quando parte lo scambio — aggiornamento 7 novembre 2026
+
+Nella versione dei sorgenti aggiornata l’automatismo è attivo per impostazione predefinita quando esiste una connessione configurata. In **Archivio e scambio → Condivisione e collaboratori → Sincronizzazione fra dispositivi** si può disattivare “Sincronizza automaticamente su questo dispositivo per questa società”. La scelta riguarda solo questo dispositivo/archivio; ID e dati degli atleti continuano a seguire lo scambio ordinario.
+
+L’app tenta lo scambio all’apertura della società, circa 10 secondi dopo le modifiche (raggruppando salvataggi ravvicinati) e ogni 5 minuti per ricevere i dati degli altri. Il lavoro resta locale prima dello scambio e utilizzabile offline. I tentativi falliti sono distanziati da 30 secondi fino a 30 minuti; il pulsante **Sincronizza ora** resta disponibile. **Verifica completa del canale** è sempre esplicita. Uno scambio riuscito non prova la ricezione sugli altri dispositivi.
+
+Su Windows l’interfaccia deve restare aperta: nessun servizio ad app chiusa. Su Android il background opzionale già esistente rimane distinto e dipende dalle decisioni del sistema. I vecchi EXE/APK non acquisiscono la modifica ai sorgenti. L’ultimo scambio riuscito è distinto dall’ultimo tentativo e dall’esito incompleto.
+
+## Collegamenti Intervals.icu
+
+In **Archivio e scambio → Collegamenti a Intervals.icu**, Admin dati può attivare l’opzione della società, inizialmente spenta. Nell’editor del profilo il campo **ID atleta Intervals.icu** è sempre disponibile: inserire per esempio `i000000`. Se l’opzione è attiva e l’ID presente, il profilo offre **Vedi su Intervals.icu**, che apre `https://intervals.icu/athlete/i000000/activities` nel browser. Le autorizzazioni del sito restano quelle dell’account nel browser.
+
+La disattivazione nasconde solo il pulsante e conserva il campo/valore. ID e interruttore si sincronizzano con gli altri dati della società e sono inclusi nel backup. Non vengono importate attività né richieste credenziali Intervals.icu in Fuorigiri.
+
 ## Uso e registrazioni
 
 Archivio e scambio → società selezionata → sincronizzazione. Il ruolo Fuorigiri deriva dall’invito personale e non dal provider. Ogni operatore accede al cloud con il proprio account, che deve poter leggere/scrivere la cartella. Un visualizzatore Fuorigiri può configurare il collegamento e ricevere dati, ma non pubblica modifiche ai dati.

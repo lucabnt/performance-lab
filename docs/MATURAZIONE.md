@@ -4,6 +4,14 @@ Implementazione del 19 ottobre 2026, requisiti TD-93–97. Il motore `growth-mat
 
 ## Dati e flusso
 
+### IMC descrittivo nel profilo — 7 novembre 2026
+
+La tabella Antropometria mostra **IMC (BMI) · kg/m²** per ciascuna rilevazione: peso in kg diviso per il quadrato della statura in metri. Entrambi i valori devono essere positivi, finiti e nello stesso record. Dati mancanti ⇒ —; non vengono combinate rilevazioni distinte neppure se hanno la stessa data. La fonte resta quella originale (misurato, dichiarato, stimato, ecc.); il risultato è calcolato e non diventa una misura acquisita. Arrotondamento solo nella presentazione, nessuna modifica agli input.
+
+Con almeno due valori disponibili si può aprire **Storico IMC (BMI)**: grafico separato di tutti i valori del profilo, con date e fonte nel tooltip, senza classificazioni. È una vista descrittiva frontend; non modifica gli snapshot di maturazione già conservati e non aggiunge l’IMC ai relativi report/export. La lettura dei giovani richiede riferimenti per età e sesso; l’IMC non distingue massa muscolare e massa grassa e non misura prestazione o maturazione.
+
+Riferimenti: [CDC, formula e interpretazione nei giovani](https://www.cdc.gov/bmi/child-teen-calculator/bmi-categories.html); [NICHD, limiti dell’IMC negli atleti](https://www.nichd.nih.gov/health/topics/obesity/conditioninfo/diagnosed). Nessun percentile o giudizio clinico automatico introdotto.
+
 Nel profilo atleta usare **Rilevazione**: data, massa e/o statura, fonte, qualità e precisione di lettura della statura. La sezione avanzata contiene dati facoltativi: statura seduta, apertura braccia, arti inferiori, stature dei genitori e una previsione adulta esterna. Non sono richiesti per registrare una misura e i loro indici restano secondari.
 
 **Correggi rilevazione** conserva una nuova revisione con motivo e controllo sulla revisione di partenza. Nascita completa e parametro M/F sono necessari per le equazioni che li richiedono; se il parametro non è indicato nella rilevazione, viene usato il sesso esplicitamente registrato nel profilo. Non viene dedotto da nome/gruppo. Solo anno di nascita non produce un'età decimale fittizia.

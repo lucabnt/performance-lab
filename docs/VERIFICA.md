@@ -1,11 +1,58 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 8 novembre 2026 — consegna sync-intervals-20261107-01
+
+Richiesta esplicita: creare nuovo EXE e APK dopo SYNC-AUTO-01 / INT-ICU-01. Build eseguite il 7 novembre, confezionamento completato l’8 dopo l’interruzione del servizio di approvazione. Candidato locale nuovo `dist/candidates/Fuorigiri-0.10.0-sync-intervals-20261107-01/`, prodotto **0.10.0**, base Git `f972c5c060477cb9bd65fb6a867efc39f5839f56` con working tree modificato e sorgenti congelati. Include anche le altre modifiche locali correnti; consegne precedenti conservate, nessuna pubblicazione.
+
+- Windows: `build.py --output-root .local/candidate-windows-20261107-01` riuscito; PyInstaller e controlli common/versioni, dipendenze incluse. Installer Inno Setup in output nuovo, compilazione riuscita in 125,703 s. Bundle portabile completo, non il solo launcher. Avviso QML sul plugin opzionale assetdownloader già noto.
+- Defender attivo con definizioni **1.463.180.0**: scansione del nuovo bundle il 7 e del nuovo installer l’8 riuscite senza rilevamenti, nessun nuovo evento per le due directory. Primo comando di scansione installer fallito con `0x80508023`; ripetuto con percorso Windows risolto e log separato, riuscito. Nessuna esclusione, riparazione della quarantena o indebolimento delle protezioni. Lo smoke dell’EXE su archivio nuovo `.local/qa-windows-package-20261107-01`, con sole directory Windows nel PATH, ha verificato import/logo/backend HTTP. **WIN-AV-01 rimane aperto per il vecchio candidato**: queste prove non confermano un falso positivo e non sostituiscono installazione/riapertura su Windows pulito.
+- Controllo finale dopo aggiornamento Defender a **1.463.187.0**: scansione dell’intera cartella di consegna completata senza rilevamenti (log locale `defender-delivery-20261108-01.log`), checksum congelati invariati.
+- Launcher: 17.404.690 byte, SHA-256 `8371267205e2a05021431e022302ff6ce17a8da66d77f8e3a353a486ff17869b`. Installer: 197.182.260 byte, SHA-256 `8449c65a760d6e8a59fcad7d75ecf46fe46de579685eb88350825b6484fba88d`. Portabile: 280.908.533 byte; digest in SHA256SUMS.txt.
+- Android: JDK 21/Gradle 8.13, gate otto wheel superato, `assembleDebug assembleRelease assembleDebugAndroidTest` in output nuovo `.local/candidate-android-20261107-01` riusciti in 6m14s (136 task, 135 eseguiti). Gradle offline ma risoluzione pip/cache distinta: non dichiarare build completamente offline. Conservati avvisi SDK XML, librerie non stripped e deprecazioni Gradle. Nessuna nuova chiave.
+- Debug installabile per test: 105.066.355 byte, SHA-256 `63b380cc3abc348609f1ee0744b8822733333d3ac52239af0a97cecb4298bbf0`, firma v2 valida e certificato debug invariato `89d904a555285aaf9e6488d8d1ac0d4e92061f9d33cb14b4236baeb909e160b3`. Release non firmato: 104.002.716 byte, SHA-256 `39505b2cd165194769995b7d2198dcd0894904ce7b1a49ba46398a368c58b745`, assenza firma verificata. Entrambi superano zipalign `-c -P 16`; la firma release resta del titolare.
+- Audit completo nuovo APK: **222 ELF, 6 non allineati LOAD a 16 KB**, gli stessi problemi già aperti: pydantic-core e FreeType entrambe le ABI, OpenBLAS/libpng x86_64. `--require-16k` fallisce come previsto; zipalign non corregge questo gate. Report incluso in ANDROID_NATIVE_AUDIT.json.
+- Contenuti: i **19 file frontend** sono identici alla build corrente in Windows/debug/release; **49 moduli backend** presenti negli APK. SOURCE_MANIFEST/BUNDLE_MANIFEST/CONTENTS registrano input, launcher e dipendenze Android risolte. Confrontati tutti i sorgenti nello ZIP con lo snapshot e il launcher nel portabile con il bundle; CRC ZIP e **24 checksum** finali verificati. Suite funzionali della precedente attività: 282 Python passati/1 skip e 42 frontend, non rieseguite per il solo confezionamento. `verify_versions.py` e `git diff --check` ripetuti riusciti.
+- Nessuna installazione su dati operativi, nessuna prova runtime di questo nuovo APK su emulatore o telefono, nessun provider reale, Windows pulito o firma Authenticode. La documentazione congelata precede soltanto questa annotazione finale e i riferimenti di consegna aggiunti dopo il confezionamento; codice funzionale incluso per intero. I checksum della consegna rimangono invariati.
+
+## 7 novembre 2026 — SYNC-AUTO-01 / INT-ICU-01
+
+- Suite Python completa finale: **282 passati, 1 saltato**, 93,48 s. Avvisi già presenti: deprecazione TestClient/httpx e ZIP duplicato intenzionale nel test di corruzione. Nuovi casi: preferenza locale persistente/isolata, viewer, ID non valido, conflitto di revisione, client senza campo, vero scambio firmato a un secondo archivio, ripristino backup v3 con ID/opzione e senza preferenza locale, ultima riuscita conservata dopo errore e invalidata al cambio destinazione.
+- Frontend: **42 test passati**, inclusi apertura/debounce, modifiche durante scambio, periodicità, assenza di sovrapposizioni, backoff/reset e distinzione scritture/preview/polling. Build TypeScript/Vite riuscita; avviso dimensioni chunk ancora presente, Plotly resta differito. `verify_suite_ui.py`, `verify_core.py` e `git diff --check` riusciti.
+- GUI reale compilata e backend reale, archivio nuovo `.local/qa-intervals-automatic-20261107-01`, soli dati sintetici. Verificati scambio all’apertura senza comando, pubblicazione dopo salvataggio profilo, preferenza automatica disattivata conservata al reload e riattivazione. Verificati Intervals disattivo senza pulsante ma con ID conservato nell’editor, attivazione e destinazione HTTPS esatta, rendering responsive stretto e desktop 1280 × 720. Corretto l’aggiornamento dopo job: rinnova lo stato senza smontare le pagine; conserva sezioni aperte e bozza della connessione.
+- Le prove GUI usano il trasporto cartella locale, i test WebDAV il server locale della suite. Nessun collaudo con account/server WebDAV esterno o accesso effettivo al profilo Intervals.icu; nessuna nuova build EXE/APK, prova Qt/telefono o modifica al candidato bloccato da Defender. Screenshot e provenienza in [galleria](screenshots/README.md).
+
+## 7 novembre 2026 — GRUPPI-05 e ANTRO-IMC-01
+
+- Frontend: `npm --prefix frontend run test:signals` **39 test superati**, inclusi vettori IMC (72 kg/200 cm = 18; 67,5 kg/176 cm = 21,791064049586777), null/zero/negativi/non finiti e record incompleti anche nella stessa data. Build frontend riuscita; rimane l’avviso Vite sui chunk grandi. `scripts/verify_suite_ui.py` superato e `git diff --check` senza errori.
+- Backend invariato: regressioni pertinenti `tests/test_memberships.py` e `tests/test_group_management.py`, **11 test superati**, incluso salvataggio atomico/duplicati; avviso preesistente Starlette/httpx. Non eseguita la suite Python completa per questa modifica frontend.
+- GUI reale compilata 0.10.0/common UI 0.2.8 con backend reale e archivio QA nuovo `.local/qa-gruppi-imc-20261107-01`, esclusivamente sintetico: filtro categoria con rosa già popolata, comando Aggiungi atleti al gruppo, destinazione inizialmente non selezionata e conferma disabilitata. Scelta 2026 ⇒ date annuali corrette e atleta già assegnato non selezionabile. Salvataggio effettivo di Bruno e Carla ⇒ due appartenenze aggiunte, rosa da uno a tre, filtro categoria conservato. Apertura dal filtro stagione 2027 vuoto ⇒ destinazione bloccata sulla stagione e date 01/01–31/12/2027, tutti e tre gli atleti della società disponibili; chiuso senza salvare.
+- Profilo Ada: cinque rilevazioni, tre IMC visibili (17,78; 18,73; 18,75), due mancanti espliciti; fonte dichiarata conservata accanto al valore del 2026-01-01. Grafico storico espandibile con tre punti cronologici, separato dalle scale peso/statura. Nessuna classificazione e nessun requisito di nascita completa per il valore numerico. Verificati in inglese pulsante collettivo, intestazione BMI, fonti Measured/Declared e testo esplicativo.
+- Catture reali senza ritocchi in `docs/screenshots/`: `gruppi-filtro-atleti.png`, `gruppi-filtro-assegnazione.png`, `antropometria-imc.png`, `antropometria-imc-storico.png`. Nessun dato personale o token nelle immagini. Guide, requisiti, architettura e regole operative aggiornati; record, schemi, report e snapshot di maturazione invariati. Nessuna nuova build EXE/APK, prova Android nativa o pubblicazione.
+
+## 7 novembre 2026 — WIN-AV-01, rimozione EXE da Defender
+
+- [Confronto con il predecessore Windows](WINDOWS_DEFENDER.md#confronto-con-il-predecessore-windows): verificati snapshot, manifest, intermedi PyInstaller, metadati del portabile e cronologia delle definizioni. I rilevamenti del 5 e del 7 novembre usano due versioni diverse delle definizioni. Nessun nuovo test di esecuzione dei candidati.
+
+- Registro operativo Defender, ore locali: per la copia di lavoro del launcher, evento 1116 alle 21:03:33 e quarantena (1117) alle 21:04:05. Verificata l'assenza di entrambe le copie nelle directory di lavoro e del bundle.
+
+- Verifica di provenienza successiva: 13 checksum della consegna confermati. Nel portabile controllati tutti i 361 binari di supporto rispetto a wheel pubbliche o distribuzioni ufficiali CPython, inclusa la variante SQLite dell'installer Windows. Confrontati il bootloader originale PyInstaller e il codice applicativo negli intermedi di build. [Perimetro, digest e limiti](WINDOWS_DEFENDER.md#verifica-di-provenienza-del-7-novembre-2026).
+
+- Diagnosi sul PC indicato dall'utente: eventi Defender confermano quarantena di `Fuorigiri.exe` installato il 5 e il 7 novembre, rilevamento `Trojan:Win32/Bearfoos.A!ml`. EXE assente, dipendenze/disinstallatore presenti; percorsi `[Icons]` e `[Run]` corretti, nessuna cancellazione post-installazione nello script Inno.
+- Anche la lettura dell'originale di build viene bloccata e genera un nuovo evento alle 20:46, confermato dalla schermata dell'utente. Impossibile completare il confronto hash. Scansione mirata senza remediation stampa esito negativo, contraddetto dai blocchi in tempo reale: non usato per qualificare il file. Aggiornamento definizioni tentato, versione invariata 1.463.178.0.
+- **Candidato Windows `windows-alpha-review-20261102-01` bloccato**, falso positivo solo ipotizzato. Nessun upload, esclusione, ripristino dalla quarantena, reinstallazione o nuova build. Dati applicativi non modificati. Gli smoke precedenti restano storici e non dimostrano accettazione antivirus.
+
+## 7 novembre 2026 — ANTRO-CHART-01, andamento antropometrico
+
+- Compilazione frontend riuscita (rimane l’avviso Vite sulla dimensione dei chunk); verifica `scripts/verify_suite_ui.py` superata. Primo tentativo build fermato dai permessi sulle copie legali generate, successivo eseguito con autorizzazione estesa.
+- Collaudo visivo del frontend compilato nel browser locale con backend reale e archivio QA nuovo `.local/qa-antropometria-20261107-01`: sette rilevazioni sintetiche, sei pesi e due stature, con valori mancanti alternati. Confermate linea blu continua tra tutti i pesi e linea arancione tra le due stature; tabella con mancanti ancora indicati da —. Cattura reale [antropometria-collegata.png](screenshots/antropometria-collegata.png), senza ritocchi.
+- Nessuna modifica ai dati esistenti o ai metodi; nessuna ricompilazione EXE/APK né prova su dispositivo Android. AGENTS.md resta valido: nessun cambiamento a comandi, struttura o regole operative.
+
 ## 2 novembre 2026 — seguito autorizzato native 16 KB e ricompilazione Windows
 
 - Stato Git iniziale con modifiche preesistenti della fase Pillow conservato; nessun reset o pubblicazione. [Piano e ricette native](ANDROID_NATIVE_16KB.md). Interrogati indici Chaquopy: provider FreeType/libpng/OpenBLAS ancora alle versioni storiche, nessun sostituto aggiornato osservato. Esaminati metadati NumPy/Matplotlib: vincoli minimi, non pin esatti; nessuna modifica delle formule per adottare librerie nuove.
 - Nuovo auditor `scripts/audit_android_native.py`: **222 ELF** nell'APK Pillow contando tutti i contenitori `.imy`, incluse le estensioni stdlib, contro i 106 del precedente controllo limitato a requirements/lib. Confermati gli stessi **sei** oggetti non qualificati 16 KB. Contratto dei consumatori derivato dall'APK con SHA-256 noto: 28 export FreeType e 57 OpenBLAS richiesti per ABI. Nessun consumatore ELF diretto di libpng osservato; non equivale a dimostrare che ogni codice runtime la ignori.
 - Selezionati sorgenti pydantic-core **2.41.4 invariato**, FreeType **2.15.0**, libpng **1.6.59**, OpenBLAS **0.3.34**. Pagina ufficiale libpng consultata: CVE-2026-46675 corretta in 1.6.59, quindi scartata 1.6.58 come candidato. Digest sdist PyPI/OpenBLAS release verificati; FreeType/libpng da commit fissati con digest osservati distinti da firme o checksum indipendenti. Nessuna affermazione di audit completo o assenza di vulnerabilità dello stack.
-- Preparati builder e wheel native-only per il layout Chaquopy, controlli macchina/LOAD, dipendenze e simboli, avvisi originali nelle wheel; OpenBLAS C_LAPACK/LP64 con LAPACK mantenuta, vettori runtime preparati (sistemi reali/complessi, autovalori, SVD, minimi quadrati, polyfit e font/PNG). **Ricette non ancora eseguite sul builder**: nessuna nuova wheel di questa fase ricevuta/adottata e nessun nuovo APK; pin e SHA256.json dell'app invariati. Rimane valido il rinvio del report con grafico sul telefono.
+- Preparati builder e wheel native-only per il layout Chaquopy, controlli macchina/LOAD, dipendenze e simboli, avvisi originali nelle wheel; OpenBLAS C_LAPACK/LP64 con LAPACK mantenuta, vettori runtime preparati (sistemi reali/complessi, autovalori, SVD, minimi quadrati, polyfit e font/PNG). **Ricette non ancora eseguite sul builder**: nessuna nuova wheel di questa fase ricevuta/adottata e nessun nuovo APK; pin e SHA256.json dell'app invariati.
 - Kit finale `tmp/native16k-kit-20261102-02.zip`: **29.037.834 byte**, SHA-256 `00b6eb048392c422ea95cacb44ca9287344da0dc69344a5aab28f682464911b5`; CRC verificati, sorgenti/hash ricontrollati, script nel kit byte-identici alle sorgenti correnti e sintassi verificata. Preliminare 01 conservato. Prima azione sul builder: pydantic-core x86_64 in output nuovo, poi revisione dei log prima degli altri componenti/ABI.
 - Strumenti: **11 test mirati passati** (sette nuovi casi su ELF/segmenti/congruenza/troncamenti, lettura .imy incluse stdlib, wheel/RECORD e protezione output, oltre ai quattro Pillow precedenti). Cinque script nativi compilati in memoria; verify_versions/core/suite_ui e git diff --check riusciti. La verifica non prova le ricette CMake/Rust su Linux o il runtime Android dei nuovi provider.
 - Windows: regressione completa prima della build **271 passati, 1 skip, 2 warning, 98,15 s**; warning Starlette/httpx e duplicato ZIP intenzionale, skip symlink Windows. **37 test frontend passati**. PyInstaller in `.local/candidate-windows-native16k-20261102-01` riuscito in circa **245,5 s**, con dipendenze correnti e correzione backup; frontend già compilato nella fase Pillow, asset inclusi byte-identici. Warning QML assetdownloader e raccolta Qt conservati; non dichiarati risolti dal solo smoke.
@@ -187,14 +234,12 @@ Confezionato candidato Android separato **`dist/candidates/Fuorigiri-0.10.0-andr
 - Browser locale sul frontend compilato, archivio QA nuovo con soli dati sintetici: Codice iniziale visibile per incrementale, Sprint, Wingate 15/30 e personalizzato; modifica e salvataggio Wingate con `ANA-DEMO-15`, visualizzazione nel catalogo e codice ereditato in Nuova versione. Acquisizione reale verificata visivamente in `screenshots/protocollo-codice.png`. Import ERG aggiornato nei sorgenti e compilato, senza prova di caricamento file in questa sessione.
 - Nessuna modifica agli archivi reali, migrazione, metodo scientifico o pacchetto UI comune. Nessun EXE/APK/installer ricostruito; nessun collaudo Android implicito. Per incrementali e personalizzati restano i vincoli precedenti di codice invariato durante la revisione.
 
-
 ## 22 ottobre 2026 — DESKTOP-01, riapertura ultima società
 
 - Suite Python completa: **206 passati, 1 saltato**; nuovi casi di persistenza dopo ricreazione backend/cambio porta/token, preferenza malformata, ID incoerenti, autenticazione e visualizzatore. Restano i warning noti Starlette/httpx e ZIP duplicato intenzionale.
 - Frontend: **25 test passati**, TypeScript/Vite compilati; warning noto sul chunk Plotly.
 - GUI desktop web compilata su archivio QA nuovo `.local/qa-last-society-20261022`: creata società sintetica, arrestato backend sulla porta 8774, riavviato sulla 8775 con nuova sessione/token e nuova scheda. La società ricordata si apre direttamente sulla pagina Atleti, senza selezione manuale. Verificato stato accessibile della GUI.
 - Nessun layout cambiato; schermate della galleria ancora rappresentative. Nessun archivio preesistente modificato. Il candidato del 21 ottobre e l’installazione precedente non contengono questa correzione. Nuova build Windows isolata in `.local/candidate-windows-20261022-01`: PyInstaller riuscito e smoke dell’EXE congelato superato con PATH limitato a Windows, senza Python/Node. Installer Inno Setup compilato con successo (111,625 s), consegna `dist/candidates/Fuorigiri-0.10.0-windows-20261022-01`, SHA-256 `b4d1538adb7d1f0f5659ec41b07662fb3e38d774884799f8859aaa507c9f7915`, 196051115 byte, quattro checksum verificati. Non firmato Authenticode; aggiornamento sopra l’installazione dell’utente non eseguito dall’agente, resta W-04/W-07.
-
 
 ## Aggiornamento candidato pilot-20261021-02 — 21 ottobre 2026
 
@@ -223,7 +268,6 @@ Android: digest delle sei wheel verificati; assembleRelease --offline inizialmen
 Consegna congelata in dist/candidates/Fuorigiri-0.10.0-pilot-20261021-01: installer Windows 196030915 byte, ZIP portabile 279664863 byte, APK release non firmato 99396505 byte, sorgenti 4510737 byte e wheel native 13773852 byte. CRC di tutti gli ZIP e SHA-256 dei 12 file della consegna verificati. APK SHA-256 `358b660953639cc7d6c3ad45cfee245ff14ae851f67e27735e6a59123dcd334b`, installer `31a85b0da2a3a01d9cb2c7e696a13fa8f2cd4172ff941b2c89d88190f4765dc0`; Authenticode installer NotSigned. ZIP portabile estratto in una nuova directory QA e secondo smoke del suo EXE con PATH senza Python/Node e percorso dati con spazi/accenti: exit 0. La checklist allegata al candidato è la fotografia al packaging, quella nei sorgenti registra anche le verifiche successive.
 
 Checklist in COLLAUDO_PILOT.md: marcate solo prove effettive; PC pulito, firma del titolare, telefono, aggiornamento operativo, provider/account reali e validazione scientifica esterna rimangono aperti. Manifest/checksum della consegna identificano i byte; sorgenti dal working tree con modifiche locali, non dal solo commit base.
-
 
 ## Correzione TD-106 — logo a destra, 21 ottobre 2026
 
@@ -438,7 +482,6 @@ Aggiunti test per Sprint/Wingate, integrali, finestre, lacune/offset/esclusioni,
 - Nessun dato operativo o identità reale importati. Archivi e credenziali delle fixture isolati sotto .local/ e tmp/, esclusi dalla repository. Nessuna validazione fisiologica nuova.
 - Pacchetto Windows 0.4 ricompilato: smoke test con import, logo e backend HTTP riuscito in .local/smoke-04; modulo cycling_test.recovery incluso nel bundle. Finestra Qt realmente aperta, versione 0.4 e tre percorsi verificati; apertura della scheda Ripristina da backup controllata. Nessun archivio creato nel profilo predefinito durante questa verifica; finestra poi chiusa. Flussi completi sui dati verificati nelle istanze browser/API isolate.
 
-
 ## Software 0.3 — 17 ottobre 2026
 
 - **32 test passati** su Windows, inclusi sei nuovi casi: protocollo senza step, creazione/revisione di test manuali, gruppo figlio senza nome, CSV obbligatori/facoltativi, media diversa dalla mediana e decodifica/analisi di quattro FIT basati sugli ERG originali.
@@ -514,7 +557,6 @@ Individuata e rimossa dalla ricerca delle dipendenze una DLL ICU di Poppler intr
 
 Build pulita riuscita con PATH isolato. Eseguito `Fuorigiri.exe --smoke-test` sul bundle finale: import, logo e backend HTTP verificati, marker in `.local/smoke-02-final/smoke-ok.txt`. Avviata anche la finestra sul desktop Windows: interfaccia caricata e footer con logo/attribuzione verificati visivamente e tramite accessibilità. Non equivale ancora al collaudo su un PC pulito.
 
-
 ## 20 ottobre 2026 — UI comune 0.2.2
 
 Riallineamento alla UI corrente di Fuorigiri e dipendenza condivisa da common. Verificati 8 test della libreria, 5 test frontend Ammiraglia e 19 frontend Fuorigiri; build TypeScript/Vite dei due prodotti e del catalogo, controlli standalone dei tarball e allineamento versione/impronta sorgenti comune. Browser su archivi QA nuovi e sintetici: shell/onboarding di entrambe, società/dashboard/liste e scarto protetto Ammiraglia, finestra licenza Fuorigiri. Catalogo a larghezza ridotta: focus iniziale, Esc con modifiche, continua a modificare, blocco della chiusura durante salvataggio. Resta il warning sul grande bundle Plotly. Nessun nuovo installer, prova Qt su PC pulito, collaudo completo di tutte le pagine o suite backend completa; backend invariato. Artefatti da checkout locale modificato (`source_dirty=true`).
@@ -554,14 +596,12 @@ Nuovo candidato locale `dist/candidates/Fuorigiri-0.10.0-pilot-20261025-02`, ver
 - Consegna completa con installer, portabile, APK, sorgenti e wheel native; checksum di tutti i file ricontrollati. Sorgenti funzionali e CSV di esempio nel pacchetto confrontati con i file finali. Nessuna pubblicazione. Registro e screenshot finali aggiornati successivamente al congelamento della consegna; i binari comprendono tutte le modifiche funzionali.
 - Ultimo controllo browser su archivio QA sintetico nuovo: download reale del CSV di esempio riuscito; caricamento del file completo da 4 righe, anteprima 4 appartenenze e 6 gruppi/stagioni nuovi senza errori. Screenshot import-csv-appartenenze.png aggiornato ai testi finali. Il salvataggio reale del lotto da 3 righe resta la prova precedente, distinta dalla cattura finale.
 
-
 ## UI-ORDER-01 — 26 ottobre 2026
 
 - Frontend: 36 test passati (`.local/test-ui-order-20261026.log`), TypeScript/Vite build completata (`.local/build-ui-order-20261026.log`); warning noto sulla dimensione del chunk Plotly. Verifica standalone common UI 0.2.8 passata. Nessun cambio backend, calcolo o protocollo di scambio: suite Python non rieseguita per questo riordino.
 - Nuova regressione sul posizionamento del grafico: riepiloghi e soli riferimenti file non bastano; campioni con tempo/canale validi, zeri reali e prelievi lattato temporizzati sono rappresentabili, coerenti con il modello del grafico.
 - Browser su frontend compilato/backend reale: aerobico con 2.571 campioni e Wingate con 166 campioni, grafico prima dei KPI; test manuale senza FIT con riepilogo in alto, cinque KPI e MAP una sola volta. Altri risultati anaerobici apre/chiude la tabella complementare senza ripetere i quattro KPI. Verificato ordine zone/MAP/test/antropometria/maturazione nel profilo, elenco test prima della guida, storico principale prima della ripetibilità e report conservati fra generazione e import CSV.
 - Controllo visivo desktop 1280 × 900 e KPI su viewport stretto 412 × 915; catture reali in docs/screenshots, dati interamente sintetici. Nessuna prova su telefono fisico, nessuna compilazione di nuovi installer o APK in questo intervento. I candidati 20261026-01 precedenti restano invariati.
-
 
 ## Preparazione pacchetti UI-ORDER-01 — 27 ottobre 2026
 
@@ -571,11 +611,9 @@ Nuovo candidato locale `dist/candidates/Fuorigiri-0.10.0-pilot-20261025-02`, ver
 - Windows: bundle PyInstaller isolato `candidate-windows-20261027-01` completato, tutti i 19 file frontend identici alla build corrente; eseguibile finale --smoke-test su archivio QA nuovo con exit 0 e marker import/logo/backend. Installer Inno Setup costruito dal medesimo bundle; nessuna installazione sui dati dell’utente e nessuna prova su Windows pulito.
 - Consegne in nuove cartelle con sorgenti GPL del working tree, guide, manifest e SHA256; pacchetti precedenti invariati. Gli artefatti 20261027-01 includono il riordino, quelli 20261026-01 no.
 
-
 ## KPI soglia relativa — 27 ottobre 2026
 
 Ripristinato Soglia relativa in W/kg nel riepilogo comune a dettaglio aerobico e anteprima, accanto alla soglia in watt. TypeScript/Vite build riuscita; 36 test frontend passati. Browser su backend reale e dati sintetici: 141 W, soglia relativa salvata 2,66 W/kg, peso associato al test. Schermate desktop e strette rinnovate, senza modifiche ai calcoli, ai dati reali o al posizionamento del grafico. Nessun nuovo installer/APK per questa correzione; i pacchetti 20261027-01 restano invariati.
-
 
 ## Pacchetti con soglia relativa — 27 ottobre 2026, build 02
 

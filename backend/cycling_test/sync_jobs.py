@@ -93,6 +93,21 @@ def install(app,store):
     from pydantic import BaseModel
     from .sync_service import require_managed
     class Start(BaseModel):verify_all:bool=False
+    class Automatic(BaseModel):enabled:bool
+    @app.get('/api/v1/sync/automatic')
+    def automatic():
+        selected=store.selected.get();require_managed(selected)
+        from .sync_service import configuration
+        config=configuration(selected)
+        path=selected.root/'sync-automatic.json'
+        enabled=json.loads(path.read_text(encoding='utf-8')).get('enabled',True) if path.exists() else True
+        ready=bool(config.get('folder')) if config['transport']=='folder' else bool(config.get('url')) if config['transport'] in ('webdav','service') else bool(config.get('client_id') and (config.get('root_id') or config.get('root_path')))
+        return {'enabled':enabled,'configured':ready}
+    @app.put('/api/v1/sync/automatic')
+    def set_automatic(data:Automatic):
+        selected=store.selected.get();require_managed(selected)
+        write_json(selected.root/'sync-automatic.json',{'enabled':data.enabled})
+        return automatic()
     @app.get('/api/v1/sync/job')
     def job():
         selected=store.selected.get();require_managed(selected)

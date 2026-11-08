@@ -4,8 +4,9 @@ import {DataTable,FormActions} from '@cycling-suite/ui';
 import {tr} from './i18n';
 type Row=Record<string,any>;
 const today=()=>new Date().toLocaleDateString('en-CA');
-export function MembershipEditor({athletes,groups,memberships,athleteId,groupId,api,run,done,busy=false}:{athletes:Row[],groups:Row[],memberships:Row[],athleteId?:string,groupId?:string,api:any,run:any,done:any,busy?:boolean}){
- const initialGroup=groupId||groups[0]?.id||'';
+export function MembershipEditor({athletes,groups,memberships,athleteId,groupId,categoryId,api,run,done,busy=false}:{athletes:Row[],groups:Row[],memberships:Row[],athleteId?:string,groupId?:string,categoryId?:string,api:any,run:any,done:any,busy?:boolean}){
+ const choices=groups.filter(g=>!categoryId||g.id===categoryId||g.parent_id===categoryId);
+ const initialGroup=groupId||(categoryId?'':choices[0]?.id||'');
  const initialPeriod=seasonPeriod(groups.find(g=>g.id===initialGroup)?.season,today());
  const [group,setGroup]=useState(initialGroup),[start,setStart]=useState(initialPeriod.start),[end,setEnd]=useState(initialPeriod.end),[year,setYear]=useState(''),[query,setQuery]=useState(''),[picked,setPicked]=useState<string[]>([]);
  const active=athletes.filter(a=>(a.status||'active')==='active').sort((a,b)=>`${a.surname} ${a.name}`.localeCompare(`${b.surname} ${b.name}`));
@@ -16,12 +17,12 @@ export function MembershipEditor({athletes,groups,memberships,athleteId,groupId,
  const selected=athleteId?(available.some(a=>a.id===athleteId)?[athleteId]:[]):picked.filter(id=>available.some(a=>a.id===id));
  const all=eligible.length>0&&eligible.every(a=>selected.includes(a.id));
  const toggle=(id:string)=>setPicked(ids=>ids.includes(id)?ids.filter(x=>x!==id):[...ids,id]);
- const label=(g:Row)=>[groups.find(p=>p.id===g.parent_id)?.name||g.name,g.season].filter(Boolean).join(' · ');
+ const label=(g:Row)=>[groups.find(p=>p.id===g.parent_id)?.name||g.name,g.season||tr('Senza stagione')].join(' · ');
  return <form onSubmit={e=>{e.preventDefault();run(async()=>{const result=await api('memberships/batch',{group_id:group,athlete_ids:selected,start,end:end||null,category_year:year?Number(year):null});await done(result)})}}>
   <h2>{tr(athleteId?'Aggiungi a un gruppo':'Aggiungi atleti')}</h2>
   {athleteId&&<p>{athletes.find(a=>a.id===athleteId)?.surname} {athletes.find(a=>a.id===athleteId)?.name}</p>}
   <div className="form-grid">
-   <label>{tr('Gruppo')}<select required disabled={!!groupId||busy} value={group} onChange={e=>{const id=e.target.value;setGroup(id);const period=seasonPeriod(groups.find(g=>g.id===id)?.season,today());setStart(period.start);setEnd(period.end)}}>{groups.map(g=><option key={g.id} value={g.id}>{label(g)}</option>)}</select></label>
+   <label>{tr('Gruppo')}<select required disabled={!!groupId||busy} value={group} onChange={e=>{const id=e.target.value;setGroup(id);const period=seasonPeriod(groups.find(g=>g.id===id)?.season,today());setStart(period.start);setEnd(period.end)}}><option value="" disabled>{tr('Seleziona gruppo o stagione')}</option>{choices.map(g=><option key={g.id} value={g.id}>{label(g)}</option>)}</select></label>
    <label>{tr('Dal')}<input required type="date" value={start} onChange={e=>setStart(e.target.value)}/></label>
    <label>{tr('Al (facoltativo)')}<input type="date" min={start} value={end} onChange={e=>setEnd(e.target.value)}/></label>
    <label>{tr('Anno di categoria (1, 2…)')}<input type="number" min="1" max="20" value={year} onChange={e=>setYear(e.target.value)}/></label>

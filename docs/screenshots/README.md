@@ -1,5 +1,30 @@
 # Schermate dell’interfaccia
 
+## Intervals.icu e sincronizzazione automatica — 7 novembre 2026
+
+Frontend Fuorigiri 0.10.0 ricompilato, common UI 0.2.8, backend reale e nuovo archivio `.local/qa-intervals-automatic-20261107-01`, società/atleta esclusivamente sintetici. Catture responsive strette effettive del browser (315 px circa); nessun APK o dispositivo Android implicito. Verificato anche il layout desktop 1280 × 720. Nessun ritocco dei contenuti, credenziale o token nelle immagini.
+
+- [Configurazione Intervals.icu](intervals-configurazione.png): interruttore condiviso della società in Archivio e scambio, attivo.
+- [Profilo con pulsante](intervals-profilo.png): “Vedi su Intervals.icu” con ID sintetico `i000000`.
+- [ID nell’editor](intervals-id.png): campo facoltativo sempre disponibile; la disattivazione nasconde soltanto il pulsante. Verificata anche la conservazione dell’ID a opzione spenta.
+
+Lo scambio automatico all’apertura e dopo salvataggio è stato osservato sul trasporto cartella locale; disattivazione persistente e riattivazione provate, insieme a conservazione di sezione aperta e bozza WebDAV durante il completamento. La bozza non è una connessione WebDAV reale collaudata. Le immagini precedenti conservano la loro provenienza; queste catture documentano le nuove parti del profilo e di Archivio e scambio.
+
+## Gruppi dall’elenco filtrato e IMC — 7 novembre 2026
+
+Fuorigiri web compilato 0.10.0, common UI 0.2.8, modifiche GRUPPI-05 e ANTRO-IMC-01. Backend reale e archivio nuovo `.local/qa-gruppi-imc-20261107-01`, società e persone esclusivamente sintetiche. Catture del viewport 1280 × 720, senza ritocchi o token, controllate visivamente; nessuna provenienza da EXE/APK o telefono.
+
+- `gruppi-filtro-atleti.png`: filtro categoria Esordienti conservato dopo aggiunta reale di due atleti alla rosa già popolata; comando collettivo sempre presente.
+- `gruppi-filtro-assegnazione.png`: due nuovi atleti selezionati, atleta già assegnato disabilitato; cattura precedente al salvataggio, parte inferiore del dialogo.
+- `antropometria-imc.png`: tabella con IMC calcolato, fonte misurata/dichiarata e due rilevazioni incomplete con —.
+- `antropometria-imc-storico.png`: tre punti IMC in grafico separato, seguito dalle scale indipendenti di peso e statura. Il titolo espandibile dello storico è sopra l’inquadratura; la legenda identifica la serie.
+
+Le altre immagini mantengono la propria provenienza, inclusa `antropometria-collegata.png` della precedente correzione dello stesso giorno.
+
+## Andamento antropometrico — 7 novembre 2026
+
+`antropometria-collegata.png`: cattura reale del frontend compilato Fuorigiri 0.10.0, common UI 0.2.8, modifica ANTRO-CHART-01. Backend reale e nuovo archivio QA `.local/qa-antropometria-20261107-01`, atleta Ada Esempio DEMO, sette rilevazioni interamente sintetiche con peso/statura alternativamente assenti. Entrambe le serie collegano i rispettivi punti disponibili. Nessun ritocco, dato personale o token; nessuna verifica EXE/APK implicita. Le altre schermate conservano la propria provenienza.
+
 ## Aggiornamento organizzazione schede — 1 novembre 2026
 
 Build finale Fuorigiri 0.10.0/UI 0.2.8, nuovo corpus locale esclusivamente sintetico `.local/ui-coherence-20261101-01` (una società, un atleta, un gruppo e una appartenenza; nessun test/provider reale). Atleti e Archivio nel README puntano alle nuove catture; le altre immagini storiche rimangono disponibili. Nessuna nuova build nativa qualificata.

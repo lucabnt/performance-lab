@@ -1,5 +1,11 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## 7 novembre 2026 — automatismo dello scambio e collegamenti atleta
+
+L’automatismo della società aperta è coordinato da `useSyncJob` e dall’orologio `AutomaticSync`: apertura, scritture UI riuscite raggruppate a 10 s e ricezione ogni 5 min. Riutilizza `/sync/start`, cattura esplicita del workspace e lock preesistenti; non modifica formati, firme, conflitti o completezza dell’audit. Il polling osserva il lavoro senza avviarne copie. Backoff 30 s–30 min anche per risultati con errori/pending, sospeso finché un lavoro è attivo; le modifiche giunte durante uno scambio restano programmate. La preferenza è locale, predefinita attiva e conservata separatamente dalla destinazione, non in localStorage. Windows richiede l’interfaccia aperta; WorkManager Android rimane indipendente. Ultima riuscita locale legata all’impronta della destinazione e distinta dall’ultimo tentativo.
+
+Intervals.icu è un collegamento esterno, senza token o chiamate API. `intervals_icu_id` è un dato revisionato dell’atleta; `intervals_icu_enabled` è una scelta revisionata della società (Admin dati), predefinita falsa. Entrambi transitano nei formati ordinari, senza migrazione SQLite o cambio di schema sync. L’editor mostra sempre il campo, mentre l’opzione controlla esclusivamente il collegamento HTTPS al dominio fisso. Le richieste atleta dei client precedenti preservano il campo omesso; un valore vuoto esplicito lo cancella. Wrapper desktop/Android già gestiscono l’apertura nel browser di sistema.
+
 ## VO₂ integrato — 31 ottobre 2026
 
 Il supporto gas dell’incrementale mantiene il motore `gas.vo2peak-time-mean/1`. Le nuove analisi risolvono una sola fonte: `gas_hash` (CSV separato con `gas_offset_s`), `settings.vo2` (osservazioni `{at_s, vo2_l_min, note}` già sull’asse del tracciato), oppure canali con unità esplicite nel CSV temporale. Fonti concorrenti sono rifiutate. L’offset gas si applica solo al file separato. Osservazioni normalizzate e fonte restano nello snapshot `analysis.gas`; gli originali allegati rimangono oggetti immutabili. Le revisioni esistenti non vengono aggiornate automaticamente.
@@ -247,7 +253,7 @@ Navigazione: **Società e gruppi · Atleti · Test · Protocolli · Confronti ·
 
 Gruppi come categorie sportive, squadre e gruppi di allenamento, con filtri per stagione. Una scheda gruppo mostra atleti e storico aggregato, filtrando per protocollo/versione e metodo. I gruppi organizzano gli atleti: non sono automaticamente ruoli di autorizzazione degli operatori.
 
-Scheda atleta: dati anagrafici e provenienza, rilevazioni antropometriche nel tempo, test, allegati, grafici, note. L'età al test usa la precisione disponibile: solo anno di nascita significa età approssimata, non data fittizia al primo gennaio.
+Scheda atleta: dati anagrafici e provenienza, rilevazioni antropometriche nel tempo, test, allegati, grafici, note. L'età al test usa la precisione disponibile: solo anno di nascita significa età approssimata, non data fittizia al primo gennaio. Dal 7 novembre 2026 (ANTRO-CHART-01), il grafico descrittivo antropometrico collega i punti disponibili di peso e statura separatamente, superando i mancanti della rispettiva serie; i segmenti sono guide visive e non generano osservazioni intermedie. I dati mancanti rimangono espliciti nella tabella; questa scelta non modifica la gestione delle lacune nei tracciati temporali dei test.
 
 Procedura nuovo test:
 
@@ -732,3 +738,10 @@ Presentare prima il contesto e le azioni della pagina, poi risultati o elenchi p
 ## Organizzazione contestuale UI-SUITE-001 — 1 novembre 2026
 
 Le operazioni di creazione/import/export sono raggiungibili nel contesto della rispettiva scheda, prima dei risultati. `ImportPanel` accetta una lista di tracciati ammessi dal contesto e viene riusato nelle finestre Atleti/Gruppi/Test/Antropometria; Archivio mantiene la vista completa espandibile. Il limite UI serve all'orientamento, non sostituisce RBAC e validazioni server. Modello e file precedono istruzioni estese; appartenenze di gruppo distinte dal profilo individuale. Nessun nuovo componente common, CSS, formato o confine fra dati delle app. [Guida](docs/IMPORT_CSV.md).
+
+
+## Elenco filtrato e IMC descrittivo — 7 novembre 2026
+
+GRUPPI-05 estende l’accesso al MembershipEditor anche al filtro categoria, con scelta esplicita della destinazione attiva entro la categoria; il filtro stagione mantiene la destinazione preimpostata. Il comando resta nel contesto della rosa senza dipendere dal numero di membri o dai risultati della ricerca. API atomica, date e permessi invariati.
+
+ANTRO-IMC-01 introduce una vista frontend calcolata dai record antropometrici correnti: kg/(cm/100)² solo con entrambi gli input positivi e finiti nello stesso record. Tabella con date, fonte e mancanti; grafico IMC separato e facoltativo da almeno due valori. Nessun nuovo campo canonico o motore scientifico, nessuna riscrittura di snapshot/report, nessuna classificazione o percentile automatico. Fonti e limiti in docs/MATURAZIONE.md.

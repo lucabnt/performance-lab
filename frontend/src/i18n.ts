@@ -6,6 +6,22 @@ export async function initializeLanguage(load:()=>Promise<Preferences>){
 }
 document.documentElement.lang=language==='en'?'en':'it';
 const translations:Record<string,string> = {
+ "Ultimo scambio riuscito":"Last successful exchange",
+ "Sincronizzazione automatica non avviata. Nuovo tentativo programmato.":"Automatic synchronization could not start. A retry is scheduled.",
+ "Collegamenti a Intervals.icu":"Intervals.icu links",
+ "Abilita collegamenti a Intervals.icu":"Enable Intervals.icu links",
+ "ID atleta Intervals.icu":"Intervals.icu athlete ID",
+ "Facoltativo, per esempio i000000.":"Optional, for example i000000.",
+ "Vedi su Intervals.icu":"View on Intervals.icu",
+ "Impostazione della società condivisa fra dispositivi. Gli ID restano conservati quando disattivi la funzione. Il collegamento apre il sito, senza importare attività o richiedere credenziali in Fuorigiri.":"Society setting shared across devices. IDs are preserved when disabled. The link opens the website without importing activities or requesting credentials in Fuorigiri.",
+ "Sincronizza automaticamente su questo dispositivo per questa società":"Automatically sync this society on this device",
+ "Con una connessione configurata: all’apertura della società, circa 10 secondi dopo le modifiche e ogni 5 minuti mentre Fuorigiri è aperto. Se lo scambio fallisce, riprova con attese crescenti. Il lavoro offline resta disponibile.":"With a configured connection: when opening the society, about 10 seconds after changes and every 5 minutes while Fuorigiri is open. Failed exchanges are retried with increasing delays. Offline work remains available.",
+
+ "Aggiungi atleti al gruppo":"Add athletes to group",
+ "Seleziona gruppo o stagione":"Select a group or season",
+ "IMC (BMI) · kg/m²":"BMI · kg/m²",
+ "Storico IMC (BMI)":"BMI history",
+ "IMC = peso / statura² (kg/m²), calcolato solo da peso e statura della stessa rilevazione. La fonte resta quella dei dati originali. È un dato descrittivo: non misura la composizione corporea e non classifica salute o prestazione. Per i giovani l’interpretazione richiede riferimenti per età e sesso.":"BMI = weight / height² (kg/m²), calculated only from weight and height in the same measurement. The source remains that of the original data. It is descriptive: it does not measure body composition or classify health or performance. Interpretation for young people requires age- and sex-specific references.",
  "Importa CSV":"Import CSV",
  "Importazioni CSV":"CSV imports",
  "Istruzioni e formato CSV":"CSV format and instructions",

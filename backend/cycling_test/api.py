@@ -58,6 +58,7 @@ class Athlete(Model):
     birth_confirmed: bool = False
     birth_source: str = ""
     sex: Literal["M", "F", ""] = ""
+    intervals_icu_id: str = Field(default="", max_length=40, pattern=r"^(?:i[0-9]+)?$")
     notes: str = Field(default="", max_length=10000)
 
     @model_validator(mode='after')
@@ -69,6 +70,11 @@ class Athlete(Model):
                 raise ValueError('Data e anno di nascita incoerenti.')
             self.birth_year = self.birth_date.year
         return self
+
+
+class IntegrationSettings(Model):
+    base: str
+    intervals_icu_enabled: bool
 
 
 class Membership(Model):
@@ -240,7 +246,7 @@ def create_app(root=None, token=None, frontend=None):
             identity=selected.identity
             read_only=identity['certificate']['role']=='viewer' or identity['certificate']['id'] in selected.revocations()
             allowed=request.method in ('GET','HEAD') or request.url.path in ('/api/v1/tests/preview','/api/v1/sync',
-                '/api/v1/sync/start','/api/v1/device/preferences','/api/v1/workspaces','/api/v1/workspaces/last-selection','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore','/api/v1/workspaces/split/preview','/api/v1/workspaces/split','/api/v1/backup/scalable/save',
+                '/api/v1/sync/start','/api/v1/sync/automatic','/api/v1/device/preferences','/api/v1/workspaces','/api/v1/workspaces/last-selection','/api/v1/workspaces/join','/api/v1/workspaces/access','/api/v1/workspaces/restore/preview','/api/v1/workspaces/restore','/api/v1/workspaces/split/preview','/api/v1/workspaces/split','/api/v1/backup/scalable/save',
                 '/api/v1/sync/connection','/api/v1/sync/run','/api/v1/sync/oauth/start','/api/v1/sync/oauth/callback','/api/v1/sync/oauth/disconnect','/api/v1/anaerobic/preview','/api/v1/custom/preview')
             allowed=allowed or request.url.path=='/api/v1/repeatability' or request.url.path.startswith('/api/v1/repeatability/report/')
             if read_only and not allowed:
@@ -298,6 +304,11 @@ def create_app(root=None, token=None, frontend=None):
             raise ValueError('Un workspace contiene una sola società. Creare un nuovo workspace.')
         return store.save("organization",data.model_dump())
 
+    @app.put('/api/v1/organizations/{id}/integrations')
+    def integrations(id: str, data: IntegrationSettings):
+        original = require(id, 'organization')
+        return store.save('organization', {**original, 'intervals_icu_enabled': data.intervals_icu_enabled}, id, data.base)
+
     def validate_group(data: Group, id: str | None = None):
         require(data.organization_id,"organization")
         if data.parent_id:
@@ -354,7 +365,10 @@ def create_app(root=None, token=None, frontend=None):
         original = require(id,"athlete")
         if original["organization_id"] != data.organization_id:
             raise ValueError("Trasferimento fra società non supportato da questa modifica.")
-        return store.save("athlete",{**original,**data.model_dump(mode='json')},id,base)
+        payload = data.model_dump(mode='json')
+        if 'intervals_icu_id' not in data.model_fields_set:
+            payload.pop('intervals_icu_id', None)
+        return store.save("athlete",{**original,**payload},id,base)
 
     @app.post("/api/v1/memberships")
     def membership(data: Membership):

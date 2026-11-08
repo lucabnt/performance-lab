@@ -1,5 +1,9 @@
 # Distribuzione desktop e prerequisiti mobile
 
+## Blocco Windows — 7 novembre 2026
+
+Il candidato `windows-alpha-review-20261102-01` è bloccato da Microsoft Defender, che rimuove `Fuorigiri.exe` con rilevamento `Trojan:Win32/Bearfoos.A!ml`. Non è attualmente qualificato per l'uso. Le prove di build/smoke del 2 novembre restano storiche.
+
 ## Preparazione alpha — 2 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-alpha-prep-20261102-01/`, prodotto 0.10.0: installer Windows del 1 novembre verificato e riusato senza ricompilazione, nuovi APK debug e release non firmato, sorgenti, wheel native e checksum. Il debug è solo per le prove; per distribuire il release seguire [FIRMA_ANDROID.md](FIRMA_ANDROID.md). Nessuna pubblicazione, firma release o accettazione operativa implicita: [checklist](COLLAUDO_PILOT.md), [prove effettive](VERIFICA.md). Le sezioni datate precedenti restano come riferimento storico.

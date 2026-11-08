@@ -1,5 +1,17 @@
 # Collaudo del candidato pilot — Windows e Android
 
+## Candidato corrente — antro-incrementale, 8 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-antro-incrementale-20261108-01/`: nuove build Windows/Android 0.10.0 con import CSV incrementale, altezza perineale e rapporto sulla statura nel profilo; include eliminazione/ripristino di misure e test e le funzioni precedenti. Installer/portabile completi, APK debug firmato per i test, release non firmato per il titolare, APK strumentale, sorgenti e wheel. Smoke Windows e scansioni correnti riusciti, contenuti e **25 checksum finali verificati**. [Registro e digest](VERIFICA.md). Nessuna pubblicazione o nuova chiave.
+
+Restano Windows pulito/aggiornamento, WIN-AV-01 del candidato storico, firma release, runtime della nuova build Android e telefono, provider reali e sei problemi LOAD nativi a 16 KB. Non confondere zipalign con qualifica 16 KB; le scansioni correnti non dimostrano un falso positivo sul vecchio candidato. La documentazione congelata nei pacchetti precede questa annotazione finale.
+
+## Candidato record-lifecycle — 8 novembre 2026
+
+Consegna precedente `dist/candidates/Fuorigiri-0.10.0-record-lifecycle-20261108-01/`: nuove build Windows/Android con RECORD-LIFECYCLE-01 e funzioni precedenti. Installer e ZIP portabile completi, APK debug firmato con la chiave di test abituale, release non firmato e APK strumentale separato, sorgenti/wheel, manifest e 25 checksum verificati. Smoke Windows e scansioni correnti del nuovo bundle/installer riusciti. [Prove e digest](VERIFICA.md).
+
+Prima di accettare: installazione/riapertura e aggiornamento su Windows pulito con protezioni attive, firma release del titolare, runtime della nuova build su Android e conservazione dei dati, provider reali se inclusi nel pilot. Audit APK 222 ELF con gli stessi sei problemi LOAD 16 KB; zipalign superato non chiude il gate. WIN-AV-01 del candidato precedente resta aperto e non viene aggirato con esclusioni. Nessuna nuova chiave, installazione sui dati operativi o pubblicazione.
+
 ## Candidato sync-intervals — consegna 8 novembre 2026
 
 `dist/candidates/Fuorigiri-0.10.0-sync-intervals-20261107-01/`: nuove build del 7 con SYNC-AUTO-01 / INT-ICU-01 e modifiche correnti. Installer e portabile completi, APK debug già firmato per i test, release non firmato per il titolare, sorgenti/wheel, manifest e 24 checksum verificati. [Prove](VERIFICA.md). Nessuna pubblicazione o modifica ai vecchi pacchetti.

@@ -1,5 +1,31 @@
 # Requisiti e to-do
 
+## Consegna antro-incrementale — 8 novembre 2026
+
+ANTRO-INCREMENTALE-01, ANTRO-PERINEALE-01 e RECORD-LIFECYCLE-01 inclusi nel nuovo candidato locale `antro-incrementale-20261108-01`: Windows installer/portabile e APK debug/release non firmato prodotti, contenuti e checksum verificati. Smoke/scansioni Windows riusciti; runtime Android e accettazione esterna restano distinti. Questa consegna supera le note «nessuna nuova build» riferite alle precedenti fasi di implementazione, senza cancellarne la cronologia. [Prove](VERIFICA.md).
+
+## ANTRO-INCREMENTALE-01 — integrazione CSV, 8 novembre 2026
+
+Richiesta originale: «implementa l’integrazione incrementale». Successiva ad ANTRO-PERINEALE-01, ne sostituisce il precedente comportamento sulle righe arricchite.
+
+Implementato e verificato nei sorgenti: per atleta/data l’import riempie solo peso, statura e altezza perineale mancanti di una rilevazione attiva compatibile e univoca. I valori comuni devono coincidere; tra più rilevazioni compatibili non viene scelta automaticamente una destinazione. Fonte e origine esplicite discordanti sono errore; se omesse si conservano quelle esistenti. Campi vuoti non cancellano dati; qualità, note, campi avanzati e identità rimangono invariati. Il record integrato conserva ID e una nuova revisione con motivo e hash del CSV. Righe complementari dello stesso lotto confluiscono nello stesso record; reimport di sottoinsiemi già acquisiti saltati.
+
+Anteprima con Nuova rilevazione / Integra rilevazione e campi da aggiungere. `plan_hash` lega la conferma al piano e alle revisioni osservate: cambiamenti richiedono nuova anteprima. Un errore blocca tutte le scritture; la transazione include creazioni, revisioni, outbox e lotto. Nessun ripristino implicito di eliminati, sovrascrittura di valori discordanti o fusione delle rilevazioni storiche già distinte. La visualizzazione del rapporto resta limitata al singolo record risultante. Prove in VERIFICA.md; nessun nuovo EXE/APK.
+
+## ANTRO-PERINEALE-01 — altezza perineale, 8 novembre 2026
+
+Richiesta originale: «nuovo standard per import di dati antropometrici, con colonna dedicata all’altezza perineale. Se stessa occorrenza riporta entrambi i dati, calcola nel profilo atleta la colonna con il rapporto. Implementa».
+
+Implementato nei sorgenti: colonna CSV facoltativa `altezza_perineale_cm`, conservata come `perineal_height_cm`, distinta dagli arti inferiori. Modello, anteprima, import, export ed editor aggiornati; ammessa anche rilevazione con sola altezza perineale. Nel profilo: valore in cm e rapporto perineale/statura × 100, solo con entrambi i valori nello stesso record. Nessuna fusione per data o ricalcolo degli snapshot maturativi. Valori positivi, finiti, fino a 180 cm e inferiori alla statura quando presente. CSV precedenti compatibili; duplicati distinguono anche la misura perineale. Comportamento iniziale sulle righe arricchite sostituito da ANTRO-INCREMENTALE-01 (sezione successiva della stessa giornata). Nessuna importazione dei dati personali allegati negli archivi QA. Prove in VERIFICA.md; nessuna nuova build nativa.
+
+## RECORD-LIFECYCLE-01 — eliminazione dagli editor, 8 novembre 2026
+
+Incluso nel nuovo candidato locale `record-lifecycle-20261108-01`: installer/portabile Windows e APK debug/release non firmato prodotti e confezionati. Smoke e controlli di integrità eseguiti; accettazione operativa ancora distinta, dettagli in [VERIFICA.md](VERIFICA.md).
+
+Richiesta originale: «una rilevazione può essere corretta ma non cancellata. una volta selezionato correggi rilevazione dovrebbe essere possibile anche eliminarla. Vale per rilevazioni antropometriche che per i test.»
+
+Implementato nei sorgenti: **Elimina rilevazione** nell’editor antropometrico esistente e **Elimina test** nelle correzioni di test incrementali con tracciato, manuali/storici, Sprint/Wingate e personalizzati. Conferma separata con Dialog comune, senza imporre il salvataggio o la validazione della bozza. Eliminazione recuperabile per revisione tramite `records/{id}/status`, esteso alle misure (solo active/deleted); API state mantiene `measurement` attivo e aggiunge `deleted_measurement` per il recupero. **Rilevazioni eliminate** nel profilo e **Test eliminati** nel profilo/in Test e analisi consentono Ripristina agli Admin dati. Mancanti/esclusioni nei calcoli correnti restano espliciti; revisioni, oggetti originali, input dei test e snapshot già conservati restano invariati. Propagazione con sync e backup esistenti, conflitto sulla revisione obsoleta e ruolo viewer preservati. Prove e limiti in [VERIFICA.md](VERIFICA.md); nessun nuovo EXE/APK implicito.
+
 ## SYNC-AUTO-01 e INT-ICU-01 — 7 novembre 2026
 
 Richiesta: «quando avviene la sincronizzazione con webdav? […] fuorigiri windows non sincronizzava il contenuto locale se non triggerato. Scegliamo la strategia migliore per risolvere»; «feature […] attivabile e disattivabile […] id intervals.icu (eg. i000000) […] vedi su Intervals.icu». Approvata l’implementazione della proposta combinata. Correzione esplicita successiva: «gli id dovrebbero essere sincronizzati insieme a tutti i dati» e «lascia il campo, togli il pulsante alla disattivazione».

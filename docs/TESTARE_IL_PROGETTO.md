@@ -30,6 +30,7 @@ Checklist funzionale:
 
 1. Dal dettaglio di qualsiasi test usare «Apri profilo atleta»: si chiude la finestra e si apre il profilo corretto, anche per un visualizzatore. Aprire un incrementale con tracciato: MAP, potenza di soglia e FTHR insieme alle zone; fonte e coefficiente realmente applicato leggibili. Selezionare un livello lattato e verificare guide/punto/riga W–FC. Non aspettarsi FC se non disponibile.
 2. Scorrere fino in fondo al dettaglio: X rimane visibile. «Correggi test» apre l'editor dedicato; verificare anche Sprint/Wingate, custom e storico manuale. Cambiare un dato e chiudere: deve chiedere se continuare o scartare, senza modificare il test salvato.
+
 3. Nell'editor digitare `23:45` come fine dal file: il campo secondi deve diventare `1425`. Provare `23:60`: deve essere segnalato, non salvato come il vecchio valore. Il grafico indica l'origine dal file; il recupero rimane relativo alla fine sforzo. Verificare input da tastiera e selezione di un campione.
 4. Controllare campi personalizzati finali e glossario contestuale in ogni pagina. Verificare anche IT/EN per i nuovi componenti; restano testi legacy da completare.
 5. Dal footer aprire «Licenza, limiti e backup»: leggere GPL originale, avvisi delle dipendenze, assenza di garanzia e limiti backup. Nessuna EULA bloccante aggiunta. La build copia automaticamente i testi legali negli asset, senza modificarne gli originali.
@@ -38,6 +39,12 @@ Checklist funzionale:
 8. Conservare una nuova analisi con motivo su una copia QA; correggere una rilevazione con motivo. La nuova anteprima può cambiare, l'analisi precedente deve rimanere identica. Verificare CSV estesi, PDF/MD atleta/società e vero ripristino del backup.
 
 Metodi e gate: [MATURAZIONE.md](MATURAZIONE.md). %PAH/residuo richiedono una previsione adulta esterna con fonte/metodo; non è presente un calcolatore automatico Khamis–Roche. I test con curve sintetiche non certificano accuratezza biologica.
+
+### Eliminare e ripristinare test e misure — 8 novembre 2026
+
+Nel dettaglio test aprire **Correggi test → Elimina test**; per le misure usare **Correggi rilevazione → Elimina rilevazione**. La conferma è separata dal salvataggio della correzione: non occorre inserire il motivo di revisione o completare campi non validi della bozza. **Annulla** ritorna all’editor senza modificare il record. **Conferma eliminazione** lo esclude dagli elenchi/calcoli correnti ma conserva revisioni e file originali.
+
+Nel profilo aprire **Rilevazioni eliminate** oppure **Test eliminati → Ripristina**; i test sono recuperabili anche da **Test e analisi → Test eliminati**. Provare su un archivio sintetico nuovo: eliminare, verificare assenza nei grafici/IMC e nelle proposte antropometriche, ripristinare e confrontare valori e riferimenti originali. I test già salvati mantengono i propri input anche eliminando una rilevazione collegata; report e snapshot conservati non vengono riscritti. Ripetere con revisione obsoleta (conflitto, nessuna sovrascrittura) e accesso visualizzatore (scrittura vietata). Per il collaudo grafico delle varie famiglie usare i loro editor dedicati; le sole prove API non attestano il rendering di tutti gli editor.
 
 ## Aggiornare le schermate del README
 

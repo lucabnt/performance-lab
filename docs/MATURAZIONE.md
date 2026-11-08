@@ -1,8 +1,14 @@
 # Crescita e maturazione — metodi e uso, versione 1
 
+## Altezza perineale descrittiva — 8 novembre 2026
+
+Il profilo mostra altezza perineale (cavallo) in cm e rapporto percentuale sulla statura della stessa rilevazione. Campo API `perineal_height_cm`, CSV `altezza_perineale_cm`, facoltativo anche nell’editor. Nessuna combinazione tra record/date; misura distinta da `lower_limb_cm` e dalla lunghezza usata da Mirwald. Il rapporto è una vista descrittiva frontend: nessuna classificazione, modifica delle equazioni o ricalcolo degli snapshot salvati.
+
 Implementazione del 19 ottobre 2026, requisiti TD-93–97. Il motore `growth-maturity/1` è separato dal motore dei test: non richiede un FIT o un test eseguito. È un supporto descrittivo, non una diagnosi o uno strumento automatico per selezionare gli atleti.
 
 ## Dati e flusso
+
+**Eliminare una rilevazione:** aprire **Correggi rilevazione → Elimina rilevazione → Conferma eliminazione**. Non occorre compilare un motivo di correzione o salvare la bozza. La rilevazione scompare dalla tabella attiva, dai grafici/IMC, dalle proposte per i nuovi test e dall’anteprima corrente di maturazione. Le analisi già conservate e gli input associati ai test precedenti non vengono riscritti. Per annullare l’operazione aprire **Rilevazioni eliminate** nel profilo e premere **Ripristina**. Eliminazione e ripristino sono revisioni sincronizzabili riservate agli Admin dati, non cancellazioni fisiche.
 
 ### IMC descrittivo nel profilo — 7 novembre 2026
 

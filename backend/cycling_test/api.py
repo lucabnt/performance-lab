@@ -289,6 +289,7 @@ def create_app(root=None, token=None, frontend=None):
     @app.get("/api/v1/state")
     def state():
         result = {kind:store.list(kind) for kind in ("organization","group","athlete","membership","measurement","protocol")}
+        result['deleted_measurement']=[r for r in result['measurement'] if r.get('status')=='deleted']
         for kind in ('membership','measurement'):
             result[kind]=[r for r in result[kind] if r.get('status')!='deleted']
         result["test"] = [{**{k:v for k,v in t.items() if k != "samples"},'has_trace':bool(t.get('samples') or t.get('trace_hash'))} for t in store.list("test")]

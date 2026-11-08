@@ -1,5 +1,15 @@
 # Prossimi passi
 
+## Candidato corrente — antro-incrementale, 8 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-antro-incrementale-20261108-01/`: nuove build Windows/Android 0.10.0 con import CSV incrementale, altezza perineale e rapporto sulla statura nel profilo; include eliminazione/ripristino di misure e test e le funzioni precedenti. Installer/portabile completi, APK debug firmato per i test, release non firmato per il titolare, APK strumentale, sorgenti e wheel. Smoke Windows e scansioni correnti riusciti, contenuti e **25 checksum finali verificati**. [Registro e digest](VERIFICA.md). Nessuna pubblicazione o nuova chiave.
+
+Restano Windows pulito/aggiornamento, WIN-AV-01 del candidato storico, firma release, runtime della nuova build Android e telefono, provider reali e sei problemi LOAD nativi a 16 KB. Non confondere zipalign con qualifica 16 KB; le scansioni correnti non dimostrano un falso positivo sul vecchio candidato. La documentazione congelata nei pacchetti precede questa annotazione finale.
+
+## Consegna precedente — record-lifecycle, 8 novembre 2026
+
+Nuovo candidato locale `dist/candidates/Fuorigiri-0.10.0-record-lifecycle-20261108-01/`, successivo a sync-intervals: include eliminazione e ripristino dagli editor di misure e test e gli aggiornamenti precedenti. Installer/portabile, debug di test, release non firmato, sorgenti e wheel in cartella nuova, senza sostituire consegne esistenti. Smoke e scansioni Windows correnti riusciti; integrità e contenuti APK verificati. [Registro](VERIFICA.md), [accettazione residua](COLLAUDO_PILOT.md). Non chiude WIN-AV-01 del vecchio candidato, Windows pulito, firma release, runtime della nuova build Android, provider reali o i sei problemi LOAD a 16 KB.
+
 ## Consegna locale aggiornata — 8 novembre 2026
 
 Disponibile `dist/candidates/Fuorigiri-0.10.0-sync-intervals-20261107-01/`, con nuove build Windows/Android e SYNC-AUTO-01 / INT-ICU-01. Scansioni correnti e smoke Windows riusciti, firma debug/allineamento/contenuti APK verificati. Non promuovere il candidato precedente bloccato né dichiarare chiuso WIN-AV-01: restano revisione e accettazione Windows con protezioni attive. Restano firma release Android, prova runtime della nuova build, provider reali e i sei moduli non qualificati 16 KB. [Registro](VERIFICA.md), [checklist](COLLAUDO_PILOT.md).

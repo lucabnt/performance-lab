@@ -1,5 +1,15 @@
 # Distribuzione desktop e prerequisiti mobile
 
+## Candidato corrente — antro-incrementale, 8 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-antro-incrementale-20261108-01/`: nuove build Windows/Android 0.10.0 con import CSV incrementale, altezza perineale e rapporto sulla statura nel profilo; include eliminazione/ripristino di misure e test e le funzioni precedenti. Installer/portabile completi, APK debug firmato per i test, release non firmato per il titolare, APK strumentale, sorgenti e wheel. Smoke Windows e scansioni correnti riusciti, contenuti e **25 checksum finali verificati**. [Registro e digest](VERIFICA.md). Nessuna pubblicazione o nuova chiave.
+
+Restano Windows pulito/aggiornamento, WIN-AV-01 del candidato storico, firma release, runtime della nuova build Android e telefono, provider reali e sei problemi LOAD nativi a 16 KB. Non confondere zipalign con qualifica 16 KB; le scansioni correnti non dimostrano un falso positivo sul vecchio candidato. La documentazione congelata nei pacchetti precede questa annotazione finale.
+
+## Candidato precedente record-lifecycle — 8 novembre 2026
+
+`dist/candidates/Fuorigiri-0.10.0-record-lifecycle-20261108-01/` include le build precedenti con eliminazione/ripristino di rilevazioni e test. Windows: installer o ZIP completo; Android: debug firmato per i test e release non firmato per la firma del titolare. Sorgenti, wheel e checksum inclusi. [Riscontri](VERIFICA.md), [gate di accettazione](COLLAUDO_PILOT.md). Nessuna pubblicazione; scansioni correnti e smoke non sostituiscono Windows pulito o risoluzione del rilevamento storico WIN-AV-01. Nessuna qualifica runtime Android/16 KB implicita.
+
 ## Blocco Windows — 7 novembre 2026
 
 Il candidato `windows-alpha-review-20261102-01` è bloccato da Microsoft Defender, che rimuove `Fuorigiri.exe` con rilevamento `Trojan:Win32/Bearfoos.A!ml`. Non è attualmente qualificato per l'uso. Le prove di build/smoke del 2 novembre restano storiche.

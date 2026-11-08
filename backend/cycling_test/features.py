@@ -85,8 +85,10 @@ def install_features(app, store, require, download, preview):
     @app.post('/api/v1/records/{id}/status')
     def status(id: str, data: Status):
         r=store.get(id)
-        if r['kind'] not in ('athlete','protocol','test'):
+        if r['kind'] not in ('athlete','protocol','test','measurement'):
             raise ValueError('Ciclo di vita non disponibile per questo record.')
+        if r['kind']=='measurement' and data.status=='archived':
+            raise ValueError('Una rilevazione può essere attiva o eliminata, non archiviata.')
         return store.save(r['kind'],{**r,'status':data.status},id,data.base)
 
     @app.get('/api/v1/records/{id}/revisions')
@@ -226,7 +228,7 @@ def install_features(app, store, require, download, preview):
 
     @app.post('/api/v1/import/preview')
     def import_preview(file: UploadFile, organization_id: str=Form(), profile: str=Form()):
-        from .csv_import import plan_import
+        from .csv_import import plan_import, plan_digest
         require(organization_id,'organization')
         raw=file.file.read(30_000_001)
         if len(raw)>30_000_000: raise ValueError('CSV troppo grande.')
@@ -249,7 +251,10 @@ def install_features(app, store, require, download, preview):
             if kind=='membership':
                 g=groups[payload['group_id']]
                 preview[-1].update(group_name=groups.get(g.get('parent_id'),g)['name'],subgroup=g.get('season',''))
-        return {k:v for k,v in result.items() if k!='entries'} | {'staged_hash':digest,'ready':len(result['entries']),
+            if kind=='measurement':
+                preview[-1].update(import_action='integrate' if payload['id'] in result.get('bases',{}) else 'create',
+                                   added_fields=result.get('integrated_fields',{}).get(payload['id'],[]))
+        return {k:v for k,v in result.items() if k not in ('entries','bases','integrated_fields')} | {'staged_hash':digest,'plan_hash':plan_digest(result),'ready':len(result['entries']),
                 'ready_rows':len(records),'new_protocols':[{'code':p['family'],'name':p['name']} for p in created],
                 'new_groups':[{'name':p['name'],'season':p.get('season','')} for kind,p in result['entries'] if kind=='group'],'preview':preview}
 
@@ -257,17 +262,21 @@ def install_features(app, store, require, download, preview):
         organization_id: str
         profile: str
         staged_hash: str
+        plan_hash: str | None = None
 
     @app.post('/api/v1/import/commit')
     def commit(data: Commit):
-        from .csv_import import plan_import
+        from .csv_import import plan_import, plan_digest
+        from .store import ConflictError
         require(data.organization_id,'organization')
         result=plan_import(store,data.organization_id,data.profile,store.read_object(data.staged_hash))
         if result['errors']: raise ValueError('Correggere tutte le righe segnalate prima del commit.')
+        if (data.plan_hash is not None and data.plan_hash!=plan_digest(result)) or (result.get('bases') and data.plan_hash is None):
+            raise ConflictError('I dati o le integrazioni sono cambiati: ripetere anteprima prima di confermare.')
         batch={'organization_id':data.organization_id,'hash':result['hash'],'profile':data.profile,'objects':[data.staged_hash],
                'record_ids':[p['id'] for _,p in result['entries']]}
-        records=store.save_batch(result['entries']+[('import_batch',batch)]) if result['entries'] else []
-        return {'imported':len(result['entries']),'skipped':result['skipped'],'batch_id':records[-1]['id'] if records else None}
+        records=store.save_batch(result['entries']+[('import_batch',batch)],bases=result.get('bases')) if result['entries'] else []
+        return {'imported':len(result['entries']),'integrated':len(result.get('bases',{})),'skipped':result['skipped'],'batch_id':records[-1]['id'] if records else None}
 
     @app.get('/api/v1/history/{org}')
     def history(org: str, group: str='', season: str='', athlete: str='', mode: str='athlete', dimension: str='season', protocol: str=''):

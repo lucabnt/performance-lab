@@ -54,7 +54,7 @@ class Store:
             return [c['record'] for row in db.execute('SELECT body FROM changes ORDER BY rowid')
                     if (c := json.loads(row[0]))['record']['id'] == id]
 
-    def save_batch(self, entries):
+    def save_batch(self, entries, bases=None):
         """Single transaction including the outbox, used after complete import validation."""
         with self.connect() as db:
             device = db.execute("SELECT value FROM config WHERE key='device'").fetchone()[0]
@@ -63,13 +63,15 @@ class Store:
                 if kind not in KINDS:
                     raise ValueError('Tipo record non valido.')
                 id, revision = payload.get('id', str(uuid4())), str(uuid4())
-                if db.execute('SELECT 1 FROM records WHERE id=?', (id,)).fetchone():
-                    raise ConflictError('Record importato già presente: ripetere anteprima.')
+                base=(bases or {}).get(id)
+                old=db.execute('SELECT revision,kind FROM records WHERE id=?', (id,)).fetchone()
+                if (old and (old['revision']!=base or old['kind']!=kind)) or (not old and base):
+                    raise ConflictError('Record importato modificato o già presente: ripetere anteprima.')
                 data = {**payload, 'id': id, 'kind': kind, 'revision': revision}
-                change = {'schema':1,'id':revision,'device':device,'base':None,'created_at':datetime.now(timezone.utc).isoformat(),'record':data}
+                change = {'schema':1,'id':revision,'device':device,'base':base,'created_at':datetime.now(timezone.utc).isoformat(),'record':data}
                 if hasattr(self, 'sign_change'):
                     change=self.sign_change(change,db=db)
-                db.execute('INSERT INTO records VALUES(?,?,?,?)',(id,kind,revision,encoded(data)))
+                db.execute('INSERT OR REPLACE INTO records VALUES(?,?,?,?)',(id,kind,revision,encoded(data)))
                 db.execute('INSERT INTO changes VALUES(?,?)',(revision,encoded(change)))
                 result.append(data)
             return result

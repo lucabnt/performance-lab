@@ -1,5 +1,36 @@
 # Schermate dell’interfaccia
 
+## Import incrementale — 8 novembre 2026
+
+Fuorigiri web compilato 0.10.0, UI comune 0.2.8, backend reale e nuovo archivio `.local/qa-incrementale-20261108-01`, dati esclusivamente sintetici. Viewport 1280 × 720, catture senza ritocchi.
+
+- [Anteprima integrazione](import-perineale.png): aggiornata dopo ANTRO-INCREMENTALE-01; sostituisce la precedente cattura della stessa giornata. Operazione e campi aggiunti visibili.
+- [Profilo dopo conferma](import-incrementale-risultato.png): una rilevazione con statura preesistente, peso e cavallo aggiunti, rapporto 47,62%.
+
+Nessuna verifica APK o dispositivo fisico implicita.
+
+## Altezza perineale — 8 novembre 2026
+
+Fuorigiri web compilato 0.10.0, UI comune 0.2.8, backend reale e archivio nuovo `.local/qa-perineale-20261108-01`. Persona e dati interamente sintetici; catture reali senza ritocchi, viewport desktop 1280 × 900.
+
+- [Profilo: misura e rapporto](antropometria-perineale.png), con record parziali della stessa data mantenuti separati.
+- [Editor rilevazione](rilevazione-perineale.png), campo cavallo precaricato.
+- [Anteprima CSV](import-perineale.png): cattura iniziale sostituita dalla verifica incrementale della stessa giornata documentata sopra.
+
+Le immagini documentano i sorgenti correnti; nessuna nuova build nativa implicita.
+
+## Eliminazione recuperabile — 8 novembre 2026
+
+Frontend compilato Fuorigiri 0.10.0/common UI 0.2.8 con RECORD-LIFECYCLE-01, backend reale e archivio nuovo `.local/qa-eliminazione-20261108-01`. Società e atleta Ada Esempio DEMO interamente sintetici; due misure e un test manuale. Screenshot reali del browser locale, circa 1280 × 720, senza ritocchi o token. Non documentano un nuovo EXE/APK o un dispositivo Android.
+
+- `eliminazione-rilevazione.png`: comando Elimina rilevazione in apertura dell’editor, motivo di correzione non compilato.
+- `eliminazione-conferma.png`: conferma annidata nel Dialog comune, data ed effetto recuperabile.
+- `rilevazioni-eliminate.png`: misura del 2026-01-01 esclusa dalla tabella attiva e disponibile al ripristino; l’altra misura resta attiva.
+- `eliminazione-test.png`: comando Elimina test nell’editor storico/manuale.
+- `test-eliminati.png`: test escluso dallo storico corrente e disponibile al recupero dal profilo.
+
+Eseguiti anche annullamento della conferma, eliminazione e ripristino reali per misura/test; ripristino del risultato MAP 200 W verificato dal dettaglio. Le altre immagini mantengono la propria provenienza.
+
 ## Intervals.icu e sincronizzazione automatica — 7 novembre 2026
 
 Frontend Fuorigiri 0.10.0 ricompilato, common UI 0.2.8, backend reale e nuovo archivio `.local/qa-intervals-automatic-20261107-01`, società/atleta esclusivamente sintetici. Catture responsive strette effettive del browser (315 px circa); nessun APK o dispositivo Android implicito. Verificato anche il layout desktop 1280 × 720. Nessun ritocco dei contenuti, credenziale o token nelle immagini.

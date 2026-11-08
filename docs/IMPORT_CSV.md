@@ -1,5 +1,26 @@
 # Importazione in blocco da CSV
 
+## Integrazione incrementale antropometrica — 8 novembre 2026
+
+Reimportare il CSV può completare una rilevazione esistente, senza duplicarla. Esempio: una riga già acquisita con statura 168 cm riceve peso 56 kg e altezza perineale 80 cm; dopo conferma il profilo conserva una sola rilevazione, con rapporto 47,62%. È possibile indicare solo i campi da aggiungere, lasciando vuoti gli altri.
+
+- La ricerca usa atleta e data. È aggiornata solo una rilevazione attiva compatibile e univoca: i valori già presenti devono coincidere con quelli compilati nel CSV. Se più record restano compatibili, l’import segnala ambiguità. Nessuna rilevazione nella data ⇒ nuova registrazione.
+- Si completano solo peso, statura e altezza perineale mancanti. Un valore diverso da quello già registrato è una discordanza: correggere dal profilo. Non vengono fusi i duplicati storici già esistenti né ripristinati record eliminati.
+- Fonte e origine esistenti sono preservate; se nel CSV sono esplicitamente diverse, occorre correggere o riconciliare la provenienza dal profilo. Per una nuova rilevazione la fonte vuota resta dichiarato. Campi avanzati, qualità e note non sono sostituiti dai default CSV.
+- Le righe complementari nel medesimo lotto confluiscono in un solo record; reimport identici o sottoinsiemi già acquisiti vengono saltati. I campi vuoti non cancellano valori.
+
+L’anteprima mostra **Operazione** (Nuova rilevazione / Integra rilevazione), **Campi da integrare** e risultato complessivo. La conferma atomica conserva ID, nuova revisione, motivo e CSV originale del lotto; anche un solo errore blocca il salvataggio dell’intero lotto. Se i dati cambiano dopo l’anteprima viene richiesta una nuova anteprima. I client precedenti che non trasmettono il piano di conferma possono ancora creare record, ma non effettuare integrazioni senza un’anteprima aggiornata.
+
+## Altezza perineale — standard dell’8 novembre 2026
+
+```csv
+atleta_id,data,peso_kg,statura_cm,altezza_perineale_cm,peso_fonte,origine
+```
+
+`altezza_perineale_cm` indica il cavallo in cm ed è facoltativa. Sono accettati anche i vecchi file senza la colonna. Ogni riga deve contenere almeno peso, statura o altezza perineale; valori mancanti restano vuoti. La misura perineale deve essere positiva, finita, ≤180 cm e inferiore alla statura se presente. Nel profilo il rapporto è `100 × altezza_perineale_cm / statura_cm`, disponibile solo se entrambi appartengono alla stessa rilevazione. Non vengono abbinate righe distinte, neppure della stessa data.
+
+La rilevazione può essere corretta nell’editor, conservando revisioni e provenienza. Per l’integrazione tramite reimport vale la procedura incrementale seguente. Non confondere questa misura con gli arti inferiori o con statura meno statura seduta.
+
 Aprire **Importa CSV** nella testata di **Atleti**, **Società e gruppi** o **Test e analisi**; per le rilevazioni usare lo stesso comando nel riquadro **Antropometria** del profilo. Ogni finestra propone solo i tracciati pertinenti (nei test, aerobico/anaerobico). Tutti e cinque i tracciati restano disponibili in **Archivio e scambio → Importazioni CSV**, sezione espandibile. Premere **Scarica modello CSV vuoto**. Ogni modello contiene soltanto la riga delle intestazioni; non contiene persone o misure dimostrative. Compilare e salvare in CSV UTF-8, poi scegliere il file dalla stessa sezione. Importare prima le anagrafiche: le associazioni usano gli ID, non i nomi.
 
 | Tipo | Campi sempre obbligatori | Contenuto |

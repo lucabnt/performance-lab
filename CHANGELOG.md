@@ -1,5 +1,30 @@
 # Changelog
 
+## 8 novembre 2026 — candidato antro-incrementale-20261108-01
+
+- Nuove build Windows e Android 0.10.0 con import antropometrico incrementale, altezza perineale e rapporto nel profilo, oltre a eliminazione/ripristino e aggiornamenti precedenti. Installer/portabile, APK debug, release non firmato, supporto strumentale, sorgenti/wheel e 25 checksum verificati in nuova consegna locale.
+- Smoke e scansioni Windows correnti riusciti; firma debug, allineamento e contenuti APK verificati. Nessuna pubblicazione, firma release o prova runtime Android; i gate di accettazione e i problemi nativi 16 KB restano aperti. [Registro](docs/VERIFICA.md).
+
+## 8 novembre 2026 — import antropometrico incrementale
+
+- Reimport CSV completa i campi mancanti di una rilevazione univocamente compatibile per atleta/data, conservando ID, provenienza e nuova revisione. Ripetizioni già acquisite saltate; discordanza o ambiguità bloccano il lotto senza sovrascritture.
+- Anteprima con operazione e campi da integrare; conferma legata al piano visualizzato e alle revisioni. Creazioni e aggiornamenti sono atomici e usano firme/sync esistenti. Test e prova GUI sintetica riusciti; nessuna nuova build nativa.
+
+## 8 novembre 2026 — altezza perineale e rapporto nel profilo
+
+- Standard CSV antropometrico esteso con `altezza_perineale_cm`, presente anche in modello, anteprima ed export; compatibilità con file precedenti. Misura modificabile nell’editor e distinta dalla lunghezza arti.
+- Colonne altezza perineale e rapporto percentuale sulla statura nel profilo, calcolato esclusivamente nella stessa rilevazione. Nessun aggiornamento automatico delle rilevazioni precedenti durante l’import. Verifiche automatiche e GUI su dati sintetici; EXE/APK esistenti invariati.
+
+## 8 novembre 2026 — candidato record-lifecycle-20261108-01
+
+- Nuove build Windows e Android 0.10.0 con eliminazione/ripristino di rilevazioni e test, oltre agli aggiornamenti precedenti. Consegna locale separata: installer, portabile, debug firmato per test, release non firmato, supporto strumentale, sorgenti, wheel e checksum verificati.
+- Smoke Windows e scansioni correnti riusciti; nessuna pubblicazione o firma release implicita. Restano accettazione Windows pulito, WIN-AV-01 del vecchio candidato, runtime Android della nuova build e gate nativo 16 KB. [Prove](docs/VERIFICA.md).
+
+## 8 novembre 2026 — eliminazione recuperabile di rilevazioni e test
+
+- Comandi Elimina nelle rispettive finestre di correzione, con conferma separata e recupero da Rilevazioni eliminate / Test eliminati. Funziona anche senza compilare una correzione; permessi Admin dati e controllo della revisione preservati.
+- Esteso il ciclo di vita alle misure antropometriche senza eliminazione fisica di revisioni o file. Esclusione da dati correnti, defaults e anteprima maturazione; analisi e report già conservati invariati. Catture QA e documentazione aggiornate; nessun nuovo pacchetto nativo.
+
 ## 8 novembre 2026 — nuovi candidati Windows e Android
 
 - Confezionato `sync-intervals-20261107-01` (prodotto 0.10.0), con sincronizzazione automatica, Intervals.icu e modifiche locali correnti: installer, portabile completo, debug Android con firma di test invariata, release non firmato, sorgenti e wheel native. Build del 7, consegna verificata l’8; nessuna pubblicazione.

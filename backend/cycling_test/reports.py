@@ -21,7 +21,7 @@ RENDERER_VERSION='0.10-vo2-1'
 CSV_HEADERS = {
     'test_anaerobico': ANAEROBIC_HEADER,
     "atleti": "atleta_id,cognome,nome,anno_nascita,anno_nascita_confermato,origine_anno_nascita,sesso,attivo,note",
-    "antropometria": "atleta_id,data,peso_kg,statura_cm,peso_fonte,origine",
+    "antropometria": "atleta_id,data,peso_kg,statura_cm,altezza_perineale_cm,peso_fonte,origine",
     "test_aerobico": "test_id,atleta_id,data,protocollo_id,durata_s,map_w,map_alt_w,peso_kg,peso_fonte,soglia_w,coeff_soglia,soglia_origine,lattato_2mmol_w,lattato_4mmol_w,fc_max_test_bpm,fc_max_riferimento_bpm,fthr_bpm,fthr_pct_fcmax,lavoro_battito_j,lavoro_battito_max_j,cadenza_media_rpm,cadenza_max_rpm,rapporto_trasm_m,pedivella_m,segnale_fc_interrotto,referto_leggibile,tracciato_parziale,note",
 }
 
@@ -232,7 +232,7 @@ def export_csv(store, organization_id):
         rows["atleti"].append({"atleta_id":a["id"],"cognome":a["surname"],"nome":a["name"],"anno_nascita":a.get("birth_year"),"anno_nascita_confermato":"si" if a.get("birth_confirmed") else "no","origine_anno_nascita":a.get("birth_source", ""),"sesso":a.get("sex", ""),"attivo":"si" if a.get("status","active")=="active" else "no","note":a.get("notes", "")})
     for m in store.list("measurement"):
         if m["athlete_id"] in ids and m.get('status') != 'deleted':
-            rows["antropometria"].append({"atleta_id":m["athlete_id"],"data":m["date"],"peso_kg":m.get("weight_kg"),"statura_cm":m.get("height_cm"),"peso_fonte":m.get("source", ""),"origine":m.get("origin","inserimento manuale")})
+            rows["antropometria"].append({"atleta_id":m["athlete_id"],"data":m["date"],"peso_kg":m.get("weight_kg"),"statura_cm":m.get("height_cm"),"altezza_perineale_cm":m.get("perineal_height_cm"),"peso_fonte":m.get("source", ""),"origine":m.get("origin","inserimento manuale")})
     versions = [];anaerobic_rows=[];lactate_rows=[];vo2_rows=[]
     for t in store.list("test"):
         if t["athlete_id"] not in ids or t.get('status')=='deleted':

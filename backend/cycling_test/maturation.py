@@ -39,6 +39,7 @@ class MeasurementPayload(BaseModel):
     model_sex:Literal['','M','F']=''
     sitting_height_cm:float|None=Field(default=None,gt=0,le=160)
     arm_span_cm:float|None=Field(default=None,gt=0,le=300)
+    perineal_height_cm:float|None=Field(default=None,gt=0,le=180)
     lower_limb_cm:float|None=Field(default=None,gt=0,le=180)
     mother_height_cm:float|None=Field(default=None,gt=0,le=260)
     father_height_cm:float|None=Field(default=None,gt=0,le=260)
@@ -50,10 +51,12 @@ class MeasurementPayload(BaseModel):
 
     @model_validator(mode='after')
     def consistent(self):
-        if not any(getattr(self,k) is not None for k in ('height_cm','weight_kg','sitting_height_cm','arm_span_cm','lower_limb_cm','mother_height_cm','father_height_cm','adult_height_cm')):
+        if not any(getattr(self,k) is not None for k in ('height_cm','weight_kg','perineal_height_cm','sitting_height_cm','arm_span_cm','lower_limb_cm','mother_height_cm','father_height_cm','adult_height_cm')):
             raise ValueError('Inserire almeno una misura.')
         if self.sitting_height_cm and self.height_cm and self.sitting_height_cm>=self.height_cm:
             raise ValueError('La statura seduta deve essere inferiore alla statura.')
+        if self.perineal_height_cm and self.height_cm and self.perineal_height_cm>=self.height_cm:
+            raise ValueError('L’altezza perineale deve essere inferiore alla statura.')
         if self.lower_limb_cm and self.height_cm and self.lower_limb_cm>=self.height_cm:
             raise ValueError('La lunghezza degli arti deve essere inferiore alla statura.')
         if self.adult_height_cm and (not self.adult_height_method.strip() or not self.adult_height_source.strip()):

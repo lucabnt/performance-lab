@@ -1,5 +1,15 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## Import antropometrico incrementale — 8 novembre 2026
+
+ANTRO-INCREMENTALE-01 sostituisce la precedente creazione di record arricchiti in ANTRO-PERINEALE-01. Matching per atleta/data, un solo candidato attivo senza valori numerici discordanti; nessun candidato o più candidati in una data già occupata produce errore da riconciliare. Riempimento solo dei campi numerici assenti, preservando gli altri attributi e la provenienza; righe complementari simulate nel piano e una sola scrittura finale per record. Nessuna fusione retroattiva di record distinti.
+
+`save_batch(entries, bases=...)` ammette revisioni ottimistiche esplicite nella stessa transazione di nuovi record, outbox firmata e lotto. Senza base un record esistente rimane un conflitto. L’anteprima espone operazione/campi aggiunti e `plan_hash` (digest di piano e revisioni); il frontend lo riporta al commit, che ricalcola e confronta il piano. Aggiornamenti richiedono il digest; client precedenti restano compatibili solo con nuove creazioni. Il rapporto perineale/statura rimane una vista del record corrente; snapshot maturativi e input dei test non vengono riscritti.
+
+## Altezza perineale — 8 novembre 2026
+
+ANTRO-PERINEALE-01: campo opzionale `perineal_height_cm` nei record antropometrici revisionati, senza migrazione dei dati esistenti; intestazione CSV `altezza_perineale_cm`. Modello, anteprima, import/export ed editor condividono la misura esplicita. Rapporto percentuale frontend da un solo record; nessun abbinamento per data né modifica al motore growth-maturity/1. Il confronto dei duplicati CSV include il nuovo campo; il comportamento iniziale sulle righe arricchite è superato da ANTRO-INCREMENTALE-01, documentato sopra.
+
 ## 7 novembre 2026 — automatismo dello scambio e collegamenti atleta
 
 L’automatismo della società aperta è coordinato da `useSyncJob` e dall’orologio `AutomaticSync`: apertura, scritture UI riuscite raggruppate a 10 s e ricezione ogni 5 min. Riutilizza `/sync/start`, cattura esplicita del workspace e lock preesistenti; non modifica formati, firme, conflitti o completezza dell’audit. Il polling osserva il lavoro senza avviarne copie. Backoff 30 s–30 min anche per risultati con errori/pending, sospeso finché un lavoro è attivo; le modifiche giunte durante uno scambio restano programmate. La preferenza è locale, predefinita attiva e conservata separatamente dalla destinazione, non in localStorage. Windows richiede l’interfaccia aperta; WorkManager Android rimane indipendente. Ultima riuscita locale legata all’impronta della destinazione e distinta dall’ultimo tentativo.
@@ -745,3 +755,8 @@ Le operazioni di creazione/import/export sono raggiungibili nel contesto della r
 GRUPPI-05 estende l’accesso al MembershipEditor anche al filtro categoria, con scelta esplicita della destinazione attiva entro la categoria; il filtro stagione mantiene la destinazione preimpostata. Il comando resta nel contesto della rosa senza dipendere dal numero di membri o dai risultati della ricerca. API atomica, date e permessi invariati.
 
 ANTRO-IMC-01 introduce una vista frontend calcolata dai record antropometrici correnti: kg/(cm/100)² solo con entrambi gli input positivi e finiti nello stesso record. Tabella con date, fonte e mancanti; grafico IMC separato e facoltativo da almeno due valori. Nessun nuovo campo canonico o motore scientifico, nessuna riscrittura di snapshot/report, nessuna classificazione o percentile automatico. Fonti e limiti in docs/MATURAZIONE.md.
+
+
+## Eliminazione recuperabile negli editor — 8 novembre 2026
+
+RECORD-LIFECYCLE-01 usa gli stati revisionati esistenti: test e misure eliminati restano nel database e negli eventi/backup. `records/{id}/status` ammette ora anche measurement (active/deleted); `/state` conserva measurement filtrato e aggiunge deleted_measurement, evitando regressioni nei consumatori attivi e rendendo esplicito il recupero. Nessun nuovo schema di persistenza o formato di sync. Conferma con Dialog comune fuori dai form di correzione: eliminazione indipendente dai campi incompleti della bozza. Rilevazioni eliminate nel profilo e Test eliminati nel profilo/archivio test consentono ripristino con base aggiornata. I test mantengono misure e analisi salvate anche se una misura di origine viene eliminata; gli snapshot di maturazione rimangono immutati.

@@ -11,7 +11,7 @@ function columns(profile:string){
  if(profile==='appartenenze')return [cell('athlete_external_id','ID esterno'),cell('athlete_name','Atleta'),cell('start','Data inizio'),cell('end','Data fine'),cell('group_name','Gruppo'),cell('subgroup','Sottogruppo / stagione'),cell('category_year','Anno di categoria'),cell('notes','Note')];
  if(profile==='atleti')return [cell('external_id','ID esterno'),cell('surname','Cognome'),cell('name','Nome'),cell('birth_year','Anno di nascita'),cell('birth_confirmed','Nascita confermata',r=>tr(r.birth_confirmed?'Sì':'No')),cell('birth_source','Fonte'),cell('sex','Sesso'),cell('status','Stato',r=>tr(r.status==='active'?'Attivo':'Archiviato')),cell('notes','Note')];
  const athlete=[cell('athlete_external_id','ID atleta'),cell('athlete_name','Atleta'),cell('date','Data')];
- if(profile==='antropometria')return [...athlete,cell('weight_kg','Peso · kg'),cell('height_cm','Statura · cm'),cell('source','Fonte del peso',r=>tr(r.source)),cell('origin','Origine')];
+ if(profile==='antropometria')return [...athlete,cell('import_action','Operazione',r=>tr(r.import_action==='integrate'?'Integra rilevazione':'Nuova rilevazione')),cell('added_fields','Campi da integrare',r=>(r.added_fields||[]).map((k:string)=>tr(({weight_kg:'Peso · kg',height_cm:'Statura · cm',perineal_height_cm:'Altezza perineale · cm'} as Record<string,string>)[k]||k)).join(', ')),cell('weight_kg','Peso · kg'),cell('height_cm','Statura · cm'),cell('perineal_height_cm','Altezza perineale · cm'),cell('source','Fonte del peso',r=>tr(r.source)),cell('origin','Origine')];
  const test=[cell('external_id','ID test'),...athlete,cell('protocol_code','Protocollo')];
  if(profile==='test_aerobico')return [...test,cell('map_w','MAP operativa · W',r=>r.analysis?.map_w??'—'),cell('threshold_w','Soglia · W',r=>r.analysis?.threshold_w??'—'),cell('fc_max_test_bpm','FC massima · bpm',r=>r.analysis?.fc_max_test_bpm??'—')];
  return [...test,cell('test_type','Tipo di test',r=>tr(families[r.test_type]||r.test_type||'Non documentato')),cell('duration_s','Durata · s',r=>r.analysis?.duration_s??'—'),cell('peak_w','Picco · W',r=>r.analysis?.peak_w??'—'),cell('mean_w','Media · W',r=>r.analysis?.mean_w??'—')];
@@ -32,6 +32,7 @@ export function ImportPanel({org,api,run,refresh,download,readOnly=false,allowed
   <details><summary>{tr('Istruzioni e formato CSV')}</summary>
   <p>{tr('Importa prima le anagrafiche. Per associare i dati agli atleti usa atleta_id, non il nome.')}</p>
   {profile==='appartenenze'&&<p>{tr('Una riga per appartenenza: lo stesso atleta può comparire in più stagioni. Sottogruppo identifica la stagione; i gruppi mancanti vengono proposti in anteprima. Gli esempi sono sintetici: sostituisci ID, nomi e date con i tuoi dati.')}</p>}
+  {profile==='antropometria'&&<p>{tr('Per atleta e data, integra soltanto i campi mancanti di una rilevazione compatibile e univoca. I campi vuoti non cancellano dati. Discordanze o abbinamenti ambigui richiedono una correzione dal profilo; le integrazioni sono indicate in anteprima.')}</p>}
   {profile!=='appartenenze'&&<p>{tr('Il modello contiene soltanto le intestazioni. Compila una riga per atleta, rilevazione o test; lascia vuoti i valori non disponibili.')}</p>}
   <p className="hint">{tr('Colonne obbligatorie:')} {schemas[profile]?.required.join(', ')}. {tr(schemas[profile]?.rule||'')}</p>
   {profile==='test_anaerobico'&&<p>{tr('Per nuovi protocolli compila tipo_test e durata_s: sprint (3–10 s), wingate15 (15 s), wingate30 (30 s). ANA-15-070 resta compatibile con i CSV storici. I risultati importati sono riepiloghi dichiarati, senza ricalcolo dai campioni.')}</p>}
@@ -44,7 +45,7 @@ export function ImportPanel({org,api,run,refresh,download,readOnly=false,allowed
    {result.errors.length>0?<DataTable rows={result.errors} columns={[cell('row','Riga'),cell('error','Errore')]}/>:<p role="status">{tr('Nessun errore rilevato.')}</p>}
    <DataTable rows={rows} columns={columns(profile)}/>
    <p>{tr('Record mostrati nell’anteprima:')} {result.preview.length} / {ready}</p>
-   <button disabled={readOnly||result.errors.length>0||!ready} onClick={()=>run(async()=>{await api('import/commit',{organization_id:org,profile,staged_hash:result.staged_hash});setResult(null);await refresh()})}>{tr('Conferma importazione atomica')}</button>
+   <button disabled={readOnly||result.errors.length>0||!ready} onClick={()=>run(async()=>{await api('import/commit',{organization_id:org,profile,staged_hash:result.staged_hash,plan_hash:result.plan_hash});setResult(null);await refresh()})}>{tr('Conferma importazione atomica')}</button>
   </>}
  </section>;
 }

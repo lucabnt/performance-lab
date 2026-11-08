@@ -9,7 +9,7 @@ SCHEMAS = {
     'appartenenze': {'required':['atleta_id','nome','cognome','data_inizio','gruppo'], 'rule': 'ID, nome e cognome riconciliati. Date AAAA-MM-GG; fine vuota = in corso. Gruppo = categoria; sottogruppo = stagione (es. 2024). Anteprima dei gruppi da creare.'},
     'test_anaerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Sprint breve, Wingate 15 s o 30 s: indicare tipo_test (sprint, wingate15, wingate30) e durata_s. Il solo codice storico ANA-15-070 conserva la compatibilità a 15 s e 0,70 N·m/kg.'},
     'atleti': {'required':['atleta_id','cognome','nome'], 'rule':'Nome e cognome obbligatori; gli altri campi sono facoltativi.'},
-    'antropometria': {'required':['atleta_id','data'], 'rule':'Almeno peso_kg oppure statura_cm; peso_fonte facoltativo (dichiarato).'},
+    'antropometria': {'required':['atleta_id','data'], 'rule':'Almeno peso_kg, statura_cm oppure altezza_perineale_cm; peso_fonte facoltativo (dichiarato).'},
     'test_aerobico': {'required':['test_id','atleta_id','data','protocollo_id'], 'rule':'Risultati facoltativi: i valori assenti restano vuoti, mai zero.'},
 }
 
@@ -104,6 +104,8 @@ def plan_import(store, org, profile, raw):
     if len(rows)>100000:
         raise ValueError('Troppe righe nel lotto.')
     entries, errors, skipped = [], [], 0
+    bases = {}
+    integrated_fields = {}
     existing = {r['id']:r for k in ('athlete','measurement','test','protocol') for r in store.list(k)}
     athletes = {a.get('external_id',a['id']):a for a in store.list('athlete') if a['organization_id']==org}
     athletes.update({a['id']:a for a in store.list('athlete') if a['organization_id']==org})
@@ -128,12 +130,43 @@ def plan_import(store, org, profile, raw):
                 athlete_id=athletes[external]['id']
                 date.fromisoformat(r['data'])
                 if profile=='antropometria':
-                    payload=Measurement(athlete_id=athlete_id,date=r['data'],weight_kg=number(r.get('peso_kg')),height_cm=number(r.get('statura_cm')),
+                    payload=Measurement(athlete_id=athlete_id,date=r['data'],weight_kg=number(r.get('peso_kg')),height_cm=number(r.get('statura_cm')),perineal_height_cm=number(r.get('altezza_perineale_cm')),
                                         source=r.get('peso_fonte','').strip() or 'dichiarato',origin=r.get('origine','')).model_dump(mode='json')
-                    if payload['weight_kg'] is None and payload['height_cm'] is None:
+                    if all(payload[k] is None for k in ('weight_kg','height_cm','perineal_height_cm')):
                         raise ValueError('Rilevazione priva di misure.')
-                    if any(m['athlete_id']==athlete_id and m['date']==payload['date'] and m.get('weight_kg')==payload['weight_kg'] and m.get('height_cm')==payload['height_cm'] and m.get('source')==payload['source'] for m in store.list('measurement')):
-                        skipped+=1;continue
+                    measures=('weight_kg','height_cm','perineal_height_cm')
+                    same_day=[m for m in existing.values() if m.get('kind')=='measurement' and m['athlete_id']==athlete_id and m['date']==payload['date']]
+                    active=[m for m in same_day if m.get('status','active')=='active']
+                    compatible=[m for m in active if all(payload[k] is None or m.get(k) is None or payload[k]==m[k] for k in measures)]
+                    if same_day:
+                        if len(compatible)>1:
+                            raise ValueError('Più rilevazioni compatibili per atleta e data: integrazione ambigua. Correggere la rilevazione dal profilo.')
+                        if not compatible:
+                            raise ValueError('Misure discordanti o rilevazione eliminata per atleta e data: correggere o ripristinare dal profilo.')
+                        old=compatible[0]
+                        if r.get('peso_fonte','').strip() and payload['source']!=old.get('source'):
+                            raise ValueError('Fonte discordante dalla rilevazione esistente: correggere dal profilo.')
+                        if payload['origin'].strip() and payload['origin'].strip()!=old.get('origin','').strip():
+                            raise ValueError('Origine discordante dalla rilevazione esistente: correggere dal profilo.')
+                        added=[k for k in measures if payload[k] is not None and old.get(k) is None]
+                        if not added:
+                            skipped+=1;continue
+                        merged={**old,**{k:payload[k] for k in added}}
+                        # Revalidate the combined observation, preserving advanced data and provenance.
+                        Measurement(**{k:v for k,v in merged.items() if k in Measurement.model_fields})
+                        if old.get('revision'):
+                            bases[old['id']]=old['revision']
+                            merged['reason']='Integrazione CSV di misure mancanti'
+                        merged['import_hash']=batch
+                        integrated_fields.setdefault(old['id'],[]).extend(k for k in added if k not in integrated_fields.get(old['id'],[]))
+                        for index,(_,entry) in enumerate(entries):
+                            if entry['id']==old['id']:
+                                entries[index]=('measurement',merged)
+                                break
+                        else:
+                            entries.append(('measurement',merged))
+                        existing[old['id']]=merged
+                        continue
                     kind='measurement';identity=external+'|'+r['data']+'|'+str(r)
                 else:
                     source_id=r.get('test_id','')
@@ -167,9 +200,15 @@ def plan_import(store, org, profile, raw):
             id=str(uuid5(NAMESPACE_URL,org+'|'+kind+'|'+identity))
             if id in existing:
                 skipped+=1;continue
-            payload.update(id=id,external_id=external if kind=='athlete' else identity,import_hash=batch)
+            payload.update(id=id,kind=kind,external_id=external if kind=='athlete' else identity,import_hash=batch)
             entries.append((kind,payload));existing[id]=payload
             if kind=='athlete': athletes[external]=payload
         except (ValueError,KeyError,TypeError) as exc:
             errors.append({'row':i,'error':str(exc)})
-    return {'entries':entries,'errors':errors,'skipped':skipped,'rows':len(rows),'hash':batch}
+    return {'entries':entries,'bases':bases,'integrated_fields':integrated_fields,'errors':errors,'skipped':skipped,'rows':len(rows),'hash':batch}
+
+
+def plan_digest(result):
+    """Bind confirmation to the proposed records and their exact source revisions."""
+    from .store import encoded
+    return hashlib.sha256(encoded({'entries':result['entries'],'bases':result.get('bases',{})}).encode()).hexdigest()

@@ -1,5 +1,11 @@
 # Crescita e maturazione — metodi e uso, versione 1
 
+## Avvisi non bloccanti — 9 novembre 2026
+
+MAT-AVVISI-01 introduce `growth-maturity/2`: formule e domini invariati, ma fonte dichiarata/arrotondata/derivata/stimata e qualità incerta non impediscono Moore/Mirwald, %PAH/residuo e proporzioni. Ogni valore disponibile conserva un avviso in `reason`, visibile anche negli export/report che lo leggono: un motivo presente non implica valore assente. Nascita completa per gli offset, M/F, input specifici e dominio restano necessari; qualità excluded resta bloccante. HV, PHV longitudinale, crescita arti e stabilità mantengono i gate di misurazione validata. Questa è una scelta di presentazione/calcolo esplorativo del prodotto, non una validazione scientifica di input dichiarati. Fonte primaria ricontrollata: [Kozieł e Malina](https://pmc.ncbi.nlm.nih.gov/articles/PMC5752743/).
+
+Le tabelle delle stime e degli indici facoltativi mostrano le date decrescenti. Gli array degli snapshot e i grafici mantengono il proprio ordine temporale; snapshot v1 invariati. Le descrizioni della versione 1 sotto restano storiche per i gate antropometrici superati da questo aggiornamento.
+
 ## Altezza perineale descrittiva — 8 novembre 2026
 
 Il profilo mostra altezza perineale (cavallo) in cm e rapporto percentuale sulla statura della stessa rilevazione. Campo API `perineal_height_cm`, CSV `altezza_perineale_cm`, facoltativo anche nell’editor. Nessuna combinazione tra record/date; misura distinta da `lower_limb_cm` e dalla lunghezza usata da Mirwald. Il rapporto è una vista descrittiva frontend: nessuna classificazione, modifica delle equazioni o ricalcolo degli snapshot salvati.

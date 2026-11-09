@@ -1,5 +1,19 @@
 # Requisiti e to-do
 
+## Consegna ordine/maturazione — 9 novembre 2026
+
+UI-ORDINE-02 e MAT-AVVISI-01 inclusi nel candidato locale `ordine-maturazione-20261109-01`: installer/portabile Windows, APK debug con firma di test esistente, release non firmato, supporto strumentale, sorgenti e wheel prodotti e verificati, **25 checksum**. Supera le note «nessun nuovo EXE/APK» della fase di implementazione sottostante. Nessuna accettazione Windows pulito, runtime Android, firma release o qualifica 16 KB implicita. Prove in VERIFICA.md.
+
+## UI-ORDINE-02 / MAT-AVVISI-01 — 9 novembre 2026
+
+Richieste originali: «nella pagina atleti, dovrebbe essere possibile ordinarli per Atleta > mi aspetterei un ordine alfabetico per cognome»; «nella pagina del singolo atleta test e misure atropometriche dovrebbero presentarsi sempre ordinate per data dal più recente. Nel caso eccedessero entrambe le 15 rilevazioni, le manderei ad una pagina sucessiva»; «Ok il limite della data di nascita, ma per cose noon bloccanti vorrei che venissero calcolati gli indici, anche qua visualizzazione dal più recente» (allegata tabella delle stime Moore/Mirwald).
+
+Implementato nei sorgenti: Atleti ordinati inizialmente per cognome e nome, controllo Atleta sul valore anagrafico senza avatar/didascalia. Test e antropometria dal più recente, pagine indipendenti da 15; grafici e calcoli mantengono tutti i dati. Tabelle maturative principali e facoltative dal più recente. Motore growth-maturity/2: fonte non misurata e qualità incerta diventano avvisi non bloccanti per Moore/Mirwald, %PAH/residuo e proporzioni. Restano necessari nascita completa per gli offset, parametro M/F, dominio di età e input specifici; misure escluse indisponibili. HV/PHV e stabilità conservano i gate precedenti. Formule e snapshot già conservati invariati. Riscontri in VERIFICA.md; nessuna nuova build nativa.
+
+## Consegna import-avvisi — 8 novembre 2026
+
+ANTRO-IMPORT-AVVISI-01 e UI-SCROLL-01 inclusi nel nuovo candidato locale `import-avvisi-20261108-01`, con le funzioni precedenti. Build Windows/Android prodotte e confezionate; contenuti, 25 checksum, smoke/scansioni Windows e firme/allineamento APK verificati. Supera le note «nessun nuovo candidato» delle precedenti fasi di implementazione, che restano come cronologia. Nessuna accettazione runtime Android, Windows pulito, firma release o qualifica 16 KB implicita. [Prove](VERIFICA.md).
+
 ## ANTRO-IMPORT-AVVISI-01 — metadati non bloccanti, 8 novembre 2026
 
 Richiesta originale: «Correggi la logica, non dovrebbero esserci problemi per incongruenze nella colonna che non contenga una misura, nel caso segnalarlo mantenendo la versione precedente ma non limitare l’importazione».
@@ -48,9 +62,11 @@ Richiesta: «quando avviene la sincronizzazione con webdav? […] fuorigiri wind
 
 Accettazione: debounce/ricezione periodica/retry con orologio controllato; isolamento preferenze; scambio e ripristino degli ID/opzione; validazione, conflitti e ruolo viewer; GUI con funzione disattiva/attiva e invio senza comando. Prove e limiti in [VERIFICA.md](VERIFICA.md). Non rilasciato in un nuovo pacchetto nativo.
 
+**Aggiornamento 8 novembre, ore 18:42.** WIN-AV-01 blocca anche il candidato Windows corrente. [Diagnosi](WINDOWS_DEFENDER.md).
+
 ## WIN-AV-01 — EXE Windows rimosso dopo installazione, 7 novembre 2026
 
-Richiesta: «installando l'ultimo candidato su windows […] dice che exe non esiste più. Verifica e in caso correggi». Diagnosi completata sul PC destinatario: Defender rimuove l'EXE e blocca anche l'originale di build con `Trojan:Win32/Bearfoos.A!ml`; nessun errore di destinazione individuato nell'installer. **Risoluzione aperta**, falso positivo non confermato. Richiesti revisione del campione, risposta documentata e nuova prova installazione/avvio/riapertura con protezioni attive senza rilevamenti. [Dettagli e criteri](WINDOWS_DEFENDER.md), [prove](VERIFICA.md). Nessuna correzione del binario o accettazione dichiarata.
+Richiesta: «installando l'ultimo candidato su windows […] dice che exe non esiste più. Verifica e in caso correggi». Diagnosi completata sul PC destinatario: Defender rimuove l'EXE e blocca anche l'originale di build con `Trojan:Win32/Bearfoos.A!ml`; nessun errore di destinazione individuato nell'installer. **Risoluzione aperta**. Resta la prova di installazione, avvio e riapertura del candidato corrente con definizioni aggiornate e protezioni attive. [Dettagli e criteri](WINDOWS_DEFENDER.md), [prove](VERIFICA.md). Nessuna correzione del binario o accettazione dichiarata.
 
 ## GRUPPI-05 e ANTRO-IMC-01 — elenco filtrato e IMC, 7 novembre 2026
 
@@ -161,7 +177,6 @@ Richiesta: preparare un candidato e una checklist Markdown con completamenti. Ve
 - **TD-104 — implementato, accessibilità completa da qualificare:** testata Android persistente con società/sezione e operatore/ruolo, contesto atleta/data nel dettaglio; focus sul titolo al cambio pagina, lingua documento IT/EN, controlli grafici con stato premuto leggibile e movimento ridotto nel common. Alternativa tabellare ai grafici con serie/unità, min/max/conteggio dei valori numerici, mancanti distinti da zero e 30 righe per pagina. Coordinate di serie diverse non vengono equiparate. Telefono, TalkBack, testo di sistema ingrandito e ulteriori configurazioni rimangono gate distinti dalle prove DOM/emulatore.
 
 **Riutilizzo:** UI comune 0.2.6, ChartFrame e LoadingState; logica scientifica, scelta dei modi touch, caricamento Plotly, route e contenuti rimangono di Fuorigiri. Nessun aggiornamento automatico di Ammiraglia. Prove effettive in VERIFICA.md; guida suite aggiornata nello stesso intervento.
-
 
 ## TD-99–101 — ergonomia Android e pratiche suite, 20 ottobre 2026
 
@@ -278,13 +293,11 @@ Stato INC aggiornato: INC-02/03/06/07 attuati nella versione locale; INC-01 ha n
 
 Le sezioni precedenti sotto conservano la cronologia e sono superate dove descrivono funzioni ora sviluppate. [Guida di prova](TESTARE_IL_PROGETTO.md).
 
-
 ## Architettura 1.2 — WebDAV confermato e passi successivi
 
 **TD-59 / CLOUD-02:** supportare **WebDAV su Windows, Fedora e Android**, con la stessa semantica di pacchetti cifrati/firmati, uso offline, ruoli e conflitti. **Requisito confermato, non implementato.** Comprende configurazione URL/cartella, credenziali protette, verifica accessi, ripresa e diagnostica, migrazione dal trasporto cartella e collaudo multipiattaforma. Nextcloud proposto come primo server di riferimento, senza promettere compatibilità con qualsiasi server WebDAV. AND-04 e INC-11 includono questa accettazione.
 
 Ordine tecnico raccomandato: interfaccia di trasporto comune → WebDAV desktop → collaudo/porting Android nella fase mobile; lo spike Drive può procedere indipendentemente. Supporto WebDAV non subordinato a OAuth o alla scelta di Google/Dropbox. [Piano operativo aggiornato](PROSSIMI_PASSI.md). Software invariato 0.4.1.
-
 
 ## Aggiornamento architettura 1.1 — accesso diretto alle API cloud
 
@@ -304,11 +317,9 @@ Step 2 eseguito come **definizione**, non come implementazione dei nuovi motori:
 
 Ordine aggiornato: **(1)** completare e consolidare l’incrementale desktop, predisponendo i contratti portabili; **(2)** fattibilità e sviluppo Android con collaudo offline e scambio desktop/mobile; **(3)** Sprint breve / potenza neuromuscolare, Wingate 30 s, Wingate 15 s. La fattibilità Android può iniziare durante il consolidamento; non si anticipano i nuovi motori prima della copertura incrementale. I candidati ulteriori restano distinti.
 
-
 ## Stato corrente 0.4 — società, ripristino e accessi
 
 17 ottobre 2026. Implementata la prima iterazione TD-45–49: percorsi separati, anteprima/ripristino ZIP, recupero cifrato del fondatore, copia indipendente e di consultazione, prima sincronizzazione da invito anche senza dati, ruoli visibili e rinnovo con nuovo invito. Guida operativa e limiti in [SOCIETA_BACKUP_E_ACCESSI.md](SOCIETA_BACKUP_E_ACCESSI.md). TD-50 rimane parziale per audit completo/rotazione/portachiavi; INC-11 non è completato nel suo insieme. Validazione locale: 45 test, TypeScript/Vite, GUI con dati sintetici; nessun collaudo cloud remoto o Fedora dichiarato.
-
 
 ## Pianificazione confermata e stato aggiornato dei requisiti
 
@@ -334,7 +345,6 @@ La scelta dei tre test successivi è confermata dall'utente; i dettagli dei meto
 ## Stato precedente 0.3 — Fuorigiri Performance Lab
 
 Nuovi requisiti **TD-30–44** implementati/documentati nel [registro della revisione 0.3](archivio/REVISIONE_FUORIGIRI_03.md), con scelte **UI-11–16**, contratto CSV e criteri di accettazione. La collocazione della gestione società è presente, ma il percorso completo di collegamento/ripristino non lo è: TD-45–50 precisano il lavoro residuo. [Copertura e mancanze del motore](archivio/COPERTURA_TEST_E_ROADMAP.md) distingue la fase incrementale obbligatoria dai test successivi. Le sezioni 0.2 sottostanti restano storico del progetto; il nome prodotto è ora confermato.
-
 
 ## Stato del codice 0.2 — 17 ottobre 2026
 
@@ -412,14 +422,12 @@ Stati: **presente** = funzionalità riscontrata nel codice; **parziale** = solo 
 
 Conservare gli ID; per richieste composte aggiornare lo stato di ogni parte. Segnare «completato» solo dopo implementazione e verifica del criterio, citando file/test o versione. Registrare ogni variazione significativa nel [changelog](../CHANGELOG.md), con motivazione, ID coinvolti e distinzione fra progetto e software.
 
-
 ## Dettaglio test: visibilità dei tracciati — 18 ottobre 2026
 
 - [x] Grafico dei campioni FIT/CSV in cima al dettaglio incrementale, anaerobico e custom, con potenza, FC e cadenza sovrapposte su un unico asse temporale, mantenendo scale e unità indipendenti.
 - [x] Canali opzionali con unità esplicite: velocità, temperatura, quota; lattato come osservazioni puntuali nel tempo. Restano disponibili i grafici specialistici gas/lattato-carico.
 - [x] Distinzione e filtro tracciato/riepilogo nello storico; spiegazione nei test senza campioni, nessuna ricostruzione da medie/massimi o interpolazione delle lacune.
 - [x] Recupero dei campioni dall'oggetto del tracciato quando non inclusi nel record, senza ricalcoli automatici. Guida ed esempi in TESTARE_IL_PROGETTO.md.
-
 
 ## Grafici sovrapposti e confronti leggibili — 18 ottobre 2026
 
@@ -429,7 +437,6 @@ Conservare gli ID; per richieste composte aggiornare lo stato di ogni parte. Seg
 - [x] Metrica e protocollo prima dei filtri secondari; legenda breve, metodi nella chiave, tabella riferita alle serie visualizzate, zero/null distinti. Esportazioni complete dell'archivio filtrato chiaramente separate dalla selezione interattiva.
 - [x] Modelli grafici verificati con 12 test Node e GUI sul corpus completo, senza rigenerazione dei dati.
 
-
 ## Lattato configurabile e chiarimento Android — 18 ottobre 2026
 
 - [x] Livelli di lattato configurabili per prova, default 2/3/4 mmol/L: interpolazione lineare locale W, W/kg e FC, senza estrapolazione o equivalenze automatiche con soglie fisiologiche.
@@ -438,7 +445,6 @@ Conservare gli ID; per richieste composte aggiornare lo stato di ogni parte. Seg
 - [x] Verifica numerica, casi ambigui/mancanti e report; PDF renderizzato e ispezionato, cache aggiornata per il nuovo renderer.
 - [x] Chiarimento Android: Kotlin già presente nella shell/credenziali/worker; Python incorporato con Chaquopy per riuso, ASGI in-process senza listener HTTP. Decisione e limiti descritti in ANDROID.md.
 - [ ] Build e collaudo Android su dispositivo fisico: restano rinviati come concordato; toolchain e wheel native non ancora disponibili. Confermare compatibilità dipendenze/ABI, prestazioni e ciclo di vita prima di dichiarare il prodotto Android pronto.
-
 
 ## Osservazioni manuali acquisite — 19 ottobre 2026
 
@@ -463,7 +469,6 @@ Le 11 osservazioni originali sono conservate in [COMMENTI_ORIGINALI_2026-10-19.m
 | TD-97 / MAT-05 | Integrare dati e analisi maturative in storico atleta, CSV esteso, report gerarchici, backup e sincronizzazione per società. | **Implementato e verificato localmente:** snapshot con input completi/metodo/hash, CSV estesi e report gerarchici da analisi conservate; backup/ripristino reale e sync firmata con visualizzatore testati. Schema storico preservato; oracoli indipendenti e corpus crescita dedicato. |
 
 P0 = condizione di accettazione prima del rilascio della funzione; P1 = prossima revisione di usabilità/trasparenza; P2 = nuova area funzionale dopo specifica e consolidamento. La numerazione non impone l'ordine di implementazione. Sync v2, backup scalabili e separazione legacy rimangono priorità infrastrutturali già registrate; questa acquisizione non le dichiara concluse.
-
 
 ## 20 ottobre 2026 — riallineamento UI della suite
 

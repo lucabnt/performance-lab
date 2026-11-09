@@ -1,5 +1,7 @@
 import {language} from './i18n';
 const messages:Record<string,string>={
+ 'Stima da misura non misurata o qualità non confermata: verificare i dati.':'Estimate from non-measured data or unconfirmed quality: verify the inputs.',
+ 'Misura esclusa dal calcolo.':'Measurement excluded from calculation.',
  'Misura non misurata o qualità non confermata.':'Measurement is not measured or its quality is unconfirmed.',
  'Serve la data di nascita completa e non futura rispetto alla misura.':'A complete birth date no later than the measurement is required.',
  'Parametro M/F per l’equazione non disponibile; non viene inferito.':'The M/F model parameter is unavailable and will not be inferred.',

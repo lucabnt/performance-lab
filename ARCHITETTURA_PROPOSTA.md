@@ -1,5 +1,9 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## 9 novembre 2026 — elenchi del profilo e qualità maturativa
+
+UI-ORDINE-02: Atleti usa DataTable comune su cognome/nome, separato dalla resa con avatar. Il profilo applica alle tabelle test/misure una politica di data decrescente e paginazione da 15 con stato indipendente; serie scientifiche complete. MAT-AVVISI-01: growth-maturity/2 versiona la qualità non bloccante dei soli indici antropometrici, conservando avvisi nel risultato. Input obbligatori, dominio, esclusione e gate longitudinali invariati; nessuna migrazione o ricalcolo degli snapshot salvati.
+
 ## Import incrementale: duplicati e metadati — 8 novembre 2026
 
 ANTRO-IMPORT-AVVISI-01 supera il rifiuto delle differenze descrittive nella prima versione dell’import incrementale. I candidati restano attivi, della stessa persona/data e senza conflitti numerici. Se una rilevazione contiene già tutte le misure compilate nel CSV, non serve aggiornare una destinazione: riga saltata anche con più record compatibili. Per integrazioni effettive fonte/origine discriminano prima con corrispondenza congiunta, poi singolarmente in ordine fonte/origine se restringono i candidati. Nessuna scelta arbitraria di una destinazione per aggiungere misure.

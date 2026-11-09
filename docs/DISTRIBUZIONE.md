@@ -1,6 +1,18 @@
 # Distribuzione desktop e prerequisiti mobile
 
-## Candidato corrente — antro-incrementale, 8 novembre 2026
+## Candidato corrente — ordine e maturazione, 9 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-ordine-maturazione-20261109-01/`: nuove build Windows/Android **0.10.0** con **UI-ORDINE-02** (cognome/nome, test e misure dal più recente in pagine indipendenti da 15) e **MAT-AVVISI-01** (stime datate decrescenti e indici antropometrici con avvisi, motore growth-maturity/2), oltre alle funzioni precedenti; UI comune **0.2.9** invariata. Installer/portabile completi, APK debug firmato per i test, release non firmato, supporto strumentale, sorgenti/wheel e **25 checksum finali verificati**. Avvio Windows, scansioni Defender attivo e controlli di contenuti/firme/allineamento riusciti. [Prove e digest](VERIFICA.md).
+
+Nessuna pubblicazione, chiave nuova o installazione sopra dati operativi. Restano Windows pulito/aggiornamento, firma release e runtime Android/telefono, sei problemi LOAD 16 KB, provider reali e validazione esterna. La documentazione congelata nei pacchetti precede questa annotazione conclusiva.
+
+## Candidato precedente — import-avvisi, 8 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-import-avvisi-20261108-01/`: nuove build Windows/Android **0.10.0** con avvisi CSV non bloccanti, riconoscimento duplicati e correzione dello scorrimento dei dialoghi tramite UI comune **0.2.9**, oltre alle funzioni precedenti. Installer e portabile completi, APK debug firmato per i test, release non firmato, supporto strumentale, sorgenti/wheel e **25 checksum verificati**. Smoke Windows e scansioni correnti riusciti, firme/allineamento/contenuti APK verificati. [Prove e digest](VERIFICA.md).
+
+Nessuna pubblicazione, nuova chiave o installazione sopra dati operativi. Restano WIN-AV-01 storico, Windows pulito/aggiornamento, firma release, runtime della nuova build Android e telefono, provider reali e sei problemi LOAD 16 KB. Zipalign e smoke non sostituiscono tali gate. La documentazione congelata nei pacchetti precede questa annotazione finale.
+
+## Candidato precedente — antro-incrementale, 8 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-antro-incrementale-20261108-01/`: nuove build Windows/Android 0.10.0 con import CSV incrementale, altezza perineale e rapporto sulla statura nel profilo; include eliminazione/ripristino di misure e test e le funzioni precedenti. Installer/portabile completi, APK debug firmato per i test, release non firmato per il titolare, APK strumentale, sorgenti e wheel. Smoke Windows e scansioni correnti riusciti, contenuti e **25 checksum finali verificati**. [Registro e digest](VERIFICA.md). Nessuna pubblicazione o nuova chiave.
 

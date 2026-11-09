@@ -10,8 +10,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing import Literal
 from .store import encoded, ConflictError
 
-VERSION = 'growth-maturity/1'
-POLICY = {'hv_min_days':90, 'hv_max_days':400, 'hv_max_cm_year':20,
+VERSION = 'growth-maturity/2'
+POLICY = {'anthropometric_quality':'warn-unless-excluded', 'hv_min_days':90, 'hv_max_days':400, 'hv_max_cm_year':20,
           'phv_min_measures':7, 'phv_min_span_days':730, 'phv_support_days':180,
           'phv_local_points':5, 'height_precision_default_cm':0.1,
           'moore_age_M':[10,16], 'moore_age_F':[9,14],
@@ -78,11 +78,12 @@ def anthropometric(athlete,m):
     h=m.get('height_cm');sh=m.get('sitting_height_cm');w=m.get('weight_kg')
     result={'date':m['date'],'measurement_id':m['id'],'revision':m['revision'],'age_years':age,'model_sex':sex,
             'height_cm':h,'source':m.get('source'), 'models':{},'optional':{}}
-    good=m.get('source')=='misurato' and m.get('quality','valid')=='valid'
+    good=m.get('quality','valid')!='excluded'
+    warning='Stima da misura non misurata o qualità non confermata: verificare i dati.' if good and (m.get('source')!='misurato' or m.get('quality','valid')!='valid') else None
     for model in ('moore','mirwald'):
         method=model+('-standing/2015-1' if model=='moore' else '/2002-1')
         reason=None
-        if not good:reason='Misura non misurata o qualità non confermata.'
+        if not good:reason='Misura esclusa dal calcolo.'
         elif age is None:reason='Serve la data di nascita completa e non futura rispetto alla misura.'
         elif sex not in ('M','F'):reason='Parametro M/F per l’equazione non disponibile; non viene inferito.'
         elif not POLICY[model+'_age_'+sex][0]<=age<=POLICY[model+'_age_'+sex][1]:reason='Età fuori dal dominio prudenziale del preset.'
@@ -109,6 +110,10 @@ def anthropometric(athlete,m):
         result['optional'].update(pah=unavailable(reason,'pah-external/1'),residual=unavailable(reason,'residual-external/1'))
     for key,num in (('sitting_height_pct',sh),('arm_span_pct',m.get('arm_span_cm')),('lower_limb_pct',m.get('lower_limb_cm'))):
         result['optional'][key]={'value':100*num/h if good and num and h else None,'method_id':'body-ratios/1','reason':None if good and num and h else 'Misura non misurata o qualità non confermata.' if not good else 'Misure specifiche mancanti.'}
+    if warning:
+        for item in [*result['models'].values(),*result['optional'].values()]:
+            if item.get('value') is not None:
+                item['reason']=warning  # Non-blocking annotation, retained by report/export consumers.
     return result
 
 

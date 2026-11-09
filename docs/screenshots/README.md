@@ -1,5 +1,9 @@
 # Schermate dell’interfaccia
 
+## Ordinamento e avvisi — 9 novembre 2026
+
+Frontend compilato 0.10.0/common UI 0.2.9, backend reale growth-maturity/2, archivio nuovo `.local/qa-ordine-20261109-01`: tre atleti sintetici, ciascuno con 17 test e 17 misure dichiarate/qualità incerta. Browser desktop circa 1265 × 712, catture reali senza ritocchi o token. `atleti-ordine-20261109.jpg`: cognome/nome; `test-ordine-20261109.jpg` e `antropometria-ordine-20261109.jpg`: ordine decrescente; `maturazione-avvisi-20261109.jpg`: offset e APHV con avviso, dal più recente. Entrambe le seconde pagine verificate con 16–17 / 17. Nessuna nuova build nativa o prova Android implicita.
+
 ## Avvisi import antropometrico — 8 novembre 2026
 
 [import-perineale.png](import-perineale.png) aggiornata dopo ANTRO-IMPORT-AVVISI-01: frontend compilato 0.10.0, UI comune 0.2.9 già consegnata separatamente, backend reale e nuovo archivio `.local/qa-import-avvisi-20261108-01`. Dati interamente sintetici, viewport 1280 × 720, nessun ritocco. Mostra 2 righe / 1 record pronto / 1 già presente, zero errori e avvisi non bloccanti di fonte/origine con confronto dei valori. Conferma GUI poi verificata nel profilo. Sostituisce le precedenti catture dello stesso file, che restano descritte nelle sezioni storiche sotto; nessuna qualifica EXE/APK implicita.

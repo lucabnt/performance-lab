@@ -1,5 +1,52 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 9 novembre 2026 — consegna ordine-maturazione-20261109-01
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-ordine-maturazione-20261109-01/`, prodotto **0.10.0**, base `c779893` e snapshot del working tree (comprende modifiche non committate). UI-ORDINE-02, MAT-AVVISI-01/growth-maturity/2 e aggiornamenti precedenti; UI comune 0.2.9 invariata. Nessun commit, pubblicazione, firma release o sostituzione di vecchi candidati.
+
+- Versioni prodotto, core 0.1.2 e UI verificati. Test sul medesimo codice funzionale nella fase precedente: **308 Python passati / 1 saltato, 43 frontend**, build e GUI come registrato sotto; nessuna modifica funzionale durante il confezionamento.
+- Windows: PyInstaller in nuova `.local/candidate-windows-20261109-01`, completato in circa **346,2 s**; Inno Setup nuovo in **128,969 s**. Avviso QML opzionale assetdownloader invariato. Avvio EXE su `.local/qa-windows-package-20261109-01` nuovo riuscito in **15,34 s**, con PATH limitato alle directory Windows: import, logo e backend HTTP verificati; marker incluso in WINDOWS_SMOKE.txt.
+- Defender attivo, protezione in tempo reale attiva, definizioni **1.463.214.0**: scansioni bundle, installer e intera consegna senza rilevamenti. Primo tentativo installer fallito con `0x80508023` sul percorso con slash; ripetuto con percorso Windows risolto, esito positivo. Log fallito conservato separatamente; nessuna esclusione o modifica alle protezioni.
+- Android: JDK 21/Gradle 8.13, otto wheel verificate e nuova `.local/candidate-android-20261109-01`. `assembleDebug assembleRelease assembleDebugAndroidTest`: **BUILD SUCCESSFUL in 6m8s**, 136 task (135 eseguiti). Gradle offline, pip/cache separati: non una build completamente offline. **39 voci dipendenze per variante identiche** al candidato precedente. Debug v2 valido e certificato di test invariato `89d904a555285aaf9e6488d8d1ac0d4e92061f9d33cb14b4236baeb909e160b3`; release senza firma. Supporto strumentale incluso, non eseguito; nessuna nuova chiave.
+- Entrambi gli APK superano zipalign `-c -P 16`; audit completo **222 ELF / 6 problemi LOAD 16 KB** invariati. `--require-16k` fallisce come atteso: pydantic-core e FreeType entrambe le ABI, OpenBLAS/libpng x86_64. Nessuna prova runtime su emulatore/telefono della nuova build o qualifica 16 KB.
+- Contenuti: **19 asset frontend identici** in Windows/debug/release, **49 moduli backend Android**; growth-maturity/2 verificato nel PYZ Windows e nel codice Android, inclusa la policy non bloccante. SOURCE_MANIFEST/BUNDLE_MANIFEST/CONTENTS inclusi. Sorgenti ZIP confrontati byte per byte con lo snapshot, launcher portabile confrontato al bundle, CRC ZIP e **25 checksum finali ricontrollati dopo scansione completa** (`.local/defender-delivery-20261109-01.log`).
+- Installer: **197.648.947 byte**, SHA-256 `021ca31f388d27636e556d9909e443f325c2b168e7b1e551f07c97dbebb672ba`.
+- Debug test: **105.063.603 byte**, SHA-256 `73ff44fa3e7e9c8b262f65eb31c27f8f87f7446ec5f2196dc21aab1fe3dec5aa`.
+- Release non firmato: **104.002.064 byte**, SHA-256 `465c18f46958f3f943b3edaed2de3068b55a73c962f7e12bff59ae1b14ffaa38`.
+
+Pacchetti congelati prima di questa annotazione finale e dell’aggiornamento dei riferimenti al candidato corrente. Nessuna successiva modifica agli artefatti. Restano firma del titolare, Windows pulito/aggiornamento, runtime Android/telefono/16 KB, provider reali e validazione esterna dei metodi.
+
+## 9 novembre 2026 — UI-ORDINE-02 / MAT-AVVISI-01
+
+- Suite Python completa: **308 passati, 1 saltato**, 2 avvisi (deprecazione httpx/Starlette e duplicato ZIP intenzionale). Inclusi cinque casi fonte/qualità non bloccante con valori confrontati agli stessi input misurati, nascita mancante bloccante e HV invariata.
+- Frontend: **43 test passati**, build TypeScript/Vite riuscita (avviso dimensione chunk Plotly), verify_suite_ui riuscito. Build iniziale fermata da EPERM sulla copia legale, poi riuscita con autorizzazione automatica.
+- GUI reale compilata con backend, nuovo archivio sintetico `.local/qa-ordine-20261109-01`: tre atleti con 17 test e misure ciascuno. Cognome/nome iniziale e click ascendente/discendente verificati senza interferenza dell’avatar. Test e misure prima pagina 17→3, seconda pagina 2→1, indicatori 1–15 / 17 e 16–17 / 17; ritorno indipendente alle prime pagine.
+- Stime Moore/Mirwald dal 17 al 1 gennaio 2024: valori e APHV disponibili con fonte dichiarata/qualità incerta e avviso leggibile. HV/PHV non disponibili per misure non confermate. Screenshot in docs/screenshots con provenienza nell’indice.
+- Nessun nuovo EXE/APK, dispositivo Android o qualifica esterna dei modelli. Snapshot storici non riscritti.
+
+## 8 novembre, ore 23:12 — reinstallazione con definizioni 1.463.191.0
+
+WIN-AV-01 riprodotto dopo aggiornamento e reinstallazione. Sistema in tempo reale: eventi 1116 e 1117, quarantena riuscita del launcher installato. [Diagnosi](WINDOWS_DEFENDER.md).
+
+## 8 novembre 2026, ore 18:42 — candidato Windows bloccato sul PC destinatario
+
+Defender ha messo in quarantena il launcher installato con lo stesso rilevamento Bearfoos del 7 novembre. I 19 asset frontend installati coincidono con il candidato corrente. Le prove di confezionamento riportate sotto precedono questo blocco. [Eventi, digest e limiti della diagnosi](WINDOWS_DEFENDER.md).
+
+## 8 novembre 2026 — candidato import-avvisi-20261108-01
+
+Consegna locale nuova `dist/candidates/Fuorigiri-0.10.0-import-avvisi-20261108-01/`, prodotto **0.10.0**, base sorgenti `c779893`, working tree iniziale pulito. Include **ANTRO-IMPORT-AVVISI-01**, **UI-SCROLL-01** (UI comune 0.2.9), import incrementale, altezza perineale e funzioni precedenti. Nessun commit, pubblicazione, firma release o sostituzione di vecchi candidati.
+
+- Controlli ripetuti: versioni/core/UI coerenti; avvisi presenti nel JavaScript compilato. Test funzionali della fase precedente sul medesimo codice: **305 Python superati / 1 saltato e 43 frontend**, GUI degli avvisi e dello scorrimento documentata sopra. Nessuna modifica funzionale in questa fase di packaging.
+- Windows: nuova build `.local/candidate-windows-20261108-03`, PyInstaller **293,4 s**, installer Inno Setup **182,29 s**, avviso plugin QML opzionale assetdownloader invariato. Smoke EXE su nuovo archivio `.local/qa-windows-package-20261108-03` riuscito in **12,81 s**, PATH limitato alle directory Windows; marker reale di import/logo/backend HTTP in WINDOWS_SMOKE.txt (stdout windowed vuoto). Defender attivo, definizioni **1.463.187.0**: bundle, installer e intera nuova consegna senza rilevamenti; nessuna esclusione. Nessuna installazione sul profilo operativo o qualifica Windows pulito; WIN-AV-01 storico aperto.
+- Android: JDK 21/Gradle 8.13, otto wheel native verificate; nuova directory `.local/candidate-android-20261108-03`. `assembleDebug assembleRelease assembleDebugAndroidTest` riuscito in **6m54s**, 136 task (135 eseguiti). Gradle offline, pip/cache distinti: non una build completamente offline. Dipendenze risolte identiche al candidato precedente. Firma v2 debug valida e certificato abituale `89d904a555285aaf9e6488d8d1ac0d4e92061f9d33cb14b4236baeb909e160b3`; release senza firma, nessuna nuova chiave. APK strumentale incluso, non eseguito in questa fase.
+- Zipalign `-c -P 16` superato da entrambi gli APK; audit debug **222 ELF / 6 problemi LOAD 16 KB** invariati. `--require-16k` fallisce come previsto: pydantic-core e FreeType entrambe le ABI, OpenBLAS/libpng x86_64. Nessuna prova runtime della nuova build su emulatore o telefono e nessuna qualifica 16 KB implicita.
+- Contenuti: **19 asset frontend identici** in Windows/debug/release e **49 moduli backend Android**. Verificata presenza della logica degli avvisi nei backend Windows PYZ e Android, oltre a perineale/lifecycle. SOURCE_MANIFEST/BUNDLE_MANIFEST/CONTENTS inclusi; snapshot sorgenti confrontato byte per byte, launcher nel portabile confrontato, CRC ZIP e **25 checksum finali** verificati dopo scansione dell’intera consegna (`.local/defender-delivery-20261108-04.log`).
+- `Fuorigiri-0.10.0-windows-x64-setup.exe`: **197,471,898 byte**, SHA-256 `aa0bbb04abec0d325f0b11049e60d03dcb3c1cc2bab4234a5b7908c65f36fa06`.
+- `Fuorigiri-0.10.0-android-debug-test.apk`: **105,063,935 byte**, SHA-256 `91ca29567448fe9c1f6d351d47ad3498f0d2f312b94226a515c6c9b75dfda126`.
+- `Fuorigiri-0.10.0-android-release-unsigned.apk`: **104,001,364 byte**, SHA-256 `e2fc33c93b945df34236f067f606077dbbd197cebb743337fdbc16198e3c112e`.
+
+Documentazione congelata nei pacchetti precedente a questa annotazione finale e ai riferimenti aggiornati al candidato corrente; nessuna successiva modifica ai binari. Restano firma release del titolare, Windows pulito/aggiornamento, runtime Android/telefono/16 KB, provider reali e validazione esterna prevista dai gate pilot.
+
 ## 8 novembre 2026 — ANTRO-IMPORT-AVVISI-01
 
 - Suite completa: **305 Python superati / 1 saltato**, 86,98 s; avvisi Starlette/httpx e duplicato ZIP intenzionale invariati. Regressioni sul caso di stesso peso/data con dichiarato e derivato, integrazione discriminata dai metadati, differenze di fonte/origine e fonte CSV sconosciuta su record esistente, reimport senza scritture e controlli numerici ancora bloccanti. Il test preesistente sulla fonte sconosciuta ora distingue record nuovi ed esistenti.

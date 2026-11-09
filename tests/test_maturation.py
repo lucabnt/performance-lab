@@ -41,11 +41,24 @@ def test_female_equation_and_no_sex_inference():
     assert anthropometric(athlete(sex=''),measurement(model_sex='M'))['models']['moore']['value'] is not None
 
 
-@pytest.mark.parametrize('a,m',[({'birth_date':None},{}),({'birth_date':'2025-01-01'},{}),({'birth_date':'1990-01-01'},{}),({}, {'source':'dichiarato'}),({}, {'quality':'uncertain'}),({}, {'quality':'excluded'}),({}, {'height_cm':None})])
+@pytest.mark.parametrize('a,m',[({'birth_date':None},{}),({'birth_date':'2025-01-01'},{}),({'birth_date':'1990-01-01'},{}),({}, {'quality':'excluded'}),({}, {'height_cm':None})])
 def test_unavailable_is_not_zero(a,m):
     r=anthropometric(athlete(**a),measurement(**m))
     assert r['models']['moore']['value'] is None
     assert r['models']['moore']['reason']
+
+
+@pytest.mark.parametrize('extra',[{'source':s} for s in ('dichiarato','arrotondato','derivato','stimato')]+[{'quality':'uncertain'}])
+def test_nonblocking_quality_keeps_calculated_indices(extra):
+    m=measurement(sitting_height_cm=88,arm_span_cm=174,adult_height_cm=180,adult_height_method='Esterno',adult_height_source='Demo',**extra)
+    r=anthropometric(athlete(),m)
+    baseline=anthropometric(athlete(),{**m,'source':'misurato','quality':'valid'})
+    for section,keys in [('models',['moore','mirwald']),('optional',['pah','residual','arm_span_pct'])]:
+        for key in keys:
+            assert r[section][key]['value']==baseline[section][key]['value']
+            assert r[section][key]['reason']
+    assert anthropometric(athlete(birth_date=None),m)['models']['moore']['value'] is None
+    assert height_velocity([measurement('2023-01-01'),m])[0]['value'] is None
 
 
 def test_missing_seated_height_does_not_invent_it():

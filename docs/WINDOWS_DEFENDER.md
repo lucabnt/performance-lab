@@ -1,5 +1,15 @@
 # Windows: eseguibile rimosso da Microsoft Defender
 
+## 8 novembre, ore 23:12 — blocco riprodotto dopo aggiornamento Defender
+
+Dopo la reinstallazione riferita dall’utente, il registro locale mostra le definizioni 1.463.191.0 alle 23:10:13 (evento 2000), rilevamenti Bearfoos sull’eseguibile installato dalle 23:12:17 e quarantena riuscita alle 23:12:50 (1116/1117). Entrambe le schermate riguardano lo stesso episodio. Il collegamento Start riportato punta al menu Programmi; l’elenco comprende anche il processo e la registrazione del disinstallatore. Il registro non identifica il componente responsabile. Il manifesto della consegna assegna al launcher 17.409.111 byte e SHA-256 `287c57daaac894a086e874241d8ace51bab19daf9e5fde22c6cadcdbd3f1259d`. Il digest della copia installata rimossa resta indisponibile. Il collaudo Windows è fallito anche con le nuove definizioni.
+
+## 8 novembre 2026 — blocco dopo installazione del candidato import-avvisi
+
+Sul PC destinatario il file di disinstallazione risulta aggiornato alle 18:41:09. Tutti i 19 asset dell'interfaccia installata coincidono per SHA-256 con il manifest di `import-avvisi-20261108-01`. Alle 18:42:04–18:42:42 gli eventi 1116 della protezione in tempo reale identificano il processo e il file installato `Fuorigiri.exe` come `Trojan:Win32/Bearfoos.A!ml` (ID 2147731250). Gli eventi 1117 registrano quarantena riuscita. Il launcher manca dalla cartella installata. Il suo SHA-256 atteso è `287c57daaac894a086e874241d8ace51bab19daf9e5fde22c6cadcdbd3f1259d`; manca un digest della copia rimossa.
+
+Le definizioni 1.463.187.0 coincidono con quelle delle scansioni di confezionamento senza rilevamenti. Il registro documenta il blocco in uso, senza identificare il componente che lo provoca o mostrare comandi remoti eseguiti. WIN-AV-01 blocca anche questo candidato Windows.
+
 ## Riscontro del 7 novembre 2026 — WIN-AV-01 aperto
 
 Il candidato `windows-alpha-review-20261102-01` è bloccato sul PC destinatario: Defender segnala `Trojan:Win32/Bearfoos.A!ml` (ID 2147731250) e rimuove `Fuorigiri.exe` dalla cartella di installazione. Eventi del 5 novembre alle 21:58–21:59 e del 7 novembre alle 20:09–20:10, ora locale. Il collegamento non trova più il file dopo l'intervento dell'antivirus.

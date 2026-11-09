@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **8 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **9 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -97,7 +97,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 - Lattato: livelli configurabili, interpolazione locale senza estrapolazione; FC dalla finestra valida dello step associato, non dal battito al prelievo. Concentrazioni fisse non equivalgono automaticamente a LT1/LT2/FTP/MLSS. Consultare metodi e snapshot nel codice prima di cambiare formule.
 - Sprint breve, Wingate 30 s e Wingate 15 s non sono automaticamente confrontabili fra loro. Preservare carico, partenza, dispositivo, finestre e metodo. Lo storico ANA-15-070 indica 15 s con frenata 0,70 N·m/kg; gli altri dettagli non verificati non vanno inventati.
 - Non fondere aggregati di protocolli, versioni, metodi/condizioni o origini incompatibili. Un affiancamento grafico descrittivo non implica equivalenza fisiologica.
-- Crescita/maturazione TD-93–97: motore `growth-maturity/1` implementato; specifica e gate in [MATURAZIONE.md](docs/MATURAZIONE.md). HV qualificata, offset Moore/Mirwald e PHV longitudinale esplorativo distinti. %PAH/residuo usano una previsione adulta esterna con fonte/metodo: Khamis–Roche automatico non implementato. Snapshot espliciti come record report di tipo maturazione, input completi e revisioni conservati; mai ricalcolare gli snapshot in un export. Dati genitoriali/braccia/arti opzionali e secondari; età non equivale a fase maturativa. Validazione esterna ancora necessaria.
+- Crescita/maturazione TD-93–97: motore corrente `growth-maturity/2` implementato (v1 storico); specifica e gate in [MATURAZIONE.md](docs/MATURAZIONE.md). Fonte non misurata/qualità incerta producono indici antropometrici con avviso; esclusione, nascita/input necessari e domini restano bloccanti. HV qualificata, offset Moore/Mirwald e PHV longitudinale esplorativo distinti. %PAH/residuo usano una previsione adulta esterna con fonte/metodo: Khamis–Roche automatico non implementato. Snapshot espliciti come record report di tipo maturazione, input completi e revisioni conservati; mai ricalcolare gli snapshot in un export. Dati genitoriali/braccia/arti opzionali e secondari; età non equivale a fase maturativa. Validazione esterna ancora necessaria.
 - Per nuovi metodi verificare fonti scientifiche primarie, dominio, input, incertezza e vettori numerici indipendenti. Non inventare un consenso unico o classificazioni automatiche per selezionare/escludere atleti.
 
 ## Interfaccia e report
@@ -147,9 +147,9 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 
 ## Distribuzione e accettazione
 
-- Candidato corrente: `antro-incrementale-20261108-01`, build e confezionamento dell’8 novembre con ANTRO-INCREMENTALE-01, ANTRO-PERINEALE-01, RECORD-LIFECYCLE-01 e aggiornamenti precedenti (IMC, gruppi, SYNC-AUTO-01 / INT-ICU-01). Installer/portabile Windows e APK debug/release non firmato, sorgenti e wheel; riscontri in VERIFICA.md. Scansioni correnti e smoke Windows riusciti **non chiudono WIN-AV-01 del candidato precedente**. Nessuna nuova prova runtime Android, qualifica 16 KB o accettazione Windows pulito implicita.
+- Candidato corrente: `ordine-maturazione-20261109-01`, build e confezionamento del 9 novembre con UI-ORDINE-02, MAT-AVVISI-01 (growth-maturity/2), UI comune 0.2.9 e aggiornamenti precedenti. Installer/portabile Windows, APK debug/release non firmato, sorgenti e wheel; 25 checksum, avvio e scansioni correnti verificati in VERIFICA.md. Nessuna nuova prova runtime Android, qualifica 16 KB o accettazione Windows pulito implicita.
 
-- Windows, 7 novembre: il candidato `windows-alpha-review-20261102-01` è bloccato da Defender con `Trojan:Win32/Bearfoos.A!ml`, che rimuove l'EXE installato e blocca anche l'originale di build. Non qualificarlo dal solo smoke precedente né dichiarare confermato un falso positivo. Non aggirare il rilevamento con esclusioni o ricompilazioni prive di diagnosi.
+- Windows, 7 novembre: il candidato `windows-alpha-review-20261102-01` è bloccato da Defender con `Trojan:Win32/Bearfoos.A!ml`, che rimuove l'EXE installato e blocca anche l'originale di build. Verificare separatamente il candidato dell’8 novembre con definizioni aggiornate e protezioni attive. Non aggirare il rilevamento con esclusioni o ricompilazioni prive di diagnosi.
 
 - Revisione pre-alpha ALPHA-REVIEW-01 del 2 novembre: correzione backup e aggiornamenti dipendenze successivi ad `alpha-prep-20261102-01`; i vecchi candidati contengono ancora Pillow 11.0.0. Nuove wheel Pillow 13.0.0 integrate e test strumentale x86_64 superato; telefono e firma restano distinti. Audit ELF dell'intero APK: sei moduli ulteriori non soddisfano il controllo LOAD a 16 KB (pydantic-core entrambe le ABI, FreeType Chaquopy entrambe le ABI, OpenBLAS/libpng x86_64); zipalign non li corregge. Riscontri e gate in [REVISIONE_ALPHA.md](docs/REVISIONE_ALPHA.md) e VERIFICA.md.
 

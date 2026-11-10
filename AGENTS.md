@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **9 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **10 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -69,7 +69,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 ## Dati, società e sincronizzazione
 
 - SYNC-AUTO-01: `useSyncJob` coordina apertura società, scritture UI raggruppate a 10 s e ricezione a 5 min sul motore job esistente; retry 30 s–30 min, senza sovrapposizioni. `sync-automatic.json` è preferenza locale per archivio/dispositivo (default attiva), fuori da eventi e backup. Windows richiede UI aperta; background Android separato. Conservare bozze connessione e ultima riuscita distinta dall’ultimo tentativo/impronta destinazione.
-- INT-ICU-01: `intervals_icu_id` revisionato sull’atleta e `intervals_icu_enabled` sulla società, entrambi sincronizzati e inclusi nei backup. Campo ID sempre disponibile nell’editor; disattivazione nasconde soltanto il pulsante. URL a dominio fisso, nessuna credenziale/API; preservare ID quando omesso da client precedenti.
+- INT-ICU-01: `intervals_icu_id` revisionato sull’atleta e `intervals_icu_enabled` sulla società, entrambi sincronizzati e inclusi nei backup. Campo ID sempre disponibile nell’editor; disattivazione nasconde soltanto il pulsante. URL a dominio fisso, nessuna credenziale/API; preservare ID quando omesso da client precedenti. Esempi UI/documentazione con segnaposto di formato `i…`, mai ID personali forniti come esempio; fixture sintetiche solo locali.
 
 - Sync UI: job device-local in sync_jobs.py e root useSyncJob; catturare lo Store reale prima dei thread, preservare ContextVar, lock e firme. Non eseguire rete sotto Runtime.lock Android. Running senza thread dopo riavvio significa interrotto, mai successo. Non confondere conteggi di operazioni con percentuale totale o ricezione su altri dispositivi. Deadline/bootstrap e watchdog non autorizzano reset dati.
 
@@ -147,7 +147,7 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 
 ## Distribuzione e accettazione
 
-- Candidato corrente: `ordine-maturazione-20261109-01`, build e confezionamento del 9 novembre con UI-ORDINE-02, MAT-AVVISI-01 (growth-maturity/2), UI comune 0.2.9 e aggiornamenti precedenti. Installer/portabile Windows, APK debug/release non firmato, sorgenti e wheel; 25 checksum, avvio e scansioni correnti verificati in VERIFICA.md. Nessuna nuova prova runtime Android, qualifica 16 KB o accettazione Windows pulito implicita.
+- Candidato corrente: `ordine-maturazione-20261109-01`, build e confezionamento del 9 novembre con UI-ORDINE-02, MAT-AVVISI-01 (growth-maturity/2), UI comune 0.2.9 e aggiornamenti precedenti. Installer/portabile Windows, APK debug/release non firmato, sorgenti e wheel; 25 checksum, avvio e scansioni correnti verificati in VERIFICA.md. WIN-AV-01 resta aperto per reinstallazione e riapertura della stessa build con protezioni attive, vedi docs/WINDOWS_DEFENDER.md. Nessuna nuova prova runtime Android, qualifica 16 KB o accettazione Windows pulito implicita.
 
 - Windows, 7 novembre: il candidato `windows-alpha-review-20261102-01` è bloccato da Defender con `Trojan:Win32/Bearfoos.A!ml`, che rimuove l'EXE installato e blocca anche l'originale di build. Verificare separatamente il candidato dell’8 novembre con definizioni aggiornate e protezioni attive. Non aggirare il rilevamento con esclusioni o ricompilazioni prive di diagnosi.
 

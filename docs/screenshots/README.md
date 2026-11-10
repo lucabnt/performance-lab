@@ -1,5 +1,9 @@
 # Schermate dell’interfaccia
 
+## Esempio Intervals.icu anonimizzato — 10 novembre 2026
+
+Rinnovata `intervals-id.png`: frontend compilato 0.10.0/common UI 0.2.9 e backend reale, nuovo archivio `.local/qa-intervals-placeholder-20261110-01`, sola persona sintetica Ada Esempio DEMO. Editor con ID vuoto e segnaposto di formato `i…`; nessun identificativo reale. Cattura browser 1280 × 720 senza ritocchi, token o credenziali. Sostituisce la cattura dell’editor del 7 novembre. Le altre catture Intervals mantengono la propria provenienza; nessun APK collaudato.
+
 ## Ordinamento e avvisi — 9 novembre 2026
 
 Frontend compilato 0.10.0/common UI 0.2.9, backend reale growth-maturity/2, archivio nuovo `.local/qa-ordine-20261109-01`: tre atleti sintetici, ciascuno con 17 test e 17 misure dichiarate/qualità incerta. Browser desktop circa 1265 × 712, catture reali senza ritocchi o token. `atleti-ordine-20261109.jpg`: cognome/nome; `test-ordine-20261109.jpg` e `antropometria-ordine-20261109.jpg`: ordine decrescente; `maturazione-avvisi-20261109.jpg`: offset e APHV con avviso, dal più recente. Entrambe le seconde pagine verificate con 16–17 / 17. Nessuna nuova build nativa o prova Android implicita.
@@ -48,7 +52,7 @@ Eseguiti anche annullamento della conferma, eliminazione e ripristino reali per 
 Frontend Fuorigiri 0.10.0 ricompilato, common UI 0.2.8, backend reale e nuovo archivio `.local/qa-intervals-automatic-20261107-01`, società/atleta esclusivamente sintetici. Catture responsive strette effettive del browser (315 px circa); nessun APK o dispositivo Android implicito. Verificato anche il layout desktop 1280 × 720. Nessun ritocco dei contenuti, credenziale o token nelle immagini.
 
 - [Configurazione Intervals.icu](intervals-configurazione.png): interruttore condiviso della società in Archivio e scambio, attivo.
-- [Profilo con pulsante](intervals-profilo.png): “Vedi su Intervals.icu” con ID sintetico `i000000`.
+- [Profilo con pulsante](intervals-profilo.png): “Vedi su Intervals.icu” con un ID usato allora come esempio, la cui natura sintetica non era stata accertata; il valore non è visibile nella cattura del profilo.
 - [ID nell’editor](intervals-id.png): campo facoltativo sempre disponibile; la disattivazione nasconde soltanto il pulsante. Verificata anche la conservazione dell’ID a opzione spenta.
 
 Lo scambio automatico all’apertura e dopo salvataggio è stato osservato sul trasporto cartella locale; disattivazione persistente e riattivazione provate, insieme a conservazione di sezione aperta e bozza WebDAV durante il completamento. La bozza non è una connessione WebDAV reale collaudata. Le immagini precedenti conservano la loro provenienza; queste catture documentano le nuove parti del profilo e di Archivio e scambio.

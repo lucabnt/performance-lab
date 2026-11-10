@@ -1,5 +1,9 @@
 # Requisiti e to-do
 
+## INT-ICU-01 — riservatezza degli esempi, 10 novembre 2026
+
+Richiesta: verificare l’ID Intervals fornito come esempio e sostituirlo perché può identificare un profilo reale. Corretto nei sorgenti: segnaposto `i…` senza identificativo numerico, istruzioni IT/EN sul formato, URL parametrico nella guida e fixture locale sintetica di 39 cifre nei test (nessuna chiamata al provider). Anonimizzato anche l’ID nella citazione storica della richiesta; nessuna modifica ai dati degli atleti. Schermata editor rinnovata senza ID salvato. Il campo era già vuoto per i nuovi atleti; l’esempio non era un default. Pacchetti nativi preesistenti non aggiornati. Prove in VERIFICA.md.
+
 ## Consegna ordine/maturazione — 9 novembre 2026
 
 UI-ORDINE-02 e MAT-AVVISI-01 inclusi nel candidato locale `ordine-maturazione-20261109-01`: installer/portabile Windows, APK debug con firma di test esistente, release non firmato, supporto strumentale, sorgenti e wheel prodotti e verificati, **25 checksum**. Supera le note «nessun nuovo EXE/APK» della fase di implementazione sottostante. Nessuna accettazione Windows pulito, runtime Android, firma release o qualifica 16 KB implicita. Prove in VERIFICA.md.
@@ -54,7 +58,7 @@ Implementato nei sorgenti: **Elimina rilevazione** nell’editor antropometrico 
 
 ## SYNC-AUTO-01 e INT-ICU-01 — 7 novembre 2026
 
-Richiesta: «quando avviene la sincronizzazione con webdav? […] fuorigiri windows non sincronizzava il contenuto locale se non triggerato. Scegliamo la strategia migliore per risolvere»; «feature […] attivabile e disattivabile […] id intervals.icu (eg. i000000) […] vedi su Intervals.icu». Approvata l’implementazione della proposta combinata. Correzione esplicita successiva: «gli id dovrebbero essere sincronizzati insieme a tutti i dati» e «lascia il campo, togli il pulsante alla disattivazione».
+Richiesta: «quando avviene la sincronizzazione con webdav? […] fuorigiri windows non sincronizzava il contenuto locale se non triggerato. Scegliamo la strategia migliore per risolvere»; «feature […] attivabile e disattivabile […] id intervals.icu (eg. [ID omesso per riservatezza]) […] vedi su Intervals.icu». Approvata l’implementazione della proposta combinata. Correzione esplicita successiva: «gli id dovrebbero essere sincronizzati insieme a tutti i dati» e «lascia il campo, togli il pulsante alla disattivazione».
 
 **SYNC-AUTO-01, implementato nei sorgenti:** una società gestita con destinazione configurata avvia lo stesso motore incrementale all’apertura, dopo circa 10 secondi di raggruppamento delle modifiche e ogni 5 minuti. Automatismo predefinito attivo, disattivabile per dispositivo/archivio, conservato in `sync-automatic.json` fuori dagli eventi e dai backup. Retry progressivo 30 s–30 min; una sola operazione per archivio; lavori manuali e verifica completa restano distinti. Ultimo scambio riuscito separato dall’ultimo tentativo. Nessun servizio Windows ad app chiusa; il background Android esistente resta una scelta separata.
 
@@ -66,7 +70,7 @@ Accettazione: debounce/ricezione periodica/retry con orologio controllato; isola
 
 ## WIN-AV-01 — EXE Windows rimosso dopo installazione, 7 novembre 2026
 
-Richiesta: «installando l'ultimo candidato su windows […] dice che exe non esiste più. Verifica e in caso correggi». Diagnosi completata sul PC destinatario: Defender rimuove l'EXE e blocca anche l'originale di build con `Trojan:Win32/Bearfoos.A!ml`; nessun errore di destinazione individuato nell'installer. **Risoluzione aperta**. Resta la prova di installazione, avvio e riapertura del candidato corrente con definizioni aggiornate e protezioni attive. [Dettagli e criteri](WINDOWS_DEFENDER.md), [prove](VERIFICA.md). Nessuna correzione del binario o accettazione dichiarata.
+Richiesta: «installando l'ultimo candidato su windows […] dice che exe non esiste più. Verifica e in caso correggi». Diagnosi completata sul PC destinatario: Defender rimuove l'EXE e blocca anche l'originale di build con `Trojan:Win32/Bearfoos.A!ml`; nessun errore di destinazione individuato nell'installer. **Risoluzione aperta**. Il 10 novembre è stata osservata la quarantena anche sull’installazione di ordine-maturazione. Resta da ottenere installazione, avvio e riapertura del candidato corrente con definizioni aggiornate e protezioni attive. [Dettagli e criteri](WINDOWS_DEFENDER.md), [prove](VERIFICA.md). Nessuna correzione del binario o accettazione dichiarata.
 
 ## GRUPPI-05 e ANTRO-IMC-01 — elenco filtrato e IMC, 7 novembre 2026
 

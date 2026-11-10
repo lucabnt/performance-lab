@@ -1,5 +1,19 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 10 novembre 2026 — rimozione ID di esempio Intervals.icu
+
+Ricerca nei file tracciati: l’ID era presente nel placeholder/testo IT/EN, guida, citazione dei requisiti, fixture API/sync/backup e didascalia della galleria; presente anche nella cattura `intervals-id.png`. Rimossi i riferimenti testuali e sostituita la cattura con una nuova acquisizione reale senza ID salvato. Nessuna verifica online del profilo: non serve accertare a chi appartenga per evitare di usarlo come esempio.
+
+- `pytest -q tests/test_intervals_automatic.py`: **4 passati**, un avviso di deprecazione Starlette/httpx. Fixture sintetica locale, nessun accesso Intervals.icu.
+- `npm --prefix frontend run build`: riuscita; avviso dimensioni chunk Vite. Primo tentativo bloccato dal sandbox sulla copia LICENSE, ripetuto con autorizzazione di esecuzione e riuscito.
+- API reale su nuovo archivio `.local/qa-intervals-placeholder-20261110-01`: atleta creato senza ID, risposta con stringa vuota. GUI compilata verificata nel browser a 1280 × 720: editor con valore vuoto, segnaposto `i…` e istruzione sul formato. Cattura senza ritocchi aggiornata in galleria.
+
+Nessuna modifica agli archivi esistenti, riscrittura della storia Git o nuova build Windows/Android. Vecchi pacchetti congelati e precedenti dati QA possono ancora contenere l’esempio.
+
+## 10 novembre 2026 — Defender sul candidato installato
+
+Quarantena alle 09:53 con definizioni 1.463.222.0. Tutti i 19 file frontend installati coincidono con ordine-maturazione; launcher assente. [Eventi e limiti del confronto](WINDOWS_DEFENDER.md).
+
 ## 9 novembre 2026 — consegna ordine-maturazione-20261109-01
 
 Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-ordine-maturazione-20261109-01/`, prodotto **0.10.0**, base `c779893` e snapshot del working tree (comprende modifiche non committate). UI-ORDINE-02, MAT-AVVISI-01/growth-maturity/2 e aggiornamenti precedenti; UI comune 0.2.9 invariata. Nessun commit, pubblicazione, firma release o sostituzione di vecchi candidati.

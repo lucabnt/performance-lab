@@ -32,7 +32,7 @@ const translations:Record<string,string> = {
  "Collegamenti a Intervals.icu":"Intervals.icu links",
  "Abilita collegamenti a Intervals.icu":"Enable Intervals.icu links",
  "ID atleta Intervals.icu":"Intervals.icu athlete ID",
- "Facoltativo, per esempio i000000.":"Optional, for example i000000.",
+ "Facoltativo: i seguito dalle cifre del tuo ID.":"Optional: i followed by the digits of your ID.",
  "Vedi su Intervals.icu":"View on Intervals.icu",
  "Impostazione della società condivisa fra dispositivi. Gli ID restano conservati quando disattivi la funzione. Il collegamento apre il sito, senza importare attività o richiedere credenziali in Fuorigiri.":"Society setting shared across devices. IDs are preserved when disabled. The link opens the website without importing activities or requesting credentials in Fuorigiri.",
  "Sincronizza automaticamente su questo dispositivo per questa società":"Automatically sync this society on this device",

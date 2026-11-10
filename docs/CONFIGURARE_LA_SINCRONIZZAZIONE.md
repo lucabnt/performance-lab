@@ -18,7 +18,7 @@ Su Windows l’interfaccia deve restare aperta: nessun servizio ad app chiusa. S
 
 ## Collegamenti Intervals.icu
 
-In **Archivio e scambio → Collegamenti a Intervals.icu**, Admin dati può attivare l’opzione della società, inizialmente spenta. Nell’editor del profilo il campo **ID atleta Intervals.icu** è sempre disponibile: inserire per esempio `i000000`. Se l’opzione è attiva e l’ID presente, il profilo offre **Vedi su Intervals.icu**, che apre `https://intervals.icu/athlete/i000000/activities` nel browser. Le autorizzazioni del sito restano quelle dell’account nel browser.
+In **Archivio e scambio → Collegamenti a Intervals.icu**, Admin dati può attivare l’opzione della società, inizialmente spenta. Nell’editor del profilo il campo **ID atleta Intervals.icu** è sempre disponibile: inserire il proprio ID, composto da `i` seguito da cifre. Il segnaposto `i…` indica soltanto il formato e non è un ID da salvare. Se l’opzione è attiva e l’ID presente, il profilo offre **Vedi su Intervals.icu**, che apre `https://intervals.icu/athlete/{id}/activities` nel browser, sostituendo `{id}` con il valore salvato. Le autorizzazioni del sito restano quelle dell’account nel browser.
 
 La disattivazione nasconde solo il pulsante e conserva il campo/valore. ID e interruttore si sincronizzano con gli altri dati della società e sono inclusi nel backup. Non vengono importate attività né richieste credenziali Intervals.icu in Fuorigiri.
 

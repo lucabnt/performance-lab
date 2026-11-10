@@ -1,5 +1,13 @@
 # Changelog
 
+## 10 novembre 2026 — esempi Intervals.icu anonimizzati
+
+- Rimosso l’ID fornito come esempio da editor IT/EN, guida, citazione dei requisiti e fixture; segnaposto UI `i…`, ID di test sintetico locale. Rinnovata la schermata dell’editor senza ID salvato. L’ID non era un valore predefinito dei nuovi atleti. Nessun nuovo EXE/APK; pacchetti e archivi preesistenti invariati.
+
+## 10 novembre 2026 — blocco Windows sul candidato ordine-maturazione
+
+- Registrata la quarantena del launcher sul PC destinatario con le definizioni Defender 1.463.222.0. [Diagnosi](docs/WINDOWS_DEFENDER.md).
+
 ## 9 novembre 2026 — candidato locale ordine-maturazione-20261109-01
 
 Prodotte nuove build Windows e Android 0.10.0 con UI-ORDINE-02 e MAT-AVVISI-01/growth-maturity/2, UI comune 0.2.9 e aggiornamenti precedenti. Installer/portabile, debug di test, release non firmato, supporto strumentale, sorgenti/wheel e 25 checksum verificati. Avvio e scansioni Windows riusciti; nessuna pubblicazione, installazione su dati operativi o qualifica runtime Android/16 KB implicita. La consegna congelata precede questa annotazione finale.

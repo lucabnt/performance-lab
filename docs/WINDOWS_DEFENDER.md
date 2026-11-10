@@ -1,5 +1,11 @@
 # Windows: eseguibile rimosso da Microsoft Defender
 
+## 10 novembre 2026 — nuovo blocco sul PC destinatario
+
+Il 10 novembre, dalle 09:52:46 alle 09:53:37, Defender ha rilevato Bearfoos sull’eseguibile installato (1116) e ha registrato la quarantena riuscita (1117), con definizioni 1.463.222.0 e motore 1.1.26100.4. L’EXE è assente. Il file del disinstallatore è datato 9 novembre alle 21:03:21. Le impronte dei file dell’interfaccia rimasti coincidono per 19/19 con ordine-maturazione-20261109-01 e per 18/19 con import-avvisi. Il launcher atteso del 9 novembre ha SHA-256 `6e7257afe7a3aae7dfc1772809d592e552f64181c52e8b98979fa714450b97d0`; manca un digest della copia rimossa. WIN-AV-01 resta aperto sul candidato corrente.
+
+Alle 10:00:26 Defender ha registrato anche la quarantena della copia in `bundle/Fuorigiri/Fuorigiri.exe` della build del 9 novembre. Il file è assente da quella cartella. La copia intermedia in `work/Fuorigiri` risultava elencata, ma Defender ha impedito la lettura per il confronto SHA-256.
+
 ## 8 novembre, ore 23:12 — blocco riprodotto dopo aggiornamento Defender
 
 Dopo la reinstallazione riferita dall’utente, il registro locale mostra le definizioni 1.463.191.0 alle 23:10:13 (evento 2000), rilevamenti Bearfoos sull’eseguibile installato dalle 23:12:17 e quarantena riuscita alle 23:12:50 (1116/1117). Entrambe le schermate riguardano lo stesso episodio. Il collegamento Start riportato punta al menu Programmi; l’elenco comprende anche il processo e la registrazione del disinstallatore. Il registro non identifica il componente responsabile. Il manifesto della consegna assegna al launcher 17.409.111 byte e SHA-256 `287c57daaac894a086e874241d8ace51bab19daf9e5fde22c6cadcdbd3f1259d`. Il digest della copia installata rimossa resta indisponibile. Il collaudo Windows è fallito anche con le nuove definizioni.

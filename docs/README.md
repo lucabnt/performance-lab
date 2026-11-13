@@ -1,6 +1,10 @@
 # Documentazione di Fuorigiri Performance Lab
 
-Indice aggiornato al **26 ottobre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
+Indice aggiornato al **10 novembre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
+
+## Prima alpha
+
+Per installazione, scelta degli allegati, licenze e limiti operativi consultare la [guida alla pre-release](DISTRIBUZIONE.md) e il [registro verifiche](VERIFICA.md).
 
 ## Uso, avvio e distribuzione
 

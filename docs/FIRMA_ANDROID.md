@@ -2,6 +2,8 @@
 
 Il candidato contiene un **APK release non firmato**. Per scelta dell’utente non è stata creata alcuna chiave: questo file non si installa finché non viene firmato. Non sostituire la firma release con quella debug per avviare un pilot operativo.
 
+Per il candidato alpha.1 completare prima la bonifica delle wheel native e degli asset APK indicata nella [guida alla distribuzione](DISTRIBUZIONE.md), poi ricompilare e verificare il nuovo input.
+
 La chiave identifica il titolare degli aggiornamenti. Conservarne una copia di recupero distinta dal PC e custodire la password separatamente. Non inserirla nella repository, negli allegati o nei log. Scegliere il canale futuro (APK diretto/Google Play) prima della prima distribuzione: con Play App Signing distinguere chiave di caricamento e chiave di firma applicativa. Fonti: [firma Android](https://developer.android.com/studio/publish/app-signing), [apksigner](https://developer.android.com/tools/apksigner), [zipalign](https://developer.android.com/tools/zipalign).
 
 ## 1. Creare una chiave stabile — solo il titolare, una volta
@@ -27,7 +29,7 @@ Verificare alias e impronta SHA-256 del certificato. Fare e verificare una copia
 Dalla radice del progetto; se si usa una copia della consegna su un altro PC, impostare `$candidate` sulla sua cartella. Installare soltanto gli strumenti di firma sul PC del titolare, non sui PC dei tester.
 
 ```powershell
-$candidate = (Resolve-Path 'dist/candidates/Fuorigiri-0.10.0-alpha-prep-20261102-01').Path
+$candidate = (Resolve-Path 'dist/candidates/Fuorigiri-0.10.0-alpha.1-20261110').Path
 $sdk = $env:ANDROID_HOME
 if (-not $sdk) { $sdk = Join-Path $env:LOCALAPPDATA 'Android/Sdk' }
 $tools = Join-Path $sdk 'build-tools/35.0.0'

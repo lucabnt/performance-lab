@@ -12,7 +12,7 @@ Sono confermati anche i confini continui delle zone riportati sotto e la possibi
 
 ## Fonte e ambito dell'esame
 
-Fonte: `F:/GitHub/test-atleti/archivio_test.pdf`, titolo «Archivio Test di Valutazione Funzionale», generato il 26 agosto 2026, 36 pagine PDF (copertina e pagine numerate 1–35). Letti indice, convenzioni, tabelle e serie individuali; ispezionate visivamente pagine rappresentative di aggregati, coorti e copertura. Le numerosità dichiarate sono 19 atleti, 51 test aerobici e 38 anaerobici, stagioni 2023–2026. Non è stata verificata la rigenerazione dai CSV sorgente né importato il PDF nell'app.
+Fonte: `archivio_test.pdf (allegato privato)`, titolo «Archivio Test di Valutazione Funzionale», generato il 26 agosto 2026, 36 pagine PDF (copertina e pagine numerate 1–35). Letti indice, convenzioni, tabelle e serie individuali; ispezionate visivamente pagine rappresentative di aggregati, coorti e copertura. Le numerosità dichiarate sono 19 atleti, 51 test aerobici e 38 anaerobici, stagioni 2023–2026. Non è stata verificata la rigenerazione dai CSV sorgente né importato il PDF nell'app.
 
 I numeri di pagina della matrice seguente sono quelli **stampati** nel documento. Le informazioni personali e le righe dei singoli atleti non sono riprodotte in questa specifica. Non copiare il PDF nei dati dimostrativi o nella repository pubblica.
 

@@ -1,6 +1,25 @@
 # Distribuzione desktop e prerequisiti mobile
 
-## Candidato corrente — ordine e maturazione, 9 novembre 2026
+## Prima pre-release 0.10.0-alpha.1
+
+Il nome prodotto resta 0.10.0. Il tag proposto è `v0.10.0-alpha.1`. Per il primo tag pubblico utilizzare una repository inizializzata dallo snapshot controllato, senza genitori della storia privata. Conservare la repository originale privata. Verificare anche eventuali fork, allegati, Actions, wiki, issue e pull request prima di cambiare la visibilità di un progetto esistente.
+
+| Allegato | Quando inserirlo |
+|---|---|
+| Fuorigiri-0.10.0-sources.zip | Snapshot dei file tracciati del candidato, con esempi sintetici, licenza, componenti comuni e istruzioni. |
+| SHA256SUMS.txt | Generato esclusivamente sugli allegati effettivamente pubblicati. |
+| Fuorigiri-0.10.0-windows-x64-setup.exe | Installer dopo completamento avvisi e sorgenti delle dipendenze ridistribuite. |
+| Fuorigiri-0.10.0-windows-x64-portable.zip | Stesso perimetro dell’installer. Estrarre l’intera cartella. |
+| Fuorigiri-0.10.0-android-native-wheels.zip | Supporto alla ricostruzione Android, dopo ricostruzione sanitizzata delle sei wheel che contengono percorsi con account del builder e verifica delle condizioni dei binari nativi. Estrarre nella radice dei sorgenti. |
+| Fuorigiri-0.10.0-android-release-signed.apk | Solo dopo verifica condizioni dei componenti Android, firma stabile e prova sul telefono. |
+
+La verifica degli asset Android ha anche individuato il percorso locale della wheel comune in direct_url.json nel pacchetto Chaquopy. Preparare il successore da un checkout neutro e riesaminare i metadati incorporati, oltre a ELF e SBOM.
+
+Il bundle Windows include 113 testi di licenza e avvisi disponibili nel builder (Python e frontend). Le librerie terze Qt conservano riferimenti a profili di compilazione a monte. Per la qualifica della distribuzione completare la corrispondenza con i sorgenti e verificare gli avvisi WebEngine/Chromium. [Dettagli licenze](../THIRD_PARTY.md).
+
+La cartella privata del candidato conserva l’APK non firmato per il titolare. La [guida di firma](FIRMA_ANDROID.md) descrive allineamento, firma, controllo dell’impronta e aggiornamento da una versione precedente. Le note di accettazione sono in [COLLAUDO_PILOT.md](COLLAUDO_PILOT.md). Le vecchie consegne includono log tecnici e possono conservare esempi rimossi. Per i download pubblici usare esclusivamente i nomi espliciti della tabella, con digest ricalcolati sulla selezione finale.
+
+## Candidato del 9 novembre — ordine e maturazione, 9 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-ordine-maturazione-20261109-01/`: nuove build Windows/Android **0.10.0** con **UI-ORDINE-02** (cognome/nome, test e misure dal più recente in pagine indipendenti da 15) e **MAT-AVVISI-01** (stime datate decrescenti e indici antropometrici con avvisi, motore growth-maturity/2), oltre alle funzioni precedenti; UI comune **0.2.9** invariata. Installer/portabile completi, APK debug firmato per i test, release non firmato, supporto strumentale, sorgenti/wheel e **25 checksum finali verificati**. Avvio Windows, scansioni Defender attivo e controlli di contenuti/firme/allineamento riusciti. [Prove e digest](VERIFICA.md).
 

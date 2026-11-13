@@ -6,7 +6,7 @@ Nuova consegna locale versionata dal common per il ripristino dello scorrimento 
 
 ## Decisione confermata
 
-Fuorigiri, Ammiraglia e il codice comune hanno repository separate. La repository locale delle librerie è `F:\GitHub\cycling-suite-common`, ramo main, primo tag `ui-v0.1.0`. Non è stata pubblicata su GitHub e non ha un remote configurato. Non sono stati creati account o scope su npm.
+Fuorigiri, Ammiraglia e il codice comune hanno repository separate. La repository locale delle librerie è `cycling-suite-common`, ramo main, primo tag `ui-v0.1.0`. Non è stata pubblicata su GitHub e non ha un remote configurato. Non sono stati creati account o scope su npm.
 
 Questa scelta sostituisce la proposta conversazionale di una monorepo con entrambe le applicazioni. I workspaces npm nella repository comune organizzano soltanto libreria ed esempi: non inglobano le app.
 

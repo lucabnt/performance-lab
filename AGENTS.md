@@ -147,7 +147,9 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 
 ## Distribuzione e accettazione
 
-- Candidato corrente: `ordine-maturazione-20261109-01`, build e confezionamento del 9 novembre con UI-ORDINE-02, MAT-AVVISI-01 (growth-maturity/2), UI comune 0.2.9 e aggiornamenti precedenti. Installer/portabile Windows, APK debug/release non firmato, sorgenti e wheel; 25 checksum, avvio e scansioni correnti verificati in VERIFICA.md. WIN-AV-01 resta aperto per reinstallazione e riapertura della stessa build con protezioni attive, vedi docs/WINDOWS_DEFENDER.md. Nessuna nuova prova runtime Android, qualifica 16 KB o accettazione Windows pulito implicita.
+- Candidato alpha.1-20261110, versione prodotto 0.10.0 (PUB-ALPHA-01): pubblicare da uno snapshot verificato senza storia privata. Per lo ZIP sorgenti e per docs/examples nel bundle includere solo file tracciati. Per scelta allegati, diritti di redistribuzione e APK firmato seguire docs/DISTRIBUZIONE.md. Sei wheel Android e il pacchetto Chaquopy conservano percorsi del builder. Per una distribuzione pubblica ricostruire da percorsi neutri e verificare ELF, SBOM e direct_url.json.
+
+- Candidato precedente: `ordine-maturazione-20261109-01`, build e confezionamento del 9 novembre con UI-ORDINE-02, MAT-AVVISI-01 (growth-maturity/2), UI comune 0.2.9 e aggiornamenti precedenti. Installer/portabile Windows, APK debug/release non firmato, sorgenti e wheel; 25 checksum, avvio e scansioni correnti verificati in VERIFICA.md. WIN-AV-01 resta aperto per reinstallazione e riapertura della stessa build con protezioni attive, vedi docs/WINDOWS_DEFENDER.md. Nessuna nuova prova runtime Android, qualifica 16 KB o accettazione Windows pulito implicita.
 
 - Windows, 7 novembre: il candidato `windows-alpha-review-20261102-01` è bloccato da Defender con `Trojan:Win32/Bearfoos.A!ml`, che rimuove l'EXE installato e blocca anche l'originale di build. Verificare separatamente il candidato dell’8 novembre con definizioni aggiornate e protezioni attive. Non aggirare il rilevamento con esclusioni o ricompilazioni prive di diagnosi.
 

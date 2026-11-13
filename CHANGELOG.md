@@ -1,5 +1,9 @@
 # Changelog
 
+## 10 novembre 2026 — preparazione pre-release 0.10.0-alpha.1
+
+README riordinato con percorsi Windows, Android e sorgenti. Rimossi riferimenti privati di assistenza. Snapshot sorgenti, documenti ed esempi desktop selezionati dall’indice Git. Guida agli allegati, alla firma Android e agli obblighi delle dipendenze aggiornata.
+
 ## 10 novembre 2026 — esempi Intervals.icu anonimizzati
 
 - Rimosso l’ID fornito come esempio da editor IT/EN, guida, citazione dei requisiti e fixture; segnaposto UI `i…`, ID di test sintetico locale. Rinnovata la schermata dell’editor senza ID salvato. L’ID non era un valore predefinito dei nuovi atleti. Nessun nuovo EXE/APK; pacchetti e archivi preesistenti invariati.

@@ -25,6 +25,27 @@ def checked_zip(path):
         error=archive.testzip()
         if error:raise ValueError(f'ZIP corrotto: {path.name}: {error}')
 
+def write_source_archive(root, destination, prefix):
+    names = subprocess.check_output(
+        ['git', 'ls-files', '--cached', '-z'], cwd=root
+    ).decode('utf-8').split('\0')
+    resources = []
+    with zipfile.ZipFile(destination, 'x', zipfile.ZIP_DEFLATED, allowZip64=True) as archive:
+        for name in sorted(filter(None, names)):
+            path = root / name
+            if name == 'bundle-resources.json' or not path.is_file():
+                continue
+            if path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
+                raise ValueError('Collegamento non ammesso nello snapshot: ' + name)
+            if path.name in {'identity.json', '.env', 'keystore.properties'} or path.suffix.lower() in {'.jks', '.keystore', '.p12', '.pfx'}:
+                raise ValueError('Materiale riservato tra i sorgenti: ' + name)
+            archive.write(path, arcname=f'{prefix}/{name}')
+            if name.startswith(('docs/', 'examples/')):
+                resources.append(name)
+        # Permit a desktop build from the extracted source archive without .git.
+        archive.writestr(f'{prefix}/bundle-resources.json', json.dumps(resources, indent=2))
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,required=True)
@@ -66,16 +87,7 @@ def main():
         for path in sorted(args.bundle.rglob('*')):
             if path.is_file():archive.write(path,arcname='Fuorigiri/'+path.relative_to(args.bundle).as_posix())
     sources=output/f'{prefix}-sources.zip'
-    names=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','-z'],cwd=ROOT).decode('utf-8').split('\0')
-    with zipfile.ZipFile(sources,'w',zipfile.ZIP_DEFLATED,allowZip64=True) as archive:
-        for name in sorted(set(names)):
-            if not name:continue
-            path=ROOT/name
-            if not path.is_file():continue
-            if not path.resolve().is_relative_to(ROOT):raise ValueError('Sorgente esterno alla repository')
-            if path.name in {'identity.json','.env','keystore.properties'} or path.suffix.lower() in {'.jks','.keystore','.p12','.pfx'}:
-                raise ValueError('Materiale riservato fra i sorgenti: archivio non completato')
-            archive.write(path,arcname=f'{prefix}/{name}')
+    write_source_archive(ROOT, sources, prefix)
     wheels=ROOT/'android/wheels'
     native=output/f'{prefix}-android-native-wheels.zip'
     hashes=json.loads((wheels/'SHA256.json').read_text(encoding='utf-8'))
@@ -96,7 +108,7 @@ Candidato locale, non pubblicato. Windows: installer o ZIP portabile (estrarre l
 
 Android: APK release NON FIRMATO, non installabile prima della firma. Nessuna chiave generata. Seguire FIRMA_ANDROID.md e poi COLLAUDO_PILOT.md. I pacchetti non sono firmati Authenticode.
 
-Sorgenti: snapshot del working tree; il commit base non include da solo tutte le modifiche. Native wheels: archivio separato da estrarre nella radice dei sorgenti per ricostruire Android. Non contiene l’intera cache delle dipendenze PyPI/Gradle: una ricostruzione completamente offline non è garantita.
+Sorgenti: snapshot dei file tracciati nel working tree e lista delle risorse desktop; il commit base non include da solo tutte le modifiche. Native wheels: archivio separato da estrarre nella radice dei sorgenti per ricostruire Android. Non contiene l’intera cache delle dipendenze PyPI/Gradle: una ricostruzione completamente offline non è garantita.
 
 SHA256SUMS.txt verifica i file originali; candidate.json riporta provenienza e gate aperti. Dopo la firma conservare il nuovo APK e il suo digest come derivati, senza riscrivere i checksum originali. Nessuna qualifica automatica di telefono, cloud o correttezza biologica.
 ''',encoding='utf-8')

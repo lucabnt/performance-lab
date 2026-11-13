@@ -1,6 +1,9 @@
 """Build on the target OS. Run npm ci && npm run build in frontend first."""
 import os
 import argparse
+import json
+import shutil
+from importlib.metadata import distributions
 import subprocess
 import sys
 from pathlib import Path
@@ -43,8 +46,48 @@ if sys.platform=='win32':
     env['PATH']=os.pathsep.join([str(Path(sys.executable).parent),sys.base_prefix,
                                 str(windows/'System32'),str(windows),str(windows/'System32/Wbem')])
 subprocess.run(command,cwd=root,check=True,env=env)
-import shutil
 for name in ('LICENSE','README.md','THIRD_PARTY.md','ARCHITETTURA_PROPOSTA.md','CHANGELOG.md'):
     shutil.copy2(root/name,bundle/name)
-shutil.copytree(root/'docs',bundle/'docs',dirs_exist_ok=True)
-shutil.copytree(root/'examples',bundle/'examples',dirs_exist_ok=True)
+# Only reviewed repository files belong in the end-user bundle.
+manifest = root / 'bundle-resources.json'
+if manifest.is_file() and not (root / '.git').exists():
+    names = json.loads(manifest.read_text(encoding='utf-8'))
+else:
+    names = subprocess.check_output(
+        ['git', 'ls-files', '-z', '--', 'docs', 'examples'], cwd=root
+    ).decode('utf-8').split('\0')
+for name in filter(None, names):
+    source = root / name
+    allowed = any(source.resolve().is_relative_to(root / folder) for folder in ('docs', 'examples'))
+    if not allowed or Path(name).is_absolute() or '..' in Path(name).parts:
+        raise ValueError('Percorso risorsa non valido: ' + name)
+    if source.is_file():
+        target = bundle / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+
+# Retain original notices available in the builder's installed distributions.
+# Some binary components need additional upstream sources and notices (THIRD_PARTY.md).
+notices = bundle / 'licenses'
+for dist in distributions():
+    for entry in dist.files or ():
+        parts = entry.parts
+        if not parts or not parts[0].endswith('.dist-info') or len(parts) < 2:
+            continue
+        if parts[1] != 'licenses' and not entry.name.upper().startswith(('LICENSE', 'COPYING', 'NOTICE')):
+            continue
+        if '..' in parts or entry.is_absolute():
+            raise ValueError('Percorso di licenza non valido.')
+        source = Path(dist.locate_file(entry))
+        if source.is_file():
+            target = notices / 'python' / entry
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+
+for package in ('react', 'react-dom', 'scheduler', 'lucide-react', 'plotly.js-dist-min', '@cycling-suite/ui'):
+    directory = root / 'frontend/node_modules' / package
+    for source in [directory / 'LICENSE', *directory.glob('NOTICE*')]:
+        if source.is_file():
+            target = notices / 'frontend' / package / source.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)

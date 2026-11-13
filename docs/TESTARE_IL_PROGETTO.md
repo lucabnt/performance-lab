@@ -78,7 +78,7 @@ Per la finestra desktop, con dipendenze desktop installate:
 .venv/Scripts/python.exe desktop_entry.py --data .local/demo-fuorigiri-completo
 ```
 
-In alternativa l’eseguibile distribuito accetta `Fuorigiri.exe --data "F:\GitHub\performance-lab\.local\demo-fuorigiri-completo"`, adattando il percorso. Usare lo stesso percorso di dati nei comandi di generazione e avvio. Il programma senza `--data` potrebbe aprire il normale archivio personale anziché la demo.
+In alternativa l’eseguibile distribuito accetta `Fuorigiri.exe --data ".local\demo-fuorigiri-completo"`, adattando il percorso. Usare lo stesso percorso di dati nei comandi di generazione e avvio. Il programma senza `--data` potrebbe aprire il normale archivio personale anziché la demo.
 
 ## Trovare e verificare i grafici del singolo test
 
@@ -317,7 +317,7 @@ Servono Python 3.12 o successivo e Node.js 22 o successivo. Per la finestra desk
 Windows PowerShell:
 
 ```powershell
-cd F:\GitHub\performance-lab
+# Eseguire dalla radice della repository.
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -e ".[desktop,dev]"
 Set-Location frontend
@@ -493,7 +493,7 @@ npm --prefix frontend run build
 Misura in sola lettura di una società, senza chiavi o contatti cloud:
 
 ```powershell
-.venv/Scripts/python.exe scripts/measure_archive_size.py --data .local/demo-fuorigiri-completo/workspaces/2fa5c417-ef59-447f-af11-528f52411b01 --out output/misure-archivio-aurora.json
+.venv/Scripts/python.exe scripts/measure_archive_size.py --data ".local/demo-fuorigiri-completo/workspaces/<id-workspace-demo>" --out output/misure-archivio-aurora.json
 ```
 
 Sostituire l'identificatore con quello della propria cartella società: cambia rigenerando la demo. Non usare la cartella contenitore di più società. La stima v1 richiede gli oggetti disponibili ed esclude versioni del provider e vecchi canali. [Misure e limiti](SYNC_DIMENSIONI_E_SCALABILITA.md). L'installer precedente non acquisisce automaticamente le modifiche ai sorgenti.

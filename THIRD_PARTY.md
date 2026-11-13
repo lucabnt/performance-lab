@@ -22,11 +22,17 @@ Inno Setup è uno strumento di build con propria licenza, non una dipendenza da 
 
 La nuova icona Fuorigiri (`fuorigiri.svg` e derivate) è opera del progetto e segue GPL-3.0-or-later. Il logo societario originale e la sua attribuzione rimangono invariati.
 
-Android 0.7: Google Play services Auth 22.0.0 dichiarato come dipendenza Gradle, soggetto alle condizioni Google Play services; non incluso nei sorgenti e non redistribuito in un APK in questa consegna. Le API cloud sono chiamate HTTP, senza SDK proprietari aggiunti al runtime Python.
+Android incorpora il client Google Play services Auth 22.0.0 tramite Gradle. Prima di distribuire l’APK occorre verificare i termini della libreria client, le dipendenze transitive e la compatibilità della loro redistribuzione con la GPL applicata all’app. Il POM della versione 22.0.0 dichiara Android Software Development Kit License. [POM ufficiale](https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-auth/22.0.0/play-services-auth-22.0.0.pom) · [Condizioni Android SDK](https://developer.android.com/studio/terms)
+
+## Distribuzione del codice e dei binari
+
+GPL-3.0-or-later esprime la scelta per il codice originale anche quando la repository diventa pubblica. Per un download dei binari offrire accesso equivalente al sorgente corrispondente, alle modifiche, agli script di compilazione e installazione e ai componenti richiesti. Conservare avvisi e condizioni delle dipendenze. I soli hash delle wheel e il lockfile identificano versioni ma non forniscono i sorgenti. [GPLv3, sezioni 1 e 6](https://www.gnu.org/licenses/gpl-3.0.html)
+
+Su Windows i metadati locali di PySide6/Shiboken 6.12.0 indicano LGPL-3.0-only, GPL-2.0-only o GPL-3.0-only. Le cartelle licenses delle wheel ispezionate contengono soltanto LicenseRef-Qt-Commercial.txt. Per la distribuzione open source completare testi applicabili, avvisi Chromium e accesso ai sorgenti delle esatte versioni WebEngine/PySide/Qt distribuite. Il runtime rileva Qt 6.12.0, WebEngine 6.140.0 e Chromium 140.0.7339.225. [Sorgenti Qt 6.12.0](https://download.qt.io/archive/qt/6.12/6.12.0/submodules/) · [Sorgenti PySide 6.12.0](https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-6.12.0-src/) · [Avvisi dei componenti](https://doc.qt.io/qt-6/licenses-used-in-qt.html) · [Obblighi Qt](https://www.qt.io/development/open-source-lgpl-obligations)
 
 ## Libreria UI della suite
 
-`@cycling-suite/ui` 0.1.0: codice GPL-3.0-or-later estratto dalla repository autonoma cycling-suite-common. Artefatto versionato, sorgenti TypeScript e script di build, licenza e NOTICE inclusi in frontend/vendor; commit/tag e checksum in suite-ui-provenance.json. React rimane una peer dependency fornita da Fuorigiri. Il logo societario è identico all’originale e mantiene le condizioni del marchio sopra indicate.
+`@cycling-suite/ui` 0.2.9: codice GPL-3.0-or-later estratto dalla repository autonoma cycling-suite-common. Artefatto versionato, sorgenti TypeScript e script di build, licenza e NOTICE inclusi in frontend/vendor; commit/tag e checksum in suite-ui-provenance.json. React rimane una peer dependency fornita da Fuorigiri. Il logo societario è identico all’originale e mantiene le condizioni del marchio sopra indicate.
 
 ## Pillow Android 13.0.0 e librerie statiche
 

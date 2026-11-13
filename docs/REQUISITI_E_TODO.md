@@ -1,5 +1,9 @@
 # Requisiti e to-do
 
+## PUB-ALPHA-01 — prima distribuzione pubblica
+
+Preparare uno snapshot con soli file tracciati e dati sintetici, verificare le revisioni raggiungibili, documentare licenze, allegati e gate per piattaforma. Il primo tag pubblico deve puntare ai sorgenti effettivamente distribuiti. [Distribuzione](DISTRIBUZIONE.md) e [prove](VERIFICA.md).
+
 ## INT-ICU-01 — riservatezza degli esempi, 10 novembre 2026
 
 Richiesta: verificare l’ID Intervals fornito come esempio e sostituirlo perché può identificare un profilo reale. Corretto nei sorgenti: segnaposto `i…` senza identificativo numerico, istruzioni IT/EN sul formato, URL parametrico nella guida e fixture locale sintetica di 39 cifre nei test (nessuna chiamata al provider). Anonimizzato anche l’ID nella citazione storica della richiesta; nessuna modifica ai dati degli atleti. Schermata editor rinnovata senza ID salvato. Il campo era già vuoto per i nuovi atleti; l’esempio non era un default. Pacchetti nativi preesistenti non aggiornati. Prove in VERIFICA.md.

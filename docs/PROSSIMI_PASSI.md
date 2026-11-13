@@ -1,5 +1,9 @@
 # Prossimi passi
 
+## Prima alpha pubblica — 10 novembre 2026
+
+Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZIONE.md). La storia privata resta separata. Prima dei binari completare il materiale di licenza Windows e la bonifica delle wheel Android, poi ricompilare e firmare l’APK.
+
 ## Candidato corrente — ordine e maturazione, 9 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-ordine-maturazione-20261109-01/`: nuove build Windows/Android **0.10.0** con **UI-ORDINE-02** (cognome/nome, test e misure dal più recente in pagine indipendenti da 15) e **MAT-AVVISI-01** (stime datate decrescenti e indici antropometrici con avvisi, motore growth-maturity/2), oltre alle funzioni precedenti; UI comune **0.2.9** invariata. Installer/portabile completi, APK debug firmato per i test, release non firmato, supporto strumentale, sorgenti/wheel e **25 checksum finali verificati**. Avvio Windows, scansioni Defender attivo e controlli di contenuti/firme/allineamento riusciti. [Prove e digest](VERIFICA.md).

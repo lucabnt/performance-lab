@@ -4,21 +4,17 @@ Applicazione open source per analizzare, confrontare e archiviare test di ciclis
 
 **Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.** Logo e attribuzione della società sono parte fissa del prodotto. Il progetto è generalizzabile a società e gruppi diversi.
 
-## About the project
+## Prima alpha · 0.10.0
 
-Fuorigiri Performance Lab is an open-source, offline-first application for cycling performance testing and athlete monitoring. It combines a Python analysis backend with a React/TypeScript interface to manage athletes, organisations, groups and versioned test protocols; analyse incremental, sprint and Wingate tests from FIT/CSV files or manual results; explore interactive histories; and export Markdown, PDF and CSV reports. Growth and maturation estimates retain their inputs, methods and limitations. Each organisation has a separate local archive, with optional encrypted synchronisation through WebDAV, Google Drive, Dropbox or OneDrive. Windows packaging includes application dependencies; Linux build configurations and sources are present; Linux packaging remains pending. An Android debug APK now runs on an x86_64 emulator with a native runtime smoke test; physical-device and complete workflow validation remain pending.
+Fuorigiri serve a tecnici e operatori che vogliono conservare misure e confrontare test nel tempo. Per la prima prova crea una società di esempio, aggiungi un atleta e registra un test manuale o importa un file sintetico. Puoi poi aprire il profilo, esportare un report e provare il ripristino su una copia.
 
-## Stato attuale
+| Per iniziare | Percorso |
+|---|---|
+| Windows 10 (build 19045 o successiva) e Windows 11 x64 | Il candidato prevede un installer per utente e uno ZIP portabile. Per il portabile estrai tutta la cartella e avvia Fuorigiri.exe. Python e Qt sono inclusi. |
+| Android 8 o successivo, ARM64 o x86_64 | Per l’installazione serve l’APK release firmato dal titolare. Le prove sul telefono e il supporto per pagine da 16 KB sono ancora incompleti. [Firma e aggiornamento](docs/FIRMA_ANDROID.md) |
+| Sorgenti e dati di prova | Segui la [guida di avvio](docs/TESTARE_IL_PROGETTO.md) e usa il [corpus sintetico](docs/DATI_SINTETICI.md). Il pacchetto Linux è rinviato. |
 
-Candidato locale **0.10.0 · pilot-20261021-01** preparato (Windows installer/portabile e Android release non firmato): [checklist di collaudo](docs/COLLAUDO_PILOT.md) e [firma APK Android](docs/FIRMA_ANDROID.md). Versione prodotto 0.10.0; pacchetti locali e gate nel [registro verifiche](docs/VERIFICA.md), nessuna release pubblica.
-
-Anteprima di sviluppo: versione dichiarata nei sorgenti **0.10.0**, con modifiche descritte nel [changelog](CHANGELOG.md). Una modifica ai sorgenti non aggiorna gli installer già prodotti.
-
-- **Desktop:** Python/FastAPI, SQLite e oggetti locali; React/TypeScript e Plotly; finestra PySide6/Qt WebEngine. Packaging Windows con dipendenze incluse, ancora da qualificare su PC pulito per i sorgenti attuali.
-- **Linux/Fedora:** configurazioni e sorgenti presenti; packaging e collaudo rimandati.
-- **Android:** APK debug compilato e avviato su emulatore x86_64, con test del runtime nativo passato. Shell Kotlin, interfaccia React e backend Python incorporato; telefono e collaudo completo ancora aperti, nessuna release Android pubblicata.
-- **Cloud:** adapter implementati e verificati con fixture. Servono registrazioni OAuth per la distribuzione e collaudi con account reali distinti. Il servizio dedicato è predisposto come contratto/client, senza un servizio ospitato già disponibile.
-- **Metodi:** risultati misurati, dichiarati, interpolati e stimati restano distinti e versionati. Le verifiche sintetiche non sostituiscono la validazione scientifica esterna.
+**Stato della pre-release.** La bozza riguarda il candidato `alpha.1-20261110`. La [guida alla distribuzione](docs/DISTRIBUZIONE.md) elenca allegati e condizioni per la pubblicazione. Restano aperti il collaudo su Windows pulito con Defender attivo, i provider cloud con due account reali e la validazione esterna dei metodi scientifici. Prima di aggiornare un archivio esistente, crea un backup e verifica di poterlo ripristinare. [Registro delle prove](docs/VERIFICA.md)
 
 ## Funzionalità
 
@@ -105,7 +101,3 @@ L’[indice completo](docs/README.md) distingue guide attuali, specifiche e docu
 Codice distribuito sotto [GPL-3.0-or-later](LICENSE), con [avvisi delle dipendenze](THIRD_PARTY.md). Il marchio della società è distinto dalla licenza del codice.
 
 Non pubblicare archivi locali, FIT personali, backup, inviti, token o chiavi. Sincronizzazione e backup hanno scopi distinti; conservare copie di recupero e verificarne il ripristino. Limiti attuali e qualifiche ancora necessarie sono descritti nella documentazione.
-
-## Candidato Windows del 1 novembre 2026
-
-Nuova consegna verificata `dist/candidates/Fuorigiri-0.10.0-pilot-20261101-01/`, con accessi CSV contestuali per Atleti/Gruppi/Test/Antropometria e punto completo espandibile in Archivio. Versione prodotto 0.10.0 invariata; ID candidato e checksum identificano i binari. Build e smoke del binario con PATH Windows superati; installer, 328 sorgenti congelati e 12 checksum verificati. Installer non firmato Authenticode; installazione su PC pulito e accettazione restano da eseguire. Nessun APK nuovo o aggiornamento operativo automatico.

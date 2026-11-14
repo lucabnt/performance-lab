@@ -170,15 +170,15 @@ Le precedenti prove emulatore x86_64 sono in VERIFICA.md. Questi check sul telef
 ## 5. Backup, recupero e sincronizzazione Windows–Android
 
 - [ ] **S-01** Esportare backup e ripristinare realmente una copia; confrontare atleti, test, revisioni, tracciati e report. Una copia di backup deve restare fuori dal canale sync.
-- [ ] **S-02** Collegare la stessa società sui due dispositivi tramite invito/accesso appropriato, non due cloni indipendenti. Atteso: medesima società/canale, accessi personali.
-- [ ] **S-03** Creare/correggere offline sul PC, sincronizzare e ricevere sul telefono; ripetere in senso opposto. Nessun duplicato o perdita di allegati.
+- [x] **S-02** Collegare la stessa società sui due dispositivi tramite invito/accesso appropriato, non due cloni indipendenti. Atteso: medesima società/canale, accessi personali. *13 novembre 2026, riferito dall’utente:* WebDAV fra Windows e Android con due operatori distinti, sincronizzazione funzionante. Build e server non annotati.
+- [ ] **S-03** Creare/correggere offline sul PC, sincronizzare e ricevere sul telefono; ripetere in senso opposto. Nessun duplicato o perdita di allegati. *13 novembre:* scambio nei due sensi riferito come funzionante su WebDAV; correzioni offline e allegati non annotati, check aperto.
 - [ ] **S-04** Modifiche concorrenti allo stesso record: conflitto esplicito e risoluzione tracciata, nessuna sovrascrittura silenziosa.
 - [ ] **S-05** Visualizzatore può consultare/esportare ma non modificare; revoca e inviti verificati anche quando un dispositivo torna online dopo giorni.
 - [ ] **S-06** Interrompere la rete a metà trasferimento sul canale QA. Atteso: retry senza pacchetti parziali utilizzati o duplicati; verifica completa distingue integrità da pacchetti già acquisiti.
 - [ ] **S-07** Scadenza/rinnovo/revoca del token o credenziale del provider: errore comprensibile e ricollegamento senza perdita dell’archivio.
 - [ ] **S-08** Se si usa sync in background Android, verificare su telefono con app chiusa e risparmio energetico; non dedurre l’esecuzione da WorkManager presente nei sorgenti.
 - [ ] **S-09** Ripristino dopo perdita del dispositivo e recupero accessi realmente provati su archivio QA. Documentare cosa recupera backup dati e cosa richiede il materiale identità.
-- [ ] **S-10** Annotare provider/server/account e condizioni effettivamente provati. Per ogni provider aggiuntivo ripetere S-02–S-08; nessuna qualifica implicita degli altri.
+- [ ] **S-10** Annotare provider/server/account e condizioni effettivamente provati. Per ogni provider aggiuntivo ripetere S-02–S-08; nessuna qualifica implicita degli altri. *13 novembre:* provato soltanto WebDAV; Drive, Dropbox e OneDrive restano non qualificati.
 
 ## 6. Pilot e promozione
 

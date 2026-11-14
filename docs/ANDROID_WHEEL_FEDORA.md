@@ -4,6 +4,46 @@ Procedura consolidata il **20 ottobre 2026**, per Fuorigiri **0.10.0**. Questa �
 
 **2 novembre 2026 — Pillow:** disponibilità verificata e kit sorgenti preparato nella [guida dedicata](ANDROID_PILLOW.md). La nuova ricetta Pillow è sperimentale e attende esecuzione nella Toolbox; non confonderla con le sei wheel già prodotte sotto.
 
+## Ricostruzione da radice neutra — PUB-ALPHA-01, 13 novembre 2026
+
+**Perché:** le wheel attuali di pydantic-core, cryptography e Pillow (entrambe le ABI) contengono percorsi della home del builder. Si trovano nelle librerie Rust (registro cargo), nei percorsi OpenSSL configurati, nelle librerie statiche libjpeg/FreeType e negli SBOM CycloneDX. Le due wheel CFFI sono pulite e restano invariate. `scripts/scan_build_paths.py --strict android/wheels` elenca i file interessati senza stampare il nome dell’account. `build_android.py --release` rifiuta il build finché il controllo non è pulito, poi ricontrolla l’APK prodotto.
+
+**Principio:** sorgenti, prefissi OpenSSL/libffi, output Pillow e registro cargo stanno sotto una radice nuova `/build/<id>` del contenitore Toolbox. SDK, NDK e rustup restano dove sono, con i loro percorsi rimappati. Le ricette dei paragrafi 5–10 non cambiano, salvo le variazioni indicate qui sotto.
+
+0. Su Windows generare un kit Pillow nuovo con `prepare_android_pillow.py` e copiarlo nella Toolbox. Oltre al builder Pillow aggiornato contiene `android_neutral_env.sh` e `scan_build_paths.py`; sotto, `<kit-o-clone>` indica il kit o un clone della repository.
+1. Nella Toolbox caricare l’ambiente abituale (paragrafo 4), poi la radice neutra:
+
+   ```bash
+   export FUORIGIRI_NEUTRAL=/build/fuorigiri-20261113-01
+   source <kit-o-clone>/android_neutral_env.sh
+   cd "$FUORIGIRI_NEUTRAL"
+   ```
+
+   Lo script rifiuta radici fuori da `/build` o già esistenti, crea `CARGO_HOME` nuovo nella radice ed esporta `FUORIGIRI_REMAP_RUST` e `FUORIGIRI_REMAP_C`.
+2. **Sorgenti (§5):** clonare e scaricare in `$FUORIGIRI_NEUTRAL` invece che in `$HOME/fuorigiri-android-build`. Copiare in `wheelhouse/` le due wheel CFFI approvate, che servono a cryptography come `PIP_FIND_LINKS`.
+3. **pydantic-core (§6):** aggiungere ambiente Rust e allineamento 16 KB, poi ripetere per arm64_v8a:
+
+   ```bash
+   CIBW_ENVIRONMENT="RUSTFLAGS='-C link-arg=-Wl,-z,max-page-size=16384 $FUORIGIRI_REMAP_RUST'" \
+   python -m cibuildwheel pydantic-core-2.41.4 --only cp313-android_x86_64 --config-file build-android.toml --output-dir wheelhouse 2>&1 | tee pydantic-core-x86_64.log
+   ```
+
+   Lo stesso flag dovrebbe correggere anche il LOAD a 16 KB di pydantic-core, uno dei sei moduli segnalati dall’audit. Verificarlo con `audit_android_native.py`: non va dato per acquisito.
+4. **OpenSSL (§7):** aggiungere `$FUORIGIRI_REMAP_C` agli argomenti di `Configure`. I prefissi `$root/openssl-android-<abi>` risultano già neutri perché `root` è la radice nuova.
+5. **cryptography (§10):** nelle due righe `CIBW_ENVIRONMENT` sostituire `RUSTFLAGS='-C link-arg=-Wl,-z,max-page-size=16384'` con `RUSTFLAGS='-C link-arg=-Wl,-z,max-page-size=16384 $FUORIGIRI_REMAP_RUST'`. Poi applicare di nuovo la riparazione ABI3 (§10 bis) alle nuove wheel originali, in destinazioni nuove, con nuovo report.
+6. **Pillow:** usare il builder del kit nuovo, che rifiuta gli output nella home e aggiunge la mappatura dei percorsi, con `--output "$FUORIGIRI_NEUTRAL/pillow-x86_64"` e `--output "$FUORIGIRI_NEUTRAL/pillow-arm64"` ([guida Pillow](ANDROID_PILLOW.md)).
+7. **Controllo sul builder, prima del trasferimento:**
+
+   ```bash
+   python <kit-o-clone>/scan_build_paths.py --strict wheelhouse/*.whl "$FUORIGIRI_NEUTRAL"/pillow-*/wheelhouse/*.whl
+   (cd wheelhouse && sha256sum *.whl > SHA256SUMS.txt)
+   ```
+
+   L’esito deve essere pulito. Su Fedora lo scanner cerca anche il nome dell’account corrente.
+8. **Su Windows:** conservare le wheel precedenti fuori da `android/wheels`. Copiare le nuove, aggiornare `SHA256.json`, `ABI3_REPAIR.json` e `PILLOW_BUILD.json` con la nuova provenienza, rieseguire `scan_build_paths.py --strict android/wheels`, `audit_android_native.py` e i test strumentali. Infine `build_android.py --release`.
+
+I digest cambiano: aggiornare il manifest solo dopo le verifiche e mai per far passare un controllo. La neutralità dei percorsi non qualifica il runtime su telefono né la compatibilità 16 KB dell’intero APK.
+
 ## Risultato e limiti
 
 Sul PC dell’utente, Fedora Kinoite 44 x86_64 con Toolbox, sono state prodotte sei wheel: pydantic-core 2.41.4, CFFI 2.0.0 e cryptography 50.0.2, ciascuna per Android API 26 **x86_64** (emulatore) e **arm64-v8a** (telefono). Cryptography x86_64 ha superato abi3audit strict. Per ARM64 abbiamo elenco file e checksum, non il log completo di audit. I digest comunicati sono in [SHA256.json](../android/wheels/SHA256.json).

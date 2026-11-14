@@ -40,6 +40,10 @@ def build(kit, output, abi):
     kit, output = kit.resolve(), output.resolve()
     if output.exists():
         raise SystemExit('Output already exists: preserved; choose a new directory')
+    home = Path.home().resolve()
+    if output.is_relative_to(home) or output.is_relative_to(Path('/var/home')):
+        # Static libjpeg/FreeType embed source paths: build under a neutral root.
+        raise SystemExit('Output under a home directory: use a neutral root such as /build/<id> (see ANDROID_WHEEL_FEDORA.md)')
     ndk = Path(os.environ.get('ANDROID_NDK_ROOT', '__missing__')).resolve()
     toolchain = ndk / 'build/cmake/android.toolchain.cmake'
     tools = ndk / 'toolchains/llvm/prebuilt/linux-x86_64/bin'
@@ -69,7 +73,7 @@ def build(kit, output, abi):
         '-DANDROID_PLATFORM=android-26', '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON',
         '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_POSITION_INDEPENDENT_CODE=ON',
         f'-DCMAKE_INSTALL_PREFIX={prefix}', '-DCMAKE_INSTALL_LIBDIR=lib',
-        '-DBUILD_SHARED_LIBS=OFF']
+        '-DBUILD_SHARED_LIBS=OFF', f'-DCMAKE_C_FLAGS=-ffile-prefix-map={home}=/home/builder']
     for name, options in [('jpeg', ['-DENABLE_SHARED=OFF', '-DENABLE_STATIC=ON',
                                   '-DWITH_TURBOJPEG=OFF', '-DWITH_SIMD=OFF']),
                           ('freetype', ['-DFT_DISABLE_ZLIB=ON', '-DFT_DISABLE_BZIP2=ON',

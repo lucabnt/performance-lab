@@ -13,6 +13,8 @@ Il nome prodotto resta 0.10.0. Il tag proposto è `v0.10.0-alpha.1`. Per il prim
 | Fuorigiri-0.10.0-android-native-wheels.zip | Supporto alla ricostruzione Android, dopo ricostruzione sanitizzata delle sei wheel che contengono percorsi con account del builder e verifica delle condizioni dei binari nativi. Estrarre nella radice dei sorgenti. |
 | Fuorigiri-0.10.0-android-release-signed.apk | Solo dopo verifica condizioni dei componenti Android, firma stabile e prova sul telefono. |
 
+**13 novembre 2026:** gli avvisi Qt/Chromium sono ora generati nel bundle (`licenses/qt`), resta la decisione su come garantire l’accesso ai sorgenti Qt. `direct_url.json` viene rimosso durante la build Gradle. `build_android.py --release` blocca wheel e APK con percorsi del builder, finché le sei wheel non sono ricostruite ([procedura](ANDROID_WHEEL_FEDORA.md)).
+
 La verifica degli asset Android ha anche individuato il percorso locale della wheel comune in direct_url.json nel pacchetto Chaquopy. Preparare il successore da un checkout neutro e riesaminare i metadati incorporati, oltre a ELF e SBOM.
 
 Il bundle Windows include 113 testi di licenza e avvisi disponibili nel builder (Python e frontend). Le librerie terze Qt conservano riferimenti a profili di compilazione a monte. Per la qualifica della distribuzione completare la corrispondenza con i sorgenti e verificare gli avvisi WebEngine/Chromium. [Dettagli licenze](../THIRD_PARTY.md).

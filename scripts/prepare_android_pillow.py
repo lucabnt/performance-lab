@@ -59,7 +59,7 @@ def prepare(output):
             checksum_kind=('publisher-PyPI' if name == 'pillow' else
                            'publisher-GitHub-release' if name == 'jpeg' else
                            'observed-download-pinned-commit'))
-    for name in ['build_android_pillow.py', 'check_android_pillow_runtime.py']:
+    for name in ['build_android_pillow.py', 'check_android_pillow_runtime.py', 'scan_build_paths.py', 'android_neutral_env.sh']:
         shutil.copy2(Path(__file__).with_name(name), output / name)
     shutil.copy2(Path(__file__).resolve().parents[1] / 'docs/ANDROID_PILLOW.md', output / 'README.md')
     (output / 'sources.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')

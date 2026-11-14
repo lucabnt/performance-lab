@@ -1,0 +1,41 @@
+Qt, PySide6 e Qt WebEngine in Fuorigiri Performance Lab per Windows
+=====================================================================
+
+Il programma per Windows include le librerie Qt e PySide6 non modificate,
+come file separati nella cartella _internal/PySide6 dell'installazione.
+
+Componenti e versioni
+- PySide6 / Shiboken6 6.12.0 (The Qt Company): usati secondo la GNU LGPL v3
+  (testo in LGPL-3.0.txt; la GPL v3 è nel file LICENSE del programma).
+- Qt 6.12.0: LGPL v3.
+- Qt WebEngine 6.140.0, basato su Chromium 140.0.7339.225: parti Qt sotto
+  LGPL v3; la parte Chromium contiene componenti con licenze diverse, la più
+  restrittiva è la LGPL v2.1 (testo in LGPL-2.1.txt). Elenco completo e testi in
+  qtwebengine-6.140.0-chromium-notices.txt.
+
+Sorgenti corrispondenti (archivi ufficiali delle stesse versioni)
+- https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-6.12.0-src/pyside-setup-everywhere-src-6.12.0.tar.xz
+- https://download.qt.io/official_releases/qt/6.12/6.12.0/single/qt-everywhere-src-6.12.0.tar.xz
+- https://download.qt.io/official_releases/qtwebengine/6.140/6.140.0/src/qtwebengine-everywhere-src-6.140.0.tar.xz
+
+Sostituzione delle librerie
+Le librerie Qt/PySide6 sono collegate dinamicamente e restano file distinti.
+È possibile sostituirle con versioni compatibili compilate da sé, sostituendo i
+file nella cartella _internal/PySide6. I sorgenti del programma e gli script di
+build sono nello ZIP sorgenti della stessa release.
+
+Per richieste sui sorgenti delle librerie distribuite rivolgersi ai
+manutentori del progetto tramite la pagina del repository.
+
+-----------------------------------------------------------------------------
+
+Qt, PySide6 and Qt WebEngine in Fuorigiri Performance Lab for Windows
+
+The Windows program ships unmodified Qt and PySide6 libraries as separate
+files in _internal/PySide6. PySide6/Shiboken6 6.12.0 and Qt 6.12.0 are used
+under the GNU LGPL v3 (LGPL-3.0.txt; GPL v3 in the program LICENSE). Qt
+WebEngine 6.140.0 is based on Chromium 140.0.7339.225; the Chromium part
+contains code under several licenses, the most restrictive being LGPL v2.1
+(LGPL-2.1.txt). Full list and texts: qtwebengine-6.140.0-chromium-notices.txt.
+Corresponding sources: the official archives listed above. The libraries are
+dynamically linked and may be replaced with compatible builds.

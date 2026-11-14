@@ -27,6 +27,17 @@ subprocess.run([sys.executable,str(root/'scripts/verify_suite_ui.py')],check=Tru
 subprocess.run([sys.executable,str(root/'scripts/verify_core.py')],check=True)
 if not (root/'frontend/dist/index.html').exists():
     raise SystemExit('Compilare prima frontend: npm ci && npm run build')
+# Qt/Chromium notices are version-specific: refuse a bundle whose runtime differs.
+qt_notices=root/'packaging/licenses/qt'
+expected=json.loads((qt_notices/'PROVENIENZA.json').read_text(encoding='utf-8'))['runtime']
+probe=('import json,PySide6;from PySide6 import QtCore,QtWebEngineCore as w;'
+       'print(json.dumps({"pyside6":PySide6.__version__,"qt":QtCore.qVersion(),'
+       '"qtwebengine":w.qWebEngineVersion(),"chromium":w.qWebEngineChromiumVersion()}))')
+found=json.loads(subprocess.check_output([sys.executable,'-c',probe],text=True))
+mismatch={k:(v,expected[k]) for k,v in found.items() if expected.get(k)!=v}
+if mismatch:
+    raise SystemExit('Avvisi Qt/Chromium non aggiornati per il runtime installato (trovato, atteso): '+repr(mismatch)
+                     +'. Rigenerare packaging/licenses/qt con scripts/collect_qtwebengine_notices.py.')
 command=[sys.executable,'-m','PyInstaller','--noconfirm','--clean','--name','Fuorigiri',
          '--paths',str(root/'backend'),'--add-data',f'{root / "frontend/dist"}{os.pathsep}frontend/dist',
          '--collect-data','matplotlib','--collect-data','reportlab',
@@ -83,6 +94,12 @@ for dist in distributions():
             target = notices / 'python' / entry
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)
+
+for source in sorted(qt_notices.iterdir()):
+    if source.is_file():
+        target = notices / 'qt' / source.name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
 
 for package in ('react', 'react-dom', 'scheduler', 'lucide-react', 'plotly.js-dist-min', '@cycling-suite/ui'):
     directory = root / 'frontend/node_modules' / package

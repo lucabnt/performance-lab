@@ -48,6 +48,13 @@ tasks.matching { it.name.startsWith("install") && it.name.endsWith("PythonRequir
     inputs.files(fileTree("${rootProject.projectDir}/wheels") {
         include("*.whl", "SHA256.json")
     })
+    // PEP 610 metadata of the local shared wheel records the builder checkout path.
+    // The wheel stays installed from the reviewed file (no name lookup on an index).
+    doLast {
+        outputs.files.forEach { output ->
+            output.walkTopDown().filter { it.isFile && it.name == "direct_url.json" }.forEach { it.delete() }
+        }
+    }
 }
 dependencies {
     implementation("com.google.android.gms:play-services-auth:22.0.0")

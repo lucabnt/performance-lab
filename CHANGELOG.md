@@ -1,5 +1,12 @@
 # Changelog
 
+## 13 novembre 2026 — preparazione binari alpha.1
+
+- Bundle Windows: avvisi Qt/PySide6/Qt WebEngine in `licenses/qt` (LGPL v3/v2.1, sorgenti corrispondenti e avvisi Chromium di 126 componenti generati da `scripts/collect_qtwebengine_notices.py`). La build si interrompe se il runtime Qt non corrisponde agli avvisi.
+- Android: `direct_url.json` della wheel comune rimosso dall’output pip di Chaquopy; installazione sempre dal file locale verificato. Nuovo `scripts/scan_build_paths.py`; `build_android.py --release` rifiuta wheel o APK con percorsi del builder o del checkout.
+- Ricostruzione delle wheel Android da radice neutra: `scripts/android_neutral_env.sh`, builder Pillow che rifiuta output nella home, procedura in ANDROID_WHEEL_FEDORA.md. Le wheel non sono ancora ricostruite.
+- Registrata la prova WebDAV Windows–Android con due operatori riferita dall’utente (S-02).
+
 ## 10 novembre 2026 — preparazione pre-release 0.10.0-alpha.1
 
 README riordinato con percorsi Windows, Android e sorgenti. Rimossi riferimenti privati di assistenza. Snapshot sorgenti, documenti ed esempi desktop selezionati dall’indice Git. Guida agli allegati, alla firma Android e agli obblighi delle dipendenze aggiornata.

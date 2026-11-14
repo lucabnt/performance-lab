@@ -44,6 +44,9 @@ def main():
     jdk=Path(os.environ.get('JAVA_HOME','__missing__'))
     if not any((jdk/'bin'/name).exists() for name in ('javac','javac.exe')):problems.append('JDK 17 o 21 completo (JAVA_HOME), non solo JRE')
     if not args.gradle:problems.append('Gradle 8.13')
+    from scan_build_paths import scan
+    if args.release and scan([root/'android/wheels'],strict=True):
+        problems.append('Wheel native con percorsi del builder: ricostruirle da radice neutra (scan_build_paths.py --strict android/wheels)')
     if problems:raise SystemExit('Build Android non ancora disponibile:\n- '+'\n- '.join(problems))
     if args.check:
         print('Prerequisiti presenti. Non equivale a compilazione, installazione o collaudo su dispositivo.');return
@@ -52,6 +55,11 @@ def main():
     mode='release' if args.release else 'debug'
     candidates=list((root/f'android/app/build/outputs/apk/{mode}').glob('*.apk'))
     if not candidates:raise SystemExit('Gradle non ha prodotto un APK.')
+    if args.release:
+        # Distributed APKs must not carry builder homes or this checkout path.
+        leaks=scan(candidates,extra=[str(root)])
+        if leaks:
+            raise SystemExit('APK con percorsi del builder, non copiato in dist/release:\n- '+'\n- '.join(sorted(leaks)))
     release=root/'dist/release';release.mkdir(parents=True,exist_ok=True)
     for apk in candidates:shutil.copy2(apk,release/f'Fuorigiri-{version}-android-{mode}.apk')
     print('APK copiato in dist/release. Debug non è un rilascio operativo; release richiede firma e collaudo.')

@@ -1,5 +1,16 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 13 novembre 2026 — avvisi Qt, percorsi di build e wheel Android
+
+- **Avvisi Qt/Chromium:** sorgente `qtwebengine-everywhere-src-6.140.0.tar.xz` da download.qt.io, MD5 ufficiale verificato (SHA-256 in `packaging/licenses/qt/PROVENIENZA.json`). Il collettore ha trovato i testi dei 126 componenti elencati da Qt: 116 dai README.chromium, 10 dalle pagine ufficiali della stessa versione, nessuno mancante. Build Windows isolata `tmp/build-check-20261113-01` riuscita: `licenses/qt` presente (118 file di avvisi in totale), DLL Qt come file separati in `_internal/PySide6`, smoke dell’EXE riuscito su archivio QA nuovo. Non è un nuovo candidato né un installer.
+- **Percorsi:** `scan_build_paths.py` sull’APK alpha.1 trova 11 file, cioè le 6 wheel note in entrambe le ABI più `direct_url.json`. Nuovo APK debug (Gradle 8.13, JDK 21; la JBR di Android Studio è Java 25 e non è supportata) senza `direct_url.json`: restano le 10 voci delle wheel. Portabile Windows alpha.1 e nuova build: nessun percorso del PC o del checkout, anche nei 1.923 moduli del PYZ. `--strict android/wheels`: 12 file nelle 6 wheel, CFFI pulite. `build_android.py --check --release` ora si ferma su questo gate; il controllo debug resta superato.
+- **Kit:** `tmp/android-neutral-kit-20261113-01` (sorgenti Pillow/libjpeg/FreeType con checksum, builder aggiornato, ambiente neutro, scanner). Nessuna wheel ricostruita, nessuna prova sul telefono o firma.
+- Test mirati dello scanner: 3 superati.
+
+## 13 novembre 2026 — sincronizzazione WebDAV Windows–Android (riferita)
+
+L’utente riferisce una prova di sincronizzazione WebDAV fra Windows e Android con due operatori distinti, con esito funzionante. Registrato come S-02 in COLLAUDO_PILOT.md. Non sono annotati build esatte, server, ruoli, modifiche offline, conflitti, allegati o revoche: S-03–S-09 restano aperti. Gli altri provider non sono qualificati da questa prova. Nella stessa giornata la regressione locale ha dato 308 test Python superati (uno saltato) e 43 test frontend superati.
+
 ## 10 novembre 2026 — confezionamento alpha.1-20261110
 
 Consegna privata in `dist/candidates/Fuorigiri-0.10.0-alpha.1-20261110/`. Installer e portabile x64, APK release non firmato, wheel e ZIP sorgenti prodotti. Il controllo Defender del bundle e dell’installer, con protezione in tempo reale attiva e definizioni 1.463.227.0, non ha rilevato minacce. Restano aperti WIN-AV-01 e la prova su PC pulito. Ricontrollati i checksum dell’intera consegna, ogni file del portabile rispetto al bundle, le wheel rispetto al manifest e tutti i 380 file dello ZIP sorgenti rispetto al working tree, più la lista generata delle risorse desktop. Gli asset UI del candidato corrispondono alla build finale.

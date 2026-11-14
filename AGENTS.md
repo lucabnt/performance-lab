@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **10 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **13 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -148,6 +148,8 @@ Il server non popola automaticamente l'archivio: per dati sintetici e URL con to
 ## Distribuzione e accettazione
 
 - Candidato alpha.1-20261110, versione prodotto 0.10.0 (PUB-ALPHA-01): pubblicare da uno snapshot verificato senza storia privata. Per lo ZIP sorgenti e per docs/examples nel bundle includere solo file tracciati. Per scelta allegati, diritti di redistribuzione e APK firmato seguire docs/DISTRIBUZIONE.md. Sei wheel Android e il pacchetto Chaquopy conservano percorsi del builder. Per una distribuzione pubblica ricostruire da percorsi neutri e verificare ELF, SBOM e direct_url.json.
+
+- Binari alpha (13 novembre): l’utente vuole Windows e Android nell’alpha; WebDAV è l’unico provider con prova riferita. Gli avvisi Qt/Chromium sono in `packaging/licenses/qt` (rigenerarli con `scripts/collect_qtwebengine_notices.py` quando cambia PySide6: `build.py` lo impone). `scripts/scan_build_paths.py` è il gate per wheel (`--strict`) e APK release; non aggirarlo aggiornando hash o allowlist. Le wheel native si ricostruiscono sotto `/build/<id>` con `android_neutral_env.sh`. Gradle 8.13 richiede JDK 17/21, non la JBR Java 25 di Android Studio. `direct_url.json` viene rimosso dall’output pip in Gradle; mantenere l’installazione della wheel comune da file locale, mai per nome da un indice.
 
 - Candidato precedente: `ordine-maturazione-20261109-01`, build e confezionamento del 9 novembre con UI-ORDINE-02, MAT-AVVISI-01 (growth-maturity/2), UI comune 0.2.9 e aggiornamenti precedenti. Installer/portabile Windows, APK debug/release non firmato, sorgenti e wheel; 25 checksum, avvio e scansioni correnti verificati in VERIFICA.md. WIN-AV-01 resta aperto per reinstallazione e riapertura della stessa build con protezioni attive, vedi docs/WINDOWS_DEFENDER.md. Nessuna nuova prova runtime Android, qualifica 16 KB o accettazione Windows pulito implicita.
 

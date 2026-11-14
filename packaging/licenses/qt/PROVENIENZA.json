@@ -1,0 +1,35 @@
+{
+  "purpose": "Avvisi Qt/PySide6/Qt WebEngine inclusi nel bundle Windows",
+  "generated": "2026-11-13",
+  "runtime": {
+    "pyside6": "6.12.0",
+    "qt": "6.12.0",
+    "qtwebengine": "6.140.0",
+    "chromium": "140.0.7339.225",
+    "chromium_security_patch": "152.0.7977.83"
+  },
+  "sources": {
+    "qtwebengine-everywhere-src-6.140.0.tar.xz": {
+      "url": "https://download.qt.io/official_releases/qtwebengine/6.140/6.140.0/src/qtwebengine-everywhere-src-6.140.0.tar.xz",
+      "md5_official": "297be1af46debde1703d9c8151516d68",
+      "sha256": "82352854a1d01dfe6abeefaf023554e4722c1d7df48ba3ce0078f6c0a9c7e1a3"
+    },
+    "licensing_page": "https://doc.qt.io/qt-6/qtwebengine-licensing.html (titolo: Qt WebEngine 6.140.0), con le pagine qtwebengine-3rdparty-*.html della stessa versione",
+    "LGPL-3.0.txt": "https://www.gnu.org/licenses/lgpl-3.0.txt",
+    "LGPL-2.1.txt": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt"
+  },
+  "generator": "scripts/collect_qtwebengine_notices.py --source <tar.xz> --page <licensing.html> --pages <cartella pagine> --output <nuovo file>",
+  "result": {
+    "components": 126,
+    "texts_from_sources": 116,
+    "texts_from_official_pages": 10,
+    "without_text": 0,
+    "distinct_texts": 106
+  },
+  "sha256": {
+    "qtwebengine-6.140.0-chromium-notices.txt": "13351a0ba94f4285a1fdf6f0dd1aa33efa30a0f7b406b1fa8b3996fa2207d090",
+    "LGPL-3.0.txt": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+    "LGPL-2.1.txt": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95"
+  },
+  "limits": "Elenco componenti dalla documentazione ufficiale Qt della versione distribuita; non è una rigenerazione dalla configurazione GN del binario. Qt base e PySide6 sono coperti da LGPL v3 e dai sorgenti indicati in LEGGIMI-QT.txt."
+}

@@ -1,5 +1,15 @@
 # Prossimi passi
 
+## Alpha con Windows e Android — 13 novembre 2026
+
+L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:
+
+1. **Fedora:** ricostruire le sei wheel da radice neutra ([procedura](ANDROID_WHEEL_FEDORA.md)), con il kit `tmp/android-neutral-kit-20261113-01`. Poi riparazione ABI3, provenienza, `scan_build_paths.py --strict`, audit nativo e test strumentali.
+2. **Android:** chiave del titolare ([firma](FIRMA_ANDROID.md)), `build_android.py --release` da snapshot committato, firma, prove A-04…A-08 e A-11 sul telefono. Gli utenti dell’APK debug devono fare un backup e disinstallarlo.
+3. **Windows:** nuova build con avvisi Qt, installazione e riapertura con Defender attivo (WIN-AV-01), prove W-01…W-06 in Windows Sandbox.
+4. **Licenze:** decidere se allegare alla release gli archivi sorgente Qt o affidarsi ai link ufficiali.
+5. **Pubblicazione:** nuovo snapshot sorgenti, allegati e `SHA256SUMS.txt` ricalcolati sullo stesso commit. Nelle note: solo WebDAV provato; Drive, Dropbox e OneDrive sperimentali; 16 KB come limite noto.
+
 ## Prima alpha pubblica — 10 novembre 2026
 
 Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZIONE.md). La storia privata resta separata. Prima dei binari completare il materiale di licenza Windows e la bonifica delle wheel Android, poi ricompilare e firmare l’APK.

@@ -1,5 +1,17 @@
 # Windows: eseguibile rimosso da Microsoft Defender
 
+## 15 novembre 2026 — quarto candidato bloccato e cambio di strategia (WIN-AV-02)
+
+Alle 18:42:09 e 18:42:33 Defender (definizioni 1.463.310.0, motore 1.1.26100.4, protezione in tempo reale attiva) ha registrato due eventi 1116 `Trojan:Win32/Bearfoos.A!ml` sul launcher installato di `revisione-tecnica-20261115-01`: il primo con processo il launcher stesso, il secondo con processo Explorer. Alla diagnosi mancava l’evento 1117 e lo stato era «Attivo» (azione richiesta). Il file era presente ma illeggibile, quindi non è stato confrontato con il digest del manifest (`5cd856e8310a195af8a60da0bac88a7d1beae6c3f2d6d6b6472859d584bb4bc3`, 17.420.543 byte). Le scansioni di confezionamento con le stesse definizioni non avevano rilevato nulla: il rilevamento compare in esecuzione.
+
+È il quarto candidato consecutivo segnalato. Inviare ogni build non è una soluzione sostenibile. Interventi sul launcher, in vigore dalle build successive a questa data:
+
+1. **Bootloader compilato localmente.** `scripts/build_pyinstaller_bootloader.py` scarica lo sdist della versione PyInstaller installata, lo verifica con lo SHA-256 pubblicato da PyPI, elimina i bootloader Windows precompilati e li ricompila con MSVC (waf). Poi costruisce la wheel in una cartella nuova, la installa con `--install` e registra i digest con `--record` in `packaging/windows/bootloader/PROVENIENZA.json`. `scripts/build.py` rifiuta la build se il PyInstaller installato non usa quei bootloader o usa quelli della wheel pubblica (`runw.exe` pubblico `2291f269…5d41`). Il lockfile fissa ancora `pyinstaller==6.22.3` con gli hash della wheel pubblica: dopo un'installazione da lockfile si deve reinstallare la wheel locale, e il gate lo segnala. Il workflow manuale `desktop-build` compila il bootloader sul runner e passa a `build.py` la provenienza appena prodotta (`--bootloader-record`); non è ancora stato eseguito con questa modifica.
+2. **Risorsa di versione.** Il launcher dichiara prodotto, versione, autore (come `AppPublisher` dell'installer), descrizione e nome file originale (`scripts/windows_launcher.py`, `--version-file`). Prima non aveva risorse `VERSIONINFO`.
+3. **Firma Authenticode: aperta.** È l'unico intervento che consente a Microsoft di riconoscere anche le build future, tramite la reputazione del certificato. Richiede una decisione del titolare su servizio, costo e intestatario (per esempio un servizio di firma cloud o un certificato OV). Nessuna chiave o certificato creato.
+
+Nessuno dei tre punti dimostra da solo l'assenza di rilevamenti. Il criterio resta quello sotto: installazione, avvio, chiusura e riapertura di un nuovo candidato con protezione attiva, senza nuovi eventi 1116. Non usare esclusioni né «Consenti».
+
 ## 10 novembre 2026 — nuovo blocco sul PC destinatario
 
 Il 10 novembre, dalle 09:52:46 alle 09:53:37, Defender ha rilevato Bearfoos sull’eseguibile installato (1116) e ha registrato la quarantena riuscita (1117), con definizioni 1.463.222.0 e motore 1.1.26100.4. L’EXE è assente. Il file del disinstallatore è datato 9 novembre alle 21:03:21. Le impronte dei file dell’interfaccia rimasti coincidono per 19/19 con ordine-maturazione-20261109-01 e per 18/19 con import-avvisi. Il launcher atteso del 9 novembre ha SHA-256 `6e7257afe7a3aae7dfc1772809d592e552f64181c52e8b98979fa714450b97d0`; manca un digest della copia rimossa. WIN-AV-01 resta aperto sul candidato corrente.

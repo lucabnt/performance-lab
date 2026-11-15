@@ -1,0 +1,44 @@
+{
+  "requirement": "WIN-AV-02",
+  "pyinstaller": "6.22.3",
+  "compiled_on": "2026-11-15",
+  "sdist": {
+    "filename": "pyinstaller-6.22.3.tar.gz",
+    "sha256": "05eb2f5615503e72939a7224d68b4aff572c6b0438ee4a17d0a4b481f399362d",
+    "url": "https://files.pythonhosted.org/packages/63/41/f90302845945abd4ed647933ff5ee7c6ac93983187be67f897b6cb613331/pyinstaller-6.22.3.tar.gz"
+  },
+  "toolchain": {
+    "msvc_build_tools": "18.9.12112.369",
+    "python": "3.14.7",
+    "waf": "./waf --target-arch=64bit configure all"
+  },
+  "wheel": {
+    "filename": "pyinstaller-6.22.3-py3-none-win_amd64.whl",
+    "sha256": "1a9ca05bc617f201b2d9a67900d1ef0eef476c5b1d2d134671441c682ee123d2"
+  },
+  "bootloaders": {
+    "run.exe": {
+      "sha256": "fc3be0e6d1c050a30011a262fa7a0bfc677698070f2fd3626233f6f6c31a56bb",
+      "bytes": 311808
+    },
+    "runw.exe": {
+      "sha256": "9776c4f71340419d04a55b8876b38eed1251ba12f55ecf172c7922271cc31c85",
+      "bytes": 307200
+    },
+    "run_d.exe": {
+      "sha256": "2df2910d343978a4f19c87706619938b0b386e9e38966f6a0d495279cd4b9c4f",
+      "bytes": 335360
+    },
+    "runw_d.exe": {
+      "sha256": "bc555eb67a0ac0968427ff7f7625e16b7e27a73d077f1566d14c8eada8690657",
+      "bytes": 329216
+    }
+  },
+  "stock_sha256": {
+    "run.exe": "581ea23eb35cee8f9df8835c892e91416df95ca629b1a6050289aea19390e08d",
+    "runw.exe": "2291f269c3a3804fde1079462239e09a8b32fffbeeaa8f628a531faf5be77d41",
+    "run_d.exe": "61569642ef07b9f3c730eb6f2ab21350e74062ff409ef200bad63d038c510387",
+    "runw_d.exe": "d85a1689b986222f6950f3ba878d791068725d789c1a8e4a783a520f788c4560"
+  },
+  "note": "Bootloader compilato localmente dallo sdist verificato; non firmato Authenticode. Non dimostra da solo l’assenza di rilevamenti Defender."
+}

@@ -23,7 +23,9 @@ jobs:
       - run: npm run test:signals
         working-directory: frontend
       - run: python -m pytest -q
-      - run: python scripts/build.py
+      # WIN-AV-02: bootloader compiled on the runner (MSVC), never the prebuilt public one.
+      - run: python scripts/build_pyinstaller_bootloader.py --output ci-bootloader --install
+      - run: python scripts/build.py --bootloader-record ci-bootloader/PROVENIENZA.json
       - shell: pwsh
         run: |
           $smoke = Start-Process -FilePath dist/Fuorigiri/Fuorigiri.exe -ArgumentList '--smoke-test','--data','.local/ci-smoke' -WindowStyle Hidden -PassThru -Wait

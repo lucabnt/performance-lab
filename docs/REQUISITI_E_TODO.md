@@ -127,6 +127,12 @@ Accettazione: debounce/ricezione periodica/retry con orologio controllato; isola
 
 **Aggiornamento 8 novembre, ore 18:42.** WIN-AV-01 blocca anche il candidato Windows corrente. [Diagnosi](WINDOWS_DEFENDER.md).
 
+## WIN-AV-02 — launcher meno esposto al rilevamento automatico, 15 novembre 2026
+
+Richiesta: «L'ultimo candidato è stato bloccato da Windows Defender, come risolviamo?», poi «Sì, procedi» sulla proposta di risorsa di versione, bootloader compilato localmente e registrazione dell'episodio. Quarto candidato consecutivo con `Bearfoos.A!ml` (revisione-tecnica-20261115-01).
+
+**Implementato negli script di build:** bootloader PyInstaller compilato localmente da sdist verificato, con provenienza registrata e gate in `build.py` che rifiuta i bootloader pubblici; risorsa `VERSIONINFO` nel launcher. **Aperta:** firma Authenticode, che richiede una decisione del titolare. Accettazione: nuovo candidato installato, avviato e riaperto con protezione attiva senza eventi 1116; il gate e la build da soli non bastano. [Dettagli](WINDOWS_DEFENDER.md), [prove](VERIFICA.md).
+
 ## WIN-AV-01 — EXE Windows rimosso dopo installazione, 7 novembre 2026
 
 Richiesta: «installando l'ultimo candidato su windows […] dice che exe non esiste più. Verifica e in caso correggi». Diagnosi completata sul PC destinatario: Defender rimuove l'EXE e blocca anche l'originale di build con `Trojan:Win32/Bearfoos.A!ml`; nessun errore di destinazione individuato nell'installer. **Risoluzione aperta**. Il 10 novembre è stata osservata la quarantena anche sull’installazione di ordine-maturazione. Resta da ottenere installazione, avvio e riapertura del candidato corrente con definizioni aggiornate e protezioni attive. [Dettagli e criteri](WINDOWS_DEFENDER.md), [prove](VERIFICA.md). Nessuna correzione del binario o accettazione dichiarata.

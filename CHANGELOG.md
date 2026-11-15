@@ -1,5 +1,12 @@
 # Changelog
 
+## 15 novembre 2026 — launcher Windows: bootloader locale e risorsa di versione (WIN-AV-02)
+
+- Defender ha bloccato anche `revisione-tecnica-20261115-01` (`Bearfoos.A!ml`, definizioni 1.463.310.0): quarto candidato di fila. [Diagnosi](docs/WINDOWS_DEFENDER.md).
+- Nuovo `scripts/build_pyinstaller_bootloader.py`: compila il bootloader PyInstaller con MSVC dallo sdist verificato con PyPI, costruisce e installa la wheel locale e registra i digest in `packaging/windows/bootloader/PROVENIENZA.json`. `scripts/build.py` rifiuta i bootloader della wheel pubblica; il workflow `desktop-build` compila il proprio bootloader sul runner (`--bootloader-record`, non ancora eseguito).
+- Il launcher ha ora una risorsa di versione (prodotto, versione, autore, descrizione).
+- Nessun nuovo candidato, firma Authenticode o prova di installazione: l'efficacia contro il rilevamento non è dimostrata.
+
 ## 15 novembre 2026 — PHV longitudinale raggiungibile (MAT-PHV-01)
 
 - Motore crescita `growth-maturity/3` con `phv-local-quadratic/2`: stature non misurate o a meno di 90 giorni dalla precedente vengono saltate ed elencate invece di bloccare tutto; buchi oltre 400 giorni dividono la serie; calo o velocità anomala bloccano solo vicino al picco. Soglia: 6 stature nel tratto del massimo e 2 intervalli per lato (prima 7 stature e 2 anni sull'intera serie). Nessuna interpolazione.

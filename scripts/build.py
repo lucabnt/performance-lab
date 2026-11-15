@@ -14,13 +14,20 @@ parser = argparse.ArgumentParser(description='Build desktop Fuorigiri con dipend
 parser.add_argument(
     '--output-root', type=Path, help='Nuova directory isolata per bundle/work/spec; rifiuta destinazioni esistenti'
 )
+parser.add_argument(
+    '--bootloader-record',
+    type=Path,
+    help='Provenienza del bootloader locale da usare al posto di quella registrata (es. build CI appena compilata)',
+)
 args = parser.parse_args()
 bundle = root / 'dist/Fuorigiri'
 extra = []
+work = root / 'build'
 if args.output_root:
     output = args.output_root.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    (output / 'work').mkdir()
+    work = output / 'work'
+    work.mkdir()
     bundle = output / 'bundle/Fuorigiri'
     extra = [
         '--distpath',
@@ -88,7 +95,22 @@ command = [
     'uvicorn.lifespan.on',
 ]
 if sys.platform == 'win32':
-    command.extend(['--windowed', '--icon', str(root / 'frontend/public/branding/fuorigiri.ico')])
+    # WIN-AV-02: refuse the prebuilt PyInstaller bootloader shared by every
+    # PyInstaller app; the launcher must use the locally compiled, recorded one.
+    from windows_launcher import verify_bootloader, write_version_file
+
+    verify_bootloader(root, args.bootloader_record)
+    work.mkdir(parents=True, exist_ok=True)
+    version_file = write_version_file(root, work / 'fuorigiri-version-info.txt')
+    command.extend(
+        [
+            '--windowed',
+            '--icon',
+            str(root / 'frontend/public/branding/fuorigiri.ico'),
+            '--version-file',
+            str(version_file),
+        ]
+    )
 command.extend(extra)
 command.append(str(root / 'desktop_entry.py'))
 env = os.environ.copy()

@@ -1,5 +1,12 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 15 novembre 2026 — WIN-AV-02 (bootloader locale e risorsa di versione)
+
+- Episodio: due eventi 1116 `Bearfoos.A!ml` alle 18:42 sul launcher installato di `revisione-tecnica-20261115-01`, definizioni 1.463.310.0, senza 1117 al momento della diagnosi; file illeggibile, digest non confrontato. [Diagnosi](WINDOWS_DEFENDER.md).
+- Sdist `pyinstaller-6.22.3.tar.gz` verificato con lo SHA-256 PyPI (`05eb2f56…362d`); bootloader compilati con MSVC Build Tools 18.9 in `output/pyinstaller-bootloader-20261115-01`, wheel installata nel `.venv`. `runw.exe` locale `9776c4f7…1c85`, diverso da quello pubblico `2291f269…5d41`, che coincide con il binario precompilato nello sdist. Gate di `build.py` superato con la wheel locale e con la provenienza indicata da `--bootloader-record`; rifiuto verificato con una provenienza che riporta il `runw.exe` pubblico. Workflow `desktop-build` modificato ma non eseguito.
+- Build di prova `output/winav02-build-20261115-01` (non un candidato): il registro PyInstaller usa `runw.exe` del `.venv`; risorsa di versione presente (prodotto, versione 0.10.0, autore, nome file originale). Scansione Defender del bundle senza rilevamenti; smoke dell'EXE su `.local/qa-smoke-winav02-20261115-01` nuovo riuscito in 9 s, nessun evento 1116/1117 nei 30 s successivi. Dopo la build è stato tolto un punto doppio dal testo di copyright della risorsa, quindi l'EXE di prova non coincide con le build future.
+- Limiti: anche i candidati precedenti superavano scansione e smoke al confezionamento e sono stati segnalati dopo l'installazione. Non provati installer, installazione, riapertura dal collegamento e firma Authenticode; l'efficacia contro il rilevamento non è dimostrata.
+
 ## 15 novembre 2026 — MAT-PHV-01 (PHV raggiungibile, `growth-maturity/3`)
 
 - `pytest` completo: **362 passati**. In `tests/test_maturation.py` nuovi casi: curva cubica nota invariata (≈8,96 cm/anno al 01/01/2024, stato `available`); stature ravvicinate, dichiarate, da verificare e buco oltre 400 giorni saltati senza cambiare il risultato; calo lontano dal picco elencato, calo che tocca la finestra bloccante; picco non ancora confermato, picco forse precedente ai dati, HV massima osservata.

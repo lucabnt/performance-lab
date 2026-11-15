@@ -1,5 +1,17 @@
 # Requisiti e to-do
 
+## REV-TEC-01 — blocco 1 della revisione tecnica, 14 novembre 2026
+
+Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVISIONE_TECNICA.md), partendo dal blocco 1 (correttezza). **Implementato nei sorgenti e verificato con test automatici**; nessun nuovo EXE/APK.
+
+- RT-03/RT-04: i download dei report (singolo test, storico e archivio) salvano un record `report` una sola volta per chiave (società, test e revisione, renderer, query, revisioni sorgente, formato, lingua). Il salvataggio richiede un admin non revocato: un admin revocato scarica il report senza scrivere. I duplicati già presenti restano invariati.
+- RT-08: un `.ctindex` illeggibile viene elencato tra gli errori e la sync v2 prosegue con l’inventario completo.
+- RT-07: salvataggi, lotti, annullamenti e applicazione degli eventi ricevuti prendono il lock di scrittura (`BEGIN IMMEDIATE`) prima del controllo di revisione.
+- RT-14/RT-17: allegato assente → 422 «Allegato non presente nell’archivio locale.»; rimossi i rami irraggiungibili del percorso sync legacy.
+- RT-13: le anteprime di ripristino in `restore-staging` più vecchie di 24 ore vengono rimosse all’avvio e a ogni nuova anteprima.
+
+Restano da eseguire i blocchi 2–5 del piano.
+
 ## PUB-ALPHA-01 — prima distribuzione pubblica
 
 Preparare uno snapshot con soli file tracciati e dati sintetici, verificare le revisioni raggiungibili, documentare licenze, allegati e gate per piattaforma. Il primo tag pubblico deve puntare ai sorgenti effettivamente distribuiti. [Distribuzione](DISTRIBUZIONE.md) e [prove](VERIFICA.md).

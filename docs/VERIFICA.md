@@ -1,5 +1,18 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 14 novembre 2026 — revisione tecnica, blocco 1
+
+Sei nuovi test, ciascuno fallito sui sorgenti precedenti (tranne il caso RT-14 e RT-13, scritti insieme alla correzione) e superato dopo la modifica:
+
+- RT-03: tre download dello storico producono un solo record `report`; una lingua diversa ne crea un secondo (prima: 3 record).
+- RT-04: admin revocato scarica lo storico con 200 e nessun record (prima: 422).
+- RT-08: con un `.ctindex` non decifrabile la sync v2 riceve il test e riporta un solo errore (prima: `InvalidToken` non gestito).
+- RT-07: con il lock di scrittura tenuto da un’altra connessione che applica una revisione più recente, `save` con la base vecchia riceve `ConflictError` (senza `BEGIN IMMEDIATE`: sovrascrittura silenziosa).
+- RT-14: allegato assente → 422 con messaggio.
+- RT-13: anteprima di 2 giorni rimossa alla creazione dell’app, anteprima recente conservata.
+
+Suite: `pytest -q` 317 superati, 1 saltato, 2 avvisi (baseline 311); `test:signals` 43/43; build frontend riuscita; `git diff --check` pulito. Non eseguiti: collaudo grafico (nessuna modifica UI), prove Android, provider cloud reali, concorrenza reale UI/job oltre al test simulato.
+
 ## 13 novembre 2026 — avvisi Qt, percorsi di build e wheel Android
 
 - **Avvisi Qt/Chromium:** sorgente `qtwebengine-everywhere-src-6.140.0.tar.xz` da download.qt.io, MD5 ufficiale verificato (SHA-256 in `packaging/licenses/qt/PROVENIENZA.json`). Il collettore ha trovato i testi dei 126 componenti elencati da Qt: 116 dai README.chromium, 10 dalle pagine ufficiali della stessa versione, nessuno mancante. Build Windows isolata `tmp/build-check-20261113-01` riuscita: `licenses/qt` presente (118 file di avvisi in totale), DLL Qt come file separati in `_internal/PySide6`, smoke dell’EXE riuscito su archivio QA nuovo. Non è un nuovo candidato né un installer.

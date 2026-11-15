@@ -294,9 +294,8 @@ def install_features(app, store, require, download, preview):
         labels={p['id']:p['name']+' · '+p['version'] for p in store.list('protocol')}
         for g in data['groups']: g['protocol_label']=labels.get(g['protocol_id'],g['protocol_id'][:8])
         body=render(data,format,language,metric,statistic)
-        if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
-            digest=store.object(body)
-            store.save('report',{'organization_id':org,'query':data['query'],'source_revisions':[r['revision'] for r in data['rows']], 'format':format,'language':language,'objects':[digest]})
+        from .store import save_report
+        save_report(store,{'organization_id':org,'query':data['query'],'source_revisions':[r['revision'] for r in data['rows']],'format':format,'language':language},body)
         return download(body,'application/pdf' if format=='pdf' else 'application/zip','storico.'+('pdf' if format=='pdf' else 'zip'))
 
     @app.get('/api/v1/history/{org}/growth')

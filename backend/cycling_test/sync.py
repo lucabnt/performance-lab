@@ -136,7 +136,7 @@ def apply_candidates(store,candidates):
         remaining = []
         for change in candidates:
             r = change["record"]
-            with store.connect() as db:
+            with store.connect(immediate=True) as db:
                 dependencies=change.get('parents',[change['base']])
                 if any(parent and not db.execute("SELECT 1 FROM changes WHERE id=?",(parent,)).fetchone() for parent in dependencies):
                     remaining.append(change)

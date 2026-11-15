@@ -143,3 +143,21 @@ def test_api_full_workflow(tmp_path):
     assert 'archive.sqlite' in zipfile.ZipFile(io.BytesIO(backup.content)).namelist()
     assert client.post('/api/v1/groups',json={'organization_id':a['id'],'name':'Wrong'}).status_code==422
     assert client.get('/api/v1/state',headers={'origin':'https://evil.invalid'}).status_code==403
+
+
+def test_concurrent_write_with_same_base_is_a_conflict(tmp_path):
+    import sqlite3,threading,time
+    from cycling_test.store import encoded
+    store=Store(tmp_path);record=store.save('athlete',{'name':'Ada'})
+    # A sync job holds the write lock while applying a newer revision.
+    other=sqlite3.connect(tmp_path/'archive.sqlite',isolation_level=None)
+    other.execute('BEGIN IMMEDIATE')
+    other.execute('UPDATE records SET revision=?,data=? WHERE id=?',('remote',encoded({**record,'revision':'remote'}),record['id']))
+    outcome=[]
+    def save():
+        try:outcome.append(store.save('athlete',{'name':'Ada B.'},record['id'],record['revision']))
+        except ConflictError as exc:outcome.append(exc)
+    worker=threading.Thread(target=save);worker.start();time.sleep(0.3)
+    other.execute('COMMIT');other.close();worker.join(10)
+    assert isinstance(outcome[0],ConflictError)
+    assert store.get(record['id'])['revision']=='remote'

@@ -532,9 +532,8 @@ def create_app(root=None, token=None, frontend=None):
             body=store.read_object(cached['objects'][0])
         else:
             body = report(t,t.get('athlete_snapshot') or require(t["athlete_id"],"athlete"),require(t["protocol_id"],"protocol"),format,language)
-            if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
-                digest=store.object(body)
-                store.save('report',{'organization_id':t['organization_id'],'test_id':id,'renderer_version':RENDERER_VERSION,'test_revision':t['revision'],'format':format,'language':language,'objects':[digest]})
+            from .store import save_report
+            save_report(store,{'organization_id':t['organization_id'],'test_id':id,'renderer_version':RENDERER_VERSION,'test_revision':t['revision'],'format':format,'language':language},body)
         return download(body,"application/pdf" if format == "pdf" else "application/zip",f"test-{id}." + ("pdf" if format == "pdf" else "zip"))
 
     @app.get("/api/v1/export/{organization_id}")
@@ -569,7 +568,7 @@ def create_app(root=None, token=None, frontend=None):
             from .sync_service import configure,run_sync
             configure(store,{'transport':'folder','folder':data.folder})
             return run_sync(store,verify_all=True)
-        key=store.identity['sync_key'] if hasattr(store,'identity') else data.key
+        key=data.key
         from .workspaces import write_json
         from datetime import datetime,timezone
         try:
@@ -578,7 +577,6 @@ def create_app(root=None, token=None, frontend=None):
         except (ValueError,OSError) as exc:
             write_json(store.root/'last-sync.json',{'at':datetime.now(timezone.utc).isoformat(),'ok':False,'error':str(exc)})
             raise ValueError(str(exc)) from exc
-        if hasattr(store,'identity'):(store.root/'sync-folder.txt').write_text(data.folder,encoding='utf-8')
         write_json(store.root/'last-sync.json',{'at':datetime.now(timezone.utc).isoformat(),'ok':not result['errors'],**result})
         return result
 

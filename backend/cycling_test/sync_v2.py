@@ -208,12 +208,17 @@ def exchange_v2(store,folder,key,transport,verify_all,result):
         # Bootstrap catalogues prioritize complete histories in original page
         # order. The full inventory remains a fallback for missing/stale indices.
         priority=[]
+        # An index is only an ordering hint: an unreadable one is reported and the
+        # complete inventory below still delivers every page.
         for index in sorted(n for n in names if n.endswith('.ctindex')):
-            raw=objects.cipher.decrypt(transport.get(index))
-            if index!='checkpoint2-'+objects.address(raw)+'.ctindex':raise ValueError('Indice v2 alterato.')
-            catalogue=json.loads(raw)
-            if catalogue.get('schema')!=2 or not isinstance(catalogue.get('pages'),list):raise ValueError('Indice v2 non valido.')
-            priority.extend(n for n in catalogue['pages'] if n in names and n.endswith('.ctsync2'))
+            try:
+                raw=objects.cipher.decrypt(transport.get(index))
+                if index!='checkpoint2-'+objects.address(raw)+'.ctindex':raise ValueError('Indice v2 alterato.')
+                catalogue=json.loads(raw)
+                if not isinstance(catalogue,dict) or catalogue.get('schema')!=2 or not isinstance(catalogue.get('pages'),list):raise ValueError('Indice v2 non valido.')
+                priority.extend(n for n in catalogue['pages'] if isinstance(n,str) and n in names and n.endswith('.ctsync2'))
+            except (ValueError,TypeError,OSError,InvalidToken,RecursionError) as exc:
+                errors.append(f'{index}: indice v2 ignorato, usato l’inventario completo ({type(exc).__name__})')
         pending=list(dict.fromkeys(priority+pending))
     while pending:
         progress=False;deferred=[]

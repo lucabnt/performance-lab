@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **13 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **14 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -77,6 +77,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 - Riapertura desktop: ultima coppia workspace/società in `last-selection.json` nella radice dati del dispositivo, tramite API autenticata; non dipendere da localStorage perché la porta HTTP cambia a ogni avvio. Solo ID, fuori da sync/backup societari; validare contro inventario e non scegliere altre società se manca quella ricordata. Android conserva la preferenza locale già esistente.
 
+- Scritture con controllo di revisione: usare `store.connect(immediate=True)` (lock prima della SELECT di base), come `save`, `save_batch`, `revise_batch` e `apply_candidates`. Report esportati salvati solo tramite `save_report` (riuso per chiave, nessuna scrittura senza `can_sign`); una GET non deve creare record a ogni chiamata. Piano residuo in [REVISIONE_TECNICA.md](docs/REVISIONE_TECNICA.md).
 - Un archivio gestito contiene **una sola società**, con database/oggetti, identità, chiave/canale, connessione e inviti separati. La selezione UI non filtra la condivisione di un archivio multi-società.
 - Gli archivi legacy multi-società restano consultabili ma sync/inviti sono bloccati. La separazione assistita deve preservare dipendenze/storia e l'originale, creando identità e chiavi appropriate.
 - Non sincronizzare il database SQLite aperto tramite client cloud. Usare i trasporti di scambio del progetto; con collaboratori diversi occorrono anche permessi/cartelle cloud distinti.

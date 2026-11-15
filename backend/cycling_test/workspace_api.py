@@ -6,7 +6,30 @@ from .workspaces import invitation, join, revoke_member, member_directory, apply
 from .store import encoded
 
 
+RESTORE_STAGING_MAX_AGE_S=24*3600
+
+
+def prune_restore_staging(root,max_age_s=RESTORE_STAGING_MAX_AGE_S):
+    """Remove restore previews abandoned by the operator (up to 64 GB each).
+
+    Only regular files older than the threshold are touched; a recent preview
+    awaiting confirmation stays available. Errors never block startup.
+    """
+    import time
+    from pathlib import Path
+    folder=Path(root)/'restore-staging';removed=0
+    if not folder.is_dir():return 0
+    limit=time.time()-max_age_s
+    for path in folder.iterdir():
+        try:
+            if path.is_file() and not path.is_symlink() and path.stat().st_mtime<limit:
+                path.unlink();removed+=1
+        except OSError:continue
+    return removed
+
+
 def install_workspaces(app,manager,store,download):
+    prune_restore_staging(manager.root)
     class Create(BaseModel):
         name: str=Field(min_length=1,max_length=300)
         operator: str=Field(min_length=1,max_length=300)
@@ -83,6 +106,7 @@ def install_workspaces(app,manager,store,download):
         from .backup_stream import inspect_file,MAX_COMPRESSED,CHUNK
         import hashlib,os
         from uuid import uuid4
+        prune_restore_staging(manager.root)
         pending=manager.root/'restore-staging';pending.mkdir(exist_ok=True)
         temp=pending/(str(uuid4())+'.tmp');digest=hashlib.sha256();size=0
         try:

@@ -1,5 +1,14 @@
 # Changelog
 
+## 14 novembre 2026 — revisione tecnica, blocco 1 (sorgenti)
+
+- Report: un solo record salvato per report con gli stessi input (singolo test, storico, archivio); ai download successivi non si aggiungono record né oggetti al canale di sync. Un admin revocato scarica i report senza tentare il salvataggio, invece di ricevere un errore (RT-03, RT-04). I duplicati esistenti non vengono toccati.
+- Sync v2: un indice `.ctindex` danneggiato o estraneo non blocca più lo scambio; l’errore è elencato e si usa l’inventario completo (RT-08).
+- Archivio: le scritture prendono il lock prima del controllo di revisione, così un salvataggio concorrente alla sync produce un conflitto invece di sovrascrivere (RT-07).
+- Allegato mancante segnalato con un messaggio (422) invece di un errore 500 (RT-14); rimosso codice irraggiungibile nella sync legacy (RT-17).
+- Anteprime di ripristino abbandonate da oltre 24 ore rimosse all’avvio (RT-13).
+- Nessuna modifica ad API, schema o interfaccia. Versione prodotto 0.10.0 invariata, nessun nuovo EXE/APK.
+
 ## 13 novembre 2026 — preparazione binari alpha.1
 
 - Bundle Windows: avvisi Qt/PySide6/Qt WebEngine in `licenses/qt` (LGPL v3/v2.1, sorgenti corrispondenti e avvisi Chromium di 126 componenti generati da `scripts/collect_qtwebengine_notices.py`). La build si interrompe se il runtime Qt non corrisponde agli avvisi.

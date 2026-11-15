@@ -168,3 +168,13 @@ def test_receiver_reuses_validated_chunks_after_missing_final_chunk(tmp_path):
     assert not set(chunks[:-1])&set(downloaded)
     assert viewer.read_object(digest)==raw
     assert not list((viewer.root/'parts').iterdir())
+
+
+def test_unreadable_v2_index_falls_back_to_full_inventory(tmp_path):
+    owner,viewer,folder=devices(tmp_path,'viewer');test=trace_test(owner);key=owner.identity['sync_key']
+    exchange(owner,folder,key,protocol=2,verify_existing=False)
+    channel=next(folder.iterdir())
+    (channel/('checkpoint2-'+'0'*64+'.ctindex')).write_bytes(b'partial upload')
+    result=exchange(viewer,folder,key,protocol=2,verify_existing=False)
+    assert not result['pending'] and viewer.get(test['id'])['id']==test['id']
+    assert len(result['errors'])==1 and 'indice v2 ignorato' in result['errors'][0]

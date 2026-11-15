@@ -198,3 +198,14 @@ def test_optional_local_audit_shape_remains_bounded(tmp_path):
         db.execute('DROP TABLE sync_audit')
         db.execute('CREATE TABLE sync_audit (body TEXT)')
     with pytest.raises(ValueError,match='Schema registro locale'):inspect_backup(backup_bytes(store))
+
+
+def test_abandoned_restore_previews_are_pruned_at_startup(tmp_path):
+    import os,time
+    from cycling_test.api import create_app
+    staging=tmp_path/'restore-staging';staging.mkdir()
+    old=staging/('a'*64);old.write_bytes(b'old preview')
+    recent=staging/('b'*64);recent.write_bytes(b'recent preview')
+    stale=time.time()-2*24*3600;os.utime(old,(stale,stale))
+    create_app(tmp_path,token='qa')
+    assert not old.exists() and recent.read_bytes()==b'recent preview'

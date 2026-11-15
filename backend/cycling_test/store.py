@@ -18,6 +18,33 @@ class ConflictError(ValueError):
     pass
 
 
+def can_sign(store):
+    """True when this device may add signed revisions: legacy archive or non-revoked admin."""
+    if not hasattr(store, 'identity'):
+        return True
+    certificate = store.identity['certificate']
+    return certificate['role'] == 'admin' and certificate['id'] not in store.revocations()
+
+
+REPORT_KEY = ('organization_id', 'test_id', 'renderer_version', 'test_revision', 'query', 'source_revisions', 'format', 'language')
+
+
+def save_report(store, payload, body):
+    """Persist an exported report once per key; reading a report never needs write rights.
+
+    Rendered bytes may differ between downloads (timestamps), so reuse is decided
+    on the inputs that define the report, not on the file digest.
+    """
+    if not can_sign(store):
+        return None
+    key = encoded({k: payload.get(k) for k in REPORT_KEY})
+    existing = next((r for r in store.list('report') if r.get('status') != 'deleted'
+                     and encoded({k: r.get(k) for k in REPORT_KEY}) == key), None)
+    if existing:
+        return existing
+    return store.save('report', {**payload, 'objects': [store.object(body)]})
+
+
 class Store:
     def __init__(self, root):
         self.root = Path(root)
@@ -56,7 +83,7 @@ class Store:
 
     def save_batch(self, entries, bases=None):
         """Single transaction including the outbox, used after complete import validation."""
-        with self.connect() as db:
+        with self.connect(immediate=True) as db:
             device = db.execute("SELECT value FROM config WHERE key='device'").fetchone()[0]
             result = []
             for kind, payload in entries:
@@ -77,7 +104,7 @@ class Store:
             return result
 
     def revise_batch(self, records, reason):
-        with self.connect() as db:
+        with self.connect(immediate=True) as db:
             device=db.execute("SELECT value FROM config WHERE key='device'").fetchone()[0]
             for old in records:
                 current=db.execute('SELECT revision FROM records WHERE id=?',(old['id'],)).fetchone()
@@ -91,10 +118,14 @@ class Store:
                 db.execute('INSERT INTO changes VALUES(?,?)',(revision,encoded(change)))
 
     @contextmanager
-    def connect(self):
+    def connect(self, immediate=False):
+        """Immediate mode takes the write lock before the revision check, so a
+        concurrent writer (UI or sync job) cannot slip between check and write."""
         db = sqlite3.connect(self.root / "archive.sqlite", timeout=30)
         db.row_factory = sqlite3.Row
         try:
+            if immediate:
+                db.execute('BEGIN IMMEDIATE')
             yield db
             db.commit()
         except Exception:
@@ -120,7 +151,7 @@ class Store:
         id = id or str(uuid4())
         revision = str(uuid4())
         data = {**payload, "id": id, "kind": kind, "revision": revision}
-        with self.connect() as db:
+        with self.connect(immediate=True) as db:
             old = db.execute("SELECT revision,kind FROM records WHERE id=?", (id,)).fetchone()
             if old and (old["revision"] != base or old["kind"] != kind):
                 raise ConflictError("Il record è cambiato: ricaricare prima di salvare.")
@@ -149,7 +180,10 @@ class Store:
     def read_object(self, digest):
         if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
             raise ValueError("Identificatore allegato non valido.")
-        data = (self.root / "objects" / digest).read_bytes()
+        try:
+            data = (self.root / "objects" / digest).read_bytes()
+        except FileNotFoundError:
+            raise ValueError("Allegato non presente nell'archivio locale.") from None
         if hashlib.sha256(data).hexdigest() != digest:
             raise ValueError("Allegato corrotto.")
         return data

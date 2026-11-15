@@ -245,8 +245,7 @@ def install_archive_reports(app,store,require,download):
     @app.get('/api/v1/archive/{org}/report/{format}')
     def report(org:str,format:Literal['md','pdf'],group:str='',season:str='',athlete:str=''):
         data=report_data(org,group,season,athlete);body=render(data,format)
-        if not hasattr(store,'identity') or store.identity['certificate']['role']=='admin':
-            digest=store.object(body)
-            store.save('report',{'organization_id':org,'renderer_version':RENDERER,'query':data['scope'],'source_revisions':data['source_revisions'],
-                                'format':format,'language':'it','objects':[digest]})
+        from .store import save_report
+        save_report(store,{'organization_id':org,'renderer_version':RENDERER,'query':data['scope'],'source_revisions':data['source_revisions'],
+                           'format':format,'language':'it'},body)
         return download(body,'application/pdf' if format=='pdf' else 'application/zip','fuorigiri-archivio.'+('pdf' if format=='pdf' else 'zip'))

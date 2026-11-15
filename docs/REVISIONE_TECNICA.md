@@ -1,6 +1,6 @@
 # Revisione tecnica e piano di intervento
 
-Revisione del **14 novembre 2026** sui sorgenti **0.10.0** (commit `b12aaa4`). Stato: **analisi e piano approvati, nessuna modifica al codice ancora eseguita**. Questo documento descrive rilievi e interventi proposti; non dichiara nulla come implementato. L'avanzamento va registrato in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), [CHANGELOG.md](../CHANGELOG.md) e [VERIFICA.md](VERIFICA.md) man mano che le voci vengono realizzate.
+Revisione del **14 novembre 2026** sui sorgenti **0.10.0** (commit `b12aaa4`). Stato: **analisi e piano approvati; blocco 1 implementato nei sorgenti il 14 novembre 2026** (vedi [Avanzamento](#avanzamento)). Le altre voci restano proposte. L'avanzamento va registrato in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), [CHANGELOG.md](../CHANGELOG.md) e [VERIFICA.md](VERIFICA.md) man mano che le voci vengono realizzate.
 
 Gli identificativi `RT-nn` sono propri di questa revisione.
 
@@ -157,6 +157,12 @@ Vincoli già fissati per la proposta: cifratura a blocchi per i file grandi, nes
 | 12 | RT-12, RT-16, RT-18, RT-19, RT-20 | Parametri scrypt, test con versioni Android, CSP, hash del lock e pin delle azioni, autorizzazioni per rotta |
 
 Per RT-01 si adotta solo la proiezione in lettura; la rimozione dei campioni dai record firmati è accantonata.
+
+## Avanzamento
+
+| Data | Voci | Stato | Note |
+|---|---|---|---|
+| 14 novembre 2026 | Blocco 1 (#1–#5: RT-03, RT-04, RT-07, RT-08, RT-13, RT-14, RT-17) | Implementato nei sorgenti, test automatici | Il riuso per chiave copre anche il report d'archivio (`archive_report.py`), che aveva lo stesso schema di salvataggio a ogni download. Il report storico viene sempre rigenerato; si evita solo il record duplicato. Soglia di pulizia delle anteprime: 24 ore. Prove in [VERIFICA.md](VERIFICA.md). |
 
 ## Architettura target
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 15 novembre 2026 — CI attiva su push
+
+- Il workflow `verify.yml` (job `verify` e `android-versions`) parte a ogni push su `main`, sulle pull request e ad avvio manuale; prima era solo manuale (RT-06, decisione dell'utente del 15 novembre). `desktop-build` e `android-build` restano ad avvio manuale. Esito su GitHub non ancora osservato: serve il primo push.
+
 ## 15 novembre 2026 — revisione tecnica, blocco 5 voce 12 (indurimenti)
 
 - Inviti e file di recupero accessi: scrypt con n = 2^17 e parametri scritti nell'involucro (RT-12). I file creati prima (n = 2^14, senza parametri) restano leggibili; i nuovi richiedono un'app aggiornata. Parametri fuori dai limiti rifiutati con l'invito ad aggiornare Fuorigiri.

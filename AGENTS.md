@@ -134,7 +134,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 Da PowerShell nella radice, usando l'ambiente di sviluppo già predisposto:
 
-`scripts/verify.py` esegue tutte le verifiche sotto più versioni, common, linter `ruff` (solo errori F/E9) e controllo del formato, con riepilogo finale; `--skip <passo>` per saltarne alcuni. Formato automatico: `.venv/Scripts/python.exe -m ruff format .` (configurazione in `pyproject.toml`) e `npm --prefix frontend run format` (prettier, `frontend/.prettierrc.json`); non mescolare riformattazioni estese con modifiche di comportamento nello stesso commit. Il workflow `verify.yml` lo usa ed è manuale finché non si decide l’attivazione su push.
+`scripts/verify.py` esegue tutte le verifiche sotto più versioni, common, linter `ruff` (solo errori F/E9) e controllo del formato, con riepilogo finale; `--skip <passo>` per saltarne alcuni. Formato automatico: `.venv/Scripts/python.exe -m ruff format .` (configurazione in `pyproject.toml`) e `npm --prefix frontend run format` (prettier, `frontend/.prettierrc.json`); non mescolare riformattazioni estese con modifiche di comportamento nello stesso commit. Il workflow `verify.yml` lo usa e parte a ogni push su `main` e sulle pull request; `desktop-build` e `android-build` restano manuali.
 
 ```powershell
 .venv/Scripts/python.exe scripts/verify.py

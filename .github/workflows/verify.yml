@@ -1,8 +1,11 @@
 name: Verify
-# RT-06: lightweight checks without packaging. Manual only for now: whether to
-# also run on push and pull_request before the repository becomes public is an
-# open decision (docs/REVISIONE_TECNICA.md, "Punti aperti").
+# RT-06: lightweight checks without packaging, on every push to main, on pull
+# requests and on demand (activation decided on 15 November 2026). Packaging
+# workflows (desktop-build, android-build) stay manual.
 on:
+  push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: read

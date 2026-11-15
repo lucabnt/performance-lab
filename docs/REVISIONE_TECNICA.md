@@ -110,7 +110,7 @@ Certezza: **riprodotto** (osservato con la sonda), **certo** (dimostrabile dal c
 | Formattazione (RT-05) | Un commit per area funzionale, non un unico commit globale. |
 | Protezione dei dati (RT-11) | Raccomandazione della cifratura del dispositivo e backup cifrato facoltativo. Esclusi: chiavi di `identity.json` nel portachiavi (guadagno minimo su Windows, perdita di portabilità della cartella) e database cifrato (nuova dipendenza nativa, password a ogni avvio, rischio di perdita totale). |
 | Formule nei CSV (RT-15) | Approvata la neutralizzazione in export con rimozione in import. |
-| CI (RT-06) | Script locale subito; workflow leggero predisposto. La repository è privata e diventerà pubblica con la prima alpha: resta da decidere se attivarlo su push già ora o tenerlo manuale fino ad allora. |
+| CI (RT-06) | Script locale subito; workflow leggero predisposto. La repository è privata e diventerà pubblica con la prima alpha: il 15 novembre 2026 l'utente ha deciso di attivarlo subito su push a `main` e pull request; i workflow di build restano manuali. |
 | Report storici già duplicati (RT-03) | Restano come sono: nessuna cancellazione, nessun raggruppamento. |
 
 ## Piano degli interventi
@@ -169,6 +169,7 @@ Per RT-01 si adotta solo la proiezione in lettura; la rimozione dei campioni dai
 | 15 novembre 2026 | Blocco 4, voce 10 (RT-11) | Implementato nei sorgenti; ripristino reale via API e GUI web | Proposta di formato approvata dall'utente il 15 novembre ([BACKUP_CIFRATO.md](BACKUP_CIFRATO.md)). File `.fgbak`, password di almeno 12 caratteri, opzione disattivata di default e disponibile dove si scarica il v3 (Android non provato). La copia decifrata resta in `restore-staging` fino al ripristino o per 24 ore. |
 | 15 novembre 2026 | Blocco 5, voce 11 (RT-01, RT-09, RT-10, RT-02) | Implementato nei sorgenti, test e misure | Misura preliminare di RT-01: `/state` 513 ms su 300 test sintetici da 30 minuti, 93 ms con la proiezione SQL e risposta identica. Sync, apertura dello store e storico misurati in [VERIFICA.md](VERIFICA.md). La sync v2 verifica ancora tutto lo storico per comporre le pagine. |
 | 15 novembre 2026 | Blocco 5, voce 12 (RT-12, RT-18, RT-19, RT-20, RT-16) | Implementato nei sorgenti, test; CSP verificata con Plotly in Chrome headless; RT-16 eseguito su Python 3.12 | I nuovi inviti e recuperi richiedono un'app aggiornata. RT-20 consente anche lo scollegamento da visualizzatore. Hash del lockfile in un file distinto per non entrare in conflitto con `sync-core.py` del common. RT-16 usa Python 3.12, perché le versioni Android di numpy e matplotlib non hanno wheel per 3.13. |
+| 15 novembre 2026 | RT-06, attivazione CI | Workflow `verify.yml` attivo su push a `main` e pull request | Decisione dell'utente. Esito su GitHub da osservare al primo push. |
 
 ## Architettura target
 
@@ -195,5 +196,4 @@ flowchart LR
 
 ## Punti aperti
 
-- Attivazione del workflow CI su push prima che la repository diventi pubblica.
 - Revisione giuridica del trattamento dei dati di minori, già prevista e non coperta da questa revisione tecnica.

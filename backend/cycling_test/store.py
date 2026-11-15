@@ -104,6 +104,8 @@ class Store:
                 raise ValueError('Archivio creato con una versione più recente.')
             # Additive migration: preserve all existing records and immutable changes.
             db.execute('CREATE INDEX IF NOT EXISTS records_kind ON records(kind)')
+            # Per-record history without scanning every change (RT-02); additive, no schema version bump.
+            db.execute("CREATE INDEX IF NOT EXISTS changes_record ON changes(json_extract(body, '$.record.id'))")
             db.execute(
                 "INSERT OR IGNORE INTO config VALUES('migration_v3',?)",
                 (encoded({'from': schema, 'legacy_method': 'legacy_unknown', 'records_rewritten': False}),),
@@ -113,9 +115,10 @@ class Store:
     def history(self, id):
         with self.connect() as db:
             return [
-                c['record']
-                for row in db.execute('SELECT body FROM changes ORDER BY rowid')
-                if (c := json.loads(row[0]))['record']['id'] == id
+                json.loads(row[0])['record']
+                for row in db.execute(
+                    "SELECT body FROM changes WHERE json_extract(body, '$.record.id')=? ORDER BY rowid", (id,)
+                )
             ]
 
     def save_batch(self, entries, bases=None):
@@ -192,6 +195,30 @@ class Store:
                 json.loads(r[0])
                 for r in db.execute("SELECT data FROM records WHERE kind=? ORDER BY rowid DESC", (kind,))
             ]
+
+    def list_without_samples(self, kind):
+        """Records without `samples`, removed in SQL before decoding (RT-01).
+
+        Returns (record, has_samples) pairs, where has_samples follows
+        `bool(record.get('samples'))`. Stored records are not changed.
+        """
+        result = []
+        with self.connect() as db:
+            for data, kind_of, length in db.execute(
+                "SELECT json_remove(data, '$.samples'), json_type(data, '$.samples'),"
+                " json_array_length(data, '$.samples') FROM records WHERE kind=? ORDER BY rowid DESC",
+                (kind,),
+            ):
+                if kind_of in (None, 'null', 'false'):
+                    present = False
+                elif kind_of == 'array':
+                    present = length > 0
+                else:
+                    # Not a list: rare legacy shape, keep Python truthiness.
+                    row = db.execute('SELECT data FROM records WHERE id=?', (json.loads(data)['id'],)).fetchone()
+                    present = bool(json.loads(row[0]).get('samples'))
+                result.append((json.loads(data), present))
+        return result
 
     def get(self, id):
         with self.connect() as db:

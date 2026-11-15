@@ -1,5 +1,6 @@
 """Custom protocols record observations without borrowing physiological methods."""
 
+from .access import viewer_allowed
 import json
 from datetime import date
 from pydantic import BaseModel, ConfigDict, Field
@@ -140,6 +141,7 @@ def install_api(app, store):
         }
 
     @app.post('/api/v1/custom/preview')
+    @viewer_allowed
     def preview(data: Test):
         return prepare(data, editing=bool(data.revision))['analysis']
 

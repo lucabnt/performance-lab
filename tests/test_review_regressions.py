@@ -109,3 +109,40 @@ def test_progression_deltas_also_exclude_estimated_weight(tmp_path):
     save_test(s, org, a, p, '2026', None)
     last = summarize(s, org['id'])['changes'][-1]
     assert last['map_w_delta'] == 20 and last['map_wkg_delta'] is None
+
+
+def test_frontend_pages_carry_a_content_security_policy(tmp_path):
+    from fastapi.testclient import TestClient
+    from cycling_test.api import create_app
+
+    web = tmp_path / 'web'
+    web.mkdir()
+    (web / 'index.html').write_text('<!doctype html><title>x</title>', encoding='utf-8')
+    client = TestClient(create_app(tmp_path / 'data', token='t', frontend=web))
+    policy = client.get('/').headers['content-security-policy']
+    assert "script-src 'self';" in policy and 'unsafe-eval' not in policy
+    assert "frame-ancestors 'none'" in policy and "object-src 'none'" in policy
+    api = client.get('/api/v1/state', headers={'X-Fuorigiri-Token': 't'})
+    assert 'content-security-policy' not in api.headers
+
+
+def test_lock_hashes_follow_the_lockfile(tmp_path):
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / 'scripts' / 'lock_hashes.py'
+    spec = importlib.util.spec_from_file_location('lock_hashes', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    assert module.check() == []
+    (tmp_path / 'requirements-lock-windows.txt').write_text(
+        'Foo_Bar==1.0\nbaz==2.0\n-r requirements-common.txt\n', encoding='utf-8'
+    )
+    (tmp_path / 'requirements-lock-windows.hashes').write_text(
+        f'foo-bar==1.0 \\\n    --hash=sha256:{"a" * 64}\nbaz==2.1 \\\n    --hash=sha256:{"b" * 64}\nqux==1\n',
+        encoding='utf-8',
+    )
+    assert module.check(tmp_path) == [
+        'requirements-lock-windows.hashes: baz 2.0 nel lock, 2.1 negli hash.',
+        'requirements-lock-windows.hashes: qux presente solo negli hash.',
+    ]

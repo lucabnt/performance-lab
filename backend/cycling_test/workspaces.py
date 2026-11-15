@@ -39,13 +39,20 @@ def verify(key, body, signature):
     Ed25519PublicKey.from_public_bytes(un64(key)).verify(un64(signature), encoded(body).encode())
 
 
+# Invitations and founder recovery (RT-12). New envelopes state their scrypt
+# parameters; envelopes without them are the original n=2**14 format.
+SEAL_KDF = {'name': 'scrypt', 'n': 2**17, 'r': 8, 'p': 1}
+LEGACY_KDF = {'name': 'scrypt', 'n': 2**14, 'r': 8, 'p': 1}
+
+
 def seal(payload, password):
     if len(password) < 12:
         raise ValueError('Usare una password di almeno 12 caratteri.')
     salt = os.urandom(16)
-    key = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1).derive(password.encode())
+    key = Scrypt(salt=salt, length=32, n=SEAL_KDF['n'], r=SEAL_KDF['r'], p=SEAL_KDF['p']).derive(password.encode())
     return encoded(
         {
+            'kdf': SEAL_KDF,
             'salt': b64(salt),
             'encrypted': Fernet(base64.urlsafe_b64encode(key)).encrypt(encoded(payload).encode()).decode(),
         }
@@ -57,7 +64,19 @@ def unseal(raw, password):
     salt = un64(envelope['salt'])
     if len(salt) != 16:
         raise ValueError('Formato cifrato non valido.')
-    key = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1).derive(password.encode())
+    kdf = envelope.get('kdf', LEGACY_KDF)
+    # Bounded like the encrypted backup, so a crafted file cannot demand huge memory.
+    if (
+        not isinstance(kdf, dict)
+        or kdf.get('name') != 'scrypt'
+        or type(kdf.get('n')) is not int
+        or not 2**14 <= kdf['n'] <= 2**20
+        or kdf['n'] & (kdf['n'] - 1)
+        or kdf.get('r') != 8
+        or kdf.get('p') != 1
+    ):
+        raise ValueError('Parametri di cifratura non supportati: aggiornare Fuorigiri.')
+    key = Scrypt(salt=salt, length=32, n=kdf['n'], r=8, p=1).derive(password.encode())
     return json.loads(Fernet(base64.urlsafe_b64encode(key)).decrypt(envelope['encrypted'].encode()))
 
 
@@ -202,26 +221,50 @@ class ArchiveStore(Store):
         return {**body, 'signature': sign(identity['private_key'], body)}
 
     def verify_change(self, change):
-        identity = self.identity
-        if change.get('workspace') != identity['workspace']:
-            raise ValueError('Workspace del pacchetto errato.')
+        self.verifier()(change)
+
+    def verifier(self):
+        """Return a checker for many signed events (RT-09).
+
+        Identity and revocations are read once and each distinct certificate
+        signature is verified once; every event signature is still verified.
+        Create a new checker after changing identity.json or revocations.json.
+        """
         from .society_scope import check_record
 
-        organizations = self.list('organization')
-        check_record(
-            change['record'],
-            identity.get('organization_id') or (organizations[0]['id'] if len(organizations) == 1 else None),
-        )
-        certificate = change['certificate']
-        verify(identity['authority_public'], certificate, change['certificate_signature'])
-        if certificate['workspace'] != identity['workspace'] or certificate['role'] != 'admin':
-            raise ValueError('Autore non autorizzato alla scrittura.')
-        revoked = self.revocations()
-        if certificate['id'] in revoked:
-            rev = json.loads((self.root / 'revocations.json').read_text(encoding='utf-8'))
-            if rev.get('accepted', {}).get(change['id']) != hashlib.sha256(encoded(change).encode()).hexdigest():
-                raise ValueError('Autore revocato: operazione in quarantena.')
-        verify(certificate['public_key'], {k: v for k, v in change.items() if k != 'signature'}, change['signature'])
+        identity = self.identity
+        revoked = set(self.revocations())
+        accepted = None
+        certificates = set()
+
+        def check(change):
+            nonlocal accepted
+            if change.get('workspace') != identity['workspace']:
+                raise ValueError('Workspace del pacchetto errato.')
+            organization = identity.get('organization_id')
+            if not organization:
+                # Legacy identity: the society can appear while receiving, so read it every time.
+                organizations = self.list('organization')
+                organization = organizations[0]['id'] if len(organizations) == 1 else None
+            check_record(change['record'], organization)
+            certificate = change['certificate']
+            seen = (encoded(certificate), change['certificate_signature'])
+            if seen not in certificates:
+                verify(identity['authority_public'], certificate, change['certificate_signature'])
+                certificates.add(seen)
+            if certificate['workspace'] != identity['workspace'] or certificate['role'] != 'admin':
+                raise ValueError('Autore non autorizzato alla scrittura.')
+            if certificate['id'] in revoked:
+                if accepted is None:
+                    rev = json.loads((self.root / 'revocations.json').read_text(encoding='utf-8'))
+                    accepted = rev.get('accepted', {})
+                if accepted.get(change['id']) != hashlib.sha256(encoded(change).encode()).hexdigest():
+                    raise ValueError('Autore revocato: operazione in quarantena.')
+            verify(
+                certificate['public_key'], {k: v for k, v in change.items() if k != 'signature'}, change['signature']
+            )
+
+        return check
 
     def revocations(self):
         path = self.root / 'revocations.json'
@@ -244,6 +287,7 @@ class Workspaces:
         self.legacy = legacy
         self.proxy = StoreProxy(legacy)
         self.lock = threading.RLock()
+        self.stores = {}
 
     def entries(self, include_detached=False):
         rows = json.loads(self.registry.read_text(encoding='utf-8')) if self.registry.exists() else []
@@ -308,7 +352,30 @@ class Workspaces:
         entry = next((e for e in self.entries() if e['id'] == id), None)
         if not entry:
             raise ValueError('Workspace non associato a questo dispositivo.')
-        return (SnapshotStore if entry.get('mode') == 'snapshot' else ArchiveStore)(entry['path'])
+        return self.open(entry)
+
+    def open(self, entry):
+        """Reuse the Store of an unchanged database instead of repeating DDL and
+        migration checks on every request (RT-10). The registry is still read on
+        every call, so detaching or removing a society takes effect immediately.
+        A replaced or missing database file (restore, manual copy) gets a fresh
+        Store, which runs the usual checks and migrations again."""
+        kind = SnapshotStore if entry.get('mode') == 'snapshot' else ArchiveStore
+        key = (str(Path(entry['path']).resolve()), kind)
+        try:
+            info = os.stat(Path(entry['path']) / 'archive.sqlite')
+            file = (info.st_dev, info.st_ino)
+        except OSError:
+            file = None
+        with self.lock:
+            cached = self.stores.get(key)
+            if file is not None and cached and cached[0] == file:
+                return cached[1]
+        store = kind(entry['path'])
+        info = os.stat(Path(entry['path']) / 'archive.sqlite')
+        with self.lock:
+            self.stores[key] = ((info.st_dev, info.st_ino), store)
+        return store
 
     def create(self, name, operator, path=''):
         name = name.strip()

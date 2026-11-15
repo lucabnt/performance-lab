@@ -27,6 +27,7 @@ def steps():
         ('versions', 'Coerenza delle versioni', [python, 'scripts/verify_versions.py'], ROOT),
         ('suite-ui', 'UI comune incorporata', [python, 'scripts/verify_suite_ui.py'], ROOT),
         ('core', 'Common Python incorporato', [python, 'scripts/verify_core.py'], ROOT),
+        ('lock-hashes', 'Hash del lockfile Python', [python, 'scripts/lock_hashes.py'], ROOT),
         ('lint', 'Linter Python (ruff)', [python, '-m', 'ruff', 'check', '.'], ROOT),
         ('format-py', 'Formato Python (ruff format)', [python, '-m', 'ruff', 'format', '--check', '.'], ROOT),
         ('format-js', 'Formato frontend (prettier)', [npm, 'run', 'format:check'], ROOT / 'frontend'),

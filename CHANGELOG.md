@@ -1,5 +1,23 @@
 # Changelog
 
+## 15 novembre 2026 — revisione tecnica, blocco 5 voce 12 (indurimenti)
+
+- Inviti e file di recupero accessi: scrypt con n = 2^17 e parametri scritti nell'involucro (RT-12). I file creati prima (n = 2^14, senza parametri) restano leggibili; i nuovi richiedono un'app aggiornata. Parametri fuori dai limiti rifiutati con l'invito ad aggiornare Fuorigiri.
+- Content-Security-Policy sulle pagine servite dal backend desktop (RT-18): solo script dell'app, nessun `eval`, stili in linea consentiti per React e Plotly, nessun incorporamento in altre pagine. Grafici Plotly verificati sotto la policy.
+- Le rotte di scrittura consentite a visualizzatori e operatori revocati sono dichiarate sulla rotta con `@viewer_allowed` invece che in un elenco di percorsi nel middleware (RT-20). Unico cambio di comportamento: scollegare e ricollegare una società è consentito anche con una società in sola lettura selezionata.
+- Azioni GitHub dei workflow fissate per SHA del commit, con la versione in commento (RT-19).
+- Nuovo `requirements-lock-windows.hashes`, generato da `scripts/lock_hashes.py --write`, con gli SHA-256 dei pacchetti PyPI del lockfile; workflow Windows con `pip install --require-hashes` e wheel comune installata a parte (già verificata da `verify_core.py`). Nuovo passo `lock-hashes` in `verify.py` (RT-19). Lo script è consegnato da `cycling-suite-common` con `sync-core.py`, come `verify_core.py`; i due file consegnati sono esclusi da `ruff format`.
+- Nuovo `scripts/test_android_versions.py` e job manuale `android-versions` in `verify.yml`: test Python con le versioni delle librerie Android su Python 3.12 (RT-16). Eseguito in locale: stessi esiti del set desktop.
+- Versione prodotto 0.10.0 invariata, nessun nuovo EXE/APK.
+
+## 15 novembre 2026 — revisione tecnica, blocco 5 voce 11 (prestazioni)
+
+- `/state` toglie i campioni dei test già nella query SQL invece di leggerli e scartarli (RT-01): su un archivio sintetico con 300 test da 30 minuti a 1 Hz (database di 49 MB), da 513 a 93 ms con risposta identica. I record firmati non cambiano.
+- Sync: identità e revoche vengono lette una volta per scambio e ogni certificato si verifica una volta sola; la firma di ogni evento resta verificata. Gli eventi locali già presenti nella cartella non vengono riverificati prima dell'invio (RT-09). Con 1.500 record la seconda sync scende da 2,15 a 0,19 s (v1) e da 2,23 a 0,91 s (v2).
+- Lo store di una società viene riusato tra le richieste finché il file del database non cambia (RT-10): da 5,2 a 0,4 ms per richiesta. Il registro delle società si rilegge sempre, quindi lo scollegamento ha effetto subito.
+- Lo storico di un record usa un indice sulla tabella delle revisioni invece di leggerla tutta (RT-02). L'indice si aggiunge all'apertura senza cambiare la versione dello schema; backup e ripristino lo accettano già.
+- Nessuna modifica ad API, formati o interfaccia. Versione prodotto 0.10.0 invariata, nessun nuovo EXE/APK.
+
 ## 15 novembre 2026 — revisione tecnica, blocco 4 (backup protetto da password)
 
 - Nuova opzione «Proteggi con password» in Archivio e scambio (RT-11). Il backup v3 viene scaricato o salvato come file `.fgbak` cifrato con AES-256-GCM a blocchi e chiave scrypt; la password richiede almeno 12 caratteri e va inserita due volte, con avviso che senza password il backup non è recuperabile.

@@ -8,8 +8,10 @@ from typing import Annotated, Literal
 from fastapi import FastAPI, Form, UploadFile, Request
 from fastapi.responses import JSONResponse, Response, FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.routing import Match, Mount
 from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 
+from .access import viewer_allowed
 from . import __version__
 from .analysis import analyze
 from .erg import parse_erg
@@ -224,6 +226,25 @@ class SyncInput(Model):
     key: str
 
 
+# Defence in depth for the pages served by the desktop backend (RT-18). Inline
+# styles are needed by React style attributes and Plotly; no inline or eval'd
+# scripts. The Android shell serves the same assets through its own loader.
+CONTENT_SECURITY_POLICY = "; ".join(
+    (
+        "default-src 'self'",
+        "script-src 'self'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: blob:",
+        "font-src 'self' data:",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'none'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+    )
+)
+
+
 def create_app(root=None, token=None, frontend=None):
     legacy = Store(root or os.environ.get("FUORIGIRI_DATA", ".local"))
     from .workspaces import Workspaces
@@ -234,6 +255,15 @@ def create_app(root=None, token=None, frontend=None):
     app = FastAPI(title="Fuorigiri Performance Lab", version=__version__, docs_url=None, redoc_url=None)
     app.state.store = store
     app.state.token = token
+
+    def viewer_route(scope):
+        for route in app.router.routes:
+            if isinstance(route, Mount):
+                continue
+            match, child = route.matches(scope)
+            if match == Match.FULL:
+                return getattr(child.get('endpoint'), 'viewer_allowed', False)
+        return False
 
     @app.middleware("http")
     async def local_only(request: Request, call_next):
@@ -253,35 +283,8 @@ def create_app(root=None, token=None, frontend=None):
             read_only = (
                 identity['certificate']['role'] == 'viewer' or identity['certificate']['id'] in selected.revocations()
             )
-            allowed = request.method in ('GET', 'HEAD') or request.url.path in (
-                '/api/v1/tests/preview',
-                '/api/v1/sync',
-                '/api/v1/sync/start',
-                '/api/v1/sync/automatic',
-                '/api/v1/device/preferences',
-                '/api/v1/workspaces',
-                '/api/v1/workspaces/last-selection',
-                '/api/v1/workspaces/join',
-                '/api/v1/workspaces/access',
-                '/api/v1/workspaces/restore/preview',
-                '/api/v1/workspaces/restore',
-                '/api/v1/workspaces/split/preview',
-                '/api/v1/workspaces/split',
-                '/api/v1/backup/scalable/save',
-                '/api/v1/backup/scalable/encrypted',
-                '/api/v1/sync/connection',
-                '/api/v1/sync/run',
-                '/api/v1/sync/oauth/start',
-                '/api/v1/sync/oauth/callback',
-                '/api/v1/sync/oauth/disconnect',
-                '/api/v1/anaerobic/preview',
-                '/api/v1/custom/preview',
-            )
-            allowed = (
-                allowed
-                or request.url.path == '/api/v1/repeatability'
-                or request.url.path.startswith('/api/v1/repeatability/report/')
-            )
+            # Exceptions are declared on the routes with @viewer_allowed (RT-20).
+            allowed = request.method in ('GET', 'HEAD') or viewer_route(request.scope)
             if read_only and not allowed:
                 store.selected.reset(marker)
                 return JSONResponse(
@@ -302,6 +305,8 @@ def create_app(root=None, token=None, frontend=None):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers["Cache-Control"] = "no-store"
+        if not request.url.path.startswith("/api/"):
+            response.headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY
         return response
 
     @app.exception_handler(ValueError)
@@ -334,12 +339,10 @@ def create_app(root=None, token=None, frontend=None):
         result['deleted_measurement'] = [r for r in result['measurement'] if r.get('status') == 'deleted']
         for kind in ('membership', 'measurement'):
             result[kind] = [r for r in result[kind] if r.get('status') != 'deleted']
+        # Samples are dropped in SQL: the list never needs them (RT-01).
         result["test"] = [
-            {
-                **{k: v for k, v in t.items() if k != "samples"},
-                'has_trace': bool(t.get('samples') or t.get('trace_hash')),
-            }
-            for t in store.list("test")
+            {**t, 'has_trace': bool(present or t.get('trace_hash'))}
+            for t, present in store.list_without_samples("test")
         ]
         result['operator'] = (
             {k: store.identity['certificate'][k] for k in ('name', 'role', 'id')}
@@ -603,6 +606,7 @@ def create_app(root=None, token=None, frontend=None):
         return decode_fit(raw, overview=True)
 
     @app.post("/api/v1/tests/preview")
+    @viewer_allowed
     def preview(data: TestInput):
         athlete = require(data.athlete_id, "athlete")
         protocol = require(data.protocol_id, "protocol")
@@ -770,6 +774,7 @@ def create_app(root=None, token=None, frontend=None):
         password: str = Field(min_length=12, max_length=1000)
 
     @app.post('/api/v1/backup/scalable/encrypted')
+    @viewer_allowed
     def encrypted_scalable_backup(data: EncryptedBackup):
         from .backup_stream import write_backup
         from .backup_crypto import encrypt_file
@@ -798,6 +803,7 @@ def create_app(root=None, token=None, frontend=None):
         return download(backup_bytes(store), 'application/zip', 'fuorigiri-backup-dati.zip')
 
     @app.post("/api/v1/sync")
+    @viewer_allowed
     def sync(data: SyncInput):
         from .sync import exchange
 

@@ -201,3 +201,43 @@ def test_concurrent_write_with_same_base_is_a_conflict(tmp_path):
     worker.join(10)
     assert isinstance(outcome[0], ConflictError)
     assert store.get(record['id'])['revision'] == 'remote'
+
+
+def test_history_reads_one_record_through_the_index(tmp_path):
+    import sqlite3
+
+    store = Store(tmp_path)
+    first = store.save('athlete', {'name': 'Ada'})
+    other = store.save('athlete', {'name': 'Bea'})
+    second = store.save('athlete', {'name': 'Ada B.'}, first['id'], first['revision'])
+    assert [r['revision'] for r in store.history(first['id'])] == [first['revision'], second['revision']]
+    assert [r['revision'] for r in store.history(other['id'])] == [other['revision']]
+    assert store.history('missing') == []
+    with sqlite3.connect(tmp_path / 'archive.sqlite') as db:
+        plan = ' '.join(
+            str(r[-1])
+            for r in db.execute(
+                "EXPLAIN QUERY PLAN SELECT body FROM changes WHERE json_extract(body, '$.record.id')=?", ('x',)
+            )
+        )
+    assert 'changes_record' in plan
+
+
+def test_state_tests_are_projected_without_samples(tmp_path):
+    store = Store(tmp_path)
+    cases = [
+        {'note': 'Città 1,25', 'samples': [{'t': 0, 'power': 101.5}]},
+        {'note': 'vuoto', 'samples': []},
+        {'note': 'nullo', 'samples': None},
+        {'note': 'assente'},
+        {'note': 'traccia esterna', 'trace_hash': 'a' * 64},
+    ]
+    for case in cases:
+        store.save('test', case)
+    projected = store.list_without_samples('test')
+    assert [r for r, _ in projected] == [{k: v for k, v in r.items() if k != 'samples'} for r in store.list('test')]
+    assert [present for _, present in projected] == [False, False, False, False, True]
+    client = TestClient(create_app(tmp_path, token='t'))
+    tests = client.get('/api/v1/state', headers={'X-Fuorigiri-Token': 't'}).json()['test']
+    assert [t['has_trace'] for t in tests] == [True, False, False, False, True]
+    assert all('samples' not in t for t in tests)

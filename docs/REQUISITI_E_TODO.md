@@ -29,7 +29,20 @@ Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVIS
 - RT-11: opzione «Proteggi con password» per il backup v3 (download e salvataggio su disco) e ripristino dei file `.fgbak` con richiesta della password. Formato approvato dall'utente: involucro AES-256-GCM a blocchi da 1 MiB, chiave scrypt (n = 2^17) con parametri nell'intestazione, contenuto v3 invariato. Specifica in [BACKUP_CIFRATO.md](BACKUP_CIFRATO.md).
 - Criteri: ripristino reale di un backup cifrato (API e GUI web), backup v3 in chiaro ancora producibili e leggibili, nessuna dipendenza nuova. Non provati l'emulatore o il telefono Android e l'EXE.
 
-Resta il blocco 5 del piano.
+**Blocco 5, voce 11 — implementata nei sorgenti, 15 novembre 2026:**
+
+- RT-01: `/state` usa `Store.list_without_samples`, che rimuove `samples` con `json_remove` in SQL; `has_trace` invariato. Misura preliminare richiesta dal piano: 513 ms su 300 test sintetici da 1.800 campioni, 93 ms dopo, risposta identica byte per byte; proiezione identica anche sui 7 archivi del corpus dimostrativo ridotto.
+- RT-09: `ArchiveStore.verifier()` legge identità e revoche una volta e verifica ogni certificato una volta; usato da sync v1, sync v2 e controllo del recupero. Prima dell'invio si verificano solo gli eventi non ancora presenti nella cartella.
+- RT-10: `Workspaces.get` riusa lo store finché lo stesso file `archive.sqlite` (dispositivo e inode) è presente; un file sostituito o assente viene riaperto con i controlli e le migrazioni consueti.
+- RT-02: `Store.history` filtra con `json_extract` e l'indice `changes_record`, aggiunto senza cambiare `user_version`.
+
+**Blocco 5, voce 12 — implementata nei sorgenti, 15 novembre 2026:**
+
+- RT-12: `seal` scrive `kdf` (scrypt n = 2^17, r = 8, p = 1) nell'involucro di inviti e recupero; `unseal` legge gli involucri senza `kdf` con n = 2^14 e accetta solo n potenza di due tra 2^14 e 2^20 con r = 8 e p = 1. Le versioni precedenti dell'app non aprono i nuovi file.
+- RT-18: intestazione `Content-Security-Policy` sulle risposte non `/api/` del backend (desktop e server di sviluppo). Android serve gli asset con il proprio loader e non riceve l'intestazione.
+- RT-20: decoratore `viewer_allowed` (`backend/cycling_test/access.py`) sulle 24 rotte già consentite e su scollegamento e ricollegamento; il middleware individua la rotta e legge il marcatore. Le nuove rotte di scrittura restano vietate ai visualizzatori se non marcate.
+- RT-19: azioni dei workflow fissate per SHA. Gli hash stanno in `requirements-lock-windows.hashes`, file distinto perché `sync-core.py` del common riscrive ogni `requirements*.txt` aggiungendo `requirements-common.txt` senza hash; nessuna modifica al common. La wheel comune si installa con `--no-deps --no-index` ed è verificata da `verify_core.py` sullo SHA-256 registrato. `verify.py` controlla offline che lock e hash coincidano. `scripts/lock_hashes.py` è consegnato dal common (fonte `cycling-suite-common/scripts/lock-hashes.py`), da non modificare qui.
+- RT-16: `scripts/test_android_versions.py` crea un ambiente separato con `android/requirements.txt`, gli strumenti di test del lock desktop e la wheel comune, poi esegue `pytest`; job manuale `android-versions` su Python 3.12. Copre le differenze di libreria, non l'interprete Chaquopy 3.13 (numpy 1.26.2 e matplotlib 3.8.4 non hanno wheel PyPI per 3.13). Eseguito il 15 novembre: 358 test superati e 1 saltato (finestra Qt, PySide6 assente nel set Android).
 
 ## PUB-ALPHA-01 — prima distribuzione pubblica
 

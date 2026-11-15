@@ -296,8 +296,9 @@ def _restore_data(manager, data, mode, path='', operator='', recovery_raw=None, 
                 write_json(check.root / 'identity.json', identity)
                 if 'revocations.json' in extra:
                     write_json(check.root / 'revocations.json', extra['revocations.json'])
+                verify_event = check.verifier()
                 for event in data['changes'].values():
-                    check.verify_change(event)
+                    verify_event(event)
             if 'access.json' in extra:
                 extra['members.json'] = [
                     m for m in extra['access.json']['members'] if m['id'] != identity['certificate']['id']

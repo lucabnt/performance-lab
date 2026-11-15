@@ -1,5 +1,6 @@
 """Methods, gas imports and explicitly paired repeatability, shared by all UIs."""
 
+from .access import viewer_allowed
 import json
 from collections import defaultdict
 from fastapi import UploadFile
@@ -55,6 +56,7 @@ def install_analysis(app, store, require, download):
         reason: str = Field(min_length=1, max_length=1000)
 
     @app.post('/api/v1/repeatability')
+    @viewer_allowed
     def repeat(data: Repeatability):
         from .specialist import repeatability
         from .history import METRICS
@@ -106,6 +108,7 @@ def install_analysis(app, store, require, download):
         }
 
     @app.post('/api/v1/repeatability/report/{format}')
+    @viewer_allowed
     def repeat_report(format: str, data: Repeatability):
         import io, zipfile
         from xml.sax.saxutils import escape

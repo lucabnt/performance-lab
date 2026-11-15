@@ -22,6 +22,7 @@ Il programma seleziona automaticamente la società appena aggiunta. La cartella 
 2. Indicare nome operatore/dispositivo, ruolo e password dell'invito (almeno 12 caratteri), quindi **Scarica invito cifrato**. Usare un invito distinto per ogni dispositivo.
 3. Comunicare file e password separatamente. Configurare sul PC fondatore una cartella condivisa disponibile offline, quindi premere **Scambia modifiche** per pubblicare i dati.
 4. Sul secondo PC usare **Gestisci società → Collega tramite invito**, caricare il JSON e inserire la password. Il backup ZIP non sostituisce l'invito.
+5. Dal 15 novembre 2026 inviti e file di recupero usano una protezione della password più costosa da forzare (scrypt n = 2^17, parametri scritti nel file). Si aprono solo con una versione di Fuorigiri da quella data in poi: aggiornare l'app sul dispositivo destinatario prima di collegarlo. Gli inviti e i recuperi creati prima restano leggibili.
 5. La società inizialmente vuota mostra **Prima sincronizzazione — acquisisci i dati**. Indicare il percorso locale della stessa cartella condivisa e premere **Acquisisci dati / Prima sincronizzazione**.
 6. Dopo l'arrivo dei dati sono disponibili le pagine ordinarie. Il ruolo corrente è visibile; gli ultimi scambi sono consultabili in Condivisione e collaboratori.
 

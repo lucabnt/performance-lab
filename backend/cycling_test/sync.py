@@ -119,22 +119,24 @@ def exchange(store, folder, key, transport=None, verify_existing=True, protocol=
                 transport.put(name, raw)
                 names.add(name)
     sent = received = pending = 0
+    # Controls are final from here on: identity and revocations are read once per exchange (RT-09).
+    check = store.verifier() if managed else None
+    # Viewers relay no writes; admins only relay already authenticated events.
+    relay = not managed or (
+        store.identity['certificate']['role'] == 'admin'
+        and store.identity['certificate']['id'] not in store.revocations()
+    )
     for change in changes:
-        if protocol == 0:
+        if protocol == 0 or not relay:
             break
-        if managed:
-            # Viewers relay no writes; admins only relay already authenticated events.
-            if (
-                store.identity['certificate']['role'] != 'admin'
-                or store.identity['certificate']['id'] in store.revocations()
-            ):
-                continue
-            try:
-                store.verify_change(change)
-            except (ValueError, KeyError, InvalidSignature):
-                continue
         name = change['id'] + '.ctsync'
         if name not in names:
+            # Only events still to publish need verifying; packets already present are not rewritten.
+            if managed:
+                try:
+                    check(change)
+                except (ValueError, KeyError, InvalidSignature):
+                    continue
             # Self-contained packets: attachments travel with the change.
             import base64
 
@@ -162,7 +164,7 @@ def exchange(store, folder, key, transport=None, verify_existing=True, protocol=
                 raise ValueError('Struttura del pacchetto non valida.')
             change = payload["change"]
             if managed:
-                store.verify_change(change)
+                check(change)
             r = change["record"]
             if (
                 change["schema"] != 1

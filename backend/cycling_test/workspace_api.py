@@ -1,3 +1,4 @@
+from .access import viewer_allowed
 import json
 from typing import Literal
 from fastapi import UploadFile, Form, File
@@ -71,6 +72,7 @@ def install_workspaces(app, manager, store, download):
         return preferences()
 
     @app.put('/api/v1/device/preferences')
+    @viewer_allowed
     def save_device_preferences(data: DevicePreferences):
         from .workspaces import write_json
 
@@ -84,10 +86,12 @@ def install_workspaces(app, manager, store, download):
         return [e for e in manager.entries(include_detached=True) if e.get('detached')]
 
     @app.post('/api/v1/workspaces/{id}/detach')
+    @viewer_allowed
     def detach_workspace(id: str):
         return manager.set_detached(id, True)
 
     @app.post('/api/v1/workspaces/{id}/reattach')
+    @viewer_allowed
     def reattach_workspace(id: str):
         return manager.set_detached(id, False)
 
@@ -105,6 +109,7 @@ def install_workspaces(app, manager, store, download):
             return {'workspace': '', 'organization': ''}
 
     @app.put('/api/v1/workspaces/last-selection')
+    @viewer_allowed
     def remember_selection(data: LastSelection):
         from .workspaces import write_json
 
@@ -116,6 +121,7 @@ def install_workspaces(app, manager, store, download):
         return data.model_dump()
 
     @app.post('/api/v1/workspaces/restore/preview')
+    @viewer_allowed
     def restore_preview(file: UploadFile, backup_password: str = Form('', max_length=1000)):
         from .recovery import summary
         from .backup_stream import inspect_file, digest_file, MAX_COMPRESSED, CHUNK
@@ -159,6 +165,7 @@ def install_workspaces(app, manager, store, download):
             temp.unlink(missing_ok=True)
 
     @app.post('/api/v1/workspaces/restore')
+    @viewer_allowed
     def restore_archive(
         backup_hash: str = Form(),
         mode: Literal['snapshot', 'independent', 'recover'] = Form(),
@@ -202,6 +209,7 @@ def install_workspaces(app, manager, store, download):
         password: str = Field('', max_length=1000)
 
     @app.post('/api/v1/backup/scalable/save')
+    @viewer_allowed
     def save_scalable_backup(data: SaveBackup):
         from pathlib import Path
         from .backup_stream import write_backup
@@ -231,6 +239,7 @@ def install_workspaces(app, manager, store, download):
         }
 
     @app.post('/api/v1/workspaces/split/preview')
+    @viewer_allowed
     def split_preview():
         from .society_migration import preview
 
@@ -243,6 +252,7 @@ def install_workspaces(app, manager, store, download):
         path: str = ''
 
     @app.post('/api/v1/workspaces/split')
+    @viewer_allowed
     def split_society(data: SplitSociety):
         from .society_migration import extract
         from .sync_service import lock
@@ -251,6 +261,7 @@ def install_workspaces(app, manager, store, download):
             return extract(manager, store, data.organization_id, data.source_hash, data.operator, data.path)
 
     @app.post('/api/v1/workspaces/access')
+    @viewer_allowed
     def replace_access(file: UploadFile, password: str = Form()):
         if not hasattr(store, 'identity'):
             raise ValueError('Selezionare la società prima di applicare il nuovo invito.')
@@ -276,6 +287,7 @@ def install_workspaces(app, manager, store, download):
         return download(export_recovery(store, data.password), 'application/json', 'fuorigiri-recupero-accessi.json')
 
     @app.post('/api/v1/workspaces')
+    @viewer_allowed
     def create(data: Create):
         try:
             return manager.create(data.name, data.operator, data.path)
@@ -283,6 +295,7 @@ def install_workspaces(app, manager, store, download):
             raise ValueError('Creazione non completata: verificare cartella e permessi di scrittura.') from exc
 
     @app.post('/api/v1/workspaces/join')
+    @viewer_allowed
     def join_workspace(file: UploadFile, password: str = Form(), path: str = Form('')):
         raw = file.file.read(1_000_001)
         if len(raw) > 1_000_000:

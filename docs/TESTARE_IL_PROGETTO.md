@@ -342,6 +342,8 @@ La prova Fedora deve verificare anche librerie grafiche richieste dalla versione
 
 Il lockfile npm viene usato da `npm ci`. `requirements-lock-windows.txt` descrive l'ambiente Windows iniziale e non è un lock portabile per Fedora; per una verifica riproducibile annotare le versioni effettive con `python -m pip freeze` e la versione Node.
 
+`requirements-lock-windows.hashes` contiene gli stessi pacchetti PyPI con gli SHA-256 di ogni file pubblicato, per `pip install --require-hashes`; la wheel comune si installa a parte con `pip install --no-deps --no-index -r requirements-common.txt` e la verifica `verify_core.py`. Dopo ogni modifica del lockfile rigenerarlo con `python scripts/lock_hashes.py --write` (serve la rete); il passo `lock-hashes` di `verify.py` controlla offline che i due file coincidano.
+
 ## 2. Test automatici e compilazione della GUI
 
 Windows:

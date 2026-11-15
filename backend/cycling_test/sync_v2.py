@@ -245,6 +245,8 @@ def exchange_v2(store, folder, key, transport, verify_all, result):
     )
     pages = []
     published = 0
+    # Controls were settled by the v1 step: read identity and revocations once (RT-09).
+    check = store.verifier() if managed else None
     if can_write:
         # Stable rowid pages include complete signed history, not just live heads.
         with store.connect() as db:
@@ -255,7 +257,7 @@ def exchange_v2(store, folder, key, transport, verify_all, result):
                     change = json.loads(row[0])
                     if managed:
                         try:
-                            store.verify_change(change)
+                            check(change)
                         except (ValueError, KeyError, InvalidSignature):
                             continue
                     events.append(change)
@@ -377,7 +379,7 @@ def exchange_v2(store, folder, key, transport, verify_all, result):
                     page_ids.add(event['id'])
                     check_record(r, org)
                     if managed:
-                        store.verify_change(event)
+                        check(event)
                     fetch_attachments(item, event, objects)
                     with store.connect() as db:
                         old = db.execute('SELECT body FROM changes WHERE id=?', (event['id'],)).fetchone()

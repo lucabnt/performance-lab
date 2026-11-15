@@ -1,5 +1,28 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 15 novembre 2026 — revisione tecnica, blocco 5 voce 12
+
+- RT-12: nuovo involucro con `kdf` n = 2^17 aperto; password errata rifiutata; n = 2^21, n non potenza di due e r diverso rifiutati con invito ad aggiornare; involucro costruito come prima di RT-12 (n = 2^14, senza parametri) ancora aperto. Test esistenti di invito, rinnovo e recupero riusciti. La suite `pytest` passa da circa 95 a 120 s per il costo maggiore di scrypt negli inviti dei test.
+- RT-18: intestazione presente sulle pagine e assente sulle risposte `/api/` (test). Pagina di prova servita dal backend con la stessa policy (`.local/qa-rt18-probe-20261115`) in Chrome headless: grafico Plotly del bundle con linee su due assi, barre su un terzo asse, rettangolo, zoom e `toImage` PNG, nessuna violazione. App completa sul corpus `.local/qa-rt01-demo-20261115` caricata in Chrome headless senza messaggi CSP nel log. La shell Qt non inietta script.
+- La prova nel pannello browser dell'app non è conclusiva: con il pannello nascosto la pagina non disegna, né con la policy né senza (server di confronto su una copia del corpus).
+- RT-20: confronto su tutte le rotte di scrittura tra vecchio elenco e marcatori, con differenze solo su scollegamento e ricollegamento; test con un visualizzatore reale: atleta 403, preferenza sync consentita, scollegamento 200.
+- RT-19: SHA delle azioni letti con `git ls-remote` dai tag correnti (checkout v4.4.0, setup-python v5.6.0, setup-node v4.4.0, setup-java v4.9.1, setup-android v3.2.2, gradle v4.4.3, download-artifact v4.3.0, upload-artifact v4.6.2). Workflow non eseguiti su GitHub.
+- RT-19, hash: `lock_hashes.py --write` ha scritto gli SHA-256 di 59 pacchetti da PyPI. `pip install --dry-run --ignore-installed --require-hashes -r requirements-lock-windows.hashes` risolve tutti i pacchetti senza dipendenze mancanti; `--no-deps --no-index -r requirements-common.txt` installa la wheel comune. Test del controllo offline: versione diversa e pacchetto in più segnalati. Lo script è poi stato sostituito dalla versione generale del common (consegna `sync-core.py --app ../performance-lab --install`, `--check` riuscito) e gli hash rigenerati con lo stesso esito.
+- RT-16: `py -3.12 scripts/test_android_versions.py --venv .local/android-versions-312` con Python 3.12.10 e numpy 1.26.2, matplotlib 3.8.4, pydantic 2.12.3, pydantic-core 2.41.4, reportlab 4.4.4, cffi 2.0.0, fastapi 0.143.3 (starlette 1.10.0 risolta da pip): 358 superati e 1 saltato (finestra Qt, PySide6 non installato). 13 avvisi in più rispetto al desktop: deprecazioni interne di matplotlib 3.8.4 con il pyparsing più recente, senza effetti sui risultati. Le dipendenze transitive non fissate in `android/requirements.txt` possono differire dall'APK; l'interprete Chaquopy 3.13 resta non coperto. Job su GitHub non eseguito.
+- Non provati: Android (la CSP non vi si applica), EXE ricompilato, apertura di un nuovo invito con un'app precedente (atteso il rifiuto).
+
+## 15 novembre 2026 — revisione tecnica, blocco 5 voce 11 (prestazioni)
+
+- Misure sul PC di sviluppo, archivi sintetici in cartelle nuove (`.local/qa-rt01-20261115`, `.local/qa-rt01-demo-20261115`):
+  - `/state` con 60 atleti e 300 test da 30 minuti a 1 Hz (database di 49 MB): mediana di 5 richieste da 513 ms a 93 ms; risposta da 101 KB identica byte per byte prima e dopo;
+  - proiezione senza campioni identica alla precedente sui 7 archivi e 82 test del corpus dimostrativo ridotto;
+  - seconda sync con 1.500 record: v1 da 2,15 a 0,19 s, v2 da 2,23 a 0,91 s. La v2 verifica ancora tutto lo storico per comporre le pagine;
+  - apertura dello store di una società: da 5,2 a 0,42 ms;
+  - `Store.history` su 1.500 record: da 17,3 a 6,0 ms, piano di esecuzione sull'indice `changes_record`.
+- Nuovi test: storico per record con piano sull'indice; store riusato e riaperto dopo la sostituzione del file, rifiutato dopo lo scollegamento; verificatore che rifiuta evento alterato, certificato falsificato e workspace diverso; proiezione con campioni assenti, vuoti, nulli e traccia esterna.
+- `scripts/verify.py` completo dopo voci 11 e 12: tutti i passi riusciti (formato ripetuto dopo l'uniformazione delle fini riga e una riga di test riformattata) e di nuovo dopo RT-19 e RT-16 con il passo `lock-hashes`: `pytest` 358 superati e 1 saltato.
+- Non provati: Android ed EXE ricompilato; archivi reali di grandi dimensioni.
+
 ## 15 novembre 2026 — revisione tecnica, blocco 4 (backup protetto da password)
 
 - `tests/test_backup_crypto.py`, 16 test:

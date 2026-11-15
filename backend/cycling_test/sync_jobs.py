@@ -1,5 +1,6 @@
 """Device-local sync jobs: networking never occupies the UI request/Runtime lock."""
 
+from .access import viewer_allowed
 import json
 import threading
 import time
@@ -163,6 +164,7 @@ def install(app, store):
         return {'enabled': enabled, 'configured': ready}
 
     @app.put('/api/v1/sync/automatic')
+    @viewer_allowed
     def set_automatic(data: Automatic):
         selected = store.selected.get()
         require_managed(selected)
@@ -176,5 +178,6 @@ def install(app, store):
         return status(selected)
 
     @app.post('/api/v1/sync/start')
+    @viewer_allowed
     def begin(data: Start):
         return start(store.selected.get(), data.verify_all)

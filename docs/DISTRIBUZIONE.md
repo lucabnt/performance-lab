@@ -90,7 +90,8 @@ Target iniziale Windows 10 22H2 x64 / Windows 11 x64 su sistema aggiornato. “N
 Build dal sorgente (solo sviluppatore):
 
 ```powershell
-.venv/Scripts/python.exe -m pip install -r requirements-lock-windows.txt
+.venv/Scripts/python.exe -m pip install --require-hashes -r requirements-lock-windows.hashes
+.venv/Scripts/python.exe -m pip install --no-deps --no-index -r requirements-common.txt
 # nella cartella frontend: npm ci; npm run build
 .venv/Scripts/python.exe scripts/build.py
 & 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe' packaging/windows/Fuorigiri.iss

@@ -7,6 +7,7 @@ from datetime import date
 from uuid import uuid5, NAMESPACE_URL
 from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 from typing import Literal
+from .access import viewer_allowed
 from .store import encoded
 from .custom_fields import FieldDefinition, protocol_metadata, attach
 
@@ -550,6 +551,7 @@ def install_api(app, store):
         }
 
     @app.post('/api/v1/anaerobic/preview')
+    @viewer_allowed
     def preview(data: TestInput):
         return prepare(data, editing=bool(data.revision))['analysis']
 

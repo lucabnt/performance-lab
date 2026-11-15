@@ -1,5 +1,6 @@
 """Per-archive connection state and sanitized, hash-linked local sync audit."""
 
+from .access import viewer_allowed
 import hashlib
 import json
 import threading
@@ -304,6 +305,7 @@ def install_sync_api(app, store):
         }
 
     @app.post('/api/v1/sync/connection')
+    @viewer_allowed
     def save_connection(data: Connection):
         return configure(store, data.model_dump())
 
@@ -311,6 +313,7 @@ def install_sync_api(app, store):
         mobile: bool = False
 
     @app.post('/api/v1/sync/oauth/start')
+    @viewer_allowed
     def oauth_start(data: OAuthRequest):
         require_managed(store)
         from .cloud import begin_oauth
@@ -327,6 +330,7 @@ def install_sync_api(app, store):
         url: str = Field(max_length=8000)
 
     @app.post('/api/v1/sync/oauth/callback')
+    @viewer_allowed
     def oauth_callback(data: OAuthCallback):
         from .cloud import oauth_status, finish_oauth
         from urllib.parse import urlsplit, parse_qs
@@ -336,6 +340,7 @@ def install_sync_api(app, store):
         return finish_oauth(data.url)
 
     @app.post('/api/v1/sync/oauth/disconnect')
+    @viewer_allowed
     def oauth_disconnect():
         from .cloud import save_secret
 
@@ -359,6 +364,7 @@ def install_sync_api(app, store):
         verify_all: bool = False
 
     @app.post('/api/v1/sync/run')
+    @viewer_allowed
     def sync(data: SyncRun = SyncRun()):
         return run_sync(store, data.verify_all)
 

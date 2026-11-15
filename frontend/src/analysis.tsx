@@ -1,48 +1,809 @@
 import {VO2Input} from './VO2Input';
 import {LactateResults} from './LactateResults';
-import React,{useState,useEffect} from 'react';
-import {metricLabel,numberText} from './metrics';
-type Row=Record<string,any>;
-const reasons:Row={maximum_not_verified:'Massimo non verificato: disponibile solo VO₂peak',insufficient_window:'Copertura della finestra insufficiente',no_crossing:'Concentrazione non attraversata',ambiguous_crossing:'Curva o attraversamento ambiguo',at_least_five_distinct_loads_required:'Servono cinque carichi distinti e una curva non decrescente',no_interior_positive_maximum:'Nessun massimo interno valido',no_valid_0_4_rise_anchor:'Ancora Dmax modificato non disponibile',at_least_ten_valid_30s_bins_required:'Servono dieci intervalli validi da 30 s',no_positive_slope_change:'Nessun cambio di pendenza valido',confirm_with_equivalents_and_end_tidal:'Da confermare con equivalenti e gas end-tidal'};
-const methodNames:Row={dmax:'Dmax cubico',modified_dmax:'Dmax modificato cubico',fixed_2:'Potenza a 2 mmol/L',fixed_4:'Potenza a 4 mmol/L'};
-const value=(v:any)=>v==null?'n.d.':typeof v==='number'?numberText(v):String(v);
+import React, {useState, useEffect} from 'react';
+import {metricLabel, numberText} from './metrics';
+type Row = Record<string, any>;
+const reasons: Row = {
+  maximum_not_verified: 'Massimo non verificato: disponibile solo VO₂peak',
+  insufficient_window: 'Copertura della finestra insufficiente',
+  no_crossing: 'Concentrazione non attraversata',
+  ambiguous_crossing: 'Curva o attraversamento ambiguo',
+  at_least_five_distinct_loads_required: 'Servono cinque carichi distinti e una curva non decrescente',
+  no_interior_positive_maximum: 'Nessun massimo interno valido',
+  no_valid_0_4_rise_anchor: 'Ancora Dmax modificato non disponibile',
+  at_least_ten_valid_30s_bins_required: 'Servono dieci intervalli validi da 30 s',
+  no_positive_slope_change: 'Nessun cambio di pendenza valido',
+  confirm_with_equivalents_and_end_tidal: 'Da confermare con equivalenti e gas end-tidal'
+};
+const methodNames: Row = {
+  dmax: 'Dmax cubico',
+  modified_dmax: 'Dmax modificato cubico',
+  fixed_2: 'Potenza a 2 mmol/L',
+  fixed_4: 'Potenza a 4 mmol/L'
+};
+const value = (v: any) => (v == null ? 'n.d.' : typeof v === 'number' ? numberText(v) : String(v));
 
-export function TraceImporter({api,run,done,disabled}:{api:any,run:any,done:any,disabled:boolean}){
- const [file,setFile]=useState<File|null>(null),[sessions,setSessions]=useState<Row[]>([]),[session,setSession]=useState('0'),[policy,setPolicy]=useState('reject'),[reason,setReason]=useState('');
- return <section><label>Tracciato FIT / CSV<input disabled={disabled} type="file" accept=".fit,.csv" onChange={e=>{const f=e.target.files?.[0];if(!f)return;setFile(f);setSessions([]);setSession('0');if(f.name.toLowerCase().endsWith('.fit'))run(async()=>{const form=new FormData();form.append('file',f);setSessions((await api('traces/inspect',form)).sessions)})}}/></label>{file&&<><div className="form-grid">{!!sessions.length&&<label>Sessione FIT<select value={session} onChange={e=>setSession(e.target.value)}>{sessions.map(s=><option value={s.index} key={s.index}>{s.index+1} · {s.sport} · {s.start} / {s.end}</option>)}</select></label>}<label>Timestamp duplicati<select value={policy} onChange={e=>setPolicy(e.target.value)}><option value="reject">Rifiuta e segnala</option><option value="keep_last">Conserva l’ultimo record (correzione esplicita)</option></select></label>{policy==='keep_last'&&<label>Motivo della correzione<input value={reason} onChange={e=>setReason(e.target.value)}/></label>}</div><button type="button" disabled={disabled||policy==='keep_last'&&!reason.trim()} onClick={()=>run(async()=>{const form=new FormData();form.append('file',file);form.append('session_index',session);form.append('duplicate_policy',policy);form.append('correction_reason',reason);await done(await api('traces',form))})}>Importa sessione selezionata</button></>}</section>
+export function TraceImporter({api, run, done, disabled}: {api: any; run: any; done: any; disabled: boolean}) {
+  const [file, setFile] = useState<File | null>(null),
+    [sessions, setSessions] = useState<Row[]>([]),
+    [session, setSession] = useState('0'),
+    [policy, setPolicy] = useState('reject'),
+    [reason, setReason] = useState('');
+  return (
+    <section>
+      <label>
+        Tracciato FIT / CSV
+        <input
+          disabled={disabled}
+          type="file"
+          accept=".fit,.csv"
+          onChange={e => {
+            const f = e.target.files?.[0];
+            if (!f) return;
+            setFile(f);
+            setSessions([]);
+            setSession('0');
+            if (f.name.toLowerCase().endsWith('.fit'))
+              run(async () => {
+                const form = new FormData();
+                form.append('file', f);
+                setSessions((await api('traces/inspect', form)).sessions);
+              });
+          }}
+        />
+      </label>
+      {file && (
+        <>
+          <div className="form-grid">
+            {!!sessions.length && (
+              <label>
+                Sessione FIT
+                <select value={session} onChange={e => setSession(e.target.value)}>
+                  {sessions.map(s => (
+                    <option value={s.index} key={s.index}>
+                      {s.index + 1} · {s.sport} · {s.start} / {s.end}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label>
+              Timestamp duplicati
+              <select value={policy} onChange={e => setPolicy(e.target.value)}>
+                <option value="reject">Rifiuta e segnala</option>
+                <option value="keep_last">Conserva l’ultimo record (correzione esplicita)</option>
+              </select>
+            </label>
+            {policy === 'keep_last' && (
+              <label>
+                Motivo della correzione
+                <input value={reason} onChange={e => setReason(e.target.value)} />
+              </label>
+            )}
+          </div>
+          <button
+            type="button"
+            disabled={disabled || (policy === 'keep_last' && !reason.trim())}
+            onClick={() =>
+              run(async () => {
+                const form = new FormData();
+                form.append('file', file);
+                form.append('session_index', session);
+                form.append('duplicate_policy', policy);
+                form.append('correction_reason', reason);
+                await done(await api('traces', form));
+              })
+            }
+          >
+            Importa sessione selezionata
+          </button>
+        </>
+      )}
+    </section>
+  );
 }
 
-export function AnalysisInput({draft,change,api,run,protocol}:{draft:Row,change:any,api:any,run:any,protocol?:Row}){
- const [presets,setPresets]=useState<Row[]>([]),[editing,setEditing]=useState(false),[definition,setDefinition]=useState<Row|null>(null),[name,setName]=useState(''),[version,setVersion]=useState(''),[reason,setReason]=useState('');
- useEffect(()=>{api('analysis-presets').then(setPresets).catch(()=>{})},[]);
- const selected=presets.find(p=>p.id===(draft.preset_id||'incremental-constant-v1'));
- const params=definition?.parameters||{};
- const editParam=(k:string,v:any)=>setDefinition(d=>d?{...d,parameters:{...d.parameters,[k]:v}}:d);
- const conditions=draft.conditions||{};
- const conditionsFields:Row={device:'Rullo / ergometro',power_meter:'Misuratore di potenza',firmware:'Firmware',calibration:'Calibrazione e data',temperature_c:'Temperatura ambiente °C',cadence_instruction:'Cadenza prescritta',pre_test:'Condizioni pre-test',stop_reason:'Motivo di arresto',recovery_mode:'Recupero attivo/passivo',posture:'Postura recupero',repeatability_session:'Sessione di ripetibilità (se applicabile)'};
- return <section className="panel protocol"><h3>Metodo e qualità</h3><label>Preset di analisi<select value={draft.preset_id||'incremental-constant-v1'} onChange={e=>change('preset_id',e.target.value)}>{presets.map(p=><option key={p.id} value={p.id}>{p.name} · {p.version}</option>)}</select></label><p className="hint">Completezza e aderenza sono distinte. Il preset è salvato nel risultato; modificarlo crea una nuova versione, senza ricalcolare i test storici.</p><button onClick={()=>{setDefinition(structuredClone(selected||presets[0]));setName(selected?.name||'');setEditing(!editing)}}>Crea una versione del preset</button>{editing&&definition&&<><div className="form-grid"><label>Nome<input value={name} onChange={e=>setName(e.target.value)}/></label><label>Versione<input value={version} onChange={e=>setVersion(e.target.value)}/></label><label>Motivo<input value={reason} onChange={e=>setReason(e.target.value)}/></label>{Object.entries({max_gap_s:'Massimo intervallo fra campioni · s',power_coverage:'Copertura potenza minima (0–1)',hr_coverage:'Copertura FC minima (0–1)',hr_window_s:'Finestra FC fine step · s',recovery_reference_s:'Finestra FC riferimento recupero · s',recovery_before_s:'Recupero: secondi prima del marker',recovery_after_s:'Recupero: secondi dopo il marker',vo2_window_s:'Media VO₂peak · s',gas_coverage:'Copertura gas minima (0–1)',adherence_tolerance_w:'Banda aderenza ±W (facoltativa)'}).map(([k,label])=><label key={k}>{label}<input type="number" step="any" value={params[k]??''} onChange={e=>editParam(k,e.target.value===''?null:Number(e.target.value))}/></label>)}<label>Fase per medie / zone<select value={params.summary_phase} onChange={e=>editParam('summary_phase',e.target.value)}><option value="whole_effort">Intero sforzo, incluso riscaldamento</option><option value="incremental_only">Dall’inizio degli incrementi</option></select></label></div><button disabled={!name.trim()||!version.trim()||!reason.trim()} onClick={()=>run(async()=>{const p=await api('analysis-presets',{name,family:selected?.family||selected?.id||'custom',version,reason,method_id:definition.method_id,parameters:params});setPresets(await api('analysis-presets'));change('preset_id',p.id);setEditing(false)})}>Pubblica preset immutabile</button></>}
- <details><summary>Allineamento per fase ed esclusioni con motivo</summary><p>Un marker sposta lo step indicato e i successivi fino al marker seguente. Le esclusioni riducono la copertura, senza comprimere il tempo.</p>{(draft.alignment_markers||[]).map((m:Row,i:number)=><div className="form-grid" key={i}><label>Step<select value={m.number} onChange={e=>change('alignment_markers',draft.alignment_markers.map((r:Row,j:number)=>j===i?{...r,number:Number(e.target.value)}:r))}>{protocol?.definition.segments.map((s:Row,j:number)=><option value={j+1} key={j}>{j+1} · {metricLabel(s.phase)} · {s.start_w} W</option>)}</select></label><label>Inizio effettivo nel file · s<input type="number" value={m.at_s} onChange={e=>change('alignment_markers',draft.alignment_markers.map((r:Row,j:number)=>j===i?{...r,at_s:Number(e.target.value)}:r))}/></label><button onClick={()=>change('alignment_markers',draft.alignment_markers.filter((_:Row,j:number)=>j!==i))}>Rimuovi marker</button></div>)}<button onClick={()=>change('alignment_markers',[...(draft.alignment_markers||[]),{number:1,at_s:Number(draft.offset_s)||0}])}>Aggiungi marker di fase</button>{(draft.excluded_intervals||[]).map((m:Row,i:number)=><div className="form-grid" key={i}>{[['start_s','Da s'],['end_s','A s'],['reason','Motivo']].map(([k,label])=><label key={k}>{label}<input type={k==='reason'?'text':'number'} value={m[k]} onChange={e=>change('excluded_intervals',draft.excluded_intervals.map((r:Row,j:number)=>j===i?{...r,[k]:k==='reason'?e.target.value:Number(e.target.value)}:r))}/></label>)}<button onClick={()=>change('excluded_intervals',draft.excluded_intervals.filter((_:Row,j:number)=>j!==i))}>Rimuovi esclusione</button></div>)}<button onClick={()=>change('excluded_intervals',[...(draft.excluded_intervals||[]),{start_s:0,end_s:1,reason:''}])}>Escludi intervallo</button></details>
- <details><summary>Dispositivi, condizioni e provenienza</summary><div className="form-grid">{Object.entries(conditionsFields).map(([k,label])=><label key={k}>{String(label)}<input value={conditions[k]||''} onChange={e=>change('conditions',{...conditions,[k]:e.target.value})}/></label>)}<label>Scala RPE<select value={draft.rpe_scale||'CR10 dichiarata'} onChange={e=>change('rpe_scale',e.target.value)}><option>CR10 dichiarata</option><option>Borg 6-20</option></select></label></div><label>Origine calibrazione del coefficiente soglia<input value={draft.threshold_calibration?.evidence||''} onChange={e=>change('threshold_calibration',{...draft.threshold_calibration,evidence:e.target.value})}/></label></details>
- <fieldset><legend>Livelli di lattato da stimare · mmol/L</legend><p>Interpolazione tra prelievi: W, W/kg e FC. La finestra FC di fine step è definita nel preset (default 30 s). Le nuove impostazioni richiedono una nuova analisi/revisione.</p><div className="form-grid">{(draft.lactate_levels||[2,3,4]).map((level:number,i:number)=><label key={i}>Livello {i+1}<input type="number" aria-label={`Livello lattato ${i+1} · mmol/L`} min="0.001" max="40" step="0.001" value={level} onChange={e=>change('lactate_levels',(draft.lactate_levels||[2,3,4]).map((v:number,j:number)=>i===j?Number(e.target.value):v))}/><button type="button" disabled={(draft.lactate_levels||[2,3,4]).length<=1} onClick={()=>change('lactate_levels',(draft.lactate_levels||[2,3,4]).filter((_:number,j:number)=>i!==j))}>Rimuovi livello</button></label>)}</div><button type="button" disabled={(draft.lactate_levels||[2,3,4]).length>=20} onClick={()=>{const current=draft.lactate_levels||[2,3,4];let next=1;while(current.includes(next)&&next<40)next++;change('lactate_levels',[...current,next])}}>Aggiungi livello</button></fieldset>
- <details><summary>Lattato: associazione dei prelievi e carico esplicito</summary><p>Il prelievo può essere associato allo step o a un carico dichiarato. Il ritardo viene sottratto all’istante del prelievo. Senza associazione certa il risultato resta indisponibile.</p>{(draft.lactate||[]).map((r:Row,i:number)=><div className="form-grid" key={i}><strong>Prelievo {i+1}</strong>{[['step_number','Step (facoltativo)'],['power_w','Carico esplicito W (facoltativo)'],['delay_s','Ritardo di prelievo s']].map(([k,label])=><label key={k}>{label}<input type="number" value={r[k]??''} onChange={e=>change('lactate',draft.lactate.map((x:Row,j:number)=>i===j?{...x,[k]:e.target.value===''?(k==='delay_s'?0:null):Number(e.target.value)}:x))}/></label>)}</div>)}</details>
- <VO2Input draft={draft} change={change}/>
- <details><summary>VO₂: importazione gas e valutazione ventilatoria</summary><p>CSV: t, vo2_l_min; opzionali vco2_l_min, ve_l_min, peto2_mmhg, petco2_mmhg. Nessuna stima di VO₂ dai soli watt/FC.</p><label>Importa gas CSV<input type="file" accept=".csv" onChange={e=>{const f=e.target.files?.[0];if(f)run(async()=>{const form=new FormData();form.append('file',f);const r=await api('gas-traces',form);change('gas_hash',r.hash)})}}/></label>{draft.gas_hash&&<p>Gas archiviati · {draft.gas_hash.slice(0,12)} <button onClick={()=>change('gas_hash',null)}>Rimuovi associazione</button></p>}<label>Offset gas rispetto al file FIT · s<input type="number" step="any" value={draft.gas_offset_s||0} onChange={e=>change('gas_offset_s',Number(e.target.value))}/></label><div className="form-grid">{['vt1','vt2'].map(k=><section key={k}><strong>{k.toUpperCase()} confermata dal valutatore</strong><label>Istante nel FIT · s<input type="number" value={draft.ventilatory_markers?.[k]?.at_s??''} onChange={e=>{const markers={...draft.ventilatory_markers};if(e.target.value==='')delete markers[k];else markers[k]={...markers[k],at_s:Number(e.target.value),evidence:markers[k]?.evidence||''};change('ventilatory_markers',markers)}}/></label>{draft.ventilatory_markers?.[k]&&<label>Evidenze / criterio<input value={draft.ventilatory_markers[k].evidence} onChange={e=>change('ventilatory_markers',{...draft.ventilatory_markers,[k]:{...draft.ventilatory_markers[k],evidence:e.target.value}})}/></label>}</section>)}</div><label><input type="checkbox" checked={!!draft.vo2max_verification?.confirmed} onChange={e=>change('vo2max_verification',{...draft.vo2max_verification,confirmed:e.target.checked,evidence:draft.vo2max_verification?.evidence||''})}/>VO₂max verificato dal laboratorio</label>{draft.vo2max_verification?.confirmed&&<label>Evidenze della verifica del massimo<textarea value={draft.vo2max_verification.evidence||''} onChange={e=>change('vo2max_verification',{...draft.vo2max_verification,evidence:e.target.value})}/></label>}</details>
- </section>
+export function AnalysisInput({
+  draft,
+  change,
+  api,
+  run,
+  protocol
+}: {
+  draft: Row;
+  change: any;
+  api: any;
+  run: any;
+  protocol?: Row;
+}) {
+  const [presets, setPresets] = useState<Row[]>([]),
+    [editing, setEditing] = useState(false),
+    [definition, setDefinition] = useState<Row | null>(null),
+    [name, setName] = useState(''),
+    [version, setVersion] = useState(''),
+    [reason, setReason] = useState('');
+  useEffect(() => {
+    api('analysis-presets')
+      .then(setPresets)
+      .catch(() => {});
+  }, []);
+  const selected = presets.find(p => p.id === (draft.preset_id || 'incremental-constant-v1'));
+  const params = definition?.parameters || {};
+  const editParam = (k: string, v: any) => setDefinition(d => (d ? {...d, parameters: {...d.parameters, [k]: v}} : d));
+  const conditions = draft.conditions || {};
+  const conditionsFields: Row = {
+    device: 'Rullo / ergometro',
+    power_meter: 'Misuratore di potenza',
+    firmware: 'Firmware',
+    calibration: 'Calibrazione e data',
+    temperature_c: 'Temperatura ambiente °C',
+    cadence_instruction: 'Cadenza prescritta',
+    pre_test: 'Condizioni pre-test',
+    stop_reason: 'Motivo di arresto',
+    recovery_mode: 'Recupero attivo/passivo',
+    posture: 'Postura recupero',
+    repeatability_session: 'Sessione di ripetibilità (se applicabile)'
+  };
+  return (
+    <section className="panel protocol">
+      <h3>Metodo e qualità</h3>
+      <label>
+        Preset di analisi
+        <select
+          value={draft.preset_id || 'incremental-constant-v1'}
+          onChange={e => change('preset_id', e.target.value)}
+        >
+          {presets.map(p => (
+            <option key={p.id} value={p.id}>
+              {p.name} · {p.version}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p className="hint">
+        Completezza e aderenza sono distinte. Il preset è salvato nel risultato; modificarlo crea una nuova versione,
+        senza ricalcolare i test storici.
+      </p>
+      <button
+        onClick={() => {
+          setDefinition(structuredClone(selected || presets[0]));
+          setName(selected?.name || '');
+          setEditing(!editing);
+        }}
+      >
+        Crea una versione del preset
+      </button>
+      {editing && definition && (
+        <>
+          <div className="form-grid">
+            <label>
+              Nome
+              <input value={name} onChange={e => setName(e.target.value)} />
+            </label>
+            <label>
+              Versione
+              <input value={version} onChange={e => setVersion(e.target.value)} />
+            </label>
+            <label>
+              Motivo
+              <input value={reason} onChange={e => setReason(e.target.value)} />
+            </label>
+            {Object.entries({
+              max_gap_s: 'Massimo intervallo fra campioni · s',
+              power_coverage: 'Copertura potenza minima (0–1)',
+              hr_coverage: 'Copertura FC minima (0–1)',
+              hr_window_s: 'Finestra FC fine step · s',
+              recovery_reference_s: 'Finestra FC riferimento recupero · s',
+              recovery_before_s: 'Recupero: secondi prima del marker',
+              recovery_after_s: 'Recupero: secondi dopo il marker',
+              vo2_window_s: 'Media VO₂peak · s',
+              gas_coverage: 'Copertura gas minima (0–1)',
+              adherence_tolerance_w: 'Banda aderenza ±W (facoltativa)'
+            }).map(([k, label]) => (
+              <label key={k}>
+                {label}
+                <input
+                  type="number"
+                  step="any"
+                  value={params[k] ?? ''}
+                  onChange={e => editParam(k, e.target.value === '' ? null : Number(e.target.value))}
+                />
+              </label>
+            ))}
+            <label>
+              Fase per medie / zone
+              <select value={params.summary_phase} onChange={e => editParam('summary_phase', e.target.value)}>
+                <option value="whole_effort">Intero sforzo, incluso riscaldamento</option>
+                <option value="incremental_only">Dall’inizio degli incrementi</option>
+              </select>
+            </label>
+          </div>
+          <button
+            disabled={!name.trim() || !version.trim() || !reason.trim()}
+            onClick={() =>
+              run(async () => {
+                const p = await api('analysis-presets', {
+                  name,
+                  family: selected?.family || selected?.id || 'custom',
+                  version,
+                  reason,
+                  method_id: definition.method_id,
+                  parameters: params
+                });
+                setPresets(await api('analysis-presets'));
+                change('preset_id', p.id);
+                setEditing(false);
+              })
+            }
+          >
+            Pubblica preset immutabile
+          </button>
+        </>
+      )}
+      <details>
+        <summary>Allineamento per fase ed esclusioni con motivo</summary>
+        <p>
+          Un marker sposta lo step indicato e i successivi fino al marker seguente. Le esclusioni riducono la copertura,
+          senza comprimere il tempo.
+        </p>
+        {(draft.alignment_markers || []).map((m: Row, i: number) => (
+          <div className="form-grid" key={i}>
+            <label>
+              Step
+              <select
+                value={m.number}
+                onChange={e =>
+                  change(
+                    'alignment_markers',
+                    draft.alignment_markers.map((r: Row, j: number) =>
+                      j === i ? {...r, number: Number(e.target.value)} : r
+                    )
+                  )
+                }
+              >
+                {protocol?.definition.segments.map((s: Row, j: number) => (
+                  <option value={j + 1} key={j}>
+                    {j + 1} · {metricLabel(s.phase)} · {s.start_w} W
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Inizio effettivo nel file · s
+              <input
+                type="number"
+                value={m.at_s}
+                onChange={e =>
+                  change(
+                    'alignment_markers',
+                    draft.alignment_markers.map((r: Row, j: number) =>
+                      j === i ? {...r, at_s: Number(e.target.value)} : r
+                    )
+                  )
+                }
+              />
+            </label>
+            <button
+              onClick={() =>
+                change(
+                  'alignment_markers',
+                  draft.alignment_markers.filter((_: Row, j: number) => j !== i)
+                )
+              }
+            >
+              Rimuovi marker
+            </button>
+          </div>
+        ))}
+        <button
+          onClick={() =>
+            change('alignment_markers', [
+              ...(draft.alignment_markers || []),
+              {number: 1, at_s: Number(draft.offset_s) || 0}
+            ])
+          }
+        >
+          Aggiungi marker di fase
+        </button>
+        {(draft.excluded_intervals || []).map((m: Row, i: number) => (
+          <div className="form-grid" key={i}>
+            {[
+              ['start_s', 'Da s'],
+              ['end_s', 'A s'],
+              ['reason', 'Motivo']
+            ].map(([k, label]) => (
+              <label key={k}>
+                {label}
+                <input
+                  type={k === 'reason' ? 'text' : 'number'}
+                  value={m[k]}
+                  onChange={e =>
+                    change(
+                      'excluded_intervals',
+                      draft.excluded_intervals.map((r: Row, j: number) =>
+                        j === i ? {...r, [k]: k === 'reason' ? e.target.value : Number(e.target.value)} : r
+                      )
+                    )
+                  }
+                />
+              </label>
+            ))}
+            <button
+              onClick={() =>
+                change(
+                  'excluded_intervals',
+                  draft.excluded_intervals.filter((_: Row, j: number) => j !== i)
+                )
+              }
+            >
+              Rimuovi esclusione
+            </button>
+          </div>
+        ))}
+        <button
+          onClick={() =>
+            change('excluded_intervals', [...(draft.excluded_intervals || []), {start_s: 0, end_s: 1, reason: ''}])
+          }
+        >
+          Escludi intervallo
+        </button>
+      </details>
+      <details>
+        <summary>Dispositivi, condizioni e provenienza</summary>
+        <div className="form-grid">
+          {Object.entries(conditionsFields).map(([k, label]) => (
+            <label key={k}>
+              {String(label)}
+              <input
+                value={conditions[k] || ''}
+                onChange={e => change('conditions', {...conditions, [k]: e.target.value})}
+              />
+            </label>
+          ))}
+          <label>
+            Scala RPE
+            <select value={draft.rpe_scale || 'CR10 dichiarata'} onChange={e => change('rpe_scale', e.target.value)}>
+              <option>CR10 dichiarata</option>
+              <option>Borg 6-20</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          Origine calibrazione del coefficiente soglia
+          <input
+            value={draft.threshold_calibration?.evidence || ''}
+            onChange={e => change('threshold_calibration', {...draft.threshold_calibration, evidence: e.target.value})}
+          />
+        </label>
+      </details>
+      <fieldset>
+        <legend>Livelli di lattato da stimare · mmol/L</legend>
+        <p>
+          Interpolazione tra prelievi: W, W/kg e FC. La finestra FC di fine step è definita nel preset (default 30 s).
+          Le nuove impostazioni richiedono una nuova analisi/revisione.
+        </p>
+        <div className="form-grid">
+          {(draft.lactate_levels || [2, 3, 4]).map((level: number, i: number) => (
+            <label key={i}>
+              Livello {i + 1}
+              <input
+                type="number"
+                aria-label={`Livello lattato ${i + 1} · mmol/L`}
+                min="0.001"
+                max="40"
+                step="0.001"
+                value={level}
+                onChange={e =>
+                  change(
+                    'lactate_levels',
+                    (draft.lactate_levels || [2, 3, 4]).map((v: number, j: number) =>
+                      i === j ? Number(e.target.value) : v
+                    )
+                  )
+                }
+              />
+              <button
+                type="button"
+                disabled={(draft.lactate_levels || [2, 3, 4]).length <= 1}
+                onClick={() =>
+                  change(
+                    'lactate_levels',
+                    (draft.lactate_levels || [2, 3, 4]).filter((_: number, j: number) => i !== j)
+                  )
+                }
+              >
+                Rimuovi livello
+              </button>
+            </label>
+          ))}
+        </div>
+        <button
+          type="button"
+          disabled={(draft.lactate_levels || [2, 3, 4]).length >= 20}
+          onClick={() => {
+            const current = draft.lactate_levels || [2, 3, 4];
+            let next = 1;
+            while (current.includes(next) && next < 40) next++;
+            change('lactate_levels', [...current, next]);
+          }}
+        >
+          Aggiungi livello
+        </button>
+      </fieldset>
+      <details>
+        <summary>Lattato: associazione dei prelievi e carico esplicito</summary>
+        <p>
+          Il prelievo può essere associato allo step o a un carico dichiarato. Il ritardo viene sottratto all’istante
+          del prelievo. Senza associazione certa il risultato resta indisponibile.
+        </p>
+        {(draft.lactate || []).map((r: Row, i: number) => (
+          <div className="form-grid" key={i}>
+            <strong>Prelievo {i + 1}</strong>
+            {[
+              ['step_number', 'Step (facoltativo)'],
+              ['power_w', 'Carico esplicito W (facoltativo)'],
+              ['delay_s', 'Ritardo di prelievo s']
+            ].map(([k, label]) => (
+              <label key={k}>
+                {label}
+                <input
+                  type="number"
+                  value={r[k] ?? ''}
+                  onChange={e =>
+                    change(
+                      'lactate',
+                      draft.lactate.map((x: Row, j: number) =>
+                        i === j
+                          ? {...x, [k]: e.target.value === '' ? (k === 'delay_s' ? 0 : null) : Number(e.target.value)}
+                          : x
+                      )
+                    )
+                  }
+                />
+              </label>
+            ))}
+          </div>
+        ))}
+      </details>
+      <VO2Input draft={draft} change={change} />
+      <details>
+        <summary>VO₂: importazione gas e valutazione ventilatoria</summary>
+        <p>
+          CSV: t, vo2_l_min; opzionali vco2_l_min, ve_l_min, peto2_mmhg, petco2_mmhg. Nessuna stima di VO₂ dai soli
+          watt/FC.
+        </p>
+        <label>
+          Importa gas CSV
+          <input
+            type="file"
+            accept=".csv"
+            onChange={e => {
+              const f = e.target.files?.[0];
+              if (f)
+                run(async () => {
+                  const form = new FormData();
+                  form.append('file', f);
+                  const r = await api('gas-traces', form);
+                  change('gas_hash', r.hash);
+                });
+            }}
+          />
+        </label>
+        {draft.gas_hash && (
+          <p>
+            Gas archiviati · {draft.gas_hash.slice(0, 12)}{' '}
+            <button onClick={() => change('gas_hash', null)}>Rimuovi associazione</button>
+          </p>
+        )}
+        <label>
+          Offset gas rispetto al file FIT · s
+          <input
+            type="number"
+            step="any"
+            value={draft.gas_offset_s || 0}
+            onChange={e => change('gas_offset_s', Number(e.target.value))}
+          />
+        </label>
+        <div className="form-grid">
+          {['vt1', 'vt2'].map(k => (
+            <section key={k}>
+              <strong>{k.toUpperCase()} confermata dal valutatore</strong>
+              <label>
+                Istante nel FIT · s
+                <input
+                  type="number"
+                  value={draft.ventilatory_markers?.[k]?.at_s ?? ''}
+                  onChange={e => {
+                    const markers = {...draft.ventilatory_markers};
+                    if (e.target.value === '') delete markers[k];
+                    else
+                      markers[k] = {...markers[k], at_s: Number(e.target.value), evidence: markers[k]?.evidence || ''};
+                    change('ventilatory_markers', markers);
+                  }}
+                />
+              </label>
+              {draft.ventilatory_markers?.[k] && (
+                <label>
+                  Evidenze / criterio
+                  <input
+                    value={draft.ventilatory_markers[k].evidence}
+                    onChange={e =>
+                      change('ventilatory_markers', {
+                        ...draft.ventilatory_markers,
+                        [k]: {...draft.ventilatory_markers[k], evidence: e.target.value}
+                      })
+                    }
+                  />
+                </label>
+              )}
+            </section>
+          ))}
+        </div>
+        <label>
+          <input
+            type="checkbox"
+            checked={!!draft.vo2max_verification?.confirmed}
+            onChange={e =>
+              change('vo2max_verification', {
+                ...draft.vo2max_verification,
+                confirmed: e.target.checked,
+                evidence: draft.vo2max_verification?.evidence || ''
+              })
+            }
+          />
+          VO₂max verificato dal laboratorio
+        </label>
+        {draft.vo2max_verification?.confirmed && (
+          <label>
+            Evidenze della verifica del massimo
+            <textarea
+              value={draft.vo2max_verification.evidence || ''}
+              onChange={e => change('vo2max_verification', {...draft.vo2max_verification, evidence: e.target.value})}
+            />
+          </label>
+        )}
+      </details>
+    </section>
+  );
 }
 
-export function AnalysisResults({analysis:a,Plot}:{analysis:Row,Plot:any}){
- const l=a.lactate_analysis,g=a.gas;
- return <section><h3>Metodo, qualità e risultati specialistici</h3><p>{a.preset?`${a.preset.name} · v${a.preset.version} · motore ${a.engine}`:'Metodo storico senza preset: provenienza legacy'}</p>{a.preset&&<small>Identità preset: {a.preset.hash.slice(0,16)}</small>}{a.steps?.length>0&&<div className="table-scroll"><table><thead><tr>{['Step','Completo','Copertura W','Errore medio W','Errore %','MAE W','RMSE W','In banda'].map(c=><th key={c}>{c}</th>)}</tr></thead><tbody>{a.steps.map((s:Row)=><tr key={s.number}><td>{s.number}</td><td>{s.complete?'Sì':'No'}</td><td>{value(100*s.power.coverage)}%</td>{['mean_error_w','mean_error_pct','mae_w','rmse_w'].map(k=><td key={k}>{value(s.adherence?.[k])}</td>)}<td>{s.adherence?.within_band_fraction==null?'Non valutata':value(s.adherence.within_band_fraction*100)+'%'}</td></tr>)}</tbody></table></div>}{a.terminal_target_w!=null&&<p>Rampa/discontinuo: target finale {value(a.terminal_target_w)} W; media finale misurata {value(a.terminal_mean_w)} W. Nessuna conversione in MAP per step.</p>}
- {l?.points.length>0&&<><LactateResults analysis={l} Plot={Plot}/><ul>{Object.entries(l.results).filter(([k])=>!k.startsWith('fixed_')).map(([k,r]:any)=><li key={k}>{methodNames[k]||k}: {value(r.value)} W{r.reason?' · '+(reasons[r.reason]||r.reason):''}</li>)}</ul></>}{l?.warnings.map((w:string)=><p className="hint" key={w}>{w}</p>)}
- {g&&<><h3>Scambi gassosi</h3><p>VO₂peak: {value(g.vo2peak.value)} L/min · {value(g.vo2peak.ml_kg_min)} mL/kg/min · media {g.vo2peak.window_s} s</p><p>VO₂max verificato: {value(g.vo2max.value)} L/min · {reasons[g.vo2max.reason]||g.vo2max.evidence}</p><Plot data={['vo2','vco2'].map(k=>({x:g.bins.map((r:Row)=>r.t/60),y:g.bins.map((r:Row)=>r[k]),type:'scatter',mode:'lines',name:k.toUpperCase()}))} layout={{xaxis:{title:{text:'Tempo FIT · min'}},yaxis:{title:{text:'L/min'}}}}/><Plot data={[{x:g.bins.map((r:Row)=>r.vo2),y:g.bins.map((r:Row)=>r.vco2),type:'scatter',mode:'markers',name:'V-slope'}]} layout={{xaxis:{title:{text:'VO₂ · L/min'}},yaxis:{title:{text:'VCO₂ · L/min'}}}}/><Plot data={['peto2','petco2'].map(k=>({x:g.bins.map((r:Row)=>r.t/60),y:g.bins.map((r:Row)=>r[k]),type:'scatter',mode:'lines',name:k.toUpperCase()}))} layout={{xaxis:{title:{text:'Tempo FIT · min'}},yaxis:{title:{text:'Gas end-tidal · mmHg'}}}}/><Plot data={['ve_vo2','ve_vco2'].map(k=>({x:g.bins.map((r:Row)=>r.t/60),y:g.bins.map((r:Row)=>r[k]),type:'scatter',mode:'lines',name:k.replace('_','/').toUpperCase()}))} layout={{xaxis:{title:{text:'Tempo FIT · min'}},yaxis:{title:{text:'Equivalenti ventilatori'}}}}/>{['vt1','vt2'].map(k=><p key={k}>{k.toUpperCase()} · suggerimento esplorativo: {value(g.suggestions[k].value)} s · marker confermato: {value(g.markers[k]?.at_s)} s</p>)}{g.warnings.map((w:string)=><p className="hint" key={w}>{w}</p>)}</>}
- </section>
+export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any}) {
+  const l = a.lactate_analysis,
+    g = a.gas;
+  return (
+    <section>
+      <h3>Metodo, qualità e risultati specialistici</h3>
+      <p>
+        {a.preset
+          ? `${a.preset.name} · v${a.preset.version} · motore ${a.engine}`
+          : 'Metodo storico senza preset: provenienza legacy'}
+      </p>
+      {a.preset && <small>Identità preset: {a.preset.hash.slice(0, 16)}</small>}
+      {a.steps?.length > 0 && (
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                {['Step', 'Completo', 'Copertura W', 'Errore medio W', 'Errore %', 'MAE W', 'RMSE W', 'In banda'].map(
+                  c => (
+                    <th key={c}>{c}</th>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {a.steps.map((s: Row) => (
+                <tr key={s.number}>
+                  <td>{s.number}</td>
+                  <td>{s.complete ? 'Sì' : 'No'}</td>
+                  <td>{value(100 * s.power.coverage)}%</td>
+                  {['mean_error_w', 'mean_error_pct', 'mae_w', 'rmse_w'].map(k => (
+                    <td key={k}>{value(s.adherence?.[k])}</td>
+                  ))}
+                  <td>
+                    {s.adherence?.within_band_fraction == null
+                      ? 'Non valutata'
+                      : value(s.adherence.within_band_fraction * 100) + '%'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {a.terminal_target_w != null && (
+        <p>
+          Rampa/discontinuo: target finale {value(a.terminal_target_w)} W; media finale misurata{' '}
+          {value(a.terminal_mean_w)} W. Nessuna conversione in MAP per step.
+        </p>
+      )}
+      {l?.points.length > 0 && (
+        <>
+          <LactateResults analysis={l} Plot={Plot} />
+          <ul>
+            {Object.entries(l.results)
+              .filter(([k]) => !k.startsWith('fixed_'))
+              .map(([k, r]: any) => (
+                <li key={k}>
+                  {methodNames[k] || k}: {value(r.value)} W{r.reason ? ' · ' + (reasons[r.reason] || r.reason) : ''}
+                </li>
+              ))}
+          </ul>
+        </>
+      )}
+      {l?.warnings.map((w: string) => (
+        <p className="hint" key={w}>
+          {w}
+        </p>
+      ))}
+      {g && (
+        <>
+          <h3>Scambi gassosi</h3>
+          <p>
+            VO₂peak: {value(g.vo2peak.value)} L/min · {value(g.vo2peak.ml_kg_min)} mL/kg/min · media{' '}
+            {g.vo2peak.window_s} s
+          </p>
+          <p>
+            VO₂max verificato: {value(g.vo2max.value)} L/min · {reasons[g.vo2max.reason] || g.vo2max.evidence}
+          </p>
+          <Plot
+            data={['vo2', 'vco2'].map(k => ({
+              x: g.bins.map((r: Row) => r.t / 60),
+              y: g.bins.map((r: Row) => r[k]),
+              type: 'scatter',
+              mode: 'lines',
+              name: k.toUpperCase()
+            }))}
+            layout={{xaxis: {title: {text: 'Tempo FIT · min'}}, yaxis: {title: {text: 'L/min'}}}}
+          />
+          <Plot
+            data={[
+              {
+                x: g.bins.map((r: Row) => r.vo2),
+                y: g.bins.map((r: Row) => r.vco2),
+                type: 'scatter',
+                mode: 'markers',
+                name: 'V-slope'
+              }
+            ]}
+            layout={{xaxis: {title: {text: 'VO₂ · L/min'}}, yaxis: {title: {text: 'VCO₂ · L/min'}}}}
+          />
+          <Plot
+            data={['peto2', 'petco2'].map(k => ({
+              x: g.bins.map((r: Row) => r.t / 60),
+              y: g.bins.map((r: Row) => r[k]),
+              type: 'scatter',
+              mode: 'lines',
+              name: k.toUpperCase()
+            }))}
+            layout={{xaxis: {title: {text: 'Tempo FIT · min'}}, yaxis: {title: {text: 'Gas end-tidal · mmHg'}}}}
+          />
+          <Plot
+            data={['ve_vo2', 've_vco2'].map(k => ({
+              x: g.bins.map((r: Row) => r.t / 60),
+              y: g.bins.map((r: Row) => r[k]),
+              type: 'scatter',
+              mode: 'lines',
+              name: k.replace('_', '/').toUpperCase()
+            }))}
+            layout={{xaxis: {title: {text: 'Tempo FIT · min'}}, yaxis: {title: {text: 'Equivalenti ventilatori'}}}}
+          />
+          {['vt1', 'vt2'].map(k => (
+            <p key={k}>
+              {k.toUpperCase()} · suggerimento esplorativo: {value(g.suggestions[k].value)} s · marker confermato:{' '}
+              {value(g.markers[k]?.at_s)} s
+            </p>
+          ))}
+          {g.warnings.map((w: string) => (
+            <p className="hint" key={w}>
+              {w}
+            </p>
+          ))}
+        </>
+      )}
+    </section>
+  );
 }
 
 export {ArchiveReports} from './ArchiveReports';
 
-export function RepeatabilityPanel({org,state,api,run,download}:{org:string,state:Row,api:any,run:any,download:any}){
- const tests=state.test.filter((t:Row)=>t.organization_id===org&&t.status!=='deleted');
- const [pairs,setPairs]=useState<Row[]>([]),[reason,setReason]=useState(''),[confirmed,setConfirmed]=useState(false),[result,setResult]=useState<Row|null>(null);
- const label=(t:Row)=>`${state.athlete.find((a:Row)=>a.id===t.athlete_id)?.surname||''} ${state.athlete.find((a:Row)=>a.id===t.athlete_id)?.name||''} · ${t.date} · ${value(t.analysis.map_w)} W`;
- return <details className="panel protocol"><summary>Ripetibilità: prove ripetute in condizioni stabili</summary><p>Seleziona coppie dello stesso atleta, protocollo, metodo e condizioni. Le variazioni fra stagioni non sono automaticamente misure dell’errore del test.</p>{pairs.map((p,i)=><div className="form-grid" key={i}>{['first','second'].map(k=><label key={k}>{k==='first'?'Prima prova':'Ripetizione'}<select value={p[k]} onChange={e=>setPairs(rows=>rows.map((r,j)=>i===j?{...r,[k]:e.target.value}:r))}>{tests.map((t:Row)=><option key={t.id} value={t.id}>{label(t)}</option>)}</select></label>)}</div>)}<button onClick={()=>setPairs(rows=>[...rows,{first:tests[0]?.id||'',second:tests[1]?.id||''}])}>Aggiungi coppia</button><label>Motivo e condizioni di ripetizione<input value={reason} onChange={e=>setReason(e.target.value)}/></label><label><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>Confermo prove ripetute in condizioni stabili</label><button disabled={!pairs.length||!confirmed||!reason.trim()} onClick={()=>run(async()=>setResult(await api('repeatability',{pairs,metric:'map_w',reason,stable_conditions_confirmed:confirmed})))}>Calcola errore tipico e MDC95</button>{result?.groups.map((g:Row,i:number)=><p key={i}>{g.n_pairs} coppie · bias {value(g.bias)} W · errore tipico {value(g.typical_error)} W · MDC95 {value(g.mdc95)} W. {g.warning}{g.ci95&&' IC95 descrittivo TE: '+g.ci95.typical_error.map((v:number)=>value(v)).join(' – ')+' W.'}</p>)}{result&&<div className="actions">{['pdf','md'].map(f=><button key={f} onClick={()=>run(()=>download(`repeatability/report/${f}`,'fuorigiri-ripetibilita.'+(f==='pdf'?'pdf':'zip'),{pairs,metric:'map_w',reason,stable_conditions_confirmed:confirmed}))}>Esporta {f.toUpperCase()}</button>)}</div>}</details>
+export function RepeatabilityPanel({
+  org,
+  state,
+  api,
+  run,
+  download
+}: {
+  org: string;
+  state: Row;
+  api: any;
+  run: any;
+  download: any;
+}) {
+  const tests = state.test.filter((t: Row) => t.organization_id === org && t.status !== 'deleted');
+  const [pairs, setPairs] = useState<Row[]>([]),
+    [reason, setReason] = useState(''),
+    [confirmed, setConfirmed] = useState(false),
+    [result, setResult] = useState<Row | null>(null);
+  const label = (t: Row) =>
+    `${state.athlete.find((a: Row) => a.id === t.athlete_id)?.surname || ''} ${state.athlete.find((a: Row) => a.id === t.athlete_id)?.name || ''} · ${t.date} · ${value(t.analysis.map_w)} W`;
+  return (
+    <details className="panel protocol">
+      <summary>Ripetibilità: prove ripetute in condizioni stabili</summary>
+      <p>
+        Seleziona coppie dello stesso atleta, protocollo, metodo e condizioni. Le variazioni fra stagioni non sono
+        automaticamente misure dell’errore del test.
+      </p>
+      {pairs.map((p, i) => (
+        <div className="form-grid" key={i}>
+          {['first', 'second'].map(k => (
+            <label key={k}>
+              {k === 'first' ? 'Prima prova' : 'Ripetizione'}
+              <select
+                value={p[k]}
+                onChange={e => setPairs(rows => rows.map((r, j) => (i === j ? {...r, [k]: e.target.value} : r)))}
+              >
+                {tests.map((t: Row) => (
+                  <option key={t.id} value={t.id}>
+                    {label(t)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
+        </div>
+      ))}
+      <button onClick={() => setPairs(rows => [...rows, {first: tests[0]?.id || '', second: tests[1]?.id || ''}])}>
+        Aggiungi coppia
+      </button>
+      <label>
+        Motivo e condizioni di ripetizione
+        <input value={reason} onChange={e => setReason(e.target.value)} />
+      </label>
+      <label>
+        <input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} />
+        Confermo prove ripetute in condizioni stabili
+      </label>
+      <button
+        disabled={!pairs.length || !confirmed || !reason.trim()}
+        onClick={() =>
+          run(async () =>
+            setResult(
+              await api('repeatability', {pairs, metric: 'map_w', reason, stable_conditions_confirmed: confirmed})
+            )
+          )
+        }
+      >
+        Calcola errore tipico e MDC95
+      </button>
+      {result?.groups.map((g: Row, i: number) => (
+        <p key={i}>
+          {g.n_pairs} coppie · bias {value(g.bias)} W · errore tipico {value(g.typical_error)} W · MDC95{' '}
+          {value(g.mdc95)} W. {g.warning}
+          {g.ci95 && ' IC95 descrittivo TE: ' + g.ci95.typical_error.map((v: number) => value(v)).join(' – ') + ' W.'}
+        </p>
+      ))}
+      {result && (
+        <div className="actions">
+          {['pdf', 'md'].map(f => (
+            <button
+              key={f}
+              onClick={() =>
+                run(() =>
+                  download(`repeatability/report/${f}`, 'fuorigiri-ripetibilita.' + (f === 'pdf' ? 'pdf' : 'zip'), {
+                    pairs,
+                    metric: 'map_w',
+                    reason,
+                    stable_conditions_confirmed: confirmed
+                  })
+                )
+              }
+            >
+              Esporta {f.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      )}
+    </details>
+  );
 }

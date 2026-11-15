@@ -1,79 +1,724 @@
 import {Synchronization} from './synchronization';
 import {SavedReports} from './SavedReports';
-import {tr,language} from './i18n';
-import {useState,useEffect,type FormEvent} from 'react';
-type Row=Record<string,any>;
-type Props={api:any,run:any,refresh:any,download:any,token:string,workspace:string,sync?:any,activate?:(entry:Row)=>Promise<void>,section?:'societies'|'sharing'|'reports'};
-const roleName=(role:string,owner=false)=>owner?tr('Fondatore'):role==='admin'?tr('Admin dati'):tr('Visualizzatore');
+import {tr, language} from './i18n';
+import {useState, useEffect, type FormEvent} from 'react';
+type Row = Record<string, any>;
+type Props = {
+  api: any;
+  run: any;
+  refresh: any;
+  download: any;
+  token: string;
+  workspace: string;
+  sync?: any;
+  activate?: (entry: Row) => Promise<void>;
+  section?: 'societies' | 'sharing' | 'reports';
+};
+const roleName = (role: string, owner = false) =>
+  owner ? tr('Fondatore') : role === 'admin' ? tr('Admin dati') : tr('Visualizzatore');
 
-async function secretDownload(path:string,data:Row,props:Props,name:string){
- const response=await fetch('/api/v1/'+path,{method:'POST',headers:{'Content-Type':'application/json','X-Fuorigiri-Token':props.token,'X-Fuorigiri-Workspace':props.workspace},body:JSON.stringify(data)});
- if(!response.ok)throw new Error((await response.json()).detail);
- const url=URL.createObjectURL(await response.blob()),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
+async function secretDownload(path: string, data: Row, props: Props, name: string) {
+  const response = await fetch('/api/v1/' + path, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Fuorigiri-Token': props.token,
+      'X-Fuorigiri-Workspace': props.workspace
+    },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) throw new Error((await response.json()).detail);
+  const url = URL.createObjectURL(await response.blob()),
+    a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 
-function SocietyManager(props:Props){
- const {api,run,refresh,activate}=props;
- const [tab,setTab]=useState('create'),[name,setName]=useState(''),[operator,setOperator]=useState(''),[path,setPath]=useState(''),[password,setPassword]=useState('');
- const [file,setFile]=useState<File|null>(null),[recovery,setRecovery]=useState<File|null>(null),[preview,setPreview]=useState<Row|null>(null),[mode,setMode]=useState('snapshot'),[working,setWorking]=useState(false),[message,setMessage]=useState('');
- const execute=(task:()=>Promise<void>)=>run(async()=>{setWorking(true);try{await task()}finally{setWorking(false)}});
- const finish=async(entry:Row)=>{setPassword('');setFile(null);setRecovery(null);setPreview(null);await refresh();if(activate)await activate(entry);else setMessage(tr('Società disponibile nel selettore laterale.'))};
- const submit=(task:()=>Promise<void>)=>(e:FormEvent)=>{e.preventDefault();execute(task)};
- return <section className="society-manager"><h2>{tr('Gestisci società')}</h2><p>{tr('Scegli come aggiungere la società su questo computer. I dati rimangono disponibili offline.')}</p>
- <LocalSocieties {...props}/>
- <div className="flow-tabs" role="tablist" aria-label={tr('Operazione società')}>{[['create','Crea nuova società'],['join','Collega tramite invito'],['restore','Ripristina da backup']].map(([id,label])=><button role="tab" aria-selected={tab===id} key={id} onClick={()=>{setTab(id);setFile(null);setPreview(null);setPassword('');setMessage('')}}>{tr(label)}</button>)}</div>
- <div role="tabpanel">
- {tab==='create'&&<form onSubmit={submit(async()=>finish(await api('workspaces',{name,operator,path})))}><h3>{tr('Un nuovo archivio, con te come fondatore')}</h3><p>{tr('Usa questa scelta per iniziare una società nuova. Non serve una password d’invito.')}</p><div className="form-grid"><label>{tr('Nome società')}<input required value={name} onChange={e=>setName(e.target.value)}/></label><label>{tr('Il tuo nome (fondatore)')}<input required value={operator} onChange={e=>setOperator(e.target.value)}/></label></div><LocalPath value={path} change={setPath}/><button className="primary" disabled={working}>{tr('Crea e apri società')}</button></form>}
- {tab==='join'&&<form onSubmit={submit(async()=>{if(!file)return;const f=new FormData();f.append('file',file);f.append('password',password);f.append('path',path);await finish(await api('workspaces/join',f))})}><h3>{tr('Accedi alla stessa società di un altro computer')}</h3><p>{tr('Chiedi al fondatore un invito JSON personale e la relativa password. Il backup ZIP non è un invito. Dopo il collegamento configura WebDAV o la cartella condivisa per acquisire i dati.')}</p><label>{tr('File invito JSON')}<input required type="file" accept=".json" onChange={e=>setFile(e.target.files?.[0]||null)}/></label><label>{tr('Password dell’invito')}<input required type="password" autoComplete="off" value={password} onChange={e=>setPassword(e.target.value)}/></label><LocalPath value={path} change={setPath}/><button className="primary" disabled={working||!file}>{tr('Collega e apri società')}</button></form>}
- {tab==='restore'&&<><h3>{tr('Recupera un archivio da un backup dati ZIP')}</h3><p>{tr('Il backup dati contiene test e allegati, ma non le credenziali del fondatore. Nessun archivio esistente verrà sovrascritto.')}</p><label>{tr('Backup dati ZIP')}<input type="file" accept=".zip" onChange={e=>{const selected=e.target.files?.[0];setPreview(null);if(selected)execute(async()=>{const f=new FormData();f.append('file',selected);setPreview(await api('workspaces/restore/preview',f))})}}/></label>
- {preview&&<form onSubmit={submit(async()=>{const f=new FormData();f.append('backup_hash',preview.backup_hash);f.append('mode',mode);f.append('path',path);f.append('operator',operator);f.append('password',password);if(recovery)f.append('recovery_file',recovery);await finish(await api('workspaces/restore',f))})}><div className="hint"><strong>{preview.organizations.map((o:Row)=>o.name).join(', ')}</strong><p>{preview.counts.athlete} {tr('atleti')} · {preview.counts.test} {tr('test')} · {preview.objects} {tr('allegati')}</p><p>{preview.checksums?tr('Integrità del database e checksum verificati.'):tr('Backup precedente: database e allegati verificati; manifest senza checksum del database.')}</p><small>{preview.created_at&&new Date(preview.created_at).toLocaleString()}</small></div>
- <label>{tr('Come vuoi usare il ripristino?')}<select value={mode} onChange={e=>{setMode(e.target.value);setPassword('')}}><option value="snapshot">{tr('Copia di consultazione — sola lettura')}</option><option value="independent">{tr('Nuova copia indipendente — nuovo fondatore')}</option><option value="recover">{tr('Recupera la società originale e gli accessi')}</option></select></label>
- {mode==='snapshot'&&<p>{tr('Potrai consultare ed esportare i dati. Nessun accesso alla sincronizzazione o ai privilegi della società originale.')}</p>}
- {mode==='independent'&&<><p className="hint">{tr('Crea un archivio modificabile con nuove credenziali e un nuovo canale. Non si collegherà alla società originale e non erediterà i suoi collaboratori. Lo storico dei dati è conservato con provenienza del ripristino.')}</p><label>{tr('Il tuo nome (nuovo fondatore)')}<input required value={operator} onChange={e=>setOperator(e.target.value)}/></label></>}
- {mode==='recover'&&<><p className="hint">{tr('Serve il file cifrato Recupero accessi esportato dal fondatore e la sua password. È un recupero del dispositivo del fondatore, non un invito per collaboratori. Se il vecchio PC è ancora attivo, evita di usare contemporaneamente la stessa identità.')}</p><label>{tr('File recupero accessi JSON')}<input required type="file" accept=".json" onChange={e=>setRecovery(e.target.files?.[0]||null)}/></label><label>{tr('Password del recupero accessi')}<input required type="password" autoComplete="off" value={password} onChange={e=>setPassword(e.target.value)}/></label></>}
- <LocalPath value={path} change={setPath}/><button className="primary" disabled={working||(mode==='recover'&&!recovery)}>{tr('Conferma ripristino e apri')}</button></form>}</>}
- </div>{message&&<p role="status">{message}</p>}</section>
+function SocietyManager(props: Props) {
+  const {api, run, refresh, activate} = props;
+  const [tab, setTab] = useState('create'),
+    [name, setName] = useState(''),
+    [operator, setOperator] = useState(''),
+    [path, setPath] = useState(''),
+    [password, setPassword] = useState('');
+  const [file, setFile] = useState<File | null>(null),
+    [recovery, setRecovery] = useState<File | null>(null),
+    [preview, setPreview] = useState<Row | null>(null),
+    [mode, setMode] = useState('snapshot'),
+    [working, setWorking] = useState(false),
+    [message, setMessage] = useState('');
+  const execute = (task: () => Promise<void>) =>
+    run(async () => {
+      setWorking(true);
+      try {
+        await task();
+      } finally {
+        setWorking(false);
+      }
+    });
+  const finish = async (entry: Row) => {
+    setPassword('');
+    setFile(null);
+    setRecovery(null);
+    setPreview(null);
+    await refresh();
+    if (activate) await activate(entry);
+    else setMessage(tr('Società disponibile nel selettore laterale.'));
+  };
+  const submit = (task: () => Promise<void>) => (e: FormEvent) => {
+    e.preventDefault();
+    execute(task);
+  };
+  return (
+    <section className="society-manager">
+      <h2>{tr('Gestisci società')}</h2>
+      <p>{tr('Scegli come aggiungere la società su questo computer. I dati rimangono disponibili offline.')}</p>
+      <LocalSocieties {...props} />
+      <div className="flow-tabs" role="tablist" aria-label={tr('Operazione società')}>
+        {[
+          ['create', 'Crea nuova società'],
+          ['join', 'Collega tramite invito'],
+          ['restore', 'Ripristina da backup']
+        ].map(([id, label]) => (
+          <button
+            role="tab"
+            aria-selected={tab === id}
+            key={id}
+            onClick={() => {
+              setTab(id);
+              setFile(null);
+              setPreview(null);
+              setPassword('');
+              setMessage('');
+            }}
+          >
+            {tr(label)}
+          </button>
+        ))}
+      </div>
+      <div role="tabpanel">
+        {tab === 'create' && (
+          <form onSubmit={submit(async () => finish(await api('workspaces', {name, operator, path})))}>
+            <h3>{tr('Un nuovo archivio, con te come fondatore')}</h3>
+            <p>{tr('Usa questa scelta per iniziare una società nuova. Non serve una password d’invito.')}</p>
+            <div className="form-grid">
+              <label>
+                {tr('Nome società')}
+                <input required value={name} onChange={e => setName(e.target.value)} />
+              </label>
+              <label>
+                {tr('Il tuo nome (fondatore)')}
+                <input required value={operator} onChange={e => setOperator(e.target.value)} />
+              </label>
+            </div>
+            <LocalPath value={path} change={setPath} />
+            <button className="primary" disabled={working}>
+              {tr('Crea e apri società')}
+            </button>
+          </form>
+        )}
+        {tab === 'join' && (
+          <form
+            onSubmit={submit(async () => {
+              if (!file) return;
+              const f = new FormData();
+              f.append('file', file);
+              f.append('password', password);
+              f.append('path', path);
+              await finish(await api('workspaces/join', f));
+            })}
+          >
+            <h3>{tr('Accedi alla stessa società di un altro computer')}</h3>
+            <p>
+              {tr(
+                'Chiedi al fondatore un invito JSON personale e la relativa password. Il backup ZIP non è un invito. Dopo il collegamento configura WebDAV o la cartella condivisa per acquisire i dati.'
+              )}
+            </p>
+            <label>
+              {tr('File invito JSON')}
+              <input required type="file" accept=".json" onChange={e => setFile(e.target.files?.[0] || null)} />
+            </label>
+            <label>
+              {tr('Password dell’invito')}
+              <input
+                required
+                type="password"
+                autoComplete="off"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </label>
+            <LocalPath value={path} change={setPath} />
+            <button className="primary" disabled={working || !file}>
+              {tr('Collega e apri società')}
+            </button>
+          </form>
+        )}
+        {tab === 'restore' && (
+          <>
+            <h3>{tr('Recupera un archivio da un backup dati ZIP')}</h3>
+            <p>
+              {tr(
+                'Il backup dati contiene test e allegati, ma non le credenziali del fondatore. Nessun archivio esistente verrà sovrascritto.'
+              )}
+            </p>
+            <label>
+              {tr('Backup dati ZIP')}
+              <input
+                type="file"
+                accept=".zip"
+                onChange={e => {
+                  const selected = e.target.files?.[0];
+                  setPreview(null);
+                  if (selected)
+                    execute(async () => {
+                      const f = new FormData();
+                      f.append('file', selected);
+                      setPreview(await api('workspaces/restore/preview', f));
+                    });
+                }}
+              />
+            </label>
+            {preview && (
+              <form
+                onSubmit={submit(async () => {
+                  const f = new FormData();
+                  f.append('backup_hash', preview.backup_hash);
+                  f.append('mode', mode);
+                  f.append('path', path);
+                  f.append('operator', operator);
+                  f.append('password', password);
+                  if (recovery) f.append('recovery_file', recovery);
+                  await finish(await api('workspaces/restore', f));
+                })}
+              >
+                <div className="hint">
+                  <strong>{preview.organizations.map((o: Row) => o.name).join(', ')}</strong>
+                  <p>
+                    {preview.counts.athlete} {tr('atleti')} · {preview.counts.test} {tr('test')} · {preview.objects}{' '}
+                    {tr('allegati')}
+                  </p>
+                  <p>
+                    {preview.checksums
+                      ? tr('Integrità del database e checksum verificati.')
+                      : tr('Backup precedente: database e allegati verificati; manifest senza checksum del database.')}
+                  </p>
+                  <small>{preview.created_at && new Date(preview.created_at).toLocaleString()}</small>
+                </div>
+                <label>
+                  {tr('Come vuoi usare il ripristino?')}
+                  <select
+                    value={mode}
+                    onChange={e => {
+                      setMode(e.target.value);
+                      setPassword('');
+                    }}
+                  >
+                    <option value="snapshot">{tr('Copia di consultazione — sola lettura')}</option>
+                    <option value="independent">{tr('Nuova copia indipendente — nuovo fondatore')}</option>
+                    <option value="recover">{tr('Recupera la società originale e gli accessi')}</option>
+                  </select>
+                </label>
+                {mode === 'snapshot' && (
+                  <p>
+                    {tr(
+                      'Potrai consultare ed esportare i dati. Nessun accesso alla sincronizzazione o ai privilegi della società originale.'
+                    )}
+                  </p>
+                )}
+                {mode === 'independent' && (
+                  <>
+                    <p className="hint">
+                      {tr(
+                        'Crea un archivio modificabile con nuove credenziali e un nuovo canale. Non si collegherà alla società originale e non erediterà i suoi collaboratori. Lo storico dei dati è conservato con provenienza del ripristino.'
+                      )}
+                    </p>
+                    <label>
+                      {tr('Il tuo nome (nuovo fondatore)')}
+                      <input required value={operator} onChange={e => setOperator(e.target.value)} />
+                    </label>
+                  </>
+                )}
+                {mode === 'recover' && (
+                  <>
+                    <p className="hint">
+                      {tr(
+                        'Serve il file cifrato Recupero accessi esportato dal fondatore e la sua password. È un recupero del dispositivo del fondatore, non un invito per collaboratori. Se il vecchio PC è ancora attivo, evita di usare contemporaneamente la stessa identità.'
+                      )}
+                    </p>
+                    <label>
+                      {tr('File recupero accessi JSON')}
+                      <input
+                        required
+                        type="file"
+                        accept=".json"
+                        onChange={e => setRecovery(e.target.files?.[0] || null)}
+                      />
+                    </label>
+                    <label>
+                      {tr('Password del recupero accessi')}
+                      <input
+                        required
+                        type="password"
+                        autoComplete="off"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                      />
+                    </label>
+                  </>
+                )}
+                <LocalPath value={path} change={setPath} />
+                <button className="primary" disabled={working || (mode === 'recover' && !recovery)}>
+                  {tr('Conferma ripristino e apri')}
+                </button>
+              </form>
+            )}
+          </>
+        )}
+      </div>
+      {message && <p role="status">{message}</p>}
+    </section>
+  );
 }
 
-function LocalSocieties(props:Props){
- const [active,setActive]=useState<Row[]>([]),[detached,setDetached]=useState<Row[]>([]),[working,setWorking]=useState(false);
- const en=language==='en';
- const load=async()=>{const [a,d]=await Promise.all([props.api('workspaces',undefined,'GET',''),props.api('workspaces/detached',undefined,'GET','')]);setActive(a);setDetached(d)};
- useEffect(()=>{props.run(load)},[props.workspace]);
- const change=(entry:Row,detach:boolean)=>{
-  if(detach&&!confirm(en?'Disconnect this club on this device? The recoverable local copy and other devices will be preserved.':'Scollegare questa società su questo dispositivo? La copia locale recuperabile e gli altri dispositivi saranno conservati.'))return;
-  props.run(async()=>{setWorking(true);try{await props.api(`workspaces/${entry.id}/${detach?'detach':'reattach'}`,{},'POST','');await props.refresh();await load()}finally{setWorking(false)}});
- };
- return <details><summary>{en?'Clubs on this device':'Società su questo dispositivo'}</summary><p>{en?'Disconnecting keeps the local files and credentials for recovery; it does not free disk space or delete cloud data.':'Lo scollegamento conserva file e credenziali locali per il ripristino; non libera spazio e non elimina i dati sul cloud.'}</p>{active.map(e=><div className="list-row" key={e.id}><span>{e.name}</span><button disabled={working||props.sync?.running} onClick={()=>change(e,true)}>{en?'Disconnect from this device':'Scollega dal dispositivo'}</button></div>)}{!active.length&&<p>{en?'No linked clubs.':'Nessuna società collegata.'}</p>}{!!detached.length&&<><h3>{en?'Disconnected clubs':'Società scollegate'}</h3>{detached.map(e=><div className="list-row" key={e.id}><span>{e.name}</span><button disabled={working} onClick={()=>change(e,false)}>{en?'Restore link':'Ripristina collegamento'}</button></div>)}</>}</details>;
+function LocalSocieties(props: Props) {
+  const [active, setActive] = useState<Row[]>([]),
+    [detached, setDetached] = useState<Row[]>([]),
+    [working, setWorking] = useState(false);
+  const en = language === 'en';
+  const load = async () => {
+    const [a, d] = await Promise.all([
+      props.api('workspaces', undefined, 'GET', ''),
+      props.api('workspaces/detached', undefined, 'GET', '')
+    ]);
+    setActive(a);
+    setDetached(d);
+  };
+  useEffect(() => {
+    props.run(load);
+  }, [props.workspace]);
+  const change = (entry: Row, detach: boolean) => {
+    if (
+      detach &&
+      !confirm(
+        en
+          ? 'Disconnect this club on this device? The recoverable local copy and other devices will be preserved.'
+          : 'Scollegare questa società su questo dispositivo? La copia locale recuperabile e gli altri dispositivi saranno conservati.'
+      )
+    )
+      return;
+    props.run(async () => {
+      setWorking(true);
+      try {
+        await props.api(`workspaces/${entry.id}/${detach ? 'detach' : 'reattach'}`, {}, 'POST', '');
+        await props.refresh();
+        await load();
+      } finally {
+        setWorking(false);
+      }
+    });
+  };
+  return (
+    <details>
+      <summary>{en ? 'Clubs on this device' : 'Società su questo dispositivo'}</summary>
+      <p>
+        {en
+          ? 'Disconnecting keeps the local files and credentials for recovery; it does not free disk space or delete cloud data.'
+          : 'Lo scollegamento conserva file e credenziali locali per il ripristino; non libera spazio e non elimina i dati sul cloud.'}
+      </p>
+      {active.map(e => (
+        <div className="list-row" key={e.id}>
+          <span>{e.name}</span>
+          <button disabled={working || props.sync?.running} onClick={() => change(e, true)}>
+            {en ? 'Disconnect from this device' : 'Scollega dal dispositivo'}
+          </button>
+        </div>
+      ))}
+      {!active.length && <p>{en ? 'No linked clubs.' : 'Nessuna società collegata.'}</p>}
+      {!!detached.length && (
+        <>
+          <h3>{en ? 'Disconnected clubs' : 'Società scollegate'}</h3>
+          {detached.map(e => (
+            <div className="list-row" key={e.id}>
+              <span>{e.name}</span>
+              <button disabled={working} onClick={() => change(e, false)}>
+                {en ? 'Restore link' : 'Ripristina collegamento'}
+              </button>
+            </div>
+          ))}
+        </>
+      )}
+    </details>
+  );
 }
 
-function LocalPath({value,change}:{value:string,change:(v:string)=>void}){if((window as any).FuorigiriNative)return null;return <details className="local-path"><summary>{tr('Scegli cartella locale (facoltativo)')}</summary><p>{tr('Lascia vuoto per usare la cartella dell’app. Una cartella scelta deve essere vuota; non usare quella sincronizzata dal cloud.')}</p><label>{tr('Cartella dati locale')}<input value={value} onChange={e=>change(e.target.value)}/></label></details>}
-
-function Sharing(props:Props){
- const {api,run,refresh}=props;
- const [members,setMembers]=useState<Row>({members:[]}),[name,setName]=useState(''),[role,setRole]=useState('viewer'),[password,setPassword]=useState(''),[message,setMessage]=useState(''),[conflicts,setConflicts]=useState<Row[]>([]),[replaceId,setReplaceId]=useState<string|null>(null),[recoveryPassword,setRecoveryPassword]=useState(''),[renewPassword,setRenewPassword]=useState(''),[renewFile,setRenewFile]=useState<File|null>(null),[working,setWorking]=useState(false);
- const load=async()=>{const m=await api('workspace/members');setMembers(m);setConflicts(await api('conflicts'))};
- useEffect(()=>{run(load)},[props.workspace]);
- const execute=(task:()=>Promise<void>)=>run(async()=>{setWorking(true);try{await task()}finally{setWorking(false)}});
- return <><section className="panel protocol"><h2>{tr('Condivisione e collaboratori')}</h2>
- {members.snapshot?<p className="hint">{tr('Copia di consultazione: per modificare i dati crea una copia indipendente dal backup, oppure recupera la società originale con il file di recupero accessi.')}</p>:!members.managed?<p>{tr('Per condividere un archivio precedente crea una copia indipendente da backup in Gestisci società. La copia avrà un fondatore e un canale propri.')}</p>:<>
- <div className="identity-card"><strong>{members.current?.name} · {roleName(members.current?.role,members.owner)}</strong><p>{tr('Questo accesso è associato all’operatore su questo dispositivo; non è un login online.')}</p><small>{tr('Identità dispositivo')}: {members.current?.id}</small><small>{tr('Archivio locale')}: {members.path}</small></div>
- {members.revoked?.includes(members.current?.id)&&<p className="alert error">{tr('Accesso revocato: puoi consultare i dati già ricevuti. Per modificare richiedi e applica un nuovo invito.')}</p>}
- {members.scope_error?<p className="hint" role="alert">{members.scope_error}</p>:<Synchronization key={props.workspace} sync={props.sync} api={api} run={run} refresh={async()=>{await refresh();await load()}} owner={!!members.owner}/>}
- <details className="access-help"><summary>{tr('Cosa possono fare i ruoli?')}</summary><ul><li>{tr('Fondatore: modifica dati, crea inviti, rinnova e revoca accessi, esporta il recupero delle credenziali.')}</li><li>{tr('Admin dati: consulta, esporta e modifica i dati; non gestisce gli accessi.')}</li><li>{tr('Visualizzatore: consulta ed esporta; non modifica i dati.')}</li></ul></details>
- <h3>{tr('Operatori e dispositivi')}</h3><p className="muted">{tr('Gli inviti emessi non confermano che il destinatario li abbia già utilizzati. Genera un invito distinto per ciascun dispositivo.')}</p>
- {members.members.map((m:Row)=><div className="list-row" key={m.id}><div><strong>{m.name} · {roleName(m.role,m.id===members.founder_id)}</strong><small>{m.id===members.current?.id?tr('Questo dispositivo'):tr('Invito emesso / identità associata')} · {members.revoked?.includes(m.id)?tr('Revocato'):tr('Non revocato')} · {m.id.slice(0,8)}</small></div>{members.owner&&m.id!==members.current?.id&&!members.revoked?.includes(m.id)&&<div className="actions"><button type="button" disabled={working} onClick={()=>{setReplaceId(m.id);setName(m.name);setRole(m.role)}}>{tr('Rinnova / cambia ruolo')}</button><button type="button" disabled={working} onClick={()=>execute(async()=>{await api('workspace/revoke/'+m.id,{});await load();setMessage(tr('Revoca registrata. Esegui uno scambio per propagarla agli altri PC.'))})}>{tr('Revoca accesso')}</button></div>}</div>)}
- {members.owner&&!members.scope_error&&<><h3>{replaceId?tr('Sostituisci l’accesso selezionato'):tr('Invita un collaboratore o un altro tuo dispositivo')}</h3><form onSubmit={e=>{e.preventDefault();execute(async()=>{await secretDownload('workspace/invite',{name,role,password,replace_id:replaceId},props,'fuorigiri-invito.json');setPassword('');setReplaceId(null);await load();setMessage(tr('Invito scaricato. Pubblica le modifiche degli accessi con uno scambio.'))})}}><div className="form-grid"><label>{tr('Nome operatore / dispositivo')}<input required value={name} onChange={e=>setName(e.target.value)}/></label><label>{tr('Ruolo dell’invito')}<select value={role} onChange={e=>setRole(e.target.value)}><option value="viewer">{tr('Visualizzatore')}</option><option value="admin">{tr('Admin dati')}</option></select></label><label>{tr('Password dell’invito (almeno 12 caratteri)')}<input required minLength={12} type="password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete="new-password"/></label></div>
- {replaceId&&<p className="hint">{tr('Scaricando il nuovo invito revochi il vecchio accesso. Sul dispositivo destinatario usa Applica nuovo invito, senza creare un altro archivio.')}</p>}<button disabled={working} type="submit">{tr('Scarica invito cifrato')}</button>{replaceId&&<button type="button" onClick={()=>setReplaceId(null)}>{tr('Annulla sostituzione')}</button>}<p className="muted">{tr('La password protegge soltanto il file d’invito. Comunica file e password su canali distinti.')}</p></form></>}
- {!members.owner&&<details><summary>{tr('Applica nuovo invito a questo dispositivo')}</summary><p>{tr('Usa questa funzione per rinnovare l’accesso o cambiare ruolo nella stessa società, conservando i dati locali. Per un’altra società usa Gestisci società.')}</p><form onSubmit={e=>{e.preventDefault();execute(async()=>{if(!renewFile)return;const f=new FormData();f.append('file',renewFile);f.append('password',renewPassword);await api('workspaces/access',f);setRenewPassword('');setRenewFile(null);await refresh();await load();setMessage(tr('Identità aggiornata. Esegui uno scambio per ricevere lo stato degli accessi.'))})}}><label>{tr('Nuovo invito JSON')}<input required type="file" accept=".json" onChange={e=>setRenewFile(e.target.files?.[0]||null)}/></label><label>{tr('Password del nuovo invito')}<input required type="password" value={renewPassword} onChange={e=>setRenewPassword(e.target.value)} autoComplete="off"/></label><button disabled={working||!renewFile}>{tr('Applica nuovo invito')}</button></form></details>}
- <p className="hint">{tr('La revoca si propaga al prossimo scambio. I dati già ricevuti restano consultabili; le scritture sconosciute al fondatore al momento della revoca vengono respinte. La chiave di lettura non viene ruotata automaticamente.')}</p>
- {members.owner&&<details><summary>{tr('Proteggi il recupero degli accessi del fondatore')}</summary><p>{tr('Scarica separatamente dal backup dati un file cifrato con identità, chiavi e gestione degli accessi. Conservalo in un luogo protetto e custodisci la password separatamente. Chi possiede file e password può recuperare i privilegi del fondatore. Aggiornalo dopo modifiche agli accessi.')}</p><form onSubmit={e=>{e.preventDefault();execute(async()=>{await secretDownload('workspace/recovery',{password:recoveryPassword},props,'fuorigiri-recupero-accessi.json');setRecoveryPassword('');setMessage(tr('Recupero accessi cifrato scaricato. Conserva anche un backup dati aggiornato.'))})}}><label>{tr('Password di recupero (almeno 12 caratteri)')}<input required minLength={12} type="password" autoComplete="new-password" value={recoveryPassword} onChange={e=>setRecoveryPassword(e.target.value)}/></label><button disabled={working}>{tr('Scarica recupero accessi cifrato')}</button></form></details>}
- </>}{message&&<p role="status">{message}</p>}</section>
- {!!conflicts.length&&<section className="panel protocol"><h2>{tr('Conflitti')}</h2>{conflicts.map(c=><div key={c.id}><p>{c.record.kind} · {c.record.name||c.record.id}</p><details><summary>{tr('Confronta dati ricevuti')}</summary><pre>{JSON.stringify(c.record,null,2)}</pre></details>{members.current?.role==='admin'&&!members.revoked?.includes(members.current?.id)&&<div className="actions">{['local','remote'].map(choice=><button key={choice} onClick={()=>execute(async()=>{await api('conflicts/'+c.id+'/resolve',{choice});await refresh();await load()})}>{choice==='local'?tr('Mantieni locale'):tr('Accetta ricevuto')}</button>)}</div>}</div>)}</section>}</>
+function LocalPath({value, change}: {value: string; change: (v: string) => void}) {
+  if ((window as any).FuorigiriNative) return null;
+  return (
+    <details className="local-path">
+      <summary>{tr('Scegli cartella locale (facoltativo)')}</summary>
+      <p>
+        {tr(
+          'Lascia vuoto per usare la cartella dell’app. Una cartella scelta deve essere vuota; non usare quella sincronizzata dal cloud.'
+        )}
+      </p>
+      <label>
+        {tr('Cartella dati locale')}
+        <input value={value} onChange={e => change(e.target.value)} />
+      </label>
+    </details>
+  );
 }
 
-export function WorkspacePanel(props:Props){
- if(props.section==='societies')return <SocietyManager {...props}/>;
- if(props.section==='reports')return <SavedReports key={props.workspace} {...props}/>;
- return <Sharing {...props}/>;
+function Sharing(props: Props) {
+  const {api, run, refresh} = props;
+  const [members, setMembers] = useState<Row>({members: []}),
+    [name, setName] = useState(''),
+    [role, setRole] = useState('viewer'),
+    [password, setPassword] = useState(''),
+    [message, setMessage] = useState(''),
+    [conflicts, setConflicts] = useState<Row[]>([]),
+    [replaceId, setReplaceId] = useState<string | null>(null),
+    [recoveryPassword, setRecoveryPassword] = useState(''),
+    [renewPassword, setRenewPassword] = useState(''),
+    [renewFile, setRenewFile] = useState<File | null>(null),
+    [working, setWorking] = useState(false);
+  const load = async () => {
+    const m = await api('workspace/members');
+    setMembers(m);
+    setConflicts(await api('conflicts'));
+  };
+  useEffect(() => {
+    run(load);
+  }, [props.workspace]);
+  const execute = (task: () => Promise<void>) =>
+    run(async () => {
+      setWorking(true);
+      try {
+        await task();
+      } finally {
+        setWorking(false);
+      }
+    });
+  return (
+    <>
+      <section className="panel protocol">
+        <h2>{tr('Condivisione e collaboratori')}</h2>
+        {members.snapshot ? (
+          <p className="hint">
+            {tr(
+              'Copia di consultazione: per modificare i dati crea una copia indipendente dal backup, oppure recupera la società originale con il file di recupero accessi.'
+            )}
+          </p>
+        ) : !members.managed ? (
+          <p>
+            {tr(
+              'Per condividere un archivio precedente crea una copia indipendente da backup in Gestisci società. La copia avrà un fondatore e un canale propri.'
+            )}
+          </p>
+        ) : (
+          <>
+            <div className="identity-card">
+              <strong>
+                {members.current?.name} · {roleName(members.current?.role, members.owner)}
+              </strong>
+              <p>{tr('Questo accesso è associato all’operatore su questo dispositivo; non è un login online.')}</p>
+              <small>
+                {tr('Identità dispositivo')}: {members.current?.id}
+              </small>
+              <small>
+                {tr('Archivio locale')}: {members.path}
+              </small>
+            </div>
+            {members.revoked?.includes(members.current?.id) && (
+              <p className="alert error">
+                {tr(
+                  'Accesso revocato: puoi consultare i dati già ricevuti. Per modificare richiedi e applica un nuovo invito.'
+                )}
+              </p>
+            )}
+            {members.scope_error ? (
+              <p className="hint" role="alert">
+                {members.scope_error}
+              </p>
+            ) : (
+              <Synchronization
+                key={props.workspace}
+                sync={props.sync}
+                api={api}
+                run={run}
+                refresh={async () => {
+                  await refresh();
+                  await load();
+                }}
+                owner={!!members.owner}
+              />
+            )}
+            <details className="access-help">
+              <summary>{tr('Cosa possono fare i ruoli?')}</summary>
+              <ul>
+                <li>
+                  {tr(
+                    'Fondatore: modifica dati, crea inviti, rinnova e revoca accessi, esporta il recupero delle credenziali.'
+                  )}
+                </li>
+                <li>{tr('Admin dati: consulta, esporta e modifica i dati; non gestisce gli accessi.')}</li>
+                <li>{tr('Visualizzatore: consulta ed esporta; non modifica i dati.')}</li>
+              </ul>
+            </details>
+            <h3>{tr('Operatori e dispositivi')}</h3>
+            <p className="muted">
+              {tr(
+                'Gli inviti emessi non confermano che il destinatario li abbia già utilizzati. Genera un invito distinto per ciascun dispositivo.'
+              )}
+            </p>
+            {members.members.map((m: Row) => (
+              <div className="list-row" key={m.id}>
+                <div>
+                  <strong>
+                    {m.name} · {roleName(m.role, m.id === members.founder_id)}
+                  </strong>
+                  <small>
+                    {m.id === members.current?.id ? tr('Questo dispositivo') : tr('Invito emesso / identità associata')}{' '}
+                    · {members.revoked?.includes(m.id) ? tr('Revocato') : tr('Non revocato')} · {m.id.slice(0, 8)}
+                  </small>
+                </div>
+                {members.owner && m.id !== members.current?.id && !members.revoked?.includes(m.id) && (
+                  <div className="actions">
+                    <button
+                      type="button"
+                      disabled={working}
+                      onClick={() => {
+                        setReplaceId(m.id);
+                        setName(m.name);
+                        setRole(m.role);
+                      }}
+                    >
+                      {tr('Rinnova / cambia ruolo')}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={working}
+                      onClick={() =>
+                        execute(async () => {
+                          await api('workspace/revoke/' + m.id, {});
+                          await load();
+                          setMessage(tr('Revoca registrata. Esegui uno scambio per propagarla agli altri PC.'));
+                        })
+                      }
+                    >
+                      {tr('Revoca accesso')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+            {members.owner && !members.scope_error && (
+              <>
+                <h3>
+                  {replaceId
+                    ? tr('Sostituisci l’accesso selezionato')
+                    : tr('Invita un collaboratore o un altro tuo dispositivo')}
+                </h3>
+                <form
+                  onSubmit={e => {
+                    e.preventDefault();
+                    execute(async () => {
+                      await secretDownload(
+                        'workspace/invite',
+                        {name, role, password, replace_id: replaceId},
+                        props,
+                        'fuorigiri-invito.json'
+                      );
+                      setPassword('');
+                      setReplaceId(null);
+                      await load();
+                      setMessage(tr('Invito scaricato. Pubblica le modifiche degli accessi con uno scambio.'));
+                    });
+                  }}
+                >
+                  <div className="form-grid">
+                    <label>
+                      {tr('Nome operatore / dispositivo')}
+                      <input required value={name} onChange={e => setName(e.target.value)} />
+                    </label>
+                    <label>
+                      {tr('Ruolo dell’invito')}
+                      <select value={role} onChange={e => setRole(e.target.value)}>
+                        <option value="viewer">{tr('Visualizzatore')}</option>
+                        <option value="admin">{tr('Admin dati')}</option>
+                      </select>
+                    </label>
+                    <label>
+                      {tr('Password dell’invito (almeno 12 caratteri)')}
+                      <input
+                        required
+                        minLength={12}
+                        type="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        autoComplete="new-password"
+                      />
+                    </label>
+                  </div>
+                  {replaceId && (
+                    <p className="hint">
+                      {tr(
+                        'Scaricando il nuovo invito revochi il vecchio accesso. Sul dispositivo destinatario usa Applica nuovo invito, senza creare un altro archivio.'
+                      )}
+                    </p>
+                  )}
+                  <button disabled={working} type="submit">
+                    {tr('Scarica invito cifrato')}
+                  </button>
+                  {replaceId && (
+                    <button type="button" onClick={() => setReplaceId(null)}>
+                      {tr('Annulla sostituzione')}
+                    </button>
+                  )}
+                  <p className="muted">
+                    {tr('La password protegge soltanto il file d’invito. Comunica file e password su canali distinti.')}
+                  </p>
+                </form>
+              </>
+            )}
+            {!members.owner && (
+              <details>
+                <summary>{tr('Applica nuovo invito a questo dispositivo')}</summary>
+                <p>
+                  {tr(
+                    'Usa questa funzione per rinnovare l’accesso o cambiare ruolo nella stessa società, conservando i dati locali. Per un’altra società usa Gestisci società.'
+                  )}
+                </p>
+                <form
+                  onSubmit={e => {
+                    e.preventDefault();
+                    execute(async () => {
+                      if (!renewFile) return;
+                      const f = new FormData();
+                      f.append('file', renewFile);
+                      f.append('password', renewPassword);
+                      await api('workspaces/access', f);
+                      setRenewPassword('');
+                      setRenewFile(null);
+                      await refresh();
+                      await load();
+                      setMessage(tr('Identità aggiornata. Esegui uno scambio per ricevere lo stato degli accessi.'));
+                    });
+                  }}
+                >
+                  <label>
+                    {tr('Nuovo invito JSON')}
+                    <input
+                      required
+                      type="file"
+                      accept=".json"
+                      onChange={e => setRenewFile(e.target.files?.[0] || null)}
+                    />
+                  </label>
+                  <label>
+                    {tr('Password del nuovo invito')}
+                    <input
+                      required
+                      type="password"
+                      value={renewPassword}
+                      onChange={e => setRenewPassword(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </label>
+                  <button disabled={working || !renewFile}>{tr('Applica nuovo invito')}</button>
+                </form>
+              </details>
+            )}
+            <p className="hint">
+              {tr(
+                'La revoca si propaga al prossimo scambio. I dati già ricevuti restano consultabili; le scritture sconosciute al fondatore al momento della revoca vengono respinte. La chiave di lettura non viene ruotata automaticamente.'
+              )}
+            </p>
+            {members.owner && (
+              <details>
+                <summary>{tr('Proteggi il recupero degli accessi del fondatore')}</summary>
+                <p>
+                  {tr(
+                    'Scarica separatamente dal backup dati un file cifrato con identità, chiavi e gestione degli accessi. Conservalo in un luogo protetto e custodisci la password separatamente. Chi possiede file e password può recuperare i privilegi del fondatore. Aggiornalo dopo modifiche agli accessi.'
+                  )}
+                </p>
+                <form
+                  onSubmit={e => {
+                    e.preventDefault();
+                    execute(async () => {
+                      await secretDownload(
+                        'workspace/recovery',
+                        {password: recoveryPassword},
+                        props,
+                        'fuorigiri-recupero-accessi.json'
+                      );
+                      setRecoveryPassword('');
+                      setMessage(tr('Recupero accessi cifrato scaricato. Conserva anche un backup dati aggiornato.'));
+                    });
+                  }}
+                >
+                  <label>
+                    {tr('Password di recupero (almeno 12 caratteri)')}
+                    <input
+                      required
+                      minLength={12}
+                      type="password"
+                      autoComplete="new-password"
+                      value={recoveryPassword}
+                      onChange={e => setRecoveryPassword(e.target.value)}
+                    />
+                  </label>
+                  <button disabled={working}>{tr('Scarica recupero accessi cifrato')}</button>
+                </form>
+              </details>
+            )}
+          </>
+        )}
+        {message && <p role="status">{message}</p>}
+      </section>
+      {!!conflicts.length && (
+        <section className="panel protocol">
+          <h2>{tr('Conflitti')}</h2>
+          {conflicts.map(c => (
+            <div key={c.id}>
+              <p>
+                {c.record.kind} · {c.record.name || c.record.id}
+              </p>
+              <details>
+                <summary>{tr('Confronta dati ricevuti')}</summary>
+                <pre>{JSON.stringify(c.record, null, 2)}</pre>
+              </details>
+              {members.current?.role === 'admin' && !members.revoked?.includes(members.current?.id) && (
+                <div className="actions">
+                  {['local', 'remote'].map(choice => (
+                    <button
+                      key={choice}
+                      onClick={() =>
+                        execute(async () => {
+                          await api('conflicts/' + c.id + '/resolve', {choice});
+                          await refresh();
+                          await load();
+                        })
+                      }
+                    >
+                      {choice === 'local' ? tr('Mantieni locale') : tr('Accetta ricevuto')}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
+    </>
+  );
+}
+
+export function WorkspacePanel(props: Props) {
+  if (props.section === 'societies') return <SocietyManager {...props} />;
+  if (props.section === 'reports') return <SavedReports key={props.workspace} {...props} />;
+  return <Sharing {...props} />;
 }

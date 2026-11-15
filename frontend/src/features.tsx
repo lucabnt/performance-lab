@@ -1,78 +1,873 @@
-import {groupSeasons,localToday,matchesGroupMembership,seasonPeriod} from './groupSeasonModel';
+import {groupSeasons, localToday, matchesGroupMembership, seasonPeriod} from './groupSeasonModel';
 import {FormActions} from '@cycling-suite/ui';
 import {TimeInput} from './time';
-import {DataTable,SortableTable} from '@cycling-suite/ui';
-export {DataTable,SortableTable};
-import {FieldSchemaEditor,FieldValues,TestExtensions} from './customFields';
-import {metricLabel,numberText} from './metrics';
+import {DataTable, SortableTable} from '@cycling-suite/ui';
+export {DataTable, SortableTable};
+import {FieldSchemaEditor, FieldValues, TestExtensions} from './customFields';
+import {metricLabel, numberText} from './metrics';
 import {thresholdCoefficient} from './thresholdReference';
 import {tr} from './i18n';
-import React,{useState,useEffect} from 'react';
-type Row=Record<string,any>;
-export function ManualTestEditor({athletes,protocols,selected,api,run,done,initialProtocol}:{athletes:Row[],protocols:Row[],selected:string,api:any,run:any,done:any,initialProtocol?:Row}){
- const [recovery,setRecovery]=useState<Row>({});
- const [draft,setDraft]=useState<Row>({athlete_id:selected||athletes[0]?.id||'',protocol_id:initialProtocol?.id||protocols[0]?.id||'',date:new Date().toLocaleDateString('en-CA'),notes:'',weight_source:'dichiarato'});
- const change=(k:string,v:any)=>setDraft(d=>({...d,[k]:v}));
- const fields=['map_w','map_alt_w','fc_max_test_bpm','end_s','weight_kg','height_cm','rest_hr','rest_after_s','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe'];
- const mobile=!!(window as any).FuorigiriNative;
- const field=(k:string)=>['end_s','rest_after_s'].includes(k)?<TimeInput key={k} label={metricLabel(k)} value={draft[k]??null} onChange={v=>change(k,v)}/>:<label key={k}>{metricLabel(k)}<input type="number" step="any" min="0" inputMode="decimal" value={draft[k]??''} onChange={e=>change(k,e.target.value)}/></label>;
+import React, {useState, useEffect} from 'react';
+type Row = Record<string, any>;
+export function ManualTestEditor({
+  athletes,
+  protocols,
+  selected,
+  api,
+  run,
+  done,
+  initialProtocol
+}: {
+  athletes: Row[];
+  protocols: Row[];
+  selected: string;
+  api: any;
+  run: any;
+  done: any;
+  initialProtocol?: Row;
+}) {
+  const [recovery, setRecovery] = useState<Row>({});
+  const [draft, setDraft] = useState<Row>({
+    athlete_id: selected || athletes[0]?.id || '',
+    protocol_id: initialProtocol?.id || protocols[0]?.id || '',
+    date: new Date().toLocaleDateString('en-CA'),
+    notes: '',
+    weight_source: 'dichiarato'
+  });
+  const change = (k: string, v: any) => setDraft(d => ({...d, [k]: v}));
+  const fields = [
+    'map_w',
+    'map_alt_w',
+    'fc_max_test_bpm',
+    'end_s',
+    'weight_kg',
+    'height_cm',
+    'rest_hr',
+    'rest_after_s',
+    'threshold_w',
+    'threshold_coefficient',
+    'fthr_bpm',
+    'ftp_w',
+    'rpe'
+  ];
+  const mobile = !!(window as any).FuorigiriNative;
+  const field = (k: string) =>
+    ['end_s', 'rest_after_s'].includes(k) ? (
+      <TimeInput key={k} label={metricLabel(k)} value={draft[k] ?? null} onChange={v => change(k, v)} />
+    ) : (
+      <label key={k}>
+        {metricLabel(k)}
+        <input
+          type="number"
+          step="any"
+          min="0"
+          inputMode="decimal"
+          value={draft[k] ?? ''}
+          onChange={e => change(k, e.target.value)}
+        />
+      </label>
+    );
 
- return <form onSubmit={e=>{e.preventDefault();run(async()=>{const values=Object.fromEntries(fields.map(k=>[k,draft[k]==null||draft[k]===''?null:Number(draft[k])])),{map_w,map_alt_w,fc_max_test_bpm,...settings}=values;await done(await api('manual-tests',{athlete_id:draft.athlete_id,protocol_id:draft.protocol_id,date:draft.date,map_w,map_alt_w,fc_max_test_bpm,settings:{...settings,end_s:settings.end_s||0,weight_source:draft.weight_source,custom_values:draft.custom_values||{},extra_fields:draft.extra_fields||[],threshold_source:'dichiarato',recovery_manual:Object.entries(recovery).filter(([,v])=>v!=='').map(([after_s,hr_bpm])=>({after_s:Number(after_s),hr_bpm:Number(hr_bpm)}))},notes:draft.notes}))})}}><h2>{tr('Test con dati manuali')}</h2><p className="hint">{tr('Non richiede FIT né step del protocollo. I risultati rimangono dichiarati e non verificati sul tracciato. Lascia vuoti i valori non disponibili.')}</p><div className="form-grid"><label>{tr('Atleta')}<select required value={draft.athlete_id} onChange={e=>change('athlete_id',e.target.value)}>{athletes.map(a=><option key={a.id} value={a.id}>{a.surname} {a.name}</option>)}</select></label><label>{tr('Protocollo e versione')}<select required value={draft.protocol_id} onChange={e=>change('protocol_id',e.target.value)}>{protocols.map(p=><option key={p.id} value={p.id}>{p.name} · {p.version}</option>)}</select></label><label>{tr('Data')}<input required type="date" value={draft.date} onChange={e=>change('date',e.target.value)}/></label>{(mobile?['map_w','fc_max_test_bpm','weight_kg','height_cm']:fields).map(field)}</div>{mobile&&<details><summary>{tr('Altri risultati e riferimenti facoltativi')}</summary><div className="form-grid">{fields.filter(k=>!['map_w','fc_max_test_bpm','weight_kg','height_cm'].includes(k)).map(field)}</div></details>}<label>{tr('Fonte del peso')}<select value={draft.weight_source} onChange={e=>change('weight_source',e.target.value)}>{['dichiarato','misurato','arrotondato','stimato'].map(v=><option key={v}>{v}</option>)}</select></label><details open={!mobile}><summary>{tr('FC di recupero manuale')}</summary><div className="form-grid">{[60,90,120].map(t=><label key={t}>{tr('Dopo s')} {t} · bpm<input type="number" min="1" max="250" value={recovery[t]??''} onChange={e=>setRecovery(r=>({...r,[t]:e.target.value}))}/></label>)}</div></details><label>{tr('Note e condizioni')}<textarea value={draft.notes} onChange={e=>change('notes',e.target.value)}/></label><TestExtensions protocol={protocols.find(p=>p.id===draft.protocol_id)} values={draft.custom_values||{}} onChange={(v:Row)=>setDraft(d=>({...d,custom_values:v}))} extraFields={draft.extra_fields||[]} onFieldsChange={(v:Row[])=>setDraft(d=>({...d,extra_fields:v}))}/><FormActions><button className="primary" type="submit">{tr('Conferma e archivia')}</button></FormActions></form>
+  return (
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        run(async () => {
+          const values = Object.fromEntries(
+              fields.map(k => [k, draft[k] == null || draft[k] === '' ? null : Number(draft[k])])
+            ),
+            {map_w, map_alt_w, fc_max_test_bpm, ...settings} = values;
+          await done(
+            await api('manual-tests', {
+              athlete_id: draft.athlete_id,
+              protocol_id: draft.protocol_id,
+              date: draft.date,
+              map_w,
+              map_alt_w,
+              fc_max_test_bpm,
+              settings: {
+                ...settings,
+                end_s: settings.end_s || 0,
+                weight_source: draft.weight_source,
+                custom_values: draft.custom_values || {},
+                extra_fields: draft.extra_fields || [],
+                threshold_source: 'dichiarato',
+                recovery_manual: Object.entries(recovery)
+                  .filter(([, v]) => v !== '')
+                  .map(([after_s, hr_bpm]) => ({after_s: Number(after_s), hr_bpm: Number(hr_bpm)}))
+              },
+              notes: draft.notes
+            })
+          );
+        });
+      }}
+    >
+      <h2>{tr('Test con dati manuali')}</h2>
+      <p className="hint">
+        {tr(
+          'Non richiede FIT né step del protocollo. I risultati rimangono dichiarati e non verificati sul tracciato. Lascia vuoti i valori non disponibili.'
+        )}
+      </p>
+      <div className="form-grid">
+        <label>
+          {tr('Atleta')}
+          <select required value={draft.athlete_id} onChange={e => change('athlete_id', e.target.value)}>
+            {athletes.map(a => (
+              <option key={a.id} value={a.id}>
+                {a.surname} {a.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          {tr('Protocollo e versione')}
+          <select required value={draft.protocol_id} onChange={e => change('protocol_id', e.target.value)}>
+            {protocols.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.name} · {p.version}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          {tr('Data')}
+          <input required type="date" value={draft.date} onChange={e => change('date', e.target.value)} />
+        </label>
+        {(mobile ? ['map_w', 'fc_max_test_bpm', 'weight_kg', 'height_cm'] : fields).map(field)}
+      </div>
+      {mobile && (
+        <details>
+          <summary>{tr('Altri risultati e riferimenti facoltativi')}</summary>
+          <div className="form-grid">
+            {fields.filter(k => !['map_w', 'fc_max_test_bpm', 'weight_kg', 'height_cm'].includes(k)).map(field)}
+          </div>
+        </details>
+      )}
+      <label>
+        {tr('Fonte del peso')}
+        <select value={draft.weight_source} onChange={e => change('weight_source', e.target.value)}>
+          {['dichiarato', 'misurato', 'arrotondato', 'stimato'].map(v => (
+            <option key={v}>{v}</option>
+          ))}
+        </select>
+      </label>
+      <details open={!mobile}>
+        <summary>{tr('FC di recupero manuale')}</summary>
+        <div className="form-grid">
+          {[60, 90, 120].map(t => (
+            <label key={t}>
+              {tr('Dopo s')} {t} · bpm
+              <input
+                type="number"
+                min="1"
+                max="250"
+                value={recovery[t] ?? ''}
+                onChange={e => setRecovery(r => ({...r, [t]: e.target.value}))}
+              />
+            </label>
+          ))}
+        </div>
+      </details>
+      <label>
+        {tr('Note e condizioni')}
+        <textarea value={draft.notes} onChange={e => change('notes', e.target.value)} />
+      </label>
+      <TestExtensions
+        protocol={protocols.find(p => p.id === draft.protocol_id)}
+        values={draft.custom_values || {}}
+        onChange={(v: Row) => setDraft(d => ({...d, custom_values: v}))}
+        extraFields={draft.extra_fields || []}
+        onFieldsChange={(v: Row[]) => setDraft(d => ({...d, extra_fields: v}))}
+      />
+      <FormActions>
+        <button className="primary" type="submit">
+          {tr('Conferma e archivia')}
+        </button>
+      </FormActions>
+    </form>
+  );
 }
-export function ZoneEditor({value,onChange}:{value:Row[],onChange:(v:Row[])=>void}){
- const update=(i:number,s:Row)=>onChange(value.map((v,j)=>i===j?s:v));
- return <section><h3>{tr("Zone personalizzate")}</h3>{value.map((s,i)=><div className="zone-editor" key={s.channel}><div className="form-grid"><label>{tr("Canale:")} {s.channel==='hr'?tr("FC"):tr("Potenza")}<input aria-label={tr("Nome schema")} value={s.name} onChange={e=>update(i,{...s,name:e.target.value})}/></label><label>{tr("Riferimento")}<select value={s.reference} onChange={e=>update(i,{...s,reference:e.target.value})}>{(s.channel==='hr'?['fthr_bpm','fc_max_test_bpm','fc_max_reference_bpm']:['threshold_w','map_w','ftp_w']).map(r=><option key={r} value={r}>{metricLabel(r)}</option>)}</select></label></div>
- <table><thead><tr><th>{tr("Zona")}</th><th>{tr("Limite superiore %")}</th><th>{tr("Incluso")}</th><th/></tr></thead><tbody>{s.zones.map((z:Row,j:number)=><tr key={j}><td><input aria-label={tr("Nome zona")} value={z.name} onChange={e=>update(i,{...s,zones:s.zones.map((x:Row,k:number)=>k===j?{...x,name:e.target.value}:x)})}/></td><td>{j===s.zones.length-1?tr("Aperto"):<input aria-label={tr("Percentuale limite")} type="number" step="any" value={z.upper??''} onChange={e=>update(i,{...s,zones:s.zones.map((x:Row,k:number)=>k===j?{...x,upper:Number(e.target.value)}:x)})}/>}</td><td>{j<s.zones.length-1&&<input aria-label={tr("Include confine")} type="checkbox" checked={z.inclusive} onChange={e=>update(i,{...s,zones:s.zones.map((x:Row,k:number)=>k===j?{...x,inclusive:e.target.checked}:x)})}/>}</td><td><button disabled={s.zones.length<=2||j===s.zones.length-1} onClick={()=>update(i,{...s,zones:s.zones.filter((_:Row,k:number)=>k!==j)})}>{tr("Rimuovi")}</button></td></tr>)}</tbody></table><button onClick={()=>{const zones=[...s.zones];const last=zones.pop();zones.push({name:'Z'+(zones.length+1),upper:(zones.at(-1)?.upper||0)+10,inclusive:true},{...last,name:'Z'+(zones.length+2)});update(i,{...s,zones})}}>{tr("Aggiungi zona")}</button></div>)}</section>
+export function ZoneEditor({value, onChange}: {value: Row[]; onChange: (v: Row[]) => void}) {
+  const update = (i: number, s: Row) => onChange(value.map((v, j) => (i === j ? s : v)));
+  return (
+    <section>
+      <h3>{tr('Zone personalizzate')}</h3>
+      {value.map((s, i) => (
+        <div className="zone-editor" key={s.channel}>
+          <div className="form-grid">
+            <label>
+              {tr('Canale:')} {s.channel === 'hr' ? tr('FC') : tr('Potenza')}
+              <input
+                aria-label={tr('Nome schema')}
+                value={s.name}
+                onChange={e => update(i, {...s, name: e.target.value})}
+              />
+            </label>
+            <label>
+              {tr('Riferimento')}
+              <select value={s.reference} onChange={e => update(i, {...s, reference: e.target.value})}>
+                {(s.channel === 'hr'
+                  ? ['fthr_bpm', 'fc_max_test_bpm', 'fc_max_reference_bpm']
+                  : ['threshold_w', 'map_w', 'ftp_w']
+                ).map(r => (
+                  <option key={r} value={r}>
+                    {metricLabel(r)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>{tr('Zona')}</th>
+                <th>{tr('Limite superiore %')}</th>
+                <th>{tr('Incluso')}</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {s.zones.map((z: Row, j: number) => (
+                <tr key={j}>
+                  <td>
+                    <input
+                      aria-label={tr('Nome zona')}
+                      value={z.name}
+                      onChange={e =>
+                        update(i, {
+                          ...s,
+                          zones: s.zones.map((x: Row, k: number) => (k === j ? {...x, name: e.target.value} : x))
+                        })
+                      }
+                    />
+                  </td>
+                  <td>
+                    {j === s.zones.length - 1 ? (
+                      tr('Aperto')
+                    ) : (
+                      <input
+                        aria-label={tr('Percentuale limite')}
+                        type="number"
+                        step="any"
+                        value={z.upper ?? ''}
+                        onChange={e =>
+                          update(i, {
+                            ...s,
+                            zones: s.zones.map((x: Row, k: number) =>
+                              k === j ? {...x, upper: Number(e.target.value)} : x
+                            )
+                          })
+                        }
+                      />
+                    )}
+                  </td>
+                  <td>
+                    {j < s.zones.length - 1 && (
+                      <input
+                        aria-label={tr('Include confine')}
+                        type="checkbox"
+                        checked={z.inclusive}
+                        onChange={e =>
+                          update(i, {
+                            ...s,
+                            zones: s.zones.map((x: Row, k: number) =>
+                              k === j ? {...x, inclusive: e.target.checked} : x
+                            )
+                          })
+                        }
+                      />
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      disabled={s.zones.length <= 2 || j === s.zones.length - 1}
+                      onClick={() => update(i, {...s, zones: s.zones.filter((_: Row, k: number) => k !== j)})}
+                    >
+                      {tr('Rimuovi')}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            onClick={() => {
+              const zones = [...s.zones];
+              const last = zones.pop();
+              zones.push(
+                {name: 'Z' + (zones.length + 1), upper: (zones.at(-1)?.upper || 0) + 10, inclusive: true},
+                {...last, name: 'Z' + (zones.length + 2)}
+              );
+              update(i, {...s, zones});
+            }}
+          >
+            {tr('Aggiungi zona')}
+          </button>
+        </div>
+      ))}
+    </section>
+  );
 }
-export function Zones({analysis}:{analysis:Row}){return <>{(analysis.zones||[]).map((s:Row,i:number)=><section key={i}><h3>{s.scheme.channel==='hr'?tr("FC"):tr("Potenza")} · {s.scheme.name} · {metricLabel(s.scheme.reference)}: {s.reference_value??tr("non disponibile")}</h3><DataTable rows={s.zones.map((z:Row)=>({...z,range:`${z.lower_inclusive?'≥':'>'}${Number(z.lower_value.toFixed(2))} / ${z.upper_value==null?'∞':(z.inclusive?'≤':'<')+Number(z.upper_value.toFixed(2))}`}))} columns={[{key:'name',label:tr("Zona")},{key:'range',label:tr("Intervallo")},{key:'seconds',label:tr("Secondi")}]}/><p className="muted">{tr("Tempo non classificato:")} {s.unclassified_s==null?tr("non disponibile"):s.unclassified_s+' s'}</p></section>)}</>}
+export function Zones({analysis}: {analysis: Row}) {
+  return (
+    <>
+      {(analysis.zones || []).map((s: Row, i: number) => (
+        <section key={i}>
+          <h3>
+            {s.scheme.channel === 'hr' ? tr('FC') : tr('Potenza')} · {s.scheme.name} · {metricLabel(s.scheme.reference)}
+            : {s.reference_value ?? tr('non disponibile')}
+          </h3>
+          <DataTable
+            rows={s.zones.map((z: Row) => ({
+              ...z,
+              range: `${z.lower_inclusive ? '≥' : '>'}${Number(z.lower_value.toFixed(2))} / ${z.upper_value == null ? '∞' : (z.inclusive ? '≤' : '<') + Number(z.upper_value.toFixed(2))}`
+            }))}
+            columns={[
+              {key: 'name', label: tr('Zona')},
+              {key: 'range', label: tr('Intervallo')},
+              {key: 'seconds', label: tr('Secondi')}
+            ]}
+          />
+          <p className="muted">
+            {tr('Tempo non classificato:')} {s.unclassified_s == null ? tr('non disponibile') : s.unclassified_s + ' s'}
+          </p>
+        </section>
+      ))}
+    </>
+  );
+}
 
 export {HistoryPanel} from './HistoryPanel';
 
 export {ImportPanel} from './ImportPanel';
 
-export function ProtocolEditor({original,api,run,done,org}:{original?:Row,api:any,run:any,done:any,org?:string}){
- const [fields,setFields]=useState<Row[]>(original?.custom_fields||[]),[fieldValues,setFieldValues]=useState<Row>(original?.custom_values||{});
- const [name,setName]=useState(original?.name||''),[family,setFamily]=useState(original?.family||'incremental'),[version,setVersion]=useState(''),[reason,setReason]=useState('');
- const [catalogOnly,setCatalogOnly]=useState(original?!original.definition.segments.length:false);
- const [segments,setSegments]=useState<Row[]>(original?.definition.segments.map((s:Row)=>({duration_s:s.end_s-s.start_s,start_w:s.start_w,end_w:s.end_w,phase:s.phase}))||[{duration_s:600,start_w:60,end_w:60,phase:'warmup'},{duration_s:240,start_w:80,end_w:80,phase:'increment'}]);
- const edit=(i:number,k:string,v:any)=>setSegments(s=>s.map((r,j)=>j===i?{...r,[k]:v}:r));
- return <><h2>{original?tr("Nuova versione"):tr("Crea protocollo")}</h2><div className="form-grid">{[[tr("Nome"),name,setName],[tr("Codice"),family,setFamily],[tr("Versione"),version,setVersion],[tr("Motivo"),reason,setReason]].map(([label,value,set]:any)=><label key={label}>{label}<input value={value} onChange={e=>set(e.target.value)}/></label>)}</div><label className="choice"><input type="checkbox" checked={catalogOnly} onChange={e=>setCatalogOnly(e.target.checked)}/>{tr("Solo scheda d’archivio, senza step")}</label>{!catalogOnly&&<><table><thead><tr><th>{tr("Durata s")}</th><th>{tr("W iniziali")}</th><th>{tr("W finali")}</th><th>{tr("Fase")}</th><th/></tr></thead><tbody>{segments.map((s,i)=><tr key={i}>{['duration_s','start_w','end_w'].map(k=><td key={k}><input aria-label={k} type="number" value={s[k]} onChange={e=>edit(i,k,Number(e.target.value))}/></td>)}<td><select value={s.phase} onChange={e=>edit(i,'phase',e.target.value)}>{['warmup','increment','recovery','cooldown'].map(p=><option key={p} value={p}>{metricLabel(p)}</option>)}</select></td><td><button onClick={()=>setSegments(s=>s.filter((_,j)=>j!==i))}>{tr("Rimuovi")}</button></td></tr>)}</tbody></table><button onClick={()=>setSegments(s=>[...s,{duration_s:240,start_w:(s.at(-1)?.end_w||0)+20,end_w:(s.at(-1)?.end_w||0)+20,phase:'increment'}])}>{tr("Aggiungi fase")}</button></>}<p className="hint">{tr("L’export ERG conserva il carico. Esporta anche la definizione JSON per fasi semantiche e versionamento.")}</p><FieldSchemaEditor fields={fields} onChange={v=>{setFields(v);setFieldValues(Object.fromEntries(Object.entries(fieldValues).filter(([k])=>v.some(f=>f.key===k&&f.scope==='protocol'))))}}/><FieldValues fields={fields} values={fieldValues} onChange={setFieldValues} scope="protocol"/><FormActions><button className="primary" onClick={()=>run(async()=>{await api('protocols/manual',{organization_id:org||null,name,family,version,parent_id:original?.id||null,reason,segments:catalogOnly?[]:segments,custom_fields:fields,custom_values:fieldValues});await done()})}>{tr("Pubblica versione")}</button></FormActions></>
+export function ProtocolEditor({
+  original,
+  api,
+  run,
+  done,
+  org
+}: {
+  original?: Row;
+  api: any;
+  run: any;
+  done: any;
+  org?: string;
+}) {
+  const [fields, setFields] = useState<Row[]>(original?.custom_fields || []),
+    [fieldValues, setFieldValues] = useState<Row>(original?.custom_values || {});
+  const [name, setName] = useState(original?.name || ''),
+    [family, setFamily] = useState(original?.family || 'incremental'),
+    [version, setVersion] = useState(''),
+    [reason, setReason] = useState('');
+  const [catalogOnly, setCatalogOnly] = useState(original ? !original.definition.segments.length : false);
+  const [segments, setSegments] = useState<Row[]>(
+    original?.definition.segments.map((s: Row) => ({
+      duration_s: s.end_s - s.start_s,
+      start_w: s.start_w,
+      end_w: s.end_w,
+      phase: s.phase
+    })) || [
+      {duration_s: 600, start_w: 60, end_w: 60, phase: 'warmup'},
+      {duration_s: 240, start_w: 80, end_w: 80, phase: 'increment'}
+    ]
+  );
+  const edit = (i: number, k: string, v: any) => setSegments(s => s.map((r, j) => (j === i ? {...r, [k]: v} : r)));
+  return (
+    <>
+      <h2>{original ? tr('Nuova versione') : tr('Crea protocollo')}</h2>
+      <div className="form-grid">
+        {[
+          [tr('Nome'), name, setName],
+          [tr('Codice'), family, setFamily],
+          [tr('Versione'), version, setVersion],
+          [tr('Motivo'), reason, setReason]
+        ].map(([label, value, set]: any) => (
+          <label key={label}>
+            {label}
+            <input value={value} onChange={e => set(e.target.value)} />
+          </label>
+        ))}
+      </div>
+      <label className="choice">
+        <input type="checkbox" checked={catalogOnly} onChange={e => setCatalogOnly(e.target.checked)} />
+        {tr('Solo scheda d’archivio, senza step')}
+      </label>
+      {!catalogOnly && (
+        <>
+          <table>
+            <thead>
+              <tr>
+                <th>{tr('Durata s')}</th>
+                <th>{tr('W iniziali')}</th>
+                <th>{tr('W finali')}</th>
+                <th>{tr('Fase')}</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {segments.map((s, i) => (
+                <tr key={i}>
+                  {['duration_s', 'start_w', 'end_w'].map(k => (
+                    <td key={k}>
+                      <input
+                        aria-label={k}
+                        type="number"
+                        value={s[k]}
+                        onChange={e => edit(i, k, Number(e.target.value))}
+                      />
+                    </td>
+                  ))}
+                  <td>
+                    <select value={s.phase} onChange={e => edit(i, 'phase', e.target.value)}>
+                      {['warmup', 'increment', 'recovery', 'cooldown'].map(p => (
+                        <option key={p} value={p}>
+                          {metricLabel(p)}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <button onClick={() => setSegments(s => s.filter((_, j) => j !== i))}>{tr('Rimuovi')}</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            onClick={() =>
+              setSegments(s => [
+                ...s,
+                {
+                  duration_s: 240,
+                  start_w: (s.at(-1)?.end_w || 0) + 20,
+                  end_w: (s.at(-1)?.end_w || 0) + 20,
+                  phase: 'increment'
+                }
+              ])
+            }
+          >
+            {tr('Aggiungi fase')}
+          </button>
+        </>
+      )}
+      <p className="hint">
+        {tr('L’export ERG conserva il carico. Esporta anche la definizione JSON per fasi semantiche e versionamento.')}
+      </p>
+      <FieldSchemaEditor
+        fields={fields}
+        onChange={v => {
+          setFields(v);
+          setFieldValues(
+            Object.fromEntries(
+              Object.entries(fieldValues).filter(([k]) => v.some(f => f.key === k && f.scope === 'protocol'))
+            )
+          );
+        }}
+      />
+      <FieldValues fields={fields} values={fieldValues} onChange={setFieldValues} scope="protocol" />
+      <FormActions>
+        <button
+          className="primary"
+          onClick={() =>
+            run(async () => {
+              await api('protocols/manual', {
+                organization_id: org || null,
+                name,
+                family,
+                version,
+                parent_id: original?.id || null,
+                reason,
+                segments: catalogOnly ? [] : segments,
+                custom_fields: fields,
+                custom_values: fieldValues
+              });
+              await done();
+            })
+          }
+        >
+          {tr('Pubblica versione')}
+        </button>
+      </FormActions>
+    </>
+  );
 }
 
-export function GrowthPanel({org,api,run,Plot}:{org:string,api:any,run:any,Plot:any}){
- const [growth,setGrowth]=useState<Row[]>([]),[first,setFirst]=useState(String(new Date().getFullYear()-1)),[second,setSecond]=useState(String(new Date().getFullYear())),[pairs,setPairs]=useState<Row|null>(null),[metric,setMetric]=useState('map_w');
- useEffect(()=>{run(async()=>setGrowth(await api(`history/${org}/growth`)))},[org]);
- return <><section className="panel protocol"><h2>{tr('Variazioni antropometriche')}</h2><p>{tr('Variazioni descrittive fra rilevazioni. La velocità annualizzata non è una previsione di crescita.')}</p><DataTable rows={growth.map(r=>({...r,delta:Number(r.delta.toFixed(3)),annualized:r.annualized==null?null:Number(r.annualized.toFixed(3))}))} columns={[{key:'athlete',label:tr('Atleta')},{key:'metric',label:tr('Metrica'),render:r=>metricLabel(r.metric)},{key:'previous_date',label:tr('Dal')},{key:'date',label:tr('Data')},{key:'days',label:tr('Giorni')},{key:'delta',label:'Delta'},{key:'annualized',label:tr('Per anno')},{key:'quality_reason',label:tr('Qualità')}]}/></section><section className="panel protocol"><h2>{tr('Confronto sugli stessi atleti')}</h2><div className="form-grid"><label>{tr('Prima stagione')}<input value={first} onChange={e=>setFirst(e.target.value)}/></label><label>{tr('Seconda stagione')}<input value={second} onChange={e=>setSecond(e.target.value)}/></label><label>{tr('Metrica')}<select value={metric} onChange={e=>setMetric(e.target.value)}>{['map_w','map_wkg','threshold_w','threshold_wkg','weight_kg'].map(m=><option key={m} value={m}>{metricLabel(m)}</option>)}</select></label></div><button onClick={()=>run(async()=>setPairs(await api(`history/${org}/compare?first=${encodeURIComponent(first)}&second=${encodeURIComponent(second)}`)))}>{tr('Confronta')}</button>{pairs&&<><p>{pairs.n_pairs} {tr('coppie comparabili')} · {pairs.unpaired_first} / {pairs.unpaired_second} {tr('risultati senza coppia')}</p><Plot data={[{x:pairs.pairs.map((r:Row)=>r.athlete),y:pairs.pairs.map((r:Row)=>r[metric+'_delta']),type:'bar',name:'Delta '+metricLabel(metric)}]}/><DataTable rows={pairs.pairs.map((r:Row)=>({...r,delta:r[metric+'_delta'],percent:r[metric+'_pct']==null?null:Number(r[metric+'_pct'].toFixed(2))}))} columns={[{key:'athlete',label:tr('Atleta')},{key:'from',label:tr('Dal')},{key:'to',label:tr('Data')},{key:'delta',label:'Delta'},{key:'percent',label:'%'}]}/></>}</section></>
+export function GrowthPanel({org, api, run, Plot}: {org: string; api: any; run: any; Plot: any}) {
+  const [growth, setGrowth] = useState<Row[]>([]),
+    [first, setFirst] = useState(String(new Date().getFullYear() - 1)),
+    [second, setSecond] = useState(String(new Date().getFullYear())),
+    [pairs, setPairs] = useState<Row | null>(null),
+    [metric, setMetric] = useState('map_w');
+  useEffect(() => {
+    run(async () => setGrowth(await api(`history/${org}/growth`)));
+  }, [org]);
+  return (
+    <>
+      <section className="panel protocol">
+        <h2>{tr('Variazioni antropometriche')}</h2>
+        <p>
+          {tr('Variazioni descrittive fra rilevazioni. La velocità annualizzata non è una previsione di crescita.')}
+        </p>
+        <DataTable
+          rows={growth.map(r => ({
+            ...r,
+            delta: Number(r.delta.toFixed(3)),
+            annualized: r.annualized == null ? null : Number(r.annualized.toFixed(3))
+          }))}
+          columns={[
+            {key: 'athlete', label: tr('Atleta')},
+            {key: 'metric', label: tr('Metrica'), render: r => metricLabel(r.metric)},
+            {key: 'previous_date', label: tr('Dal')},
+            {key: 'date', label: tr('Data')},
+            {key: 'days', label: tr('Giorni')},
+            {key: 'delta', label: 'Delta'},
+            {key: 'annualized', label: tr('Per anno')},
+            {key: 'quality_reason', label: tr('Qualità')}
+          ]}
+        />
+      </section>
+      <section className="panel protocol">
+        <h2>{tr('Confronto sugli stessi atleti')}</h2>
+        <div className="form-grid">
+          <label>
+            {tr('Prima stagione')}
+            <input value={first} onChange={e => setFirst(e.target.value)} />
+          </label>
+          <label>
+            {tr('Seconda stagione')}
+            <input value={second} onChange={e => setSecond(e.target.value)} />
+          </label>
+          <label>
+            {tr('Metrica')}
+            <select value={metric} onChange={e => setMetric(e.target.value)}>
+              {['map_w', 'map_wkg', 'threshold_w', 'threshold_wkg', 'weight_kg'].map(m => (
+                <option key={m} value={m}>
+                  {metricLabel(m)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <button
+          onClick={() =>
+            run(async () =>
+              setPairs(
+                await api(
+                  `history/${org}/compare?first=${encodeURIComponent(first)}&second=${encodeURIComponent(second)}`
+                )
+              )
+            )
+          }
+        >
+          {tr('Confronta')}
+        </button>
+        {pairs && (
+          <>
+            <p>
+              {pairs.n_pairs} {tr('coppie comparabili')} · {pairs.unpaired_first} / {pairs.unpaired_second}{' '}
+              {tr('risultati senza coppia')}
+            </p>
+            <Plot
+              data={[
+                {
+                  x: pairs.pairs.map((r: Row) => r.athlete),
+                  y: pairs.pairs.map((r: Row) => r[metric + '_delta']),
+                  type: 'bar',
+                  name: 'Delta ' + metricLabel(metric)
+                }
+              ]}
+            />
+            <DataTable
+              rows={pairs.pairs.map((r: Row) => ({
+                ...r,
+                delta: r[metric + '_delta'],
+                percent: r[metric + '_pct'] == null ? null : Number(r[metric + '_pct'].toFixed(2))
+              }))}
+              columns={[
+                {key: 'athlete', label: tr('Atleta')},
+                {key: 'from', label: tr('Dal')},
+                {key: 'to', label: tr('Data')},
+                {key: 'delta', label: 'Delta'},
+                {key: 'percent', label: '%'}
+              ]}
+            />
+          </>
+        )}
+      </section>
+    </>
+  );
 }
 
-export function DefaultsPanel({org,api,run}:{org:string,api:any,run:any}){
- const [source,setSource]=useState(''),[population,setPopulation]=useState(''),[weight,setWeight]=useState(''),[height,setHeight]=useState(''),[saved,setSaved]=useState(false);
- return <section className="panel protocol"><h2>{tr('Suggerimenti in assenza di misure')}</h2><p>{tr('Valori facoltativi con fonte e popolazione. Il test li userà soltanto dopo una scelta esplicita, come stime.')}</p><div className="form-grid"><label>{tr('Fonte')}<input value={source} onChange={e=>setSource(e.target.value)}/></label><label>{tr('Popolazione')}<input value={population} onChange={e=>setPopulation(e.target.value)}/></label><label>{tr('Peso · kg')}<input type="number" value={weight} onChange={e=>setWeight(e.target.value)}/></label><label>{tr('Statura · cm')}<input type="number" value={height} onChange={e=>setHeight(e.target.value)}/></label></div><button onClick={()=>run(async()=>{await api('default-profiles',{organization_id:org,source,population,weight_kg:weight?Number(weight):null,height_cm:height?Number(height):null});setSaved(true)})}>{tr('Salva suggerimenti')}</button>{saved&&<p role="status">{tr('Salvato nell’archivio locale.')}</p>}</section>
+export function DefaultsPanel({org, api, run}: {org: string; api: any; run: any}) {
+  const [source, setSource] = useState(''),
+    [population, setPopulation] = useState(''),
+    [weight, setWeight] = useState(''),
+    [height, setHeight] = useState(''),
+    [saved, setSaved] = useState(false);
+  return (
+    <section className="panel protocol">
+      <h2>{tr('Suggerimenti in assenza di misure')}</h2>
+      <p>
+        {tr(
+          'Valori facoltativi con fonte e popolazione. Il test li userà soltanto dopo una scelta esplicita, come stime.'
+        )}
+      </p>
+      <div className="form-grid">
+        <label>
+          {tr('Fonte')}
+          <input value={source} onChange={e => setSource(e.target.value)} />
+        </label>
+        <label>
+          {tr('Popolazione')}
+          <input value={population} onChange={e => setPopulation(e.target.value)} />
+        </label>
+        <label>
+          {tr('Peso · kg')}
+          <input type="number" value={weight} onChange={e => setWeight(e.target.value)} />
+        </label>
+        <label>
+          {tr('Statura · cm')}
+          <input type="number" value={height} onChange={e => setHeight(e.target.value)} />
+        </label>
+      </div>
+      <button
+        onClick={() =>
+          run(async () => {
+            await api('default-profiles', {
+              organization_id: org,
+              source,
+              population,
+              weight_kg: weight ? Number(weight) : null,
+              height_cm: height ? Number(height) : null
+            });
+            setSaved(true);
+          })
+        }
+      >
+        {tr('Salva suggerimenti')}
+      </button>
+      {saved && <p role="status">{tr('Salvato nell’archivio locale.')}</p>}
+    </section>
+  );
 }
 
-export function HistoricalEditor({test,api,run,done,standalone=false}:{test:Row,api:any,run:any,done:(r:Row)=>void,standalone?:boolean}){
- const [open,setOpen]=useState(standalone),[draft,setDraft]=useState<Row>({...test.settings,threshold_coefficient:thresholdCoefficient(test),map_w:test.analysis.map_w,map_alt_w:test.analysis.map_alt_w,threshold_w:test.analysis.threshold_w,fthr_bpm:test.analysis.fthr_bpm,fc_max_test_bpm:test.analysis.fc_max_test_bpm,date:test.date,notes:test.notes,reason:''});
- const change=(key:string,value:string)=>setDraft(d=>({...d,[key]:value}));
- return <section>{!standalone&&<button onClick={()=>setOpen(!open)}>{tr('Correggi risultato storico')}</button>}{open&&<><div className="form-grid"><label>{tr('Data')}<input type="date" value={draft.date} onChange={e=>change('date',e.target.value)}/></label>{['map_w','map_alt_w','fc_max_test_bpm','end_s','weight_kg','height_cm','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe','rest_hr','rest_after_s'].map(k=><label key={k}>{metricLabel(k)}<input type="number" step="any" value={draft[k]??''} onChange={e=>change(k,e.target.value)}/></label>)}</div><label>{tr('Note')}<textarea value={draft.notes||''} onChange={e=>change('notes',e.target.value)}/></label><label>{tr('Motivo della revisione')}<input value={draft.reason} onChange={e=>change('reason',e.target.value)}/></label><FormActions><button onClick={()=>run(async()=>{const settings={...test.settings,...Object.fromEntries(['weight_kg','height_cm','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','rpe','rest_hr','rest_after_s'].map(k=>[k,draft[k]==null||draft[k]===''?null:Number(draft[k])])),end_s:Number(draft.end_s)||0,weight_source:test.settings.weight_source||'dichiarato',threshold_source:'dichiarato'};const saved=await api(`tests/${test.id}/historical`,{base:test.revision,reason:draft.reason,date:draft.date,map_w:draft.map_w==null||draft.map_w===''?null:Number(draft.map_w),map_alt_w:draft.map_alt_w==null||draft.map_alt_w===''?null:Number(draft.map_alt_w),fc_max_test_bpm:draft.fc_max_test_bpm==null||draft.fc_max_test_bpm===''?null:Number(draft.fc_max_test_bpm),settings,notes:draft.notes||''},'PUT');done(saved);setOpen(false)})}>{tr('Salva nuova revisione')}</button></FormActions></>}</section>
+export function HistoricalEditor({
+  test,
+  api,
+  run,
+  done,
+  standalone = false
+}: {
+  test: Row;
+  api: any;
+  run: any;
+  done: (r: Row) => void;
+  standalone?: boolean;
+}) {
+  const [open, setOpen] = useState(standalone),
+    [draft, setDraft] = useState<Row>({
+      ...test.settings,
+      threshold_coefficient: thresholdCoefficient(test),
+      map_w: test.analysis.map_w,
+      map_alt_w: test.analysis.map_alt_w,
+      threshold_w: test.analysis.threshold_w,
+      fthr_bpm: test.analysis.fthr_bpm,
+      fc_max_test_bpm: test.analysis.fc_max_test_bpm,
+      date: test.date,
+      notes: test.notes,
+      reason: ''
+    });
+  const change = (key: string, value: string) => setDraft(d => ({...d, [key]: value}));
+  return (
+    <section>
+      {!standalone && <button onClick={() => setOpen(!open)}>{tr('Correggi risultato storico')}</button>}
+      {open && (
+        <>
+          <div className="form-grid">
+            <label>
+              {tr('Data')}
+              <input type="date" value={draft.date} onChange={e => change('date', e.target.value)} />
+            </label>
+            {[
+              'map_w',
+              'map_alt_w',
+              'fc_max_test_bpm',
+              'end_s',
+              'weight_kg',
+              'height_cm',
+              'threshold_w',
+              'threshold_coefficient',
+              'fthr_bpm',
+              'ftp_w',
+              'rpe',
+              'rest_hr',
+              'rest_after_s'
+            ].map(k => (
+              <label key={k}>
+                {metricLabel(k)}
+                <input type="number" step="any" value={draft[k] ?? ''} onChange={e => change(k, e.target.value)} />
+              </label>
+            ))}
+          </div>
+          <label>
+            {tr('Note')}
+            <textarea value={draft.notes || ''} onChange={e => change('notes', e.target.value)} />
+          </label>
+          <label>
+            {tr('Motivo della revisione')}
+            <input value={draft.reason} onChange={e => change('reason', e.target.value)} />
+          </label>
+          <FormActions>
+            <button
+              onClick={() =>
+                run(async () => {
+                  const settings = {
+                    ...test.settings,
+                    ...Object.fromEntries(
+                      [
+                        'weight_kg',
+                        'height_cm',
+                        'threshold_w',
+                        'threshold_coefficient',
+                        'fthr_bpm',
+                        'ftp_w',
+                        'rpe',
+                        'rest_hr',
+                        'rest_after_s'
+                      ].map(k => [k, draft[k] == null || draft[k] === '' ? null : Number(draft[k])])
+                    ),
+                    end_s: Number(draft.end_s) || 0,
+                    weight_source: test.settings.weight_source || 'dichiarato',
+                    threshold_source: 'dichiarato'
+                  };
+                  const saved = await api(
+                    `tests/${test.id}/historical`,
+                    {
+                      base: test.revision,
+                      reason: draft.reason,
+                      date: draft.date,
+                      map_w: draft.map_w == null || draft.map_w === '' ? null : Number(draft.map_w),
+                      map_alt_w: draft.map_alt_w == null || draft.map_alt_w === '' ? null : Number(draft.map_alt_w),
+                      fc_max_test_bpm:
+                        draft.fc_max_test_bpm == null || draft.fc_max_test_bpm === ''
+                          ? null
+                          : Number(draft.fc_max_test_bpm),
+                      settings,
+                      notes: draft.notes || ''
+                    },
+                    'PUT'
+                  );
+                  done(saved);
+                  setOpen(false);
+                })
+              }
+            >
+              {tr('Salva nuova revisione')}
+            </button>
+          </FormActions>
+        </>
+      )}
+    </section>
+  );
 }
 
-export function GroupTree({groups,memberships,onSelect,onAdd,onAddSeason,onEdit,onRemove,canEdit=false}:{groups:Row[],memberships:Row[],onSelect:(id:string)=>void,onAdd:(id:string)=>void,onAddSeason:(id:string)=>void,onEdit:(record:Row,scope:'group'|'season')=>void,onRemove:(record:Row,scope:'group'|'season')=>void,canEdit?:boolean}){
- const today=localToday();
- return <>{groups.filter(g=>!g.parent_id&&g.status!=='deleted').map(parent=><section className="panel protocol" key={parent.id}>
-  <div className="panel-head"><h2>{parent.name}</h2><div className="actions"><button disabled={!canEdit} onClick={()=>onAddSeason(parent.id)}>{tr('Aggiungi stagione')}</button><button disabled={!canEdit} onClick={()=>onEdit(parent,'group')}>{tr('Modifica categoria')}</button><button disabled={!canEdit} onClick={()=>onRemove(parent,'group')}>{tr('Elimina categoria')}</button></div></div>
-  <button onClick={()=>onSelect(parent.id)}>{tr('Mostra gli atleti attuali della categoria')}</button>
-  {!groupSeasons(parent,groups,memberships).length&&<p>{tr('Aggiungi una stagione per preparare la rosa.')}</p>}
-  <div className="cards">{groupSeasons(parent,groups,memberships).map(season=>{
-   const filter=`season:${season.id}`,period=seasonPeriod(season.season,today);
-   const count=new Set(memberships.filter(m=>matchesGroupMembership(m,filter,groups,today)).map(m=>m.athlete_id)).size;
-   return <section className="zone-editor" key={season.id} aria-label={`${parent.name} - ${season.season||tr('Senza stagione')}`}>
-    <h3>{season.season?`${tr('Stagione')} ${season.season}`:tr('Senza stagione')}{period.start>today&&` - ${tr('Futura')}`}</h3>
-    {season.id!==parent.id&&season.name!==parent.name&&<p>{season.name}</p>}
-    <p>{tr(period.end?'Atleti nella stagione:':'Atleti attuali:')} {count}</p>
-    {period.end&&<p className="hint">{tr('Appartenenze nel periodo:')} {period.start} / {period.end}</p>}
-    <div className="actions"><button disabled={!canEdit} onClick={()=>onAdd(season.id)}>{tr('Aggiungi atleti')}</button>
-    <button onClick={()=>onSelect(filter)}>{tr('Mostra gli atleti')} ({count})</button><button disabled={!canEdit} onClick={()=>onEdit(season,season.id===parent.id&&season.season?'season':'group')}>{tr('Modifica stagione')}</button><button disabled={!canEdit} onClick={()=>onRemove(season,season.id===parent.id&&season.season?'season':'group')}>{tr('Elimina stagione')}</button></div>
-   </section>;
-  })}</div>
- </section>)}</>;
+export function GroupTree({
+  groups,
+  memberships,
+  onSelect,
+  onAdd,
+  onAddSeason,
+  onEdit,
+  onRemove,
+  canEdit = false
+}: {
+  groups: Row[];
+  memberships: Row[];
+  onSelect: (id: string) => void;
+  onAdd: (id: string) => void;
+  onAddSeason: (id: string) => void;
+  onEdit: (record: Row, scope: 'group' | 'season') => void;
+  onRemove: (record: Row, scope: 'group' | 'season') => void;
+  canEdit?: boolean;
+}) {
+  const today = localToday();
+  return (
+    <>
+      {groups
+        .filter(g => !g.parent_id && g.status !== 'deleted')
+        .map(parent => (
+          <section className="panel protocol" key={parent.id}>
+            <div className="panel-head">
+              <h2>{parent.name}</h2>
+              <div className="actions">
+                <button disabled={!canEdit} onClick={() => onAddSeason(parent.id)}>
+                  {tr('Aggiungi stagione')}
+                </button>
+                <button disabled={!canEdit} onClick={() => onEdit(parent, 'group')}>
+                  {tr('Modifica categoria')}
+                </button>
+                <button disabled={!canEdit} onClick={() => onRemove(parent, 'group')}>
+                  {tr('Elimina categoria')}
+                </button>
+              </div>
+            </div>
+            <button onClick={() => onSelect(parent.id)}>{tr('Mostra gli atleti attuali della categoria')}</button>
+            {!groupSeasons(parent, groups, memberships).length && (
+              <p>{tr('Aggiungi una stagione per preparare la rosa.')}</p>
+            )}
+            <div className="cards">
+              {groupSeasons(parent, groups, memberships).map(season => {
+                const filter = `season:${season.id}`,
+                  period = seasonPeriod(season.season, today);
+                const count = new Set(
+                  memberships.filter(m => matchesGroupMembership(m, filter, groups, today)).map(m => m.athlete_id)
+                ).size;
+                return (
+                  <section
+                    className="zone-editor"
+                    key={season.id}
+                    aria-label={`${parent.name} - ${season.season || tr('Senza stagione')}`}
+                  >
+                    <h3>
+                      {season.season ? `${tr('Stagione')} ${season.season}` : tr('Senza stagione')}
+                      {period.start > today && ` - ${tr('Futura')}`}
+                    </h3>
+                    {season.id !== parent.id && season.name !== parent.name && <p>{season.name}</p>}
+                    <p>
+                      {tr(period.end ? 'Atleti nella stagione:' : 'Atleti attuali:')} {count}
+                    </p>
+                    {period.end && (
+                      <p className="hint">
+                        {tr('Appartenenze nel periodo:')} {period.start} / {period.end}
+                      </p>
+                    )}
+                    <div className="actions">
+                      <button disabled={!canEdit} onClick={() => onAdd(season.id)}>
+                        {tr('Aggiungi atleti')}
+                      </button>
+                      <button onClick={() => onSelect(filter)}>
+                        {tr('Mostra gli atleti')} ({count})
+                      </button>
+                      <button
+                        disabled={!canEdit}
+                        onClick={() => onEdit(season, season.id === parent.id && season.season ? 'season' : 'group')}
+                      >
+                        {tr('Modifica stagione')}
+                      </button>
+                      <button
+                        disabled={!canEdit}
+                        onClick={() => onRemove(season, season.id === parent.id && season.season ? 'season' : 'group')}
+                      >
+                        {tr('Elimina stagione')}
+                      </button>
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+    </>
+  );
 }

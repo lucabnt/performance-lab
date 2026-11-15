@@ -1,1 +1,1 @@
-export {clock,parseClock} from '@cycling-suite/ui';
+export {clock, parseClock} from '@cycling-suite/ui';

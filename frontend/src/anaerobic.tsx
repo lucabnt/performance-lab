@@ -1,29 +1,509 @@
 import {language} from './i18n';
 import {FormActions} from '@cycling-suite/ui';
 import {TraceImporter} from './analysis';
-import {TimeInput,validTimes} from './time';
-import {TestExtensions,CustomValuesDisplay} from './customFields';
+import {TimeInput, validTimes} from './time';
+import {TestExtensions, CustomValuesDisplay} from './customFields';
 import {useState} from 'react';
-import {metricLabel,numberText} from './metrics';
-type Row=Record<string,any>;
-export const anaerobicTypes:Row={sprint:'Sprint breve',wingate30:'Wingate 30 s',wingate15:'Wingate 15 s'};
-export const anaerobicMetrics=['peak_w','peak_wkg','best_1s_w','best_5s_w','time_to_peak_s','mean_w','mean_wkg','work_kj','end_power_w','fatigue_pct','decline_ws','declared_fatigue_ws','cadence_max_rpm','cadence_mean_rpm'];
-export function AnaerobicResults({analysis}:{analysis:Row,Plot:any,samples?:Row[]}){
- const a=analysis,primary=['peak_w','mean_w','work_kj','fatigue_pct'];
- return <><h3>{language==='en'?'Test summary':'Riepilogo del test'}</h3><div className="stats">{primary.map(k=><div className="stat" key={k}><small>{metricLabel(k)}</small><h2>{numberText(a[k])}</h2></div>)}</div><details><summary>{language==='en'?'Additional results':'Altri risultati'}</summary><table><tbody>{[...anaerobicMetrics,'fc_max_test_bpm'].filter(k=>!primary.includes(k)&&a[k]!=null).map(k=><tr key={k}><th>{metricLabel(k)}</th><td>{numberText(a[k])}</td></tr>)}</tbody></table></details><p>Copertura potenza: {a.power_coverage==null?'non disponibile':numberText(a.power_coverage*100)+'%'} · Origine: {({computed:'Calcolato dal tracciato',manual:'Dichiarato manualmente','legacy-csv':'Storico CSV dichiarato'} as Row)[a.source]||a.source}</p>{a.warnings?.map((w:string)=><p className="hint" key={w}>{w}</p>)}<details><summary>Metodo e condizioni di confronto</summary><p>{a.method}</p><dl>{Object.entries(a.protocol_snapshot||{}).filter(([,v])=>v!==''&&v!=null&&typeof v!=='object').map(([k,v])=><div key={k}><dt>{({family:'Tipo di prova',duration_s:'Durata · s',torque_nm_kg:'Coppia frenante · N·m/kg',device:'Dispositivo',start:'Partenza',position:'Posizione',peak_window_s:'Finestra picco · s',end_window_s:'Finestra finale · s',load_description:'Descrizione del carico',warmup:'Riscaldamento',max_gap_s:'Intervallo massimo fra campioni · s',coverage_min:'Copertura minima'} as Row)[k]||k.replaceAll('_',' ')}</dt><dd>{({unknown:'Non documentato',stationary:'Da fermo',flying:'Lanciata',seated:'Seduto',standing:'In piedi',mixed:'Mista'} as Row)[String(v)]||String(v)}</dd></div>)}</dl></details></>;
+import {metricLabel, numberText} from './metrics';
+type Row = Record<string, any>;
+export const anaerobicTypes: Row = {sprint: 'Sprint breve', wingate30: 'Wingate 30 s', wingate15: 'Wingate 15 s'};
+export const anaerobicMetrics = [
+  'peak_w',
+  'peak_wkg',
+  'best_1s_w',
+  'best_5s_w',
+  'time_to_peak_s',
+  'mean_w',
+  'mean_wkg',
+  'work_kj',
+  'end_power_w',
+  'fatigue_pct',
+  'decline_ws',
+  'declared_fatigue_ws',
+  'cadence_max_rpm',
+  'cadence_mean_rpm'
+];
+export function AnaerobicResults({analysis}: {analysis: Row; Plot: any; samples?: Row[]}) {
+  const a = analysis,
+    primary = ['peak_w', 'mean_w', 'work_kj', 'fatigue_pct'];
+  return (
+    <>
+      <h3>{language === 'en' ? 'Test summary' : 'Riepilogo del test'}</h3>
+      <div className="stats">
+        {primary.map(k => (
+          <div className="stat" key={k}>
+            <small>{metricLabel(k)}</small>
+            <h2>{numberText(a[k])}</h2>
+          </div>
+        ))}
+      </div>
+      <details>
+        <summary>{language === 'en' ? 'Additional results' : 'Altri risultati'}</summary>
+        <table>
+          <tbody>
+            {[...anaerobicMetrics, 'fc_max_test_bpm']
+              .filter(k => !primary.includes(k) && a[k] != null)
+              .map(k => (
+                <tr key={k}>
+                  <th>{metricLabel(k)}</th>
+                  <td>{numberText(a[k])}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </details>
+      <p>
+        Copertura potenza: {a.power_coverage == null ? 'non disponibile' : numberText(a.power_coverage * 100) + '%'} ·
+        Origine:{' '}
+        {(
+          {
+            computed: 'Calcolato dal tracciato',
+            manual: 'Dichiarato manualmente',
+            'legacy-csv': 'Storico CSV dichiarato'
+          } as Row
+        )[a.source] || a.source}
+      </p>
+      {a.warnings?.map((w: string) => (
+        <p className="hint" key={w}>
+          {w}
+        </p>
+      ))}
+      <details>
+        <summary>Metodo e condizioni di confronto</summary>
+        <p>{a.method}</p>
+        <dl>
+          {Object.entries(a.protocol_snapshot || {})
+            .filter(([, v]) => v !== '' && v != null && typeof v !== 'object')
+            .map(([k, v]) => (
+              <div key={k}>
+                <dt>
+                  {(
+                    {
+                      family: 'Tipo di prova',
+                      duration_s: 'Durata · s',
+                      torque_nm_kg: 'Coppia frenante · N·m/kg',
+                      device: 'Dispositivo',
+                      start: 'Partenza',
+                      position: 'Posizione',
+                      peak_window_s: 'Finestra picco · s',
+                      end_window_s: 'Finestra finale · s',
+                      load_description: 'Descrizione del carico',
+                      warmup: 'Riscaldamento',
+                      max_gap_s: 'Intervallo massimo fra campioni · s',
+                      coverage_min: 'Copertura minima'
+                    } as Row
+                  )[k] || k.replaceAll('_', ' ')}
+                </dt>
+                <dd>
+                  {(
+                    {
+                      unknown: 'Non documentato',
+                      stationary: 'Da fermo',
+                      flying: 'Lanciata',
+                      seated: 'Seduto',
+                      standing: 'In piedi',
+                      mixed: 'Mista'
+                    } as Row
+                  )[String(v)] || String(v)}
+                </dd>
+              </div>
+            ))}
+        </dl>
+      </details>
+    </>
+  );
 }
-export function AnaerobicEditor({org,state,api,run,refresh,Plot,original,done,readOnly=false,initialProtocol,initialMode='manual',selected=''}:{org:string,state:Row,api:any,run:any,refresh:any,Plot:any,original?:Row,done?:any,readOnly?:boolean,initialProtocol?:Row,initialMode?:string,selected?:string}){
- const protocols=state.protocol.filter((p:Row)=>anaerobicTypes[p.test_type]&&(!p.organization_id||p.organization_id===org)&&(p.status==='active'&&!p.historical||p.id===original?.protocol_id));
- const athletes=state.athlete.filter((a:Row)=>a.organization_id===org&&((a.status||'active')==='active'||a.id===original?.athlete_id));
- const [draft,setDraft]=useState<Row>({athlete_id:original?.athlete_id||selected||athletes[0]?.id||'',protocol_id:original?.protocol_id||initialProtocol?.id||protocols[0]?.id||'',date:original?.date||new Date().toLocaleDateString('en-CA'),...original?.settings,weight_kg:original?.settings.weight_kg??'',weight_source:original?.settings.weight_source||'misurato',offset_s:original?.settings.offset_s||0,notes:original?.notes||'',reason:'',custom_values:original?.settings.custom_values||{},extra_fields:original?.settings.extra_fields||[],excluded_intervals:original?.settings.excluded_intervals||[],conditions:original?.settings.conditions||{}});
- const [manual,setManual]=useState<Row>(original?.historical?Object.fromEntries([...anaerobicMetrics,'fc_max_test_bpm'].filter(k=>!k.endsWith('wkg')&&original.analysis[k]!=null).map(k=>[k,original.analysis[k]])):{});
- const [trace,setTrace]=useState<Row|null>(original?.trace_hash?{hash:original.trace_hash,samples:original.samples}:null),[mode,setMode]=useState(original?.trace_hash?'trace':initialMode),[preview,setPreview]=useState<Row|null>(null),[zoom,setZoom]=useState(true);
- const protocol=protocols.find((p:Row)=>p.id===draft.protocol_id),spec=protocol?.anaerobic_spec;
- const edit=(k:string,v:any)=>{setDraft(d=>({...d,[k]:v}));setPreview(null)};
- const payload=()=>({athlete_id:draft.athlete_id,protocol_id:draft.protocol_id,date:draft.date,trace_hash:mode==='trace'?trace?.hash||null:null,manual:mode==='manual'?Object.fromEntries(Object.entries(manual).filter(([,v])=>v!==''&&v!=null).map(([k,v])=>[k,Number(v)])):{},settings:{weight_kg:draft.weight_kg===''?null:Number(draft.weight_kg),weight_source:draft.weight_source,offset_s:Number(draft.offset_s),conditions:draft.conditions,excluded_intervals:draft.excluded_intervals,custom_values:draft.custom_values,extra_fields:draft.extra_fields},notes:draft.notes,revision:original?.revision||null,reason:draft.reason});
- return <form onSubmit={e=>{e.preventDefault();run(async()=>setPreview(await api(original?.entry_source==='csv'?'anaerobic/historical/'+original.id+'/preview':'anaerobic/preview',payload())))}}><h2>{original?'Correggi test':'Registra prova anaerobica'}</h2><div className="form-grid"><label>Atleta<select disabled={!!original} value={draft.athlete_id} onChange={e=>edit('athlete_id',e.target.value)}>{athletes.map((a:Row)=><option key={a.id} value={a.id}>{a.surname} {a.name}</option>)}</select></label><label>Protocollo e versione<select disabled={!!original} value={draft.protocol_id} onChange={e=>{edit('protocol_id',e.target.value);edit('custom_values',{});edit('extra_fields',[])}}>{protocols.map((p:Row)=><option key={p.id} value={p.id}>{p.name} · {p.version}</option>)}</select></label><label>Data<input required type="date" value={draft.date} onChange={e=>edit('date',e.target.value)}/></label><label>Peso · kg<input type="number" min="1" step="any" value={draft.weight_kg} onChange={e=>edit('weight_kg',e.target.value)}/></label><label>Fonte peso<select value={draft.weight_source} onChange={e=>edit('weight_source',e.target.value)}>{['misurato','dichiarato','arrotondato','derivato','stimato'].map(v=><option key={v}>{v}</option>)}</select></label><label>Origine risultati<select disabled={original?.entry_source==='csv'} value={mode} onChange={e=>{setMode(e.target.value);setPreview(null)}}><option value="manual">Manuale</option><option value="trace">Da file FIT / CSV</option></select></label></div>
- {spec&&<p className="hint">{anaerobicTypes[protocol?.test_type]} · {spec.duration_s} s · coppia {spec.torque_nm_kg??'non documentata'} N·m/kg · picco {spec.peak_window_s??'finestra non documentata'} s · {spec.device||'dispositivo non documentato'}. {original?.entry_source==='csv'?'Storico dichiarato.':'I risultati rimangono separati dalle altre versioni e dai riepiloghi storici.'}</p>}
- {mode==='manual'?<div className="form-grid">{['peak_w','time_to_peak_s','mean_w','work_kj','end_power_w','declared_fatigue_ws','cadence_max_rpm','cadence_mean_rpm','fc_max_test_bpm'].map(k=><label key={k}>{metricLabel(k)}<input type="number" min="0" step="any" value={manual[k]??''} onChange={e=>{setManual(m=>({...m,[k]:e.target.value}));setPreview(null)}}/></label>)}</div>:<><TraceImporter {...{api,run}} disabled={!!original} done={(r:Row)=>{setTrace(r);setPreview(null)}}/>{trace&&<><p>Indica l’inizio dello sforzo: la durata deriva dal protocollo. Puoi fare clic sul grafico o inserire i secondi.</p><TimeInput label="Inizio dello sforzo dal file" value={draft.offset_s} onChange={v=>edit('offset_s',v??0)}/><label><input type="checkbox" checked={zoom} onChange={e=>setZoom(e.target.checked)}/>Ingrandisci lo sforzo selezionato</label><Plot onPick={(t:number)=>edit('offset_s',Math.max(0,Number(t.toFixed(3))))} data={[{x:trace.samples.map((r:Row)=>r.t/60),y:trace.samples.map((r:Row)=>r.power),customdata:trace.samples.map((r:Row)=>[r.t,`${Math.floor(r.t/60)}:${(r.t%60).toFixed(2).padStart(5,'0')}`]),hovertemplate:'%{customdata[1]} · %{customdata[0]:.3f} s<br>%{y} W<extra>Potenza</extra>',type:'scatter',mode:'lines',name:'Potenza · W'}]} layout={{xaxis:{title:{text:'Tempo dal file · min'},...(zoom?{range:[Math.max(0,(Number(draft.offset_s)-3)/60),(Number(draft.offset_s)+(spec?.duration_s||15)+3)/60]}:{})},yaxis:{title:{text:'Potenza · W'}},shapes:[{type:'rect',xref:'x',yref:'paper',x0:Number(draft.offset_s)/60,x1:(Number(draft.offset_s)+(spec?.duration_s||15))/60,y0:0,y1:1,fillcolor:'#1a62b71a',line:{width:0},layer:'below'}]}}/>
- <details><summary>Esclusioni motivate</summary>{draft.excluded_intervals.map((r:Row,i:number)=><div className="form-grid" key={i}>{['start_s','end_s','reason'].map(k=><label key={k}>{k==='reason'?'Motivo':k==='start_s'?'Inizio dal file · s':'Fine dal file · s'}<input type={k==='reason'?'text':'number'} step="any" value={r[k]} onChange={e=>edit('excluded_intervals',draft.excluded_intervals.map((x:Row,j:number)=>i===j?{...x,[k]:k==='reason'?e.target.value:Number(e.target.value)}:x))}/></label>)}<button type="button" onClick={()=>edit('excluded_intervals',draft.excluded_intervals.filter((_:Row,j:number)=>j!==i))}>Rimuovi esclusione</button></div>)}<button type="button" onClick={()=>edit('excluded_intervals',[...draft.excluded_intervals,{start_s:0,end_s:1,reason:''}])}>Escludi intervallo</button></details></>}</>}
-<label>Condizioni / calibrazione<input value={draft.conditions.observations||''} onChange={e=>edit('conditions',{...draft.conditions,observations:e.target.value})}/></label><label>Note<textarea value={draft.notes} onChange={e=>edit('notes',e.target.value)}/></label>{original&&<label>Motivo correzione<input required value={draft.reason} onChange={e=>edit('reason',e.target.value)}/></label>} <TestExtensions protocol={protocol} values={draft.custom_values} onChange={(v:Row)=>edit('custom_values',v)} extraFields={draft.extra_fields} onFieldsChange={(v:Row[])=>edit('extra_fields',v)}/><FormActions>{!preview&&<button disabled={readOnly||!protocol||mode==='trace'&&!trace}>Verifica e calcola anteprima</button>}</FormActions>{preview&&<><AnaerobicResults analysis={preview} Plot={Plot}/><FormActions><button className="primary" type="button" disabled={readOnly} onClick={e=>{if(!validTimes(e.currentTarget))return;run(async()=>{const path=original?(original.entry_source==='csv'?'anaerobic/historical/':'anaerobic/tests/')+original.id:'anaerobic/tests';const r=await api(path,payload(),original?'PUT':'POST');await refresh();done?.(r)})}}>Conferma e archivia</button></FormActions></>}</form>;
+export function AnaerobicEditor({
+  org,
+  state,
+  api,
+  run,
+  refresh,
+  Plot,
+  original,
+  done,
+  readOnly = false,
+  initialProtocol,
+  initialMode = 'manual',
+  selected = ''
+}: {
+  org: string;
+  state: Row;
+  api: any;
+  run: any;
+  refresh: any;
+  Plot: any;
+  original?: Row;
+  done?: any;
+  readOnly?: boolean;
+  initialProtocol?: Row;
+  initialMode?: string;
+  selected?: string;
+}) {
+  const protocols = state.protocol.filter(
+    (p: Row) =>
+      anaerobicTypes[p.test_type] &&
+      (!p.organization_id || p.organization_id === org) &&
+      ((p.status === 'active' && !p.historical) || p.id === original?.protocol_id)
+  );
+  const athletes = state.athlete.filter(
+    (a: Row) => a.organization_id === org && ((a.status || 'active') === 'active' || a.id === original?.athlete_id)
+  );
+  const [draft, setDraft] = useState<Row>({
+    athlete_id: original?.athlete_id || selected || athletes[0]?.id || '',
+    protocol_id: original?.protocol_id || initialProtocol?.id || protocols[0]?.id || '',
+    date: original?.date || new Date().toLocaleDateString('en-CA'),
+    ...original?.settings,
+    weight_kg: original?.settings.weight_kg ?? '',
+    weight_source: original?.settings.weight_source || 'misurato',
+    offset_s: original?.settings.offset_s || 0,
+    notes: original?.notes || '',
+    reason: '',
+    custom_values: original?.settings.custom_values || {},
+    extra_fields: original?.settings.extra_fields || [],
+    excluded_intervals: original?.settings.excluded_intervals || [],
+    conditions: original?.settings.conditions || {}
+  });
+  const [manual, setManual] = useState<Row>(
+    original?.historical
+      ? Object.fromEntries(
+          [...anaerobicMetrics, 'fc_max_test_bpm']
+            .filter(k => !k.endsWith('wkg') && original.analysis[k] != null)
+            .map(k => [k, original.analysis[k]])
+        )
+      : {}
+  );
+  const [trace, setTrace] = useState<Row | null>(
+      original?.trace_hash ? {hash: original.trace_hash, samples: original.samples} : null
+    ),
+    [mode, setMode] = useState(original?.trace_hash ? 'trace' : initialMode),
+    [preview, setPreview] = useState<Row | null>(null),
+    [zoom, setZoom] = useState(true);
+  const protocol = protocols.find((p: Row) => p.id === draft.protocol_id),
+    spec = protocol?.anaerobic_spec;
+  const edit = (k: string, v: any) => {
+    setDraft(d => ({...d, [k]: v}));
+    setPreview(null);
+  };
+  const payload = () => ({
+    athlete_id: draft.athlete_id,
+    protocol_id: draft.protocol_id,
+    date: draft.date,
+    trace_hash: mode === 'trace' ? trace?.hash || null : null,
+    manual:
+      mode === 'manual'
+        ? Object.fromEntries(
+            Object.entries(manual)
+              .filter(([, v]) => v !== '' && v != null)
+              .map(([k, v]) => [k, Number(v)])
+          )
+        : {},
+    settings: {
+      weight_kg: draft.weight_kg === '' ? null : Number(draft.weight_kg),
+      weight_source: draft.weight_source,
+      offset_s: Number(draft.offset_s),
+      conditions: draft.conditions,
+      excluded_intervals: draft.excluded_intervals,
+      custom_values: draft.custom_values,
+      extra_fields: draft.extra_fields
+    },
+    notes: draft.notes,
+    revision: original?.revision || null,
+    reason: draft.reason
+  });
+  return (
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        run(async () =>
+          setPreview(
+            await api(
+              original?.entry_source === 'csv'
+                ? 'anaerobic/historical/' + original.id + '/preview'
+                : 'anaerobic/preview',
+              payload()
+            )
+          )
+        );
+      }}
+    >
+      <h2>{original ? 'Correggi test' : 'Registra prova anaerobica'}</h2>
+      <div className="form-grid">
+        <label>
+          Atleta
+          <select disabled={!!original} value={draft.athlete_id} onChange={e => edit('athlete_id', e.target.value)}>
+            {athletes.map((a: Row) => (
+              <option key={a.id} value={a.id}>
+                {a.surname} {a.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Protocollo e versione
+          <select
+            disabled={!!original}
+            value={draft.protocol_id}
+            onChange={e => {
+              edit('protocol_id', e.target.value);
+              edit('custom_values', {});
+              edit('extra_fields', []);
+            }}
+          >
+            {protocols.map((p: Row) => (
+              <option key={p.id} value={p.id}>
+                {p.name} · {p.version}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Data
+          <input required type="date" value={draft.date} onChange={e => edit('date', e.target.value)} />
+        </label>
+        <label>
+          Peso · kg
+          <input
+            type="number"
+            min="1"
+            step="any"
+            value={draft.weight_kg}
+            onChange={e => edit('weight_kg', e.target.value)}
+          />
+        </label>
+        <label>
+          Fonte peso
+          <select value={draft.weight_source} onChange={e => edit('weight_source', e.target.value)}>
+            {['misurato', 'dichiarato', 'arrotondato', 'derivato', 'stimato'].map(v => (
+              <option key={v}>{v}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Origine risultati
+          <select
+            disabled={original?.entry_source === 'csv'}
+            value={mode}
+            onChange={e => {
+              setMode(e.target.value);
+              setPreview(null);
+            }}
+          >
+            <option value="manual">Manuale</option>
+            <option value="trace">Da file FIT / CSV</option>
+          </select>
+        </label>
+      </div>
+      {spec && (
+        <p className="hint">
+          {anaerobicTypes[protocol?.test_type]} · {spec.duration_s} s · coppia {spec.torque_nm_kg ?? 'non documentata'}{' '}
+          N·m/kg · picco {spec.peak_window_s ?? 'finestra non documentata'} s ·{' '}
+          {spec.device || 'dispositivo non documentato'}.{' '}
+          {original?.entry_source === 'csv'
+            ? 'Storico dichiarato.'
+            : 'I risultati rimangono separati dalle altre versioni e dai riepiloghi storici.'}
+        </p>
+      )}
+      {mode === 'manual' ? (
+        <div className="form-grid">
+          {[
+            'peak_w',
+            'time_to_peak_s',
+            'mean_w',
+            'work_kj',
+            'end_power_w',
+            'declared_fatigue_ws',
+            'cadence_max_rpm',
+            'cadence_mean_rpm',
+            'fc_max_test_bpm'
+          ].map(k => (
+            <label key={k}>
+              {metricLabel(k)}
+              <input
+                type="number"
+                min="0"
+                step="any"
+                value={manual[k] ?? ''}
+                onChange={e => {
+                  setManual(m => ({...m, [k]: e.target.value}));
+                  setPreview(null);
+                }}
+              />
+            </label>
+          ))}
+        </div>
+      ) : (
+        <>
+          <TraceImporter
+            {...{api, run}}
+            disabled={!!original}
+            done={(r: Row) => {
+              setTrace(r);
+              setPreview(null);
+            }}
+          />
+          {trace && (
+            <>
+              <p>
+                Indica l’inizio dello sforzo: la durata deriva dal protocollo. Puoi fare clic sul grafico o inserire i
+                secondi.
+              </p>
+              <TimeInput
+                label="Inizio dello sforzo dal file"
+                value={draft.offset_s}
+                onChange={v => edit('offset_s', v ?? 0)}
+              />
+              <label>
+                <input type="checkbox" checked={zoom} onChange={e => setZoom(e.target.checked)} />
+                Ingrandisci lo sforzo selezionato
+              </label>
+              <Plot
+                onPick={(t: number) => edit('offset_s', Math.max(0, Number(t.toFixed(3))))}
+                data={[
+                  {
+                    x: trace.samples.map((r: Row) => r.t / 60),
+                    y: trace.samples.map((r: Row) => r.power),
+                    customdata: trace.samples.map((r: Row) => [
+                      r.t,
+                      `${Math.floor(r.t / 60)}:${(r.t % 60).toFixed(2).padStart(5, '0')}`
+                    ]),
+                    hovertemplate: '%{customdata[1]} · %{customdata[0]:.3f} s<br>%{y} W<extra>Potenza</extra>',
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Potenza · W'
+                  }
+                ]}
+                layout={{
+                  xaxis: {
+                    title: {text: 'Tempo dal file · min'},
+                    ...(zoom
+                      ? {
+                          range: [
+                            Math.max(0, (Number(draft.offset_s) - 3) / 60),
+                            (Number(draft.offset_s) + (spec?.duration_s || 15) + 3) / 60
+                          ]
+                        }
+                      : {})
+                  },
+                  yaxis: {title: {text: 'Potenza · W'}},
+                  shapes: [
+                    {
+                      type: 'rect',
+                      xref: 'x',
+                      yref: 'paper',
+                      x0: Number(draft.offset_s) / 60,
+                      x1: (Number(draft.offset_s) + (spec?.duration_s || 15)) / 60,
+                      y0: 0,
+                      y1: 1,
+                      fillcolor: '#1a62b71a',
+                      line: {width: 0},
+                      layer: 'below'
+                    }
+                  ]
+                }}
+              />
+              <details>
+                <summary>Esclusioni motivate</summary>
+                {draft.excluded_intervals.map((r: Row, i: number) => (
+                  <div className="form-grid" key={i}>
+                    {['start_s', 'end_s', 'reason'].map(k => (
+                      <label key={k}>
+                        {k === 'reason' ? 'Motivo' : k === 'start_s' ? 'Inizio dal file · s' : 'Fine dal file · s'}
+                        <input
+                          type={k === 'reason' ? 'text' : 'number'}
+                          step="any"
+                          value={r[k]}
+                          onChange={e =>
+                            edit(
+                              'excluded_intervals',
+                              draft.excluded_intervals.map((x: Row, j: number) =>
+                                i === j ? {...x, [k]: k === 'reason' ? e.target.value : Number(e.target.value)} : x
+                              )
+                            )
+                          }
+                        />
+                      </label>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        edit(
+                          'excluded_intervals',
+                          draft.excluded_intervals.filter((_: Row, j: number) => j !== i)
+                        )
+                      }
+                    >
+                      Rimuovi esclusione
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() =>
+                    edit('excluded_intervals', [...draft.excluded_intervals, {start_s: 0, end_s: 1, reason: ''}])
+                  }
+                >
+                  Escludi intervallo
+                </button>
+              </details>
+            </>
+          )}
+        </>
+      )}
+      <label>
+        Condizioni / calibrazione
+        <input
+          value={draft.conditions.observations || ''}
+          onChange={e => edit('conditions', {...draft.conditions, observations: e.target.value})}
+        />
+      </label>
+      <label>
+        Note
+        <textarea value={draft.notes} onChange={e => edit('notes', e.target.value)} />
+      </label>
+      {original && (
+        <label>
+          Motivo correzione
+          <input required value={draft.reason} onChange={e => edit('reason', e.target.value)} />
+        </label>
+      )}{' '}
+      <TestExtensions
+        protocol={protocol}
+        values={draft.custom_values}
+        onChange={(v: Row) => edit('custom_values', v)}
+        extraFields={draft.extra_fields}
+        onFieldsChange={(v: Row[]) => edit('extra_fields', v)}
+      />
+      <FormActions>
+        {!preview && (
+          <button disabled={readOnly || !protocol || (mode === 'trace' && !trace)}>Verifica e calcola anteprima</button>
+        )}
+      </FormActions>
+      {preview && (
+        <>
+          <AnaerobicResults analysis={preview} Plot={Plot} />
+          <FormActions>
+            <button
+              className="primary"
+              type="button"
+              disabled={readOnly}
+              onClick={e => {
+                if (!validTimes(e.currentTarget)) return;
+                run(async () => {
+                  const path = original
+                    ? (original.entry_source === 'csv' ? 'anaerobic/historical/' : 'anaerobic/tests/') + original.id
+                    : 'anaerobic/tests';
+                  const r = await api(path, payload(), original ? 'PUT' : 'POST');
+                  await refresh();
+                  done?.(r);
+                });
+              }}
+            >
+              Conferma e archivia
+            </button>
+          </FormActions>
+        </>
+      )}
+    </form>
+  );
 }

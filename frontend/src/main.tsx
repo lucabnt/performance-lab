@@ -1,276 +1,2814 @@
-import {RecordDeletion,DeletedRecords} from './RecordLifecycle';
+import {RecordDeletion, DeletedRecords} from './RecordLifecycle';
 import {isArchiveWrite} from './automaticSync';
 import {IntervalsSettings, IntervalsLink, IntervalsField} from './IntervalsIntegration';
 import {ChronologicalTable} from './ChronologicalTable';
-import {bodyMassIndex,perinealHeightRatio} from './anthropometryModel';
+import {bodyMassIndex, perinealHeightRatio} from './anthropometryModel';
 import {AnthropometryBmiHistory} from './AnthropometryBmiHistory';
 import {GroupManager} from './GroupManager';
 import {GroupEditor} from './GroupEditor';
-import {groupSeasons,groupFilterLabel,matchesGroupMembership,seasonPeriod} from './groupSeasonModel';
+import {groupSeasons, groupFilterLabel, matchesGroupMembership, seasonPeriod} from './groupSeasonModel';
 import {MembershipEditor} from './MembershipEditor';
 import {useAndroidBack} from './useAndroidBack';
 import {AndroidNavigation} from './AndroidNavigation';
 import {version as appVersion} from '../package.json';
 import {ArchiveMaintenance} from './ArchiveMaintenance';
-import {MeasurementEditor,MaturationPanel} from './Maturation';
+import {MeasurementEditor, MaturationPanel} from './Maturation';
 import {Dialog} from './Dialog';
-import {Glossary,pageTerms} from './Glossary';
+import {Glossary, pageTerms} from './Glossary';
 import {Legal} from './Legal';
 import {withDeadline} from './startupDeadline';
 import {useSyncJob} from './useSyncJob';
 import {SyncJobStatus} from './SyncJobStatus';
 import {ReferenceSummary} from './ReferenceSummary';
-import {AthleteTrainingZones,TestZones} from './TrainingZones';
-import {TimeInput,validTimes} from './time';
+import {AthleteTrainingZones, TestZones} from './TrainingZones';
+import {TimeInput, validTimes} from './time';
 import {AthleteProgression} from './AthleteProgression';
-import {rememberedSelection,saveSelection,loadArchiveSelection} from './archiveSelection';
+import {rememberedSelection, saveSelection, loadArchiveSelection} from './archiveSelection';
 import {TestSignals} from './TestSignals';
-import {hasRecordedTrace,hasSignalChart} from './signalChartModel';
-import {DataTable,Field,RecordCards,CollapsibleFilters,FormActions,LoadingState} from '@cycling-suite/ui';
-import {ProtocolDesigner,NewTestChoice,CustomTestEditor,protocolType} from './protocols';
-import {TestExtensions,CustomValuesDisplay} from './customFields';
-import {AnaerobicEditor,AnaerobicResults,anaerobicTypes,anaerobicMetrics} from './anaerobic';
+import {hasRecordedTrace, hasSignalChart} from './signalChartModel';
+import {DataTable, Field, RecordCards, CollapsibleFilters, FormActions, LoadingState} from '@cycling-suite/ui';
+import {ProtocolDesigner, NewTestChoice, CustomTestEditor, protocolType} from './protocols';
+import {TestExtensions, CustomValuesDisplay} from './customFields';
+import {AnaerobicEditor, AnaerobicResults, anaerobicTypes, anaerobicMetrics} from './anaerobic';
 import './mobile';
 import {metricLabel} from './metrics';
 import {tr, language, setLanguage} from './i18n';
 import {Branding} from './branding';
 import React, {useState, useEffect, useRef, type FormEvent} from 'react';
 import {createRoot} from 'react-dom/client';
-import {Activity, Users, Layers, ArrowUpRight, Plus, Upload, Download, FolderSync, Building2, ChevronRight, Search, X, Check, AlertTriangle, Bike, HardDrive, Info} from 'lucide-react';
+import {
+  Activity,
+  Users,
+  Layers,
+  ArrowUpRight,
+  Plus,
+  Upload,
+  Download,
+  FolderSync,
+  Building2,
+  ChevronRight,
+  Search,
+  X,
+  Check,
+  AlertTriangle,
+  Bike,
+  HardDrive,
+  Info
+} from 'lucide-react';
 import {Plot} from './Plot';
 import '@cycling-suite/ui/theme.css';
 import '@cycling-suite/ui/components.css';
 import '@cycling-suite/ui/application.css';
 import './style.css';
-import {TraceImporter,AnalysisInput,AnalysisResults,ArchiveReports,RepeatabilityPanel} from './analysis';
+import {TraceImporter, AnalysisInput, AnalysisResults, ArchiveReports, RepeatabilityPanel} from './analysis';
 import {WorkspacePanel} from './workspaces';
-import {ManualTestEditor, HistoricalEditor, DefaultsPanel, GrowthPanel, SortableTable, ZoneEditor, Zones, HistoryPanel, ImportPanel} from './features';
+import {
+  ManualTestEditor,
+  HistoricalEditor,
+  DefaultsPanel,
+  GrowthPanel,
+  SortableTable,
+  ZoneEditor,
+  Zones,
+  HistoryPanel,
+  ImportPanel
+} from './features';
 
 type Row = Record<string, any>;
-type TestFilters={source:string;query:string;protocol:string;page:number};
-const emptyTestFilters:TestFilters={source:'all',query:'',protocol:'',page:0};
-type State = {operator?:Row;organization:Row[]; group:Row[]; athlete:Row[]; membership:Row[]; measurement:Row[]; deleted_measurement?:Row[]; protocol:Row[]; test:Row[]};
-const empty:State = {organization:[],group:[],athlete:[],membership:[],measurement:[],protocol:[],test:[]};
+type TestFilters = {source: string; query: string; protocol: string; page: number};
+const emptyTestFilters: TestFilters = {source: 'all', query: '', protocol: '', page: 0};
+type State = {
+  operator?: Row;
+  organization: Row[];
+  group: Row[];
+  athlete: Row[];
+  membership: Row[];
+  measurement: Row[];
+  deleted_measurement?: Row[];
+  protocol: Row[];
+  test: Row[];
+};
+const empty: State = {
+  organization: [],
+  group: [],
+  athlete: [],
+  membership: [],
+  measurement: [],
+  protocol: [],
+  test: []
+};
 const params = new URLSearchParams(location.hash.slice(1));
-if(params.has('token')) {sessionStorage.setItem('fuorigiri-token',params.get('token')!);history.replaceState(null,'',location.pathname);}
+if (params.has('token')) {
+  sessionStorage.setItem('fuorigiri-token', params.get('token')!);
+  history.replaceState(null, '', location.pathname);
+}
 const token = sessionStorage.getItem('fuorigiri-token') || '';
-async function api(path:string, data?:unknown, method='POST', workspaceOverride?:string) {
+async function api(path: string, data?: unknown, method = 'POST', workspaceOverride?: string) {
   const form = data instanceof FormData;
-  const workspace=workspaceOverride??sessionStorage.getItem('fuorigiri-workspace')??'';
-  const response = await fetch('/api/v1/'+path,{method:data===undefined?'GET':method,headers:{'X-Fuorigiri-Token':token,'X-Fuorigiri-Workspace':workspace,...(form?{}:{'Content-Type':'application/json'})},body:data===undefined?undefined:form?data:JSON.stringify(data)});
-  if(!response.ok){const e=await response.json();throw new Error(typeof e.detail==='string'?e.detail:JSON.stringify(e.detail));}
-  const result=await response.json();
-  if(data!==undefined&&isArchiveWrite(path,method))window.dispatchEvent(new CustomEvent('fuorigiri-archive-write',{detail:workspace}));
+  const workspace = workspaceOverride ?? sessionStorage.getItem('fuorigiri-workspace') ?? '';
+  const response = await fetch('/api/v1/' + path, {
+    method: data === undefined ? 'GET' : method,
+    headers: {
+      'X-Fuorigiri-Token': token,
+      'X-Fuorigiri-Workspace': workspace,
+      ...(form ? {} : {'Content-Type': 'application/json'})
+    },
+    body: data === undefined ? undefined : form ? data : JSON.stringify(data)
+  });
+  if (!response.ok) {
+    const e = await response.json();
+    throw new Error(typeof e.detail === 'string' ? e.detail : JSON.stringify(e.detail));
+  }
+  const result = await response.json();
+  if (data !== undefined && isArchiveWrite(path, method))
+    window.dispatchEvent(new CustomEvent('fuorigiri-archive-write', {detail: workspace}));
   return result;
 }
-async function download(path:string,name:string,data?:unknown){
-  const downloadWorkspace=sessionStorage.getItem('fuorigiri-workspace')||'';
-  const localized=path.includes('/report/')?path+(path.includes('?')?'&':'?')+'language='+language:path;
-  const r=await fetch('/api/v1/'+localized,{method:data===undefined?'GET':'POST',headers:{'X-Fuorigiri-Token':token,'X-Fuorigiri-Workspace':sessionStorage.getItem('fuorigiri-workspace')||'','Content-Type':'application/json'},body:data===undefined?undefined:JSON.stringify(data)});
-  if(!r.ok){const e=await r.json();throw new Error(e.detail || tr("Esportazione non riuscita"));}
-  const blob=await r.blob();
-  if(/report/.test(path))window.dispatchEvent(new CustomEvent('fuorigiri-archive-write',{detail:downloadWorkspace}));
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
-}
-const today=()=>new Date().toLocaleDateString('en-CA');
-const n=(v:any,suffix='')=>v===null||v===undefined?'—':`${typeof v==='number'?Number(v.toFixed(2)):v}${suffix}`;
-function Trace({samples,protocol,offset=0,end,onPick,excluded=[],markers=[],lactate=[],vo2=[]}: {samples:Row[],protocol?:Row,offset?:number,end?:number,onPick?:(t:number)=>void,excluded?:Row[],markers?:Row[],lactate?:Row[],vo2?:Row[]}){
- return <TestSignals test={{samples,settings:{offset_s:offset,end_s:end,excluded_intervals:excluded,alignment_markers:markers,lactate,vo2}}} protocol={protocol} Plot={Plot} onPick={onPick}/>;
-}
-const android=document.documentElement.classList.contains('android');
-if(android)saveSelection(rememberedSelection(sessionStorage,localStorage),sessionStorage);
-const contextualCsvProfiles:Record<string,readonly string[]>={'csv-athletes':['atleti'],'csv-memberships':['appartenenze'],'csv-tests':['test_aerobico','test_anaerobico'],'csv-measurements':['antropometria']};
-
-function App(){
- const [athletePage,setAthletePage]=useState(0),[testFilters,setTestFilters]=useState<Record<string,TestFilters>>({});
- const [protocolSearch,setProtocolSearch]=useState(''),[protocolKind,setProtocolKind]=useState(''),[protocolStatus,setProtocolStatus]=useState('active');
- const [testProtocol,setTestProtocol]=useState<Row|undefined>(),[entryMode,setEntryMode]=useState('manual');
- const [membershipGroup,setMembershipGroup]=useState('');
- const [membershipCategory,setMembershipCategory]=useState('');
- const [newGroupParent,setNewGroupParent]=useState('');
- const [state,setState]=useState<State>(empty),[org,setOrg]=useState(''),[page,setPage]=useState('athletes'),[selected,setSelected]=useState(''),[search,setSearch]=useState(''),[groupFilter,setGroupFilter]=useState(''),[modal,setModal]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[notice,setNotice]=useState(''),[activeTest,setActiveTest]=useState<Row|null>(null);
- const [trace,setTrace]=useState<Row|null>(null),[preview,setPreview]=useState<Row|null>(null),[draft,setDraft]=useState<Row>({}),[syncFolder,setSyncFolder]=useState(''),[syncKey,setSyncKey]=useState('');
- const [editAthlete,setEditAthlete]=useState<Row|null>(null),[editTest,setEditTest]=useState<Row|null>(null),[editProtocol,setEditProtocol]=useState<Row|undefined>(),[metric,setMetric]=useState('map_w'),[lifecycle,setLifecycle]=useState('active');
- const [pickTarget,setPickTarget]=useState('');const [editMeasurement,setEditMeasurement]=useState<Row|undefined>();
- const [workspaces,setWorkspaces]=useState<Row[]>([]),[workspace,setWorkspace]=useState(sessionStorage.getItem('fuorigiri-workspace')||'');
- const [loading,setLoading]=useState(true),[started,setStarted]=useState(false);const refreshSequence=useRef(0);
- const restoredSelection=useRef(android);
- const readSelection=()=>rememberedSelection(sessionStorage,android?localStorage:undefined);
- const writeSelection=(s:{workspace:string;organization:string})=>saveSelection(s,sessionStorage,android?localStorage:undefined);
- const refresh=async(background=false)=>{const sequence=++refreshSequence.current;if(!background)setLoading(true);try{
-  if(!restoredSelection.current){
-   const saved=await withDeadline(api('workspaces/last-selection',undefined,'GET',''),30000,'Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.');
-   if(sequence!==refreshSequence.current)return;
-   writeSelection(saved);restoredSelection.current=true;
+async function download(path: string, name: string, data?: unknown) {
+  const downloadWorkspace = sessionStorage.getItem('fuorigiri-workspace') || '';
+  const localized = path.includes('/report/') ? path + (path.includes('?') ? '&' : '?') + 'language=' + language : path;
+  const r = await fetch('/api/v1/' + localized, {
+    method: data === undefined ? 'GET' : 'POST',
+    headers: {
+      'X-Fuorigiri-Token': token,
+      'X-Fuorigiri-Workspace': sessionStorage.getItem('fuorigiri-workspace') || '',
+      'Content-Type': 'application/json'
+    },
+    body: data === undefined ? undefined : JSON.stringify(data)
+  });
+  if (!r.ok) {
+    const e = await r.json();
+    throw new Error(e.detail || tr('Esportazione non riuscita'));
   }
-  const result=await loadArchiveSelection((...args:any[])=>withDeadline((api as any)(...args),30000,'Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.'),readSelection,writeSelection,()=>sequence===refreshSequence.current);
-  if(result&&sequence===refreshSequence.current){
-   if(!android)await api('workspaces/last-selection',{workspace:result.workspace,organization:result.organization},'PUT','');
-   if(sequence!==refreshSequence.current)return;
-   setStarted(true);setState(result.state);setWorkspace(result.workspace);setOrg(result.organization);setWorkspaces(result.workspaces);if(result.missing)setNotice('L’archivio ricordato non è più disponibile. Seleziona una società: nessun dato è stato eliminato.');
-  }
- }finally{if(sequence===refreshSequence.current)setLoading(false)}};
- useEffect(()=>{refresh().catch(e=>setError(e.message))},[]);
- useEffect(()=>{window.scrollTo(0,0);if(android)requestAnimationFrame(()=>{const heading=document.querySelector<HTMLElement>('main h1');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true})}})},[page,selected,workspace,org]);
- useEffect(()=>setAthletePage(0),[search,groupFilter,lifecycle,workspace,org]);
+  const blob = await r.blob();
+  if (/report/.test(path))
+    window.dispatchEvent(new CustomEvent('fuorigiri-archive-write', {detail: downloadWorkspace}));
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+const today = () => new Date().toLocaleDateString('en-CA');
+const n = (v: any, suffix = '') =>
+  v === null || v === undefined ? '—' : `${typeof v === 'number' ? Number(v.toFixed(2)) : v}${suffix}`;
+function Trace({
+  samples,
+  protocol,
+  offset = 0,
+  end,
+  onPick,
+  excluded = [],
+  markers = [],
+  lactate = [],
+  vo2 = []
+}: {
+  samples: Row[];
+  protocol?: Row;
+  offset?: number;
+  end?: number;
+  onPick?: (t: number) => void;
+  excluded?: Row[];
+  markers?: Row[];
+  lactate?: Row[];
+  vo2?: Row[];
+}) {
+  return (
+    <TestSignals
+      test={{
+        samples,
+        settings: {offset_s: offset, end_s: end, excluded_intervals: excluded, alignment_markers: markers, lactate, vo2}
+      }}
+      protocol={protocol}
+      Plot={Plot}
+      onPick={onPick}
+    />
+  );
+}
+const android = document.documentElement.classList.contains('android');
+if (android) saveSelection(rememberedSelection(sessionStorage, localStorage), sessionStorage);
+const contextualCsvProfiles: Record<string, readonly string[]> = {
+  'csv-athletes': ['atleti'],
+  'csv-memberships': ['appartenenze'],
+  'csv-tests': ['test_aerobico', 'test_anaerobico'],
+  'csv-measurements': ['antropometria']
+};
 
- const sync=useSyncJob(api,workspace,()=>{refresh(true).catch(e=>setError(e.message))});
- const [progressionMetric,setProgressionMetric]=useState('map_w');
- useEffect(()=>setProgressionMetric('map_w'),[selected,workspace]);
- const activate=async(entry:Row)=>{writeSelection({workspace:entry.id,organization:entry.organization_id||''});setWorkspace(entry.id);setSelected('');setGroupFilter('');setActiveTest(null);await refresh();setModal('');setPage('archive');setNotice(tr('Società aperta su questo dispositivo.'))};
- const canEdit=!state.operator||state.operator.role==='admin'&&!state.operator.revoked;
- const run=async(fn:()=>Promise<void>)=>{setBusy(true);setError('');try{await fn()}catch(e){setError((e as Error).message)}finally{setBusy(false)}};
- const customMetricNames:Row=Object.fromEntries(state.test.flatMap(t=>(t.analysis.custom_fields||[]).filter((f:Row)=>f.scope==='test'&&f.type==='number').flatMap((f:Row)=>Object.keys(t.analysis).filter(k=>k.startsWith(`custom:${t.protocol_id}:${f.key}:`)).map(k=>[k,f.label+(f.unit?' · '+f.unit:'')]))));
- const metricName=(key:string)=>customMetricNames[key]||metricLabel(key);
- const athletes=state.athlete.filter(a=>a.organization_id===org);
- const groups=state.group.filter(g=>g.organization_id===org);
- const activeGroups=groups.filter(g=>g.status!=='deleted');
- const assignableGroups=activeGroups.filter(g=>g.season_status!=='deleted');
- const athlete=athletes.find(a=>a.id===selected);
- const organization=state.organization.find(o=>o.id===org);
- const intervalsEnabled=!!organization?.intervals_icu_enabled;
- const allTests=state.test.filter(t=>t.organization_id===org&&state.athlete.some(a=>a.id===t.athlete_id&&a.status!=='deleted'));
- const tests=allTests.filter(t=>t.status!=='deleted');
- const deletedTests=allTests.filter(t=>t.status==='deleted');
- const activeAthletes=athletes.filter(a=>(a.status||'active')==='active');
- const activeProtocols=state.protocol.filter(p=>(p.status||'active')==='active'&&!anaerobicTypes[p.test_type]&&p.test_type!=='custom'&&(!p.organization_id||p.organization_id===org));
- const catalogProtocols=state.protocol.filter(p=>(!p.organization_id||p.organization_id===org)&&(!protocolSearch||`${p.name} ${p.family} ${p.version}`.toLowerCase().includes(protocolSearch.toLowerCase()))&&(!protocolKind||(p.test_type||'incremental')===protocolKind)&&(protocolStatus==='all'||(p.status||'active')===protocolStatus));
- const athleteTests=tests.filter(t=>t.athlete_id===selected).sort((a,b)=>a.date.localeCompare(b.date));
- const displayed=athletes.filter(a=>(lifecycle==='all'||(a.status||'active')===lifecycle)&&`${a.name} ${a.surname}`.toLowerCase().includes(search.toLowerCase())&&(!groupFilter||state.membership.some(m=>m.athlete_id===a.id&&matchesGroupMembership(m,groupFilter,groups)))).sort((a,b)=>a.surname.localeCompare(b.surname,language,{sensitivity:'base'})||a.name.localeCompare(b.name,language,{sensitivity:'base'}));
- const open=(name:string)=>{if(name==='group')setNewGroupParent('');setError('');if(!canEdit&&['athlete','test','measurement','membership','group-membership','group','protocol','protocol-editor','manual-test'].includes(name)){setError(tr('Accesso in sola lettura: questa operazione richiede Admin dati.'));return}setModal(name)};
- const submit=(endpoint:string,build:(f:FormData)=>Row)=>(e:FormEvent<HTMLFormElement>)=>{e.preventDefault();const form=new FormData(e.currentTarget);run(async()=>{await api(endpoint,build(form));await refresh();setModal('');setNotice(tr("Salvato nell’archivio locale."))})};
- const addToGroup=(id:string)=>{setMembershipCategory('');setMembershipGroup(id.replace(/^season:/,''));open('group-membership')};
- const addToFilteredGroup=()=>{if(groupFilter.startsWith('season:'))addToGroup(groupFilter);else{setMembershipGroup('');setMembershipCategory(groupFilter);open('group-membership')}};
- const addSeason=(id:string)=>{open('group');setNewGroupParent(id)};
- const startIncremental=(protocolId?:string)=>{setEditTest(null);setTrace(null);setPreview(null);setDraft({athlete_id:selected||activeAthletes[0]?.id||'',protocol_id:protocolId||activeProtocols[0]?.id||'',date:today(),offset_s:0,end_s:0,weight_kg:'',height_cm:'',rest_hr:'',rest_after_s:'',rpe:'',threshold_w:'',threshold_coefficient:'',fthr_bpm:'',ftp_w:'',fc_max_reference_bpm:'',weight_source:'dichiarato',recovery_manual:[],lactate:[],notes:''});run(async()=>{const zones=await api('zones/presets');setDraft(d=>({...d,zone_schemes:zones}));});open('test')};
- const startTest=()=>{setEditTest(null);open('test-choice')};
- const chooseTest=(p:Row,mode:string)=>{setTestProtocol(p);setEntryMode(mode);if(p.test_type==='custom')open('custom-test');else if(anaerobicTypes[p.test_type])open('anaerobic-test');else{startIncremental(p.id);if(mode==='manual')open('manual-test')}};
- const payload=()=>({athlete_id:draft.athlete_id,protocol_id:draft.protocol_id,trace_hash:trace?.hash,date:draft.date,notes:draft.notes,settings:{...Object.fromEntries(['offset_s','end_s','weight_kg','height_cm','rest_hr','rest_after_s','rpe','threshold_w','threshold_coefficient','fthr_bpm','ftp_w','fc_max_reference_bpm'].map(k=>[k,draft[k]===''||draft[k]==null?null:Number(draft[k])])),weight_source:draft.weight_source||'dichiarato',measurement_id:draft.measurement_id||null,threshold_source:draft.threshold_source||'dichiarato',recovery_manual:draft.recovery_manual||[],lactate:draft.lactate||[],zone_schemes:draft.zone_schemes,...Object.fromEntries(['vo2','lactate_levels','preset_id','excluded_intervals','alignment_markers','conditions','gas_hash','gas_offset_s','ventilatory_markers','vo2max_verification','threshold_calibration','rpe_scale','custom_values','extra_fields'].filter(k=>draft[k]!=null).map(k=>[k,draft[k]]))}});
- const reviseTest=()=>{if(!activeTest)return;setEditTest(activeTest);setTrace({hash:activeTest.trace_hash,samples:activeTest.samples});setDraft({...activeTest,...activeTest.settings});setPreview(null);setActiveTest(null);open('test')};
- const status=async(r:Row,value:string)=>{await api(`records/${r.id}/status`,{base:r.revision,status:value});await refresh()};
+function App() {
+  const [athletePage, setAthletePage] = useState(0),
+    [testFilters, setTestFilters] = useState<Record<string, TestFilters>>({});
+  const [protocolSearch, setProtocolSearch] = useState(''),
+    [protocolKind, setProtocolKind] = useState(''),
+    [protocolStatus, setProtocolStatus] = useState('active');
+  const [testProtocol, setTestProtocol] = useState<Row | undefined>(),
+    [entryMode, setEntryMode] = useState('manual');
+  const [membershipGroup, setMembershipGroup] = useState('');
+  const [membershipCategory, setMembershipCategory] = useState('');
+  const [newGroupParent, setNewGroupParent] = useState('');
+  const [state, setState] = useState<State>(empty),
+    [org, setOrg] = useState(''),
+    [page, setPage] = useState('athletes'),
+    [selected, setSelected] = useState(''),
+    [search, setSearch] = useState(''),
+    [groupFilter, setGroupFilter] = useState(''),
+    [modal, setModal] = useState(''),
+    [error, setError] = useState(''),
+    [busy, setBusy] = useState(false),
+    [notice, setNotice] = useState(''),
+    [activeTest, setActiveTest] = useState<Row | null>(null);
+  const [trace, setTrace] = useState<Row | null>(null),
+    [preview, setPreview] = useState<Row | null>(null),
+    [draft, setDraft] = useState<Row>({}),
+    [syncFolder, setSyncFolder] = useState(''),
+    [syncKey, setSyncKey] = useState('');
+  const [editAthlete, setEditAthlete] = useState<Row | null>(null),
+    [editTest, setEditTest] = useState<Row | null>(null),
+    [editProtocol, setEditProtocol] = useState<Row | undefined>(),
+    [metric, setMetric] = useState('map_w'),
+    [lifecycle, setLifecycle] = useState('active');
+  const [pickTarget, setPickTarget] = useState('');
+  const [editMeasurement, setEditMeasurement] = useState<Row | undefined>();
+  const [workspaces, setWorkspaces] = useState<Row[]>([]),
+    [workspace, setWorkspace] = useState(sessionStorage.getItem('fuorigiri-workspace') || '');
+  const [loading, setLoading] = useState(true),
+    [started, setStarted] = useState(false);
+  const refreshSequence = useRef(0);
+  const restoredSelection = useRef(android);
+  const readSelection = () => rememberedSelection(sessionStorage, android ? localStorage : undefined);
+  const writeSelection = (s: {workspace: string; organization: string}) =>
+    saveSelection(s, sessionStorage, android ? localStorage : undefined);
+  const refresh = async (background = false) => {
+    const sequence = ++refreshSequence.current;
+    if (!background) setLoading(true);
+    try {
+      if (!restoredSelection.current) {
+        const saved = await withDeadline(
+          api('workspaces/last-selection', undefined, 'GET', ''),
+          30000,
+          'Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.'
+        );
+        if (sequence !== refreshSequence.current) return;
+        writeSelection(saved);
+        restoredSelection.current = true;
+      }
+      const result = await loadArchiveSelection(
+        (...args: any[]) =>
+          withDeadline(
+            (api as any)(...args),
+            30000,
+            'Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.'
+          ),
+        readSelection,
+        writeSelection,
+        () => sequence === refreshSequence.current
+      );
+      if (result && sequence === refreshSequence.current) {
+        if (!android)
+          await api(
+            'workspaces/last-selection',
+            {workspace: result.workspace, organization: result.organization},
+            'PUT',
+            ''
+          );
+        if (sequence !== refreshSequence.current) return;
+        setStarted(true);
+        setState(result.state);
+        setWorkspace(result.workspace);
+        setOrg(result.organization);
+        setWorkspaces(result.workspaces);
+        if (result.missing)
+          setNotice(
+            'L’archivio ricordato non è più disponibile. Seleziona una società: nessun dato è stato eliminato.'
+          );
+      }
+    } finally {
+      if (sequence === refreshSequence.current) setLoading(false);
+    }
+  };
+  useEffect(() => {
+    refresh().catch(e => setError(e.message));
+  }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (android)
+      requestAnimationFrame(() => {
+        const heading = document.querySelector<HTMLElement>('main h1');
+        if (heading) {
+          heading.tabIndex = -1;
+          heading.focus({preventScroll: true});
+        }
+      });
+  }, [page, selected, workspace, org]);
+  useEffect(() => setAthletePage(0), [search, groupFilter, lifecycle, workspace, org]);
 
- const change=(k:string,v:any)=>{setDraft(d=>({...d,[k]:v,...(['weight_kg','height_cm'].includes(k)?{measurement_id:null}:{})}));setPreview(null)};
- const protocol=state.protocol.find(p=>p.id===draft.protocol_id);
- const navigate=(id:string)=>{setPage(id);setSelected('');setActiveTest(null)};
- useAndroidBack(android,page,selected,workspace,busy||loading,screen=>{setPage(screen.page);setSelected(screen.selected);setActiveTest(null)});
- const languageControl=<label className="language">Lingua / Language <select aria-label="Lingua / Language" value={language} disabled={busy} onChange={e=>run(()=>setLanguage(e.target.value,value=>api('device/preferences',{language:value},'PUT','')))}><option value="it">Italiano</option><option value="en">English</option></select></label>;
- const societyControls=(manage:()=>void)=>(<div className="workspace"><small>{tr("SOCIETÀ")}</small><select aria-label={tr("Società")} value={workspace?'w:'+workspace+(workspaces.find(w=>w.id===workspace)?.organizations?.length>1?'/'+org:''):'o:'+org} disabled={busy||loading} onChange={e=>{const value=e.target.value;const [w,desiredOrg]=value.startsWith('w:')?value.slice(2).split('/'):['',value.slice(2)];writeSelection({workspace:w,organization:desiredOrg||''});setWorkspace(w);setOrg(desiredOrg||'');setSelected('');setGroupFilter('');setActiveTest(null);run(refresh)}}><option value="o:">{loading?tr("Caricamento società…"):workspace?tr("Apri archivio locale precedente"):tr("Seleziona società")}</option>{!workspace&&state.organization.map(o=><option key={o.id} value={'o:'+o.id}>{o.name}</option>)}{workspaces.flatMap(w=>w.organizations?.length>1?w.organizations.map((o:Row)=><option key={w.id+'/'+o.id} value={'w:'+w.id+'/'+o.id}>{o.name} · {tr('Backup ripristinato')}</option>):[<option key={w.id} value={'w:'+w.id}>{w.name}{w.mode==='snapshot'?' · '+tr('Consultazione'):''}</option>])}</select><button onClick={manage}><Building2 size={14}/>{tr("Gestisci società")}</button></div>);
- const sectionButtons=(navigate:(page:string)=>void)=><>{[['athletes',tr("Atleti"),Users],['tests',tr("Test e analisi"),Activity],['protocols',tr("Protocolli"),Layers],['groups',tr("Società e gruppi"),Building2],['history',tr("Storici e confronti"),Activity],['archive',tr("Archivio e scambio"),FolderSync]].map(([id,label,Icon]:any)=><button key={id} className={page===id?'active':''} disabled={loading} aria-current={page===id?'page':undefined} onClick={()=>navigate(id)}><Icon size={19}/>{label}{page===id&&<ChevronRight size={15}/>}</button>)}{android&&<button className={page==='info'?'active':''} aria-current={page==='info'?'page':undefined} onClick={()=>navigate('info')}><Info size={19}/>{tr('Info')}</button>}</>;
- const testHasChart=!!activeTest&&hasSignalChart(activeTest);
- const editingRecord=modal==='measurement'?editMeasurement:editTest&&['test','historical-test','anaerobic-test','custom-test'].includes(modal)?editTest:undefined;
- const restoreRecord=(record:Row)=>run(async()=>{await status(record,'active');setNotice(tr('Elemento ripristinato.'))});
- const deletedTestList=(athleteId?:string)=><DeletedRecords records={deletedTests.filter(t=>!athleteId||t.athlete_id===athleteId)} title="Test eliminati" describe={t=>[state.athlete.find(a=>a.id===t.athlete_id)?.surname,state.athlete.find(a=>a.id===t.athlete_id)?.name,state.protocol.find(p=>p.id===t.protocol_id)?.name].filter(Boolean).join(' · ')} busy={busy} canEdit={canEdit} onRestore={restoreRecord}/>;
- return <div className="app">
-  {!android&&<aside inert={!!modal||!!activeTest}><div className="brand"><img className="brand-icon" src="/branding/fuorigiri.svg" alt=""/><div>Fuorigiri<small>PERFORMANCE LAB</small></div></div>
-   {societyControls(()=>open('societies'))}
-   <nav>{sectionButtons(navigate)}</nav>
-   <div className="sidebar-foot"><span className="dot"/>{tr("Archivio locale")}<small>{tr("Disponibile anche senza Internet")}</small><div className="version">v{appVersion} · {tr("Anteprima di sviluppo")}</div></div>
-  </aside>}
-  <main style={android?{marginLeft:0,width:'100%'}:undefined} aria-busy={loading} inert={!!modal||!!activeTest}><header>{android?<AndroidNavigation society={societyControls} onManage={()=>open('societies')} sections={sectionButtons} language={languageControl} onNavigate={navigate} context={<><p>{loading?tr('Apertura società…'):state.organization.find(o=>o.id===org)?.name||workspaces.find(w=>w.id===workspace)?.name||tr('Nessuna società aperta')} · {tr(({athletes:'Atleti',tests:'Test e analisi',protocols:'Protocolli',groups:'Società e gruppi',history:'Storici e confronti',archive:'Archivio e scambio',info:'Info'} as Row)[page]||page)}</p>{athlete&&<p>{athlete.name} {athlete.surname}</p>}{state.operator&&<small>{state.operator.name} · {state.operator.snapshot?tr('Copia di consultazione'):state.operator.revoked?tr('Accesso revocato — sola lettura'):state.operator.owner?tr('Fondatore'):canEdit?tr('Admin dati'):tr('Visualizzatore')}</small>}</>}/>:<>{languageControl}<div className="breadcrumb">{tr("Società")} <ChevronRight size={12}/> {state.organization.find(o=>o.id===org)?.name||workspaces.find(w=>w.id===workspace)?.name||tr("Il tuo archivio")}</div><div className="local"><HardDrive size={14}/> Offline first</div></>}</header><SyncJobStatus sync={sync} compact/>
-   {(!started||loading)&&<LoadingState title={tr(loading?'Apertura società…':'Apertura non riuscita')} detail={loading?tr('Lettura dei dati locali. Non è necessaria una connessione Internet.'):error||tr('I dati locali sono conservati. Riprova ad aprire l’archivio.')} retry={!loading?()=>{setError('');refresh().catch(e=>setError(e.message))}:undefined} retryLabel={tr('Riprova')}/> }
-   {started&&error&&<div className="alert error" role="alert"><AlertTriangle size={18}/><span>{error}</span><button onClick={()=>setError('')} aria-label={tr("Chiudi errore")}><X size={16}/></button></div>}
-   {notice&&<div className="alert success" role="status"><Check size={18}/><span>{notice}</span><button onClick={()=>setNotice('')} aria-label={tr("Chiudi messaggio")}><X size={16}/></button></div>}
-   {!loading&&started&&page!=='info'&&!org&&!workspace&&<WorkspacePanel sync={sync} api={api} run={run} refresh={refresh} download={download} token={token} workspace={workspace} activate={activate} section="societies"/>}
-   {!loading&&started&&page!=='info'&&!org&&workspace&&<><div className="page-head"><div><h1>{workspaces.find(w=>w.id===workspace)?.name||tr('Società collegata')}</h1><p>{tr('Invito associato. Acquisisci i dati dalla cartella condivisa per iniziare.')}</p></div></div><WorkspacePanel key={workspace} sync={sync} api={api} run={run} refresh={refresh} download={download} token={token} workspace={workspace} section="sharing"/></>}
-   {!android&&page!=='info'&&state.operator&&<div className={'operator-badge '+(!canEdit?'readonly':'')} role="status">{state.operator.name} · {state.operator.snapshot?tr('Copia di consultazione'):state.operator.revoked?tr('Accesso revocato — sola lettura'):state.operator.owner?tr('Fondatore'):state.operator.role==='admin'?tr('Admin dati'):tr('Visualizzatore')}{!canEdit&&<span> · {tr('Consultazione ed esportazione disponibili')}</span>}</div>}
-   {!loading&&page!=='info'&&org&&<>
-    <div className="page-head"><div>{!android&&<div className="eyebrow">{athlete?tr("PROFILO ATLETA"):tr("MONITORAGGIO E PERFORMANCE")}</div>}<h1>{athlete?`${athlete.name} ${athlete.surname}`:android?({athletes:tr('Atleti'),tests:tr('Test e analisi'),protocols:tr('Protocolli'),groups:tr('Società e gruppi'),history:tr('Storici e confronti'),archive:tr('Archivio e scambio')} as Row)[page]:({athletes:tr("Ogni atleta, nel tempo."),tests:tr("Dai dati alle osservazioni."),protocols:tr("Protocolli ripetibili."),groups:tr("Una squadra, più percorsi."),history:tr("La squadra, nel tempo."),archive:tr("I tuoi dati, con te.")} as Row)[page]}</h1>{!android&&<p>{athlete?tr("Misure, test e progressione individuale."):({athletes:tr("Un punto di riferimento per conoscere la tua squadra."),tests:tr("Importa una prova, verifica il tracciato e conserva i risultati."),protocols:tr("Definisci il metodo. Conserva ogni evoluzione."),groups:tr("Categorie e appartenenze con una storia."),history:tr("Categorie, stagioni e coorti con metodi espliciti."),archive:tr("Esporta, salva una copia e scambia le modifiche tra dispositivi.")} as Row)[page]}</p>}</div>
-     {page==='athletes'&&<div className="actions">{!athlete&&<button disabled={!canEdit||busy} onClick={()=>open('csv-athletes')}><Upload size={16}/>{tr('Importa CSV')}</button>}<button disabled={!canEdit||!!athlete&&(athlete.status||'active')!=='active'} className="primary" onClick={()=>athlete?startTest():(setEditAthlete(null),open('athlete'))}><Plus size={17}/>{athlete?tr("Nuovo test"):tr("Aggiungi atleta")}</button></div>}
-     {page==='tests'&&<div className="actions"><button disabled={!canEdit||busy} onClick={()=>open('csv-tests')}><Upload size={16}/>{tr('Importa CSV')}</button><button className="primary" onClick={startTest} disabled={!canEdit||!activeAthletes.length}><Plus size={17}/>{tr("Nuovo test")}</button></div>}
-     {page==='protocols'&&<button disabled={!canEdit} className="primary" onClick={()=>{setEditProtocol(undefined);open('protocol-editor')}}><Plus size={17}/>Crea protocollo</button>}
-     {page==='groups'&&<div className="actions"><button disabled={!canEdit||busy} onClick={()=>open('csv-memberships')}><Upload size={16}/>{tr('Importa CSV')}</button><button disabled={!canEdit} className="primary" onClick={()=>open('group')}><Plus size={17}/>{tr("Crea gruppo")}</button></div>}
+  const sync = useSyncJob(api, workspace, () => {
+    refresh(true).catch(e => setError(e.message));
+  });
+  const [progressionMetric, setProgressionMetric] = useState('map_w');
+  useEffect(() => setProgressionMetric('map_w'), [selected, workspace]);
+  const activate = async (entry: Row) => {
+    writeSelection({workspace: entry.id, organization: entry.organization_id || ''});
+    setWorkspace(entry.id);
+    setSelected('');
+    setGroupFilter('');
+    setActiveTest(null);
+    await refresh();
+    setModal('');
+    setPage('archive');
+    setNotice(tr('Società aperta su questo dispositivo.'));
+  };
+  const canEdit = !state.operator || (state.operator.role === 'admin' && !state.operator.revoked);
+  const run = async (fn: () => Promise<void>) => {
+    setBusy(true);
+    setError('');
+    try {
+      await fn();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const customMetricNames: Row = Object.fromEntries(
+    state.test.flatMap(t =>
+      (t.analysis.custom_fields || [])
+        .filter((f: Row) => f.scope === 'test' && f.type === 'number')
+        .flatMap((f: Row) =>
+          Object.keys(t.analysis)
+            .filter(k => k.startsWith(`custom:${t.protocol_id}:${f.key}:`))
+            .map(k => [k, f.label + (f.unit ? ' · ' + f.unit : '')])
+        )
+    )
+  );
+  const metricName = (key: string) => customMetricNames[key] || metricLabel(key);
+  const athletes = state.athlete.filter(a => a.organization_id === org);
+  const groups = state.group.filter(g => g.organization_id === org);
+  const activeGroups = groups.filter(g => g.status !== 'deleted');
+  const assignableGroups = activeGroups.filter(g => g.season_status !== 'deleted');
+  const athlete = athletes.find(a => a.id === selected);
+  const organization = state.organization.find(o => o.id === org);
+  const intervalsEnabled = !!organization?.intervals_icu_enabled;
+  const allTests = state.test.filter(
+    t => t.organization_id === org && state.athlete.some(a => a.id === t.athlete_id && a.status !== 'deleted')
+  );
+  const tests = allTests.filter(t => t.status !== 'deleted');
+  const deletedTests = allTests.filter(t => t.status === 'deleted');
+  const activeAthletes = athletes.filter(a => (a.status || 'active') === 'active');
+  const activeProtocols = state.protocol.filter(
+    p =>
+      (p.status || 'active') === 'active' &&
+      !anaerobicTypes[p.test_type] &&
+      p.test_type !== 'custom' &&
+      (!p.organization_id || p.organization_id === org)
+  );
+  const catalogProtocols = state.protocol.filter(
+    p =>
+      (!p.organization_id || p.organization_id === org) &&
+      (!protocolSearch || `${p.name} ${p.family} ${p.version}`.toLowerCase().includes(protocolSearch.toLowerCase())) &&
+      (!protocolKind || (p.test_type || 'incremental') === protocolKind) &&
+      (protocolStatus === 'all' || (p.status || 'active') === protocolStatus)
+  );
+  const athleteTests = tests.filter(t => t.athlete_id === selected).sort((a, b) => a.date.localeCompare(b.date));
+  const displayed = athletes
+    .filter(
+      a =>
+        (lifecycle === 'all' || (a.status || 'active') === lifecycle) &&
+        `${a.name} ${a.surname}`.toLowerCase().includes(search.toLowerCase()) &&
+        (!groupFilter ||
+          state.membership.some(m => m.athlete_id === a.id && matchesGroupMembership(m, groupFilter, groups)))
+    )
+    .sort(
+      (a, b) =>
+        a.surname.localeCompare(b.surname, language, {sensitivity: 'base'}) ||
+        a.name.localeCompare(b.name, language, {sensitivity: 'base'})
+    );
+  const open = (name: string) => {
+    if (name === 'group') setNewGroupParent('');
+    setError('');
+    if (
+      !canEdit &&
+      [
+        'athlete',
+        'test',
+        'measurement',
+        'membership',
+        'group-membership',
+        'group',
+        'protocol',
+        'protocol-editor',
+        'manual-test'
+      ].includes(name)
+    ) {
+      setError(tr('Accesso in sola lettura: questa operazione richiede Admin dati.'));
+      return;
+    }
+    setModal(name);
+  };
+  const submit = (endpoint: string, build: (f: FormData) => Row) => (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    run(async () => {
+      await api(endpoint, build(form));
+      await refresh();
+      setModal('');
+      setNotice(tr('Salvato nell’archivio locale.'));
+    });
+  };
+  const addToGroup = (id: string) => {
+    setMembershipCategory('');
+    setMembershipGroup(id.replace(/^season:/, ''));
+    open('group-membership');
+  };
+  const addToFilteredGroup = () => {
+    if (groupFilter.startsWith('season:')) addToGroup(groupFilter);
+    else {
+      setMembershipGroup('');
+      setMembershipCategory(groupFilter);
+      open('group-membership');
+    }
+  };
+  const addSeason = (id: string) => {
+    open('group');
+    setNewGroupParent(id);
+  };
+  const startIncremental = (protocolId?: string) => {
+    setEditTest(null);
+    setTrace(null);
+    setPreview(null);
+    setDraft({
+      athlete_id: selected || activeAthletes[0]?.id || '',
+      protocol_id: protocolId || activeProtocols[0]?.id || '',
+      date: today(),
+      offset_s: 0,
+      end_s: 0,
+      weight_kg: '',
+      height_cm: '',
+      rest_hr: '',
+      rest_after_s: '',
+      rpe: '',
+      threshold_w: '',
+      threshold_coefficient: '',
+      fthr_bpm: '',
+      ftp_w: '',
+      fc_max_reference_bpm: '',
+      weight_source: 'dichiarato',
+      recovery_manual: [],
+      lactate: [],
+      notes: ''
+    });
+    run(async () => {
+      const zones = await api('zones/presets');
+      setDraft(d => ({...d, zone_schemes: zones}));
+    });
+    open('test');
+  };
+  const startTest = () => {
+    setEditTest(null);
+    open('test-choice');
+  };
+  const chooseTest = (p: Row, mode: string) => {
+    setTestProtocol(p);
+    setEntryMode(mode);
+    if (p.test_type === 'custom') open('custom-test');
+    else if (anaerobicTypes[p.test_type]) open('anaerobic-test');
+    else {
+      startIncremental(p.id);
+      if (mode === 'manual') open('manual-test');
+    }
+  };
+  const payload = () => ({
+    athlete_id: draft.athlete_id,
+    protocol_id: draft.protocol_id,
+    trace_hash: trace?.hash,
+    date: draft.date,
+    notes: draft.notes,
+    settings: {
+      ...Object.fromEntries(
+        [
+          'offset_s',
+          'end_s',
+          'weight_kg',
+          'height_cm',
+          'rest_hr',
+          'rest_after_s',
+          'rpe',
+          'threshold_w',
+          'threshold_coefficient',
+          'fthr_bpm',
+          'ftp_w',
+          'fc_max_reference_bpm'
+        ].map(k => [k, draft[k] === '' || draft[k] == null ? null : Number(draft[k])])
+      ),
+      weight_source: draft.weight_source || 'dichiarato',
+      measurement_id: draft.measurement_id || null,
+      threshold_source: draft.threshold_source || 'dichiarato',
+      recovery_manual: draft.recovery_manual || [],
+      lactate: draft.lactate || [],
+      zone_schemes: draft.zone_schemes,
+      ...Object.fromEntries(
+        [
+          'vo2',
+          'lactate_levels',
+          'preset_id',
+          'excluded_intervals',
+          'alignment_markers',
+          'conditions',
+          'gas_hash',
+          'gas_offset_s',
+          'ventilatory_markers',
+          'vo2max_verification',
+          'threshold_calibration',
+          'rpe_scale',
+          'custom_values',
+          'extra_fields'
+        ]
+          .filter(k => draft[k] != null)
+          .map(k => [k, draft[k]])
+      )
+    }
+  });
+  const reviseTest = () => {
+    if (!activeTest) return;
+    setEditTest(activeTest);
+    setTrace({hash: activeTest.trace_hash, samples: activeTest.samples});
+    setDraft({...activeTest, ...activeTest.settings});
+    setPreview(null);
+    setActiveTest(null);
+    open('test');
+  };
+  const status = async (r: Row, value: string) => {
+    await api(`records/${r.id}/status`, {base: r.revision, status: value});
+    await refresh();
+  };
+
+  const change = (k: string, v: any) => {
+    setDraft(d => ({...d, [k]: v, ...(['weight_kg', 'height_cm'].includes(k) ? {measurement_id: null} : {})}));
+    setPreview(null);
+  };
+  const protocol = state.protocol.find(p => p.id === draft.protocol_id);
+  const navigate = (id: string) => {
+    setPage(id);
+    setSelected('');
+    setActiveTest(null);
+  };
+  useAndroidBack(android, page, selected, workspace, busy || loading, screen => {
+    setPage(screen.page);
+    setSelected(screen.selected);
+    setActiveTest(null);
+  });
+  const languageControl = (
+    <label className="language">
+      Lingua / Language{' '}
+      <select
+        aria-label="Lingua / Language"
+        value={language}
+        disabled={busy}
+        onChange={e =>
+          run(() => setLanguage(e.target.value, value => api('device/preferences', {language: value}, 'PUT', '')))
+        }
+      >
+        <option value="it">Italiano</option>
+        <option value="en">English</option>
+      </select>
+    </label>
+  );
+  const societyControls = (manage: () => void) => (
+    <div className="workspace">
+      <small>{tr('SOCIETÀ')}</small>
+      <select
+        aria-label={tr('Società')}
+        value={
+          workspace
+            ? 'w:' + workspace + (workspaces.find(w => w.id === workspace)?.organizations?.length > 1 ? '/' + org : '')
+            : 'o:' + org
+        }
+        disabled={busy || loading}
+        onChange={e => {
+          const value = e.target.value;
+          const [w, desiredOrg] = value.startsWith('w:') ? value.slice(2).split('/') : ['', value.slice(2)];
+          writeSelection({workspace: w, organization: desiredOrg || ''});
+          setWorkspace(w);
+          setOrg(desiredOrg || '');
+          setSelected('');
+          setGroupFilter('');
+          setActiveTest(null);
+          run(refresh);
+        }}
+      >
+        <option value="o:">
+          {loading
+            ? tr('Caricamento società…')
+            : workspace
+              ? tr('Apri archivio locale precedente')
+              : tr('Seleziona società')}
+        </option>
+        {!workspace &&
+          state.organization.map(o => (
+            <option key={o.id} value={'o:' + o.id}>
+              {o.name}
+            </option>
+          ))}
+        {workspaces.flatMap(w =>
+          w.organizations?.length > 1
+            ? w.organizations.map((o: Row) => (
+                <option key={w.id + '/' + o.id} value={'w:' + w.id + '/' + o.id}>
+                  {o.name} · {tr('Backup ripristinato')}
+                </option>
+              ))
+            : [
+                <option key={w.id} value={'w:' + w.id}>
+                  {w.name}
+                  {w.mode === 'snapshot' ? ' · ' + tr('Consultazione') : ''}
+                </option>
+              ]
+        )}
+      </select>
+      <button onClick={manage}>
+        <Building2 size={14} />
+        {tr('Gestisci società')}
+      </button>
     </div>
-    {page==='athletes'&&!athlete&&<>{android?<details><summary>{tr('Riepilogo società')}</summary><div className="stats"><Stat label={tr("ATLETI IN ARCHIVIO")} value={athletes.length} text={tr("Profili della società")}/><Stat label={tr("TEST REGISTRATI")} value={tests.length} text={tr("Risultati conservati localmente")}/><Stat label={tr("GRUPPI")} value={activeGroups.length} text={tr("Categorie e squadre")}/><Stat label={tr("PROTOCOLLI")} value={new Set(state.protocol.map(p=>p.family)).size} text={`${state.protocol.length} versioni archiviate`}/></div></details>:<div className="stats"><Stat label={tr("ATLETI IN ARCHIVIO")} value={athletes.length} text={tr("Profili della società")}/><Stat label={tr("TEST REGISTRATI")} value={tests.length} text={tr("Risultati conservati localmente")}/><Stat label={tr("GRUPPI")} value={activeGroups.length} text={tr("Categorie e squadre")}/><Stat label={tr("PROTOCOLLI")} value={new Set(state.protocol.map(p=>p.family)).size} text={`${state.protocol.length} versioni archiviate`}/></div>}
-     <section className="panel"><div className="panel-head" style={android?{display:'block'}:undefined}><h2>{groupFilter?groupFilterLabel(groupFilter,groups):tr("La squadra")} <span className="count">{displayed.length}</span></h2>{groupFilter.startsWith('season:')&&(()=>{const g=groups.find(g=>g.id===groupFilter.slice(7));const period=seasonPeriod(g?.season);return period.end?<p className="hint">{tr('Appartenenze nel periodo:')} {period.start} / {period.end}</p>:null})()}{groupFilter&&<button disabled={!canEdit||busy} onClick={addToFilteredGroup}>{tr('Aggiungi atleti al gruppo')}</button>}{android?<CollapsibleFilters label={tr('Filtri atleti')}>{<><select aria-label={tr("Stato atleta")} value={lifecycle} onChange={e=>setLifecycle(e.target.value)}><option value="active">{tr("Attivi")}</option><option value="archived">{tr("Archiviati")}</option><option value="deleted">{tr("Eliminati")}</option><option value="all">{tr("Tutti")}</option></select><div className="search"><Search size={16}/><input aria-label={tr("Cerca atleta")} placeholder={tr("Cerca un atleta…")} value={search} onChange={e=>setSearch(e.target.value)}/></div><select aria-label={tr("Filtra gruppo")} value={groupFilter} onChange={e=>setGroupFilter(e.target.value)}><option value="">{tr("Tutti i gruppi")}</option>{groups.filter(g=>!g.parent_id&&g.status!=='deleted').map(g=><React.Fragment key={g.id}><option value={g.id}>{g.name} - {tr('Attuali')}</option>{groupSeasons(g,groups,state.membership).map(season=><option key={season.id} value={`season:${season.id}`}>{g.name} - {season.season||tr('Senza stagione')}</option>)}</React.Fragment>)}</select></>}</CollapsibleFilters>:<div className="tools"><select aria-label={tr("Stato atleta")} value={lifecycle} onChange={e=>setLifecycle(e.target.value)}><option value="active">{tr("Attivi")}</option><option value="archived">{tr("Archiviati")}</option><option value="deleted">{tr("Eliminati")}</option><option value="all">{tr("Tutti")}</option></select><div className="search"><Search size={16}/><input aria-label={tr("Cerca atleta")} placeholder={tr("Cerca un atleta…")} value={search} onChange={e=>setSearch(e.target.value)}/></div><select aria-label={tr("Filtra gruppo")} value={groupFilter} onChange={e=>setGroupFilter(e.target.value)}><option value="">{tr("Tutti i gruppi")}</option>{groups.filter(g=>!g.parent_id&&g.status!=='deleted').map(g=><React.Fragment key={g.id}><option value={g.id}>{g.name} - {tr('Attuali')}</option>{groupSeasons(g,groups,state.membership).map(season=><option key={season.id} value={`season:${season.id}`}>{g.name} - {season.season||tr('Senza stagione')}</option>)}</React.Fragment>)}</select></div>}</div>
-      {!displayed.length?<Empty text={tr("Nessun atleta trovato. Aggiungi un profilo per iniziare.")}/> :android?<RecordCards pageIndex={athletePage} onPageChange={setAthletePage} locale={language==='en'?'en':'it'} resetKey={[search,groupFilter,lifecycle,org].join('|')} actionLabel={tr('Apri profilo atleta')} onOpen={setSelected} items={displayed.map(a=>{const ordered=tests.filter(t=>t.athlete_id===a.id).sort((a,b)=>b.date.localeCompare(a.date));const last=ordered[0],lastMap=ordered.find(t=>!t.test_type&&t.analysis.map_w!=null);return {id:a.id,title:`${a.surname} ${a.name}`,subtitle:a.birth_year?`${tr('ANNO DI NASCITA')} ${a.birth_year}`:tr('Nascita da completare'),details:[{label:tr('ULTIMO TEST'),value:last?.date||tr('Nessun test')},{label:tr('MAP OPERATIVA'),value:n(lastMap?.analysis.map_w,' W')}]}})}/>:<DataTable rows={displayed.map(a=>{const ordered=tests.filter(t=>t.athlete_id===a.id).sort((a,b)=>b.date.localeCompare(a.date));return {...a,athleteName:`${a.surname} ${a.name}`,lastDate:ordered[0]?.date,lastMap:ordered.find(t=>!t.test_type&&t.analysis.map_w!=null)?.analysis.map_w}})} columns={[
- {key:'athleteName',label:tr('ATLETA'),render:a=><button className="person" onClick={()=>setSelected(a.id)}><span className="avatar">{a.name[0]}{a.surname[0]}</span><span>{a.surname} {a.name}<small>{tr('Apri profilo atleta')}</small></span></button>},
- {key:'birth_year',label:tr('ANNO DI NASCITA'),render:a=><>{n(a.birth_year)}{a.birth_year&&!a.birth_confirmed&&<small>{tr('Da confermare')}</small>}</>},
- {key:'lastDate',label:tr('ULTIMO TEST'),render:a=>a.lastDate||tr('Nessun test')},
- {key:'lastMap',label:tr('MAP OPERATIVA'),render:a=>n(a.lastMap,' W')}
- ]}/>}
-     </section></>}
-    {page==='athletes'&&athlete&&<>
-     <div className="actions"><IntervalsLink enabled={intervalsEnabled} id={athlete.intervals_icu_id}/><button onClick={()=>setSelected('')}>{tr("← Tutti gli atleti")}</button><button disabled={!canEdit||!assignableGroups.length||(athlete.status||'active')!=='active'} onClick={()=>open('membership')}>{tr("Aggiungi a un gruppo")}</button><button disabled={!canEdit} onClick={()=>{setEditAthlete(athlete);open('athlete')}}>{tr("Modifica profilo")}</button><button disabled={!canEdit} onClick={()=>run(()=>status(athlete,'archived'))}>{tr("Archivia")}</button><button disabled={!canEdit} onClick={()=>{if(confirm(tr("Escludere questo atleta dai nuovi storici? Potrai ripristinarlo.")))run(()=>status(athlete,'deleted'))}}>{tr("Elimina")}</button>{athlete.status&&athlete.status!=='active'&&<button disabled={!canEdit} onClick={()=>run(()=>status(athlete,'active'))}>{tr("Ripristina")}</button>}</div>
-     <div className="stats"><Stat label={tr("ANNO DI NASCITA")} value={n(athlete.birth_year)} text={athlete.birth_confirmed?tr("Confermato"):tr("Da confermare")}/><Stat label="TEST" value={athleteTests.length} text={tr("Nello storico individuale")}/><Stat label={tr("ULTIMA MAP")} value={n(athleteTests.filter(t=>!t.test_type&&t.analysis.map_w!=null).at(-1)?.analysis.map_w,' W')} text={tr("Ultimo step completo")}/></div>
-     <AthleteTrainingZones key={selected} athlete={athlete} api={api} run={run} refresh={refresh} canEdit={canEdit}/>
-     <AthleteProgression key={selected} tests={athleteTests} protocols={state.protocol} metric={progressionMetric} setMetric={setProgressionMetric} metrics={['map_w','map_wkg','threshold_w','threshold_wkg','ftp_w','ftp_wkg','vo2peak_l_min','vo2peak_ml_kg_min',...anaerobicMetrics,...Object.keys(customMetricNames),...new Set(athleteTests.flatMap(t=>Object.keys(t.analysis).filter(k=>/^lactate_\d+(?:p\d+)?_(w|wkg|hr_bpm)$/.test(k))))]} label={metricName} Plot={Plot}/>
-     <TestList filters={testFilters[`${workspace}:${selected}`]||emptyTestFilters} changeFilters={value=>setTestFilters(old=>({...old,[`${workspace}:${selected}`]:value}))} list={athleteTests} state={state} open={id=>run(async()=>setActiveTest(await api('tests/'+id)))}/>{deletedTestList(selected)}
-     <section className="panel"><div className="panel-head"><h2>{tr("Antropometria")}</h2><div className="actions"><button disabled={!canEdit||busy} onClick={()=>open('csv-measurements')}><Upload size={16}/>{tr('Importa CSV')}</button><button disabled={!canEdit} onClick={()=>{setEditMeasurement(undefined);open('measurement')}}><Plus size={16}/>{tr("Rilevazione")}</button></div></div><ChronologicalTable key={`${workspace}:${selected}`} label={tr("Antropometria")}><thead><tr><th>{tr("DATA")}</th><th>{tr("PESO")}</th><th>{tr("STATURA")}</th><th>{tr('Altezza perineale · cm')}</th><th>{tr('Perineale/statura · %')}</th><th>{tr('IMC (BMI) · kg/m²')}</th><th>{tr("FONTE")}</th><th/></tr></thead><tbody>{state.measurement.filter(m=>m.athlete_id===selected).map(m=><tr key={m.id}><td>{m.date}</td><td>{n(m.weight_kg,' kg')}</td><td>{n(m.height_cm,' cm')}</td><td>{n(m.perineal_height_cm)}</td><td>{n(perinealHeightRatio(m))}</td><td>{n(bodyMassIndex(m))}</td><td>{tr(m.source)}</td><td><button disabled={!canEdit} onClick={()=>{setEditMeasurement(m);open('measurement')}}>{tr('Correggi rilevazione')}</button></td></tr>)}</tbody></ChronologicalTable><AnthropometryBmiHistory measurements={state.measurement.filter(m=>m.athlete_id===selected)} Plot={Plot}/></section><DeletedRecords records={(state.deleted_measurement||[]).filter(m=>m.athlete_id===selected)} title="Rilevazioni eliminate" describe={m=>[n(m.weight_kg,' kg'),n(m.height_cm,' cm'),tr(m.source)].join(' · ')} busy={busy} canEdit={canEdit} onRestore={restoreRecord}/>
-     <section className="panel protocol"><h2>{language==='en'?'Anthropometric trends':'Andamento antropometrico'}</h2><Plot data={['weight_kg','height_cm'].map((k,i)=>{const rows=state.measurement.filter(m=>m.athlete_id===selected).sort((a,b)=>a.date.localeCompare(b.date));return {x:rows.map(r=>r.date),y:rows.map(r=>r[k]),name:metricLabel(k),type:'scatter',mode:'lines+markers',yaxis:i?'y2':'y',connectgaps:true}})} layout={{yaxis:{title:{text:'kg'}},yaxis2:{title:{text:'cm'},overlaying:'y',side:'right'}}}/></section><MaturationPanel key={selected} athlete={athlete} revisionKey={state.measurement.filter(m=>m.athlete_id===selected).map(m=>m.revision).join('|')} api={api} run={run} canEdit={canEdit} Plot={Plot}/><section className="panel"><div className="panel-head"><h2>{tr("Appartenenze")}</h2><button onClick={()=>open('membership')} disabled={!canEdit||!assignableGroups.length||(athlete.status||'active')!=='active'}><Plus size={16}/>{tr("Assegna gruppo")}</button></div>{state.membership.filter(m=>m.athlete_id===selected).map(m=><div className="list-row" key={m.id}><strong>{[groups.find(g=>g.id===m.group_id)?.name,groups.find(g=>g.id===m.group_id)?.season].filter(Boolean).join(' · ')}{groups.some(g=>g.id===m.group_id&&(g.status==='deleted'||g.season_status==='deleted'))&&` · ${tr('Gruppo o stagione eliminati')}`}</strong><span>{m.start} → {m.end||tr("in corso")}</span></div>)}</section>
-    </>}
-    {page==='tests'&&<><TestList filters={testFilters[`${workspace}:${selected}`]||emptyTestFilters} changeFilters={value=>setTestFilters(old=>({...old,[`${workspace}:${selected}`]:value}))} list={tests} state={state} open={id=>run(async()=>setActiveTest(await api('tests/'+id)))}/>{deletedTestList()}<details className="panel protocol"><summary>{tr('Guida ai test')}</summary><p>{language==='en'?'Define methods in Protocols, then choose New test to record results manually or from a file. Incremental tests, Sprint, Wingate and custom protocols retain their own methods.':'Definisci i metodi in Protocolli, poi usa Nuovo test per scegliere protocollo, versione e inserimento manuale o da file. Incrementali, Sprint, Wingate e protocolli personalizzati conservano metodi distinti.'}</p><p className="hint">{tr("La fine del file può includere recupero o defaticamento. Conferma sempre il termine dello sforzo prima di calcolare i risultati.")}</p></details></>}
-    {page==='history'&&<><HistoryPanel org={org} state={state} api={api} download={download} run={run} Plot={Plot}/><RepeatabilityPanel org={org} state={state} api={api} run={run} download={download}/><details className="panel protocol"><summary>{tr('Confronti individuali e variazioni antropometriche')}</summary><GrowthPanel org={org} api={api} run={run} Plot={Plot}/></details></>}
-    {page==='protocols'&&<><p>Definisci un protocollo manualmente, anche senza step o ERG, oppure importa il programma di carico. Ogni versione conserva metodo e campi facoltativi.</p><div className="form-grid"><label>Cerca protocollo<input value={protocolSearch} onChange={e=>setProtocolSearch(e.target.value)} placeholder="Nome, codice o versione"/></label><label>Famiglia<select value={protocolKind} onChange={e=>setProtocolKind(e.target.value)}><option value="">Tutte</option><option value="incremental">Incrementale aerobico</option>{Object.entries(anaerobicTypes).map(([k,v])=><option key={k} value={k}>{String(v)}</option>)}<option value="custom">Personalizzato</option></select></label><label>Stato protocollo<select value={protocolStatus} onChange={e=>setProtocolStatus(e.target.value)}><option value="active">Attivi</option><option value="archived">Archiviati</option><option value="deleted">Eliminati</option><option value="all">Tutti</option></select></label></div><button disabled={!canEdit} onClick={()=>open('protocol')}><Upload size={16}/> Importa ERG</button></>}
-    {page==='protocols'&&<div className="cards">{catalogProtocols.map(p=><section className="panel protocol" key={p.id}><div className="protocol-top"><Layers size={20}/><span className="tag">{p.version}</span></div><h2>{p.name}</h2><p>{protocolType(p)} · {p.family}</p>{!p.definition.points.length?<p className="hint">{p.test_type==='custom'?'Protocollo personalizzato: campi dichiarati, nessuna formula automatica.':anaerobicTypes[p.test_type]?'Prova all-out di '+p.anaerobic_spec.duration_s+' s. Carico e finestre nella definizione.':tr('Protocollo d’archivio senza step. Utilizzabile con risultati manuali.')}</p>:<Plot data={[{x:p.definition.points.map((v:number[])=>v[0]/60),y:p.definition.points.map((v:number[])=>v[1]),type:'scatter',mode:'lines',fill:'tozeroy',line:{color:'#248777',width:2},fillcolor:'#24877716'}]} layout={{height:180,showlegend:false,margin:{l:35,r:10,t:8,b:28}}}/>}<div className="protocol-meta">{p.anaerobic_spec?<span>{n(p.anaerobic_spec.duration_s)} s · durata dello sforzo</span>:p.definition.segments.length?<><span>{p.definition.segments.length} {tr("fasi")}</span><span>{n(p.definition.duration_s/60)} {tr("min previsti")}</span></>:<span>{p.test_type==='custom'?'Durata libera · osservazioni personalizzate':'Solo scheda · durata non definita'}</span>}</div><p className="muted">{p.reason||tr("Prima definizione del protocollo")}</p><small>{tr("Versione immutabile ·")} {p.parent_id?tr("Evoluzione di una versione precedente"):tr("Protocollo iniziale")}</small><p>{tr("Stato:")} {({active:tr('Attivo'),archived:tr('Archiviato'),deleted:tr('Eliminato')} as Row)[p.status||'active']||p.status}</p><div className="actions"><button disabled={!canEdit} onClick={()=>{setEditProtocol(p);open('protocol-editor')}}>{tr("Nuova versione")}</button><button disabled={!p.definition.points.length} title={tr("Richiede un protocollo con step")} onClick={()=>run(()=>download(`protocols/${p.id}/erg`,'protocollo.erg'))}>ERG</button><button onClick={()=>run(()=>download(`protocols/${p.id}/definition`,'protocollo.json'))}>JSON</button><button disabled={!canEdit} onClick={()=>run(()=>status(p,'archived'))}>{tr("Archivia")}</button><button disabled={!canEdit} onClick={()=>run(()=>status(p,'deleted'))}>{tr("Elimina")}</button><button disabled={!canEdit} onClick={()=>run(()=>status(p,'active'))}>{tr("Ripristina")}</button></div></section>)}{!catalogProtocols.length&&<Empty text="Nessun protocollo corrisponde ai filtri. Puoi crearne uno manualmente o importare un ERG."/>}</div>}
-    {page==='groups'&&<><GroupManager key={`${workspace}:${org}`} groups={groups} api={api} run={run} busy={busy} onChanged={async()=>{await refresh();setGroupFilter('')}} memberships={state.membership} canEdit={canEdit} onAddSeason={addSeason} onAdd={addToGroup} onSelect={id=>{setGroupFilter(id);setLifecycle('all');setSearch('');setSelected('');setPage('athletes')}}/></>}
-    {page==='archive'&&<><IntervalsSettings organization={organization} canEdit={canEdit&&!busy} api={api} run={run} refresh={refresh}/><ArchiveReports org={org} state={state} api={api} run={run} download={download}/><WorkspacePanel sync={sync} api={api} run={run} refresh={refresh} download={download} token={token} workspace={workspace} section="reports"/><details className="panel protocol"><summary>{tr('Importazioni CSV')}</summary><ImportPanel readOnly={!canEdit} org={org} api={api} run={run} refresh={refresh} download={download}/></details><div className="cards"><section className="panel protocol"><Download/><h2>{tr("Esporta lo storico")}</h2><p>{tr("CSV di anagrafiche, antropometria, incrementali e anaerobici, dati estesi e manifest delle versioni.")}</p><button onClick={()=>run(()=>download('export/'+org,'storico-csv.zip'))}>{tr("Esporta CSV")}</button></section><section className="panel protocol"><HardDrive/><h2>{tr("Copia dell’archivio")}</h2><p>{tr("Database consistente e file originali. Il backup scaricato non è cifrato.")}</p><ArchiveMaintenance key={workspace||'legacy'} {...{api,run,download,refresh,activate}}/></section></div><details className="panel protocol"><summary>{tr("Condivisione e collaboratori")}</summary><WorkspacePanel sync={sync} api={api} run={run} refresh={refresh} download={download} token={token} workspace={workspace} section="sharing"/></details><details className="panel protocol"><summary>{tr("Impostazioni avanzate")}</summary>{canEdit&&<DefaultsPanel org={org} api={api} run={run}/>}{!workspace&&<details><summary>{tr("Scambio precedente con chiave condivisa")}</summary>     <section className="panel protocol"><span className="tag amber">{tr("SPERIMENTALE")}</span><h2>{tr("Scambio tramite cartella")}</h2><p>{tr("Seleziona un percorso già sincronizzato dal tuo client cloud, disponibile offline e separato dai dati locali dell’app.")}</p><div className="hint">Lo scambio comprende tutto questo archivio: è bloccato se contiene più società. Scambio precedente senza identità firmate. Preferire una società separata con inviti personali; conservare la chiave separatamente.</div><Field label={tr("Percorso della cartella sincronizzata")}><input value={syncFolder} onChange={e=>setSyncFolder(e.target.value)} placeholder="C:\Users\…\Drive\Fuorigiri"/></Field><Field label={tr("Chiave di scambio")}><input type="password" value={syncKey} onChange={e=>setSyncKey(e.target.value)} autoComplete="off"/></Field><div className="actions"><button onClick={()=>run(async()=>{const r=await api('sync/key',{});setSyncKey(r.key);setNotice('Chiave creata. Copiala dal campo con un gestore di password e conservala prima di chiudere.')})}>{tr("Genera chiave")}</button><button className="primary" disabled={busy||!syncFolder||!syncKey||state.organization.length!==1} onClick={()=>run(async()=>{const r=await api('sync',{folder:syncFolder,key:syncKey});setNotice(`${r.written_to_folder} pacchetti scritti · ${r.received} acquisiti · ${r.conflicts} conflitti · ${r.pending} in attesa. ${r.status}`);if(r.errors.length)setError(r.errors.join('; '));await refresh()})}><FolderSync size={16}/>{tr("Scambia modifiche")}</button></div></section></details>}</details></>}
-
-   </>}
-   {android&&page==='info'&&<section className="panel" aria-labelledby="app-info-title"><h1 id="app-info-title">{tr('Info')}</h1><h2>Fuorigiri Performance Lab</h2><p>{tr('Versione')} {appVersion} · {tr('Anteprima di sviluppo')}</p><p><HardDrive size={16}/> {tr('Archivio locale')} · {tr('Disponibile anche senza Internet')}</p></section>}
-   <Glossary keys={page==='info'||!org?[]:page==='athletes'&&!athlete?['MAP','Wkg']:pageTerms[page]||[]}/>{(!android||page==='info')&&<><Branding/><Legal api={api}/></>}
-  </main>
-  {modal&&<Dialog busy={busy} key={modal} title={contextualCsvProfiles[modal]?tr('Importa CSV'):modal==='group-membership'?tr('Aggiungi atleti'):modal==='membership'?tr('Aggiungi a un gruppo'):editTest&&['test','historical-test','anaerobic-test','custom-test'].includes(modal)?tr('Correggi test'):tr('Modifica archivio')} editor={modal!=='test-choice'&&modal!=='societies'} onClose={()=>{setModal('');if(editTest&&['test','historical-test','anaerobic-test','custom-test'].includes(modal))setActiveTest(editTest)}}>
-   {error&&<div className="alert error" role="alert">{error}</div>}
-   {editingRecord&&<RecordDeletion record={editingRecord} busy={busy} canEdit={canEdit} error={error} onDelete={()=>run(async()=>{await status(editingRecord,'deleted');setModal('');setActiveTest(null);setEditTest(null);setEditMeasurement(undefined);setPreview(null);setNotice(tr('Elemento eliminato. Puoi ripristinarlo dalla sezione degli elementi eliminati.'))})}/>}
-   {contextualCsvProfiles[modal]&&<ImportPanel key={modal} allowedProfiles={contextualCsvProfiles[modal]} readOnly={!canEdit} org={org} api={api} run={run} refresh={refresh} download={download}/>}
-   {modal==='test-choice'&&<NewTestChoice {...{org,state,selected}} onChoose={chooseTest} onProtocols={()=>{setModal('');setPage('protocols')}}/>}
-   {modal==='anaerobic-test'&&<AnaerobicEditor original={editTest||undefined} {...{org,state,api,run,refresh,Plot,selected}} initialProtocol={testProtocol} initialMode={entryMode} done={async(r:Row)=>{setModal('');setActiveTest(r);await refresh()}}/>}
-   {modal==='custom-test'&&testProtocol&&<CustomTestEditor original={editTest||undefined} {...{org,state,api,run,Plot,selected}} protocol={testProtocol} mode={entryMode} done={async(r:Row)=>{setModal('');setActiveTest(r);await refresh()}}/>}
-   {modal==='historical-test'&&editTest&&<HistoricalEditor standalone test={editTest} api={api} run={run} done={async(r:Row)=>{await refresh();setModal('');setActiveTest(r)}}/>}
-   {modal==='manual-test'&&<ManualTestEditor athletes={activeAthletes} protocols={activeProtocols} initialProtocol={testProtocol} selected={selected} api={api} run={run} done={async(saved:Row)=>{await refresh();setModal('');setActiveTest(saved)}}/>}
-   {modal==='protocol-editor'&&<ProtocolDesigner org={org} original={editProtocol} api={api} run={run} done={async()=>{await refresh();setModal('')}}/>}
-   {modal==='societies'&&<WorkspacePanel sync={sync} api={api} run={run} refresh={refresh} download={download} token={token} workspace={workspace} activate={activate} section="societies"/>}
-   {modal==='organization'&&<form onSubmit={submit('organizations',f=>({name:f.get('name')}))}><h2>{tr("Nuova società")}</h2><Field label={tr("Nome")}><input name="name" required autoFocus/></Field><Save busy={busy}/></form>}
-   {modal==='group'&&<GroupEditor groups={groups.filter(g=>g.status!=='deleted')} parentId={newGroupParent} busy={busy} onSubmit={submit('groups',f=>({organization_id:org,name:f.get('name'),season:f.get('season')||'',parent_id:f.get('parent_id')||null}))}/>}
-   {modal==='athlete'&&<form onSubmit={e=>{e.preventDefault();const f=new FormData(e.currentTarget);run(async()=>{const data={organization_id:org,name:f.get('name'),surname:f.get('surname'),birth_date:f.get('birth_date')||null,birth_year:f.get('birth_year')?Number(f.get('birth_year')):null,birth_confirmed:f.get('confirmed')==='on',birth_source:f.get('source'),sex:f.get('sex'),notes:f.get('notes'),status:editAthlete?.status||'active',intervals_icu_id:String(f.get('intervals_icu_id')||'').trim()};await api(editAthlete?`athletes/${editAthlete.id}?base=${editAthlete.revision}`:'athletes',data,editAthlete?'PUT':'POST');await refresh();setModal('')})}}><h2>{editAthlete?tr("Modifica atleta"):tr("Nuovo atleta")}</h2><div className="form-grid"><Field label={tr("Nome")}><input name="name" defaultValue={editAthlete?.name} required autoFocus/></Field><Field label={tr("Cognome")}><input name="surname" defaultValue={editAthlete?.surname} required/></Field><Field label={tr("Data di nascita (facoltativa)")}><input name="birth_date" type="date" defaultValue={editAthlete?.birth_date||''}/></Field><Field label={tr("Solo anno, se data ignota")}><input name="birth_year" type="number" min="1900" max={new Date().getFullYear()} defaultValue={editAthlete?.birth_year||''}/></Field><Field label={tr("Sesso")}><select name="sex" defaultValue={editAthlete?.sex||''}><option value="">{tr("Non indicato")}</option><option>M</option><option>F</option></select></Field></div><label><input type="checkbox" name="confirmed" defaultChecked={editAthlete?.birth_confirmed}/>{tr("Nascita confermata")}</label><Field label={tr("Fonte")}><input name="source" defaultValue={editAthlete?.birth_source||''}/></Field><IntervalsField id={editAthlete?.intervals_icu_id}/><Field label={tr("Note")}><textarea name="notes" defaultValue={editAthlete?.notes||''}/></Field><Save busy={busy}/></form>}
-   {['membership','group-membership'].includes(modal)&&<MembershipEditor athletes={athletes} groups={assignableGroups} memberships={state.membership} athleteId={modal==='membership'?selected:undefined} groupId={modal==='group-membership'?membershipGroup:undefined} categoryId={modal==='group-membership'?membershipCategory:undefined} api={api} run={run} busy={busy} done={async(result:Row)=>{await refresh();setModal('');setNotice(`${tr('Appartenenze aggiunte:')} ${result.added} · ${tr('già presenti')}: ${result.skipped}`)}}/>}
-   {modal==='measurement'&&<MeasurementEditor athlete={selected} original={editMeasurement} api={api} run={run} done={async()=>{await refresh();setModal('')}}/>}
-   {modal==='protocol'&&<form onSubmit={e=>{e.preventDefault();const f=new FormData(e.currentTarget);f.append('organization_id',org);run(async()=>{await api('protocols',f);await refresh();setModal('');setNotice(tr("Versione del protocollo archiviata."))})}}><h2>{tr("Protocollo da ERG")}</h2><p className="muted">{tr("Il file definisce il carico. Completa l’identità e la fase di riscaldamento.")}</p><Field label={tr("File ERG")}><input name="file" type="file" accept=".erg" required/></Field><Field label={tr("Nome")}><input name="name" required placeholder={tr("Incrementale Allievi")}/></Field><div className="form-grid"><Field label={tr("Codice")}><input name="family" required defaultValue="incremental"/></Field><Field label={tr("Versione")}><input name="version" defaultValue="1.0" required/></Field></div><Field label={tr("Fine riscaldamento · secondi")}><input name="warmup_s" type="number" defaultValue="600" min="0" required/></Field><Field label={tr("Versione precedente (per evoluzioni)")}><select name="parent_id"><option value="">{tr("Nuovo protocollo")}</option>{state.protocol.map(p=><option key={p.id} value={p.id}>{p.name} · {p.version}</option>)}</select></Field><Field label={tr("Motivo / descrizione")}><textarea name="reason"/></Field><Save busy={busy}/></form>}
-   {modal==='test'&&<><div className="eyebrow">{tr("NUOVO TEST")}</div><h2>{tr("Dal tracciato al risultato.")}</h2>{!editTest&&<div className="hint">{tr("Non hai un file?")} <button onClick={()=>open('manual-test')}>{tr("Inserisci solo dati manuali")}</button></div>}<div className="form-grid"><Field label={tr("Atleta")}><select disabled={!!editTest} value={draft.athlete_id} onChange={e=>change('athlete_id',e.target.value)}>{(editTest?athletes:activeAthletes).map(a=><option key={a.id} value={a.id}>{a.surname} {a.name}</option>)}</select></Field><Field label={tr("Protocollo e versione")}><select value={draft.protocol_id} onChange={e=>change('protocol_id',e.target.value)}>{(editTest?state.protocol:activeProtocols).map(p=><option key={p.id} value={p.id}>{p.name} · {p.version}</option>)}</select></Field></div>
-    <TraceImporter api={api} run={run} disabled={!!editTest} done={async(t:Row)=>{setTrace(t);setPreview(null);setDraft(d=>({...d,end_s:t.duration_s,date:t.started_at?t.started_at.slice(0,10):d.date}))}}/>
-    <label>Selezione sul grafico<select value={pickTarget} onChange={e=>setPickTarget(e.target.value)}><option value="">Solo navigazione</option><option value="offset_s">Imposta inizio protocollo</option><option value="end_s">Imposta fine sforzo</option></select></label>
-    {trace&&<><Trace samples={trace.samples} protocol={protocol} offset={Number(draft.offset_s)} end={Number(draft.end_s)} excluded={draft.excluded_intervals||[]} markers={draft.alignment_markers||[]} lactate={draft.lactate||[]} vo2={draft.vo2||[]} onPick={t=>{if(pickTarget)change(pickTarget,Math.round(t*1000)/1000)}}/><div className="hint">{tr("Conferma fine sforzo e offset: il valore iniziale di fine coincide con la fine del file, non necessariamente con l’esaurimento.")}</div></>}
-    <div className="form-grid"><TimeInput label="Inizio protocollo dal file" value={draft.offset_s} onChange={v=>change('offset_s',v)}/><TimeInput label="Fine sforzo dal file" value={draft.end_s} onChange={v=>change('end_s',v)}/></div>
-    <div className="form-grid">{[['date',tr("Data"),'date'],['weight_kg',tr("Peso · kg"),'number'],['height_cm',tr("Statura · cm"),'number'],['rest_hr',tr("FC a riposo · bpm"),'number'],['rest_after_s',tr("Dopo quanto riposo · s"),'number'],['rpe','RPE (scala indicata)','number'],['threshold_w',tr("Watt Soglia dichiarati"),'number'],['threshold_coefficient',tr("Coefficiente MAP → soglia (se non dichiarata)"),'number'],['fthr_bpm','FTHR · bpm','number'],['ftp_w',tr("FTP dichiarata · W"),'number'],['fc_max_reference_bpm',tr("FC massima riferimento · bpm"),'number']].map(([k,label,type])=><Field key={k} label={label}><input type={type} value={draft[k]??''} min={type==='number'?0:undefined} step={type==='number'?'any':undefined} onChange={e=>change(k,e.target.value)}/></Field>)}</div><Field label={tr("Note e condizioni")}><textarea value={draft.notes} onChange={e=>change('notes',e.target.value)}/></Field>
-    <button onClick={()=>run(async()=>{const r=await api(`athletes/${draft.athlete_id}/defaults?on=${draft.date}`);if(r.measurement){const m=r.measurement;setDraft(d=>({...d,weight_kg:m.weight_kg??'',height_cm:m.height_cm??'',weight_source:m.source,measurement_id:m.id}));setPreview(null);setNotice(`Rilevazione proposta del ${m.date}, fonte ${m.source}. Verifica prima di confermare.`)}else if(r.suggestion){const m=r.suggestion;setDraft(d=>({...d,weight_kg:m.weight_kg??'',height_cm:m.height_cm??'',weight_source:'stimato'}));setPreview(null);setNotice(`Valori stimati proposti: ${m.population}. Fonte: ${m.source}. Non sono misure dell’atleta.`)}else setNotice(tr("Nessuna misura precedente: lascia vuoto o inserisci un dato con provenienza."))} )}>{tr("Proponi ultima antropometria")}</button>
-    <Field label={tr("Fonte del peso")}><select value={draft.weight_source||'dichiarato'} onChange={e=>change('weight_source',e.target.value)}>{['misurato','arrotondato','dichiarato','stimato'].map(v=><option key={v}>{v}</option>)}</select></Field>
-    <h3>{tr("FC di recupero manuale")}</h3>{(draft.recovery_manual||[]).map((r:Row,i:number)=><div className="form-grid" key={i}><Field label={tr("Dopo s")}><input type="number" value={r.after_s} onChange={e=>change('recovery_manual',draft.recovery_manual.map((x:Row,j:number)=>i===j?{...x,after_s:Number(e.target.value)}:x))}/></Field><Field label={tr("FC bpm")}><input type="number" value={r.hr_bpm} onChange={e=>change('recovery_manual',draft.recovery_manual.map((x:Row,j:number)=>i===j?{...x,hr_bpm:Number(e.target.value)}:x))}/></Field><button onClick={()=>change('recovery_manual',draft.recovery_manual.filter((_:Row,j:number)=>j!==i))}>{tr("Rimuovi misura")}</button></div>)}<button onClick={()=>change('recovery_manual',[...(draft.recovery_manual||[]),{after_s:60,hr_bpm:100}])}>{tr("Aggiungi recupero")}</button>
-    <h3>{tr("Lattato")}</h3>{(draft.lactate||[]).map((r:Row,i:number)=><div className="form-grid" key={i}><Field label={tr("Istante dal file · s")}><input type="number" value={r.at_s} onChange={e=>change('lactate',draft.lactate.map((x:Row,j:number)=>i===j?{...x,at_s:Number(e.target.value)}:x))}/></Field><Field label="mmol/L"><input type="number" step="any" value={r.mmol_l} onChange={e=>change('lactate',draft.lactate.map((x:Row,j:number)=>i===j?{...x,mmol_l:Number(e.target.value)}:x))}/></Field><button onClick={()=>change('lactate',draft.lactate.filter((_:Row,j:number)=>j!==i))}>{tr("Rimuovi misura")}</button></div>)}<button onClick={()=>change('lactate',[...(draft.lactate||[]),{at_s:0,mmol_l:1,note:''}])}>{tr("Aggiungi prelievo")}</button>
-    <AnalysisInput draft={draft} change={change} api={api} run={run} protocol={protocol}/>
-    {draft.zone_schemes&&<ZoneEditor value={draft.zone_schemes} onChange={v=>change('zone_schemes',v)}/>}
-    {editTest&&<Field label={tr("Motivo della revisione")}><input value={draft.reason||''} onChange={e=>change('reason',e.target.value)}/></Field>}
-    {preview&&<><ReferenceSummary test={{analysis:preview,settings:draft}}/><Zones analysis={preview}/><AnalysisResults analysis={preview} Plot={Plot}/>{preview.warnings.map((w:string)=><div className="hint" key={w}>{w}</div>)}<p className="muted">{preview.method}</p></>}
-    <TestExtensions protocol={protocol} values={draft.custom_values||{}} onChange={(v:Row)=>change('custom_values',v)} extraFields={draft.extra_fields||[]} onFieldsChange={(v:Row[])=>change('extra_fields',v)}/>
-    <FormActions><button disabled={busy||!trace||!protocol?.definition.segments.length} onClick={e=>{if(validTimes(e.currentTarget))run(async()=>setPreview(await api('tests/preview',payload())))}}>{tr("Calcola anteprima")}</button><button className="primary" disabled={busy||!preview} onClick={e=>{if(!validTimes(e.currentTarget))return;run(async()=>{const saved=editTest?await api(`tests/${editTest.id}`,{base:editTest.revision,reason:draft.reason||'',test:payload()},'PUT'):await api('tests',payload());await refresh();setModal('');setActiveTest(saved);setNotice(tr("Test archiviato con il protocollo e il metodo utilizzati."))})}}>{tr("Conferma e archivia")}</button></FormActions>
-   </>}
-  <Glossary keys={contextualCsvProfiles[modal]?[]:modal==='test'?['MAP','FTHR','FC','RPE','mmol','HRR']:modal==='measurement'?['HV','PHV','PAH']:['protocol']}/></Dialog>}
-  {activeTest&&<Dialog busy={busy} title={android?[tr('Dettaglio test'),activeTest.date,state.athlete.find(a=>a.id===activeTest.athlete_id)?.surname,state.athlete.find(a=>a.id===activeTest.athlete_id)?.name].filter(Boolean).join(' · '):tr('Dettaglio test')} onClose={()=>setActiveTest(null)}>
-   <div className="eyebrow">{android&&<span>{state.organization.find(o=>o.id===org)?.name} · </span>}{tr('TEST ARCHIVIATO ·')} {activeTest.date}</div><h2>{state.athlete.find(a=>a.id===activeTest.athlete_id)?.surname} {state.athlete.find(a=>a.id===activeTest.athlete_id)?.name}</h2><p>{state.protocol.find(p=>p.id===activeTest.protocol_id)?.name} · {state.protocol.find(p=>p.id===activeTest.protocol_id)?.version}</p>
-   <div className="actions"><button disabled={!state.athlete.some(a=>a.id===activeTest.athlete_id)} onClick={()=>{setSelected(activeTest.athlete_id);setPage('athletes');setActiveTest(null)}}><Users size={16}/>{language==='en'?'Open athlete profile':'Apri profilo atleta'}</button><button disabled={!canEdit} onClick={()=>{const t=activeTest;setEditTest(t);setTestProtocol(state.protocol.find(p=>p.id===t.protocol_id));if(t.test_type==='custom'){setActiveTest(null);open('custom-test')}else if(anaerobicTypes[t.test_type]){setActiveTest(null);open('anaerobic-test')}else if(t.historical){setActiveTest(null);open('historical-test')}else reviseTest()}}>{tr('Correggi test')}</button></div>
-   {testHasChart&&<TestSignals test={activeTest} protocol={state.protocol.find(p=>p.id===activeTest.protocol_id)} Plot={Plot}/>}
-   {activeTest.test_type==='custom'?<p>{activeTest.analysis.method}</p>:anaerobicTypes[activeTest.test_type]?<AnaerobicResults analysis={activeTest.analysis} Plot={Plot}/>:<>
-    <ReferenceSummary test={activeTest}/><TestZones test={activeTest} api={api} run={run}/>
-    {!!activeTest.analysis.recovery?.length&&<><h3>Recupero dalla fine sforzo</h3><div className="stats">{activeTest.analysis.recovery.map((r:Row)=><Stat key={r.after_s} label={`DOPO ${r.after_s} S`} value={n(r.hr_bpm,' bpm')} text={`HRR ${n(r.hrr_bpm,' bpm')}`}/>)}</div></>}
-    <AnalysisResults analysis={activeTest.analysis} Plot={Plot}/>{(activeTest.analysis.warnings||[]).map((w:string)=><p className="hint" key={w}>{w}</p>)}<p className="muted">{activeTest.analysis.method}</p>
-   </>}
-   {!testHasChart&&<TestSignals test={activeTest} protocol={state.protocol.find(p=>p.id===activeTest.protocol_id)} Plot={Plot}/>}
-   {activeTest.settings.conditions&&<p>{Object.entries(activeTest.settings.conditions).filter(([,v])=>v).map(([k,v])=>`${({device:'Ergometro',power_meter:'Misuratore di potenza',firmware:'Firmware',calibration:'Calibrazione',temperature_c:'Temperatura °C',cadence_instruction:'Cadenza prescritta',pre_test:'Condizioni prima del test',stop_reason:'Motivo di arresto',recovery_mode:'Modalità di recupero',posture:'Postura',repeatability_session:'Sessione di ripetibilità',observations:'Osservazioni'} as Row)[k]||metricLabel(k)}: ${v}`).join(' · ')}</p>}<p>{activeTest.notes}</p><CustomValuesDisplay analysis={activeTest.analysis}/>
-   <div className="actions">{['md','pdf'].map(f=><button key={f} disabled={busy} onClick={()=>run(()=>download(`tests/${activeTest.id}/report/${f}`,'report.'+(f==='pdf'?'pdf':'zip')))}>Report {f.toUpperCase()}</button>)}</div>
-   <Glossary keys={activeTest.test_type==='custom'?['protocol','FC','Wkg']:anaerobicTypes[activeTest.test_type]?['anaerobic','FC','Wkg','protocol']:['MAP','FTHR','FC','FTP','RPE','mmol','HRR','Wkg','quality','VO2','Dmax']}/>
-  </Dialog>}
- </div>
+  );
+  const sectionButtons = (navigate: (page: string) => void) => (
+    <>
+      {[
+        ['athletes', tr('Atleti'), Users],
+        ['tests', tr('Test e analisi'), Activity],
+        ['protocols', tr('Protocolli'), Layers],
+        ['groups', tr('Società e gruppi'), Building2],
+        ['history', tr('Storici e confronti'), Activity],
+        ['archive', tr('Archivio e scambio'), FolderSync]
+      ].map(([id, label, Icon]: any) => (
+        <button
+          key={id}
+          className={page === id ? 'active' : ''}
+          disabled={loading}
+          aria-current={page === id ? 'page' : undefined}
+          onClick={() => navigate(id)}
+        >
+          <Icon size={19} />
+          {label}
+          {page === id && <ChevronRight size={15} />}
+        </button>
+      ))}
+      {android && (
+        <button
+          className={page === 'info' ? 'active' : ''}
+          aria-current={page === 'info' ? 'page' : undefined}
+          onClick={() => navigate('info')}
+        >
+          <Info size={19} />
+          {tr('Info')}
+        </button>
+      )}
+    </>
+  );
+  const testHasChart = !!activeTest && hasSignalChart(activeTest);
+  const editingRecord =
+    modal === 'measurement'
+      ? editMeasurement
+      : editTest && ['test', 'historical-test', 'anaerobic-test', 'custom-test'].includes(modal)
+        ? editTest
+        : undefined;
+  const restoreRecord = (record: Row) =>
+    run(async () => {
+      await status(record, 'active');
+      setNotice(tr('Elemento ripristinato.'));
+    });
+  const deletedTestList = (athleteId?: string) => (
+    <DeletedRecords
+      records={deletedTests.filter(t => !athleteId || t.athlete_id === athleteId)}
+      title="Test eliminati"
+      describe={t =>
+        [
+          state.athlete.find(a => a.id === t.athlete_id)?.surname,
+          state.athlete.find(a => a.id === t.athlete_id)?.name,
+          state.protocol.find(p => p.id === t.protocol_id)?.name
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      }
+      busy={busy}
+      canEdit={canEdit}
+      onRestore={restoreRecord}
+    />
+  );
+  return (
+    <div className="app">
+      {!android && (
+        <aside inert={!!modal || !!activeTest}>
+          <div className="brand">
+            <img className="brand-icon" src="/branding/fuorigiri.svg" alt="" />
+            <div>
+              Fuorigiri<small>PERFORMANCE LAB</small>
+            </div>
+          </div>
+          {societyControls(() => open('societies'))}
+          <nav>{sectionButtons(navigate)}</nav>
+          <div className="sidebar-foot">
+            <span className="dot" />
+            {tr('Archivio locale')}
+            <small>{tr('Disponibile anche senza Internet')}</small>
+            <div className="version">
+              v{appVersion} · {tr('Anteprima di sviluppo')}
+            </div>
+          </div>
+        </aside>
+      )}
+      <main
+        style={android ? {marginLeft: 0, width: '100%'} : undefined}
+        aria-busy={loading}
+        inert={!!modal || !!activeTest}
+      >
+        <header>
+          {android ? (
+            <AndroidNavigation
+              society={societyControls}
+              onManage={() => open('societies')}
+              sections={sectionButtons}
+              language={languageControl}
+              onNavigate={navigate}
+              context={
+                <>
+                  <p>
+                    {loading
+                      ? tr('Apertura società…')
+                      : state.organization.find(o => o.id === org)?.name ||
+                        workspaces.find(w => w.id === workspace)?.name ||
+                        tr('Nessuna società aperta')}{' '}
+                    ·{' '}
+                    {tr(
+                      (
+                        {
+                          athletes: 'Atleti',
+                          tests: 'Test e analisi',
+                          protocols: 'Protocolli',
+                          groups: 'Società e gruppi',
+                          history: 'Storici e confronti',
+                          archive: 'Archivio e scambio',
+                          info: 'Info'
+                        } as Row
+                      )[page] || page
+                    )}
+                  </p>
+                  {athlete && (
+                    <p>
+                      {athlete.name} {athlete.surname}
+                    </p>
+                  )}
+                  {state.operator && (
+                    <small>
+                      {state.operator.name} ·{' '}
+                      {state.operator.snapshot
+                        ? tr('Copia di consultazione')
+                        : state.operator.revoked
+                          ? tr('Accesso revocato — sola lettura')
+                          : state.operator.owner
+                            ? tr('Fondatore')
+                            : canEdit
+                              ? tr('Admin dati')
+                              : tr('Visualizzatore')}
+                    </small>
+                  )}
+                </>
+              }
+            />
+          ) : (
+            <>
+              {languageControl}
+              <div className="breadcrumb">
+                {tr('Società')} <ChevronRight size={12} />{' '}
+                {state.organization.find(o => o.id === org)?.name ||
+                  workspaces.find(w => w.id === workspace)?.name ||
+                  tr('Il tuo archivio')}
+              </div>
+              <div className="local">
+                <HardDrive size={14} /> Offline first
+              </div>
+            </>
+          )}
+        </header>
+        <SyncJobStatus sync={sync} compact />
+        {(!started || loading) && (
+          <LoadingState
+            title={tr(loading ? 'Apertura società…' : 'Apertura non riuscita')}
+            detail={
+              loading
+                ? tr('Lettura dei dati locali. Non è necessaria una connessione Internet.')
+                : error || tr('I dati locali sono conservati. Riprova ad aprire l’archivio.')
+            }
+            retry={
+              !loading
+                ? () => {
+                    setError('');
+                    refresh().catch(e => setError(e.message));
+                  }
+                : undefined
+            }
+            retryLabel={tr('Riprova')}
+          />
+        )}
+        {started && error && (
+          <div className="alert error" role="alert">
+            <AlertTriangle size={18} />
+            <span>{error}</span>
+            <button onClick={() => setError('')} aria-label={tr('Chiudi errore')}>
+              <X size={16} />
+            </button>
+          </div>
+        )}
+        {notice && (
+          <div className="alert success" role="status">
+            <Check size={18} />
+            <span>{notice}</span>
+            <button onClick={() => setNotice('')} aria-label={tr('Chiudi messaggio')}>
+              <X size={16} />
+            </button>
+          </div>
+        )}
+        {!loading && started && page !== 'info' && !org && !workspace && (
+          <WorkspacePanel
+            sync={sync}
+            api={api}
+            run={run}
+            refresh={refresh}
+            download={download}
+            token={token}
+            workspace={workspace}
+            activate={activate}
+            section="societies"
+          />
+        )}
+        {!loading && started && page !== 'info' && !org && workspace && (
+          <>
+            <div className="page-head">
+              <div>
+                <h1>{workspaces.find(w => w.id === workspace)?.name || tr('Società collegata')}</h1>
+                <p>{tr('Invito associato. Acquisisci i dati dalla cartella condivisa per iniziare.')}</p>
+              </div>
+            </div>
+            <WorkspacePanel
+              key={workspace}
+              sync={sync}
+              api={api}
+              run={run}
+              refresh={refresh}
+              download={download}
+              token={token}
+              workspace={workspace}
+              section="sharing"
+            />
+          </>
+        )}
+        {!android && page !== 'info' && state.operator && (
+          <div className={'operator-badge ' + (!canEdit ? 'readonly' : '')} role="status">
+            {state.operator.name} ·{' '}
+            {state.operator.snapshot
+              ? tr('Copia di consultazione')
+              : state.operator.revoked
+                ? tr('Accesso revocato — sola lettura')
+                : state.operator.owner
+                  ? tr('Fondatore')
+                  : state.operator.role === 'admin'
+                    ? tr('Admin dati')
+                    : tr('Visualizzatore')}
+            {!canEdit && <span> · {tr('Consultazione ed esportazione disponibili')}</span>}
+          </div>
+        )}
+        {!loading && page !== 'info' && org && (
+          <>
+            <div className="page-head">
+              <div>
+                {!android && (
+                  <div className="eyebrow">{athlete ? tr('PROFILO ATLETA') : tr('MONITORAGGIO E PERFORMANCE')}</div>
+                )}
+                <h1>
+                  {athlete
+                    ? `${athlete.name} ${athlete.surname}`
+                    : android
+                      ? (
+                          {
+                            athletes: tr('Atleti'),
+                            tests: tr('Test e analisi'),
+                            protocols: tr('Protocolli'),
+                            groups: tr('Società e gruppi'),
+                            history: tr('Storici e confronti'),
+                            archive: tr('Archivio e scambio')
+                          } as Row
+                        )[page]
+                      : (
+                          {
+                            athletes: tr('Ogni atleta, nel tempo.'),
+                            tests: tr('Dai dati alle osservazioni.'),
+                            protocols: tr('Protocolli ripetibili.'),
+                            groups: tr('Una squadra, più percorsi.'),
+                            history: tr('La squadra, nel tempo.'),
+                            archive: tr('I tuoi dati, con te.')
+                          } as Row
+                        )[page]}
+                </h1>
+                {!android && (
+                  <p>
+                    {athlete
+                      ? tr('Misure, test e progressione individuale.')
+                      : (
+                          {
+                            athletes: tr('Un punto di riferimento per conoscere la tua squadra.'),
+                            tests: tr('Importa una prova, verifica il tracciato e conserva i risultati.'),
+                            protocols: tr('Definisci il metodo. Conserva ogni evoluzione.'),
+                            groups: tr('Categorie e appartenenze con una storia.'),
+                            history: tr('Categorie, stagioni e coorti con metodi espliciti.'),
+                            archive: tr('Esporta, salva una copia e scambia le modifiche tra dispositivi.')
+                          } as Row
+                        )[page]}
+                  </p>
+                )}
+              </div>
+              {page === 'athletes' && (
+                <div className="actions">
+                  {!athlete && (
+                    <button disabled={!canEdit || busy} onClick={() => open('csv-athletes')}>
+                      <Upload size={16} />
+                      {tr('Importa CSV')}
+                    </button>
+                  )}
+                  <button
+                    disabled={!canEdit || (!!athlete && (athlete.status || 'active') !== 'active')}
+                    className="primary"
+                    onClick={() => (athlete ? startTest() : (setEditAthlete(null), open('athlete')))}
+                  >
+                    <Plus size={17} />
+                    {athlete ? tr('Nuovo test') : tr('Aggiungi atleta')}
+                  </button>
+                </div>
+              )}
+              {page === 'tests' && (
+                <div className="actions">
+                  <button disabled={!canEdit || busy} onClick={() => open('csv-tests')}>
+                    <Upload size={16} />
+                    {tr('Importa CSV')}
+                  </button>
+                  <button className="primary" onClick={startTest} disabled={!canEdit || !activeAthletes.length}>
+                    <Plus size={17} />
+                    {tr('Nuovo test')}
+                  </button>
+                </div>
+              )}
+              {page === 'protocols' && (
+                <button
+                  disabled={!canEdit}
+                  className="primary"
+                  onClick={() => {
+                    setEditProtocol(undefined);
+                    open('protocol-editor');
+                  }}
+                >
+                  <Plus size={17} />
+                  Crea protocollo
+                </button>
+              )}
+              {page === 'groups' && (
+                <div className="actions">
+                  <button disabled={!canEdit || busy} onClick={() => open('csv-memberships')}>
+                    <Upload size={16} />
+                    {tr('Importa CSV')}
+                  </button>
+                  <button disabled={!canEdit} className="primary" onClick={() => open('group')}>
+                    <Plus size={17} />
+                    {tr('Crea gruppo')}
+                  </button>
+                </div>
+              )}
+            </div>
+            {page === 'athletes' && !athlete && (
+              <>
+                {android ? (
+                  <details>
+                    <summary>{tr('Riepilogo società')}</summary>
+                    <div className="stats">
+                      <Stat
+                        label={tr('ATLETI IN ARCHIVIO')}
+                        value={athletes.length}
+                        text={tr('Profili della società')}
+                      />
+                      <Stat
+                        label={tr('TEST REGISTRATI')}
+                        value={tests.length}
+                        text={tr('Risultati conservati localmente')}
+                      />
+                      <Stat label={tr('GRUPPI')} value={activeGroups.length} text={tr('Categorie e squadre')} />
+                      <Stat
+                        label={tr('PROTOCOLLI')}
+                        value={new Set(state.protocol.map(p => p.family)).size}
+                        text={`${state.protocol.length} versioni archiviate`}
+                      />
+                    </div>
+                  </details>
+                ) : (
+                  <div className="stats">
+                    <Stat label={tr('ATLETI IN ARCHIVIO')} value={athletes.length} text={tr('Profili della società')} />
+                    <Stat
+                      label={tr('TEST REGISTRATI')}
+                      value={tests.length}
+                      text={tr('Risultati conservati localmente')}
+                    />
+                    <Stat label={tr('GRUPPI')} value={activeGroups.length} text={tr('Categorie e squadre')} />
+                    <Stat
+                      label={tr('PROTOCOLLI')}
+                      value={new Set(state.protocol.map(p => p.family)).size}
+                      text={`${state.protocol.length} versioni archiviate`}
+                    />
+                  </div>
+                )}
+                <section className="panel">
+                  <div className="panel-head" style={android ? {display: 'block'} : undefined}>
+                    <h2>
+                      {groupFilter ? groupFilterLabel(groupFilter, groups) : tr('La squadra')}{' '}
+                      <span className="count">{displayed.length}</span>
+                    </h2>
+                    {groupFilter.startsWith('season:') &&
+                      (() => {
+                        const g = groups.find(g => g.id === groupFilter.slice(7));
+                        const period = seasonPeriod(g?.season);
+                        return period.end ? (
+                          <p className="hint">
+                            {tr('Appartenenze nel periodo:')} {period.start} / {period.end}
+                          </p>
+                        ) : null;
+                      })()}
+                    {groupFilter && (
+                      <button disabled={!canEdit || busy} onClick={addToFilteredGroup}>
+                        {tr('Aggiungi atleti al gruppo')}
+                      </button>
+                    )}
+                    {android ? (
+                      <CollapsibleFilters label={tr('Filtri atleti')}>
+                        {
+                          <>
+                            <select
+                              aria-label={tr('Stato atleta')}
+                              value={lifecycle}
+                              onChange={e => setLifecycle(e.target.value)}
+                            >
+                              <option value="active">{tr('Attivi')}</option>
+                              <option value="archived">{tr('Archiviati')}</option>
+                              <option value="deleted">{tr('Eliminati')}</option>
+                              <option value="all">{tr('Tutti')}</option>
+                            </select>
+                            <div className="search">
+                              <Search size={16} />
+                              <input
+                                aria-label={tr('Cerca atleta')}
+                                placeholder={tr('Cerca un atleta…')}
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                              />
+                            </div>
+                            <select
+                              aria-label={tr('Filtra gruppo')}
+                              value={groupFilter}
+                              onChange={e => setGroupFilter(e.target.value)}
+                            >
+                              <option value="">{tr('Tutti i gruppi')}</option>
+                              {groups
+                                .filter(g => !g.parent_id && g.status !== 'deleted')
+                                .map(g => (
+                                  <React.Fragment key={g.id}>
+                                    <option value={g.id}>
+                                      {g.name} - {tr('Attuali')}
+                                    </option>
+                                    {groupSeasons(g, groups, state.membership).map(season => (
+                                      <option key={season.id} value={`season:${season.id}`}>
+                                        {g.name} - {season.season || tr('Senza stagione')}
+                                      </option>
+                                    ))}
+                                  </React.Fragment>
+                                ))}
+                            </select>
+                          </>
+                        }
+                      </CollapsibleFilters>
+                    ) : (
+                      <div className="tools">
+                        <select
+                          aria-label={tr('Stato atleta')}
+                          value={lifecycle}
+                          onChange={e => setLifecycle(e.target.value)}
+                        >
+                          <option value="active">{tr('Attivi')}</option>
+                          <option value="archived">{tr('Archiviati')}</option>
+                          <option value="deleted">{tr('Eliminati')}</option>
+                          <option value="all">{tr('Tutti')}</option>
+                        </select>
+                        <div className="search">
+                          <Search size={16} />
+                          <input
+                            aria-label={tr('Cerca atleta')}
+                            placeholder={tr('Cerca un atleta…')}
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                          />
+                        </div>
+                        <select
+                          aria-label={tr('Filtra gruppo')}
+                          value={groupFilter}
+                          onChange={e => setGroupFilter(e.target.value)}
+                        >
+                          <option value="">{tr('Tutti i gruppi')}</option>
+                          {groups
+                            .filter(g => !g.parent_id && g.status !== 'deleted')
+                            .map(g => (
+                              <React.Fragment key={g.id}>
+                                <option value={g.id}>
+                                  {g.name} - {tr('Attuali')}
+                                </option>
+                                {groupSeasons(g, groups, state.membership).map(season => (
+                                  <option key={season.id} value={`season:${season.id}`}>
+                                    {g.name} - {season.season || tr('Senza stagione')}
+                                  </option>
+                                ))}
+                              </React.Fragment>
+                            ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                  {!displayed.length ? (
+                    <Empty text={tr('Nessun atleta trovato. Aggiungi un profilo per iniziare.')} />
+                  ) : android ? (
+                    <RecordCards
+                      pageIndex={athletePage}
+                      onPageChange={setAthletePage}
+                      locale={language === 'en' ? 'en' : 'it'}
+                      resetKey={[search, groupFilter, lifecycle, org].join('|')}
+                      actionLabel={tr('Apri profilo atleta')}
+                      onOpen={setSelected}
+                      items={displayed.map(a => {
+                        const ordered = tests
+                          .filter(t => t.athlete_id === a.id)
+                          .sort((a, b) => b.date.localeCompare(a.date));
+                        const last = ordered[0],
+                          lastMap = ordered.find(t => !t.test_type && t.analysis.map_w != null);
+                        return {
+                          id: a.id,
+                          title: `${a.surname} ${a.name}`,
+                          subtitle: a.birth_year
+                            ? `${tr('ANNO DI NASCITA')} ${a.birth_year}`
+                            : tr('Nascita da completare'),
+                          details: [
+                            {label: tr('ULTIMO TEST'), value: last?.date || tr('Nessun test')},
+                            {label: tr('MAP OPERATIVA'), value: n(lastMap?.analysis.map_w, ' W')}
+                          ]
+                        };
+                      })}
+                    />
+                  ) : (
+                    <DataTable
+                      rows={displayed.map(a => {
+                        const ordered = tests
+                          .filter(t => t.athlete_id === a.id)
+                          .sort((a, b) => b.date.localeCompare(a.date));
+                        return {
+                          ...a,
+                          athleteName: `${a.surname} ${a.name}`,
+                          lastDate: ordered[0]?.date,
+                          lastMap: ordered.find(t => !t.test_type && t.analysis.map_w != null)?.analysis.map_w
+                        };
+                      })}
+                      columns={[
+                        {
+                          key: 'athleteName',
+                          label: tr('ATLETA'),
+                          render: a => (
+                            <button className="person" onClick={() => setSelected(a.id)}>
+                              <span className="avatar">
+                                {a.name[0]}
+                                {a.surname[0]}
+                              </span>
+                              <span>
+                                {a.surname} {a.name}
+                                <small>{tr('Apri profilo atleta')}</small>
+                              </span>
+                            </button>
+                          )
+                        },
+                        {
+                          key: 'birth_year',
+                          label: tr('ANNO DI NASCITA'),
+                          render: a => (
+                            <>
+                              {n(a.birth_year)}
+                              {a.birth_year && !a.birth_confirmed && <small>{tr('Da confermare')}</small>}
+                            </>
+                          )
+                        },
+                        {key: 'lastDate', label: tr('ULTIMO TEST'), render: a => a.lastDate || tr('Nessun test')},
+                        {key: 'lastMap', label: tr('MAP OPERATIVA'), render: a => n(a.lastMap, ' W')}
+                      ]}
+                    />
+                  )}
+                </section>
+              </>
+            )}
+            {page === 'athletes' && athlete && (
+              <>
+                <div className="actions">
+                  <IntervalsLink enabled={intervalsEnabled} id={athlete.intervals_icu_id} />
+                  <button onClick={() => setSelected('')}>{tr('← Tutti gli atleti')}</button>
+                  <button
+                    disabled={!canEdit || !assignableGroups.length || (athlete.status || 'active') !== 'active'}
+                    onClick={() => open('membership')}
+                  >
+                    {tr('Aggiungi a un gruppo')}
+                  </button>
+                  <button
+                    disabled={!canEdit}
+                    onClick={() => {
+                      setEditAthlete(athlete);
+                      open('athlete');
+                    }}
+                  >
+                    {tr('Modifica profilo')}
+                  </button>
+                  <button disabled={!canEdit} onClick={() => run(() => status(athlete, 'archived'))}>
+                    {tr('Archivia')}
+                  </button>
+                  <button
+                    disabled={!canEdit}
+                    onClick={() => {
+                      if (confirm(tr('Escludere questo atleta dai nuovi storici? Potrai ripristinarlo.')))
+                        run(() => status(athlete, 'deleted'));
+                    }}
+                  >
+                    {tr('Elimina')}
+                  </button>
+                  {athlete.status && athlete.status !== 'active' && (
+                    <button disabled={!canEdit} onClick={() => run(() => status(athlete, 'active'))}>
+                      {tr('Ripristina')}
+                    </button>
+                  )}
+                </div>
+                <div className="stats">
+                  <Stat
+                    label={tr('ANNO DI NASCITA')}
+                    value={n(athlete.birth_year)}
+                    text={athlete.birth_confirmed ? tr('Confermato') : tr('Da confermare')}
+                  />
+                  <Stat label="TEST" value={athleteTests.length} text={tr('Nello storico individuale')} />
+                  <Stat
+                    label={tr('ULTIMA MAP')}
+                    value={n(
+                      athleteTests.filter(t => !t.test_type && t.analysis.map_w != null).at(-1)?.analysis.map_w,
+                      ' W'
+                    )}
+                    text={tr('Ultimo step completo')}
+                  />
+                </div>
+                <AthleteTrainingZones
+                  key={selected}
+                  athlete={athlete}
+                  api={api}
+                  run={run}
+                  refresh={refresh}
+                  canEdit={canEdit}
+                />
+                <AthleteProgression
+                  key={selected}
+                  tests={athleteTests}
+                  protocols={state.protocol}
+                  metric={progressionMetric}
+                  setMetric={setProgressionMetric}
+                  metrics={[
+                    'map_w',
+                    'map_wkg',
+                    'threshold_w',
+                    'threshold_wkg',
+                    'ftp_w',
+                    'ftp_wkg',
+                    'vo2peak_l_min',
+                    'vo2peak_ml_kg_min',
+                    ...anaerobicMetrics,
+                    ...Object.keys(customMetricNames),
+                    ...new Set(
+                      athleteTests.flatMap(t =>
+                        Object.keys(t.analysis).filter(k => /^lactate_\d+(?:p\d+)?_(w|wkg|hr_bpm)$/.test(k))
+                      )
+                    )
+                  ]}
+                  label={metricName}
+                  Plot={Plot}
+                />
+                <TestList
+                  filters={testFilters[`${workspace}:${selected}`] || emptyTestFilters}
+                  changeFilters={value => setTestFilters(old => ({...old, [`${workspace}:${selected}`]: value}))}
+                  list={athleteTests}
+                  state={state}
+                  open={id => run(async () => setActiveTest(await api('tests/' + id)))}
+                />
+                {deletedTestList(selected)}
+                <section className="panel">
+                  <div className="panel-head">
+                    <h2>{tr('Antropometria')}</h2>
+                    <div className="actions">
+                      <button disabled={!canEdit || busy} onClick={() => open('csv-measurements')}>
+                        <Upload size={16} />
+                        {tr('Importa CSV')}
+                      </button>
+                      <button
+                        disabled={!canEdit}
+                        onClick={() => {
+                          setEditMeasurement(undefined);
+                          open('measurement');
+                        }}
+                      >
+                        <Plus size={16} />
+                        {tr('Rilevazione')}
+                      </button>
+                    </div>
+                  </div>
+                  <ChronologicalTable key={`${workspace}:${selected}`} label={tr('Antropometria')}>
+                    <thead>
+                      <tr>
+                        <th>{tr('DATA')}</th>
+                        <th>{tr('PESO')}</th>
+                        <th>{tr('STATURA')}</th>
+                        <th>{tr('Altezza perineale · cm')}</th>
+                        <th>{tr('Perineale/statura · %')}</th>
+                        <th>{tr('IMC (BMI) · kg/m²')}</th>
+                        <th>{tr('FONTE')}</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {state.measurement
+                        .filter(m => m.athlete_id === selected)
+                        .map(m => (
+                          <tr key={m.id}>
+                            <td>{m.date}</td>
+                            <td>{n(m.weight_kg, ' kg')}</td>
+                            <td>{n(m.height_cm, ' cm')}</td>
+                            <td>{n(m.perineal_height_cm)}</td>
+                            <td>{n(perinealHeightRatio(m))}</td>
+                            <td>{n(bodyMassIndex(m))}</td>
+                            <td>{tr(m.source)}</td>
+                            <td>
+                              <button
+                                disabled={!canEdit}
+                                onClick={() => {
+                                  setEditMeasurement(m);
+                                  open('measurement');
+                                }}
+                              >
+                                {tr('Correggi rilevazione')}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </ChronologicalTable>
+                  <AnthropometryBmiHistory
+                    measurements={state.measurement.filter(m => m.athlete_id === selected)}
+                    Plot={Plot}
+                  />
+                </section>
+                <DeletedRecords
+                  records={(state.deleted_measurement || []).filter(m => m.athlete_id === selected)}
+                  title="Rilevazioni eliminate"
+                  describe={m => [n(m.weight_kg, ' kg'), n(m.height_cm, ' cm'), tr(m.source)].join(' · ')}
+                  busy={busy}
+                  canEdit={canEdit}
+                  onRestore={restoreRecord}
+                />
+                <section className="panel protocol">
+                  <h2>{language === 'en' ? 'Anthropometric trends' : 'Andamento antropometrico'}</h2>
+                  <Plot
+                    data={['weight_kg', 'height_cm'].map((k, i) => {
+                      const rows = state.measurement
+                        .filter(m => m.athlete_id === selected)
+                        .sort((a, b) => a.date.localeCompare(b.date));
+                      return {
+                        x: rows.map(r => r.date),
+                        y: rows.map(r => r[k]),
+                        name: metricLabel(k),
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        yaxis: i ? 'y2' : 'y',
+                        connectgaps: true
+                      };
+                    })}
+                    layout={{
+                      yaxis: {title: {text: 'kg'}},
+                      yaxis2: {title: {text: 'cm'}, overlaying: 'y', side: 'right'}
+                    }}
+                  />
+                </section>
+                <MaturationPanel
+                  key={selected}
+                  athlete={athlete}
+                  revisionKey={state.measurement
+                    .filter(m => m.athlete_id === selected)
+                    .map(m => m.revision)
+                    .join('|')}
+                  api={api}
+                  run={run}
+                  canEdit={canEdit}
+                  Plot={Plot}
+                />
+                <section className="panel">
+                  <div className="panel-head">
+                    <h2>{tr('Appartenenze')}</h2>
+                    <button
+                      onClick={() => open('membership')}
+                      disabled={!canEdit || !assignableGroups.length || (athlete.status || 'active') !== 'active'}
+                    >
+                      <Plus size={16} />
+                      {tr('Assegna gruppo')}
+                    </button>
+                  </div>
+                  {state.membership
+                    .filter(m => m.athlete_id === selected)
+                    .map(m => (
+                      <div className="list-row" key={m.id}>
+                        <strong>
+                          {[groups.find(g => g.id === m.group_id)?.name, groups.find(g => g.id === m.group_id)?.season]
+                            .filter(Boolean)
+                            .join(' · ')}
+                          {groups.some(
+                            g => g.id === m.group_id && (g.status === 'deleted' || g.season_status === 'deleted')
+                          ) && ` · ${tr('Gruppo o stagione eliminati')}`}
+                        </strong>
+                        <span>
+                          {m.start} → {m.end || tr('in corso')}
+                        </span>
+                      </div>
+                    ))}
+                </section>
+              </>
+            )}
+            {page === 'tests' && (
+              <>
+                <TestList
+                  filters={testFilters[`${workspace}:${selected}`] || emptyTestFilters}
+                  changeFilters={value => setTestFilters(old => ({...old, [`${workspace}:${selected}`]: value}))}
+                  list={tests}
+                  state={state}
+                  open={id => run(async () => setActiveTest(await api('tests/' + id)))}
+                />
+                {deletedTestList()}
+                <details className="panel protocol">
+                  <summary>{tr('Guida ai test')}</summary>
+                  <p>
+                    {language === 'en'
+                      ? 'Define methods in Protocols, then choose New test to record results manually or from a file. Incremental tests, Sprint, Wingate and custom protocols retain their own methods.'
+                      : 'Definisci i metodi in Protocolli, poi usa Nuovo test per scegliere protocollo, versione e inserimento manuale o da file. Incrementali, Sprint, Wingate e protocolli personalizzati conservano metodi distinti.'}
+                  </p>
+                  <p className="hint">
+                    {tr(
+                      'La fine del file può includere recupero o defaticamento. Conferma sempre il termine dello sforzo prima di calcolare i risultati.'
+                    )}
+                  </p>
+                </details>
+              </>
+            )}
+            {page === 'history' && (
+              <>
+                <HistoryPanel org={org} state={state} api={api} download={download} run={run} Plot={Plot} />
+                <RepeatabilityPanel org={org} state={state} api={api} run={run} download={download} />
+                <details className="panel protocol">
+                  <summary>{tr('Confronti individuali e variazioni antropometriche')}</summary>
+                  <GrowthPanel org={org} api={api} run={run} Plot={Plot} />
+                </details>
+              </>
+            )}
+            {page === 'protocols' && (
+              <>
+                <p>
+                  Definisci un protocollo manualmente, anche senza step o ERG, oppure importa il programma di carico.
+                  Ogni versione conserva metodo e campi facoltativi.
+                </p>
+                <div className="form-grid">
+                  <label>
+                    Cerca protocollo
+                    <input
+                      value={protocolSearch}
+                      onChange={e => setProtocolSearch(e.target.value)}
+                      placeholder="Nome, codice o versione"
+                    />
+                  </label>
+                  <label>
+                    Famiglia
+                    <select value={protocolKind} onChange={e => setProtocolKind(e.target.value)}>
+                      <option value="">Tutte</option>
+                      <option value="incremental">Incrementale aerobico</option>
+                      {Object.entries(anaerobicTypes).map(([k, v]) => (
+                        <option key={k} value={k}>
+                          {String(v)}
+                        </option>
+                      ))}
+                      <option value="custom">Personalizzato</option>
+                    </select>
+                  </label>
+                  <label>
+                    Stato protocollo
+                    <select value={protocolStatus} onChange={e => setProtocolStatus(e.target.value)}>
+                      <option value="active">Attivi</option>
+                      <option value="archived">Archiviati</option>
+                      <option value="deleted">Eliminati</option>
+                      <option value="all">Tutti</option>
+                    </select>
+                  </label>
+                </div>
+                <button disabled={!canEdit} onClick={() => open('protocol')}>
+                  <Upload size={16} /> Importa ERG
+                </button>
+              </>
+            )}
+            {page === 'protocols' && (
+              <div className="cards">
+                {catalogProtocols.map(p => (
+                  <section className="panel protocol" key={p.id}>
+                    <div className="protocol-top">
+                      <Layers size={20} />
+                      <span className="tag">{p.version}</span>
+                    </div>
+                    <h2>{p.name}</h2>
+                    <p>
+                      {protocolType(p)} · {p.family}
+                    </p>
+                    {!p.definition.points.length ? (
+                      <p className="hint">
+                        {p.test_type === 'custom'
+                          ? 'Protocollo personalizzato: campi dichiarati, nessuna formula automatica.'
+                          : anaerobicTypes[p.test_type]
+                            ? 'Prova all-out di ' +
+                              p.anaerobic_spec.duration_s +
+                              ' s. Carico e finestre nella definizione.'
+                            : tr('Protocollo d’archivio senza step. Utilizzabile con risultati manuali.')}
+                      </p>
+                    ) : (
+                      <Plot
+                        data={[
+                          {
+                            x: p.definition.points.map((v: number[]) => v[0] / 60),
+                            y: p.definition.points.map((v: number[]) => v[1]),
+                            type: 'scatter',
+                            mode: 'lines',
+                            fill: 'tozeroy',
+                            line: {color: '#248777', width: 2},
+                            fillcolor: '#24877716'
+                          }
+                        ]}
+                        layout={{height: 180, showlegend: false, margin: {l: 35, r: 10, t: 8, b: 28}}}
+                      />
+                    )}
+                    <div className="protocol-meta">
+                      {p.anaerobic_spec ? (
+                        <span>{n(p.anaerobic_spec.duration_s)} s · durata dello sforzo</span>
+                      ) : p.definition.segments.length ? (
+                        <>
+                          <span>
+                            {p.definition.segments.length} {tr('fasi')}
+                          </span>
+                          <span>
+                            {n(p.definition.duration_s / 60)} {tr('min previsti')}
+                          </span>
+                        </>
+                      ) : (
+                        <span>
+                          {p.test_type === 'custom'
+                            ? 'Durata libera · osservazioni personalizzate'
+                            : 'Solo scheda · durata non definita'}
+                        </span>
+                      )}
+                    </div>
+                    <p className="muted">{p.reason || tr('Prima definizione del protocollo')}</p>
+                    <small>
+                      {tr('Versione immutabile ·')}{' '}
+                      {p.parent_id ? tr('Evoluzione di una versione precedente') : tr('Protocollo iniziale')}
+                    </small>
+                    <p>
+                      {tr('Stato:')}{' '}
+                      {({active: tr('Attivo'), archived: tr('Archiviato'), deleted: tr('Eliminato')} as Row)[
+                        p.status || 'active'
+                      ] || p.status}
+                    </p>
+                    <div className="actions">
+                      <button
+                        disabled={!canEdit}
+                        onClick={() => {
+                          setEditProtocol(p);
+                          open('protocol-editor');
+                        }}
+                      >
+                        {tr('Nuova versione')}
+                      </button>
+                      <button
+                        disabled={!p.definition.points.length}
+                        title={tr('Richiede un protocollo con step')}
+                        onClick={() => run(() => download(`protocols/${p.id}/erg`, 'protocollo.erg'))}
+                      >
+                        ERG
+                      </button>
+                      <button onClick={() => run(() => download(`protocols/${p.id}/definition`, 'protocollo.json'))}>
+                        JSON
+                      </button>
+                      <button disabled={!canEdit} onClick={() => run(() => status(p, 'archived'))}>
+                        {tr('Archivia')}
+                      </button>
+                      <button disabled={!canEdit} onClick={() => run(() => status(p, 'deleted'))}>
+                        {tr('Elimina')}
+                      </button>
+                      <button disabled={!canEdit} onClick={() => run(() => status(p, 'active'))}>
+                        {tr('Ripristina')}
+                      </button>
+                    </div>
+                  </section>
+                ))}
+                {!catalogProtocols.length && (
+                  <Empty text="Nessun protocollo corrisponde ai filtri. Puoi crearne uno manualmente o importare un ERG." />
+                )}
+              </div>
+            )}
+            {page === 'groups' && (
+              <>
+                <GroupManager
+                  key={`${workspace}:${org}`}
+                  groups={groups}
+                  api={api}
+                  run={run}
+                  busy={busy}
+                  onChanged={async () => {
+                    await refresh();
+                    setGroupFilter('');
+                  }}
+                  memberships={state.membership}
+                  canEdit={canEdit}
+                  onAddSeason={addSeason}
+                  onAdd={addToGroup}
+                  onSelect={id => {
+                    setGroupFilter(id);
+                    setLifecycle('all');
+                    setSearch('');
+                    setSelected('');
+                    setPage('athletes');
+                  }}
+                />
+              </>
+            )}
+            {page === 'archive' && (
+              <>
+                <IntervalsSettings
+                  organization={organization}
+                  canEdit={canEdit && !busy}
+                  api={api}
+                  run={run}
+                  refresh={refresh}
+                />
+                <ArchiveReports org={org} state={state} api={api} run={run} download={download} />
+                <WorkspacePanel
+                  sync={sync}
+                  api={api}
+                  run={run}
+                  refresh={refresh}
+                  download={download}
+                  token={token}
+                  workspace={workspace}
+                  section="reports"
+                />
+                <details className="panel protocol">
+                  <summary>{tr('Importazioni CSV')}</summary>
+                  <ImportPanel
+                    readOnly={!canEdit}
+                    org={org}
+                    api={api}
+                    run={run}
+                    refresh={refresh}
+                    download={download}
+                  />
+                </details>
+                <div className="cards">
+                  <section className="panel protocol">
+                    <Download />
+                    <h2>{tr('Esporta lo storico')}</h2>
+                    <p>
+                      {tr(
+                        'CSV di anagrafiche, antropometria, incrementali e anaerobici, dati estesi e manifest delle versioni.'
+                      )}
+                    </p>
+                    <button onClick={() => run(() => download('export/' + org, 'storico-csv.zip'))}>
+                      {tr('Esporta CSV')}
+                    </button>
+                  </section>
+                  <section className="panel protocol">
+                    <HardDrive />
+                    <h2>{tr('Copia dell’archivio')}</h2>
+                    <p>{tr('Database consistente e file originali. Il backup scaricato non è cifrato.')}</p>
+                    <ArchiveMaintenance key={workspace || 'legacy'} {...{api, run, download, refresh, activate}} />
+                  </section>
+                </div>
+                <details className="panel protocol">
+                  <summary>{tr('Condivisione e collaboratori')}</summary>
+                  <WorkspacePanel
+                    sync={sync}
+                    api={api}
+                    run={run}
+                    refresh={refresh}
+                    download={download}
+                    token={token}
+                    workspace={workspace}
+                    section="sharing"
+                  />
+                </details>
+                <details className="panel protocol">
+                  <summary>{tr('Impostazioni avanzate')}</summary>
+                  {canEdit && <DefaultsPanel org={org} api={api} run={run} />}
+                  {!workspace && (
+                    <details>
+                      <summary>{tr('Scambio precedente con chiave condivisa')}</summary>{' '}
+                      <section className="panel protocol">
+                        <span className="tag amber">{tr('SPERIMENTALE')}</span>
+                        <h2>{tr('Scambio tramite cartella')}</h2>
+                        <p>
+                          {tr(
+                            'Seleziona un percorso già sincronizzato dal tuo client cloud, disponibile offline e separato dai dati locali dell’app.'
+                          )}
+                        </p>
+                        <div className="hint">
+                          Lo scambio comprende tutto questo archivio: è bloccato se contiene più società. Scambio
+                          precedente senza identità firmate. Preferire una società separata con inviti personali;
+                          conservare la chiave separatamente.
+                        </div>
+                        <Field label={tr('Percorso della cartella sincronizzata')}>
+                          <input
+                            value={syncFolder}
+                            onChange={e => setSyncFolder(e.target.value)}
+                            placeholder="C:\Users\…\Drive\Fuorigiri"
+                          />
+                        </Field>
+                        <Field label={tr('Chiave di scambio')}>
+                          <input
+                            type="password"
+                            value={syncKey}
+                            onChange={e => setSyncKey(e.target.value)}
+                            autoComplete="off"
+                          />
+                        </Field>
+                        <div className="actions">
+                          <button
+                            onClick={() =>
+                              run(async () => {
+                                const r = await api('sync/key', {});
+                                setSyncKey(r.key);
+                                setNotice(
+                                  'Chiave creata. Copiala dal campo con un gestore di password e conservala prima di chiudere.'
+                                );
+                              })
+                            }
+                          >
+                            {tr('Genera chiave')}
+                          </button>
+                          <button
+                            className="primary"
+                            disabled={busy || !syncFolder || !syncKey || state.organization.length !== 1}
+                            onClick={() =>
+                              run(async () => {
+                                const r = await api('sync', {folder: syncFolder, key: syncKey});
+                                setNotice(
+                                  `${r.written_to_folder} pacchetti scritti · ${r.received} acquisiti · ${r.conflicts} conflitti · ${r.pending} in attesa. ${r.status}`
+                                );
+                                if (r.errors.length) setError(r.errors.join('; '));
+                                await refresh();
+                              })
+                            }
+                          >
+                            <FolderSync size={16} />
+                            {tr('Scambia modifiche')}
+                          </button>
+                        </div>
+                      </section>
+                    </details>
+                  )}
+                </details>
+              </>
+            )}
+          </>
+        )}
+        {android && page === 'info' && (
+          <section className="panel" aria-labelledby="app-info-title">
+            <h1 id="app-info-title">{tr('Info')}</h1>
+            <h2>Fuorigiri Performance Lab</h2>
+            <p>
+              {tr('Versione')} {appVersion} · {tr('Anteprima di sviluppo')}
+            </p>
+            <p>
+              <HardDrive size={16} /> {tr('Archivio locale')} · {tr('Disponibile anche senza Internet')}
+            </p>
+          </section>
+        )}
+        <Glossary
+          keys={page === 'info' || !org ? [] : page === 'athletes' && !athlete ? ['MAP', 'Wkg'] : pageTerms[page] || []}
+        />
+        {(!android || page === 'info') && (
+          <>
+            <Branding />
+            <Legal api={api} />
+          </>
+        )}
+      </main>
+      {modal && (
+        <Dialog
+          busy={busy}
+          key={modal}
+          title={
+            contextualCsvProfiles[modal]
+              ? tr('Importa CSV')
+              : modal === 'group-membership'
+                ? tr('Aggiungi atleti')
+                : modal === 'membership'
+                  ? tr('Aggiungi a un gruppo')
+                  : editTest && ['test', 'historical-test', 'anaerobic-test', 'custom-test'].includes(modal)
+                    ? tr('Correggi test')
+                    : tr('Modifica archivio')
+          }
+          editor={modal !== 'test-choice' && modal !== 'societies'}
+          onClose={() => {
+            setModal('');
+            if (editTest && ['test', 'historical-test', 'anaerobic-test', 'custom-test'].includes(modal))
+              setActiveTest(editTest);
+          }}
+        >
+          {error && (
+            <div className="alert error" role="alert">
+              {error}
+            </div>
+          )}
+          {editingRecord && (
+            <RecordDeletion
+              record={editingRecord}
+              busy={busy}
+              canEdit={canEdit}
+              error={error}
+              onDelete={() =>
+                run(async () => {
+                  await status(editingRecord, 'deleted');
+                  setModal('');
+                  setActiveTest(null);
+                  setEditTest(null);
+                  setEditMeasurement(undefined);
+                  setPreview(null);
+                  setNotice(tr('Elemento eliminato. Puoi ripristinarlo dalla sezione degli elementi eliminati.'));
+                })
+              }
+            />
+          )}
+          {contextualCsvProfiles[modal] && (
+            <ImportPanel
+              key={modal}
+              allowedProfiles={contextualCsvProfiles[modal]}
+              readOnly={!canEdit}
+              org={org}
+              api={api}
+              run={run}
+              refresh={refresh}
+              download={download}
+            />
+          )}
+          {modal === 'test-choice' && (
+            <NewTestChoice
+              {...{org, state, selected}}
+              onChoose={chooseTest}
+              onProtocols={() => {
+                setModal('');
+                setPage('protocols');
+              }}
+            />
+          )}
+          {modal === 'anaerobic-test' && (
+            <AnaerobicEditor
+              original={editTest || undefined}
+              {...{org, state, api, run, refresh, Plot, selected}}
+              initialProtocol={testProtocol}
+              initialMode={entryMode}
+              done={async (r: Row) => {
+                setModal('');
+                setActiveTest(r);
+                await refresh();
+              }}
+            />
+          )}
+          {modal === 'custom-test' && testProtocol && (
+            <CustomTestEditor
+              original={editTest || undefined}
+              {...{org, state, api, run, Plot, selected}}
+              protocol={testProtocol}
+              mode={entryMode}
+              done={async (r: Row) => {
+                setModal('');
+                setActiveTest(r);
+                await refresh();
+              }}
+            />
+          )}
+          {modal === 'historical-test' && editTest && (
+            <HistoricalEditor
+              standalone
+              test={editTest}
+              api={api}
+              run={run}
+              done={async (r: Row) => {
+                await refresh();
+                setModal('');
+                setActiveTest(r);
+              }}
+            />
+          )}
+          {modal === 'manual-test' && (
+            <ManualTestEditor
+              athletes={activeAthletes}
+              protocols={activeProtocols}
+              initialProtocol={testProtocol}
+              selected={selected}
+              api={api}
+              run={run}
+              done={async (saved: Row) => {
+                await refresh();
+                setModal('');
+                setActiveTest(saved);
+              }}
+            />
+          )}
+          {modal === 'protocol-editor' && (
+            <ProtocolDesigner
+              org={org}
+              original={editProtocol}
+              api={api}
+              run={run}
+              done={async () => {
+                await refresh();
+                setModal('');
+              }}
+            />
+          )}
+          {modal === 'societies' && (
+            <WorkspacePanel
+              sync={sync}
+              api={api}
+              run={run}
+              refresh={refresh}
+              download={download}
+              token={token}
+              workspace={workspace}
+              activate={activate}
+              section="societies"
+            />
+          )}
+          {modal === 'organization' && (
+            <form onSubmit={submit('organizations', f => ({name: f.get('name')}))}>
+              <h2>{tr('Nuova società')}</h2>
+              <Field label={tr('Nome')}>
+                <input name="name" required autoFocus />
+              </Field>
+              <Save busy={busy} />
+            </form>
+          )}
+          {modal === 'group' && (
+            <GroupEditor
+              groups={groups.filter(g => g.status !== 'deleted')}
+              parentId={newGroupParent}
+              busy={busy}
+              onSubmit={submit('groups', f => ({
+                organization_id: org,
+                name: f.get('name'),
+                season: f.get('season') || '',
+                parent_id: f.get('parent_id') || null
+              }))}
+            />
+          )}
+          {modal === 'athlete' && (
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                const f = new FormData(e.currentTarget);
+                run(async () => {
+                  const data = {
+                    organization_id: org,
+                    name: f.get('name'),
+                    surname: f.get('surname'),
+                    birth_date: f.get('birth_date') || null,
+                    birth_year: f.get('birth_year') ? Number(f.get('birth_year')) : null,
+                    birth_confirmed: f.get('confirmed') === 'on',
+                    birth_source: f.get('source'),
+                    sex: f.get('sex'),
+                    notes: f.get('notes'),
+                    status: editAthlete?.status || 'active',
+                    intervals_icu_id: String(f.get('intervals_icu_id') || '').trim()
+                  };
+                  await api(
+                    editAthlete ? `athletes/${editAthlete.id}?base=${editAthlete.revision}` : 'athletes',
+                    data,
+                    editAthlete ? 'PUT' : 'POST'
+                  );
+                  await refresh();
+                  setModal('');
+                });
+              }}
+            >
+              <h2>{editAthlete ? tr('Modifica atleta') : tr('Nuovo atleta')}</h2>
+              <div className="form-grid">
+                <Field label={tr('Nome')}>
+                  <input name="name" defaultValue={editAthlete?.name} required autoFocus />
+                </Field>
+                <Field label={tr('Cognome')}>
+                  <input name="surname" defaultValue={editAthlete?.surname} required />
+                </Field>
+                <Field label={tr('Data di nascita (facoltativa)')}>
+                  <input name="birth_date" type="date" defaultValue={editAthlete?.birth_date || ''} />
+                </Field>
+                <Field label={tr('Solo anno, se data ignota')}>
+                  <input
+                    name="birth_year"
+                    type="number"
+                    min="1900"
+                    max={new Date().getFullYear()}
+                    defaultValue={editAthlete?.birth_year || ''}
+                  />
+                </Field>
+                <Field label={tr('Sesso')}>
+                  <select name="sex" defaultValue={editAthlete?.sex || ''}>
+                    <option value="">{tr('Non indicato')}</option>
+                    <option>M</option>
+                    <option>F</option>
+                  </select>
+                </Field>
+              </div>
+              <label>
+                <input type="checkbox" name="confirmed" defaultChecked={editAthlete?.birth_confirmed} />
+                {tr('Nascita confermata')}
+              </label>
+              <Field label={tr('Fonte')}>
+                <input name="source" defaultValue={editAthlete?.birth_source || ''} />
+              </Field>
+              <IntervalsField id={editAthlete?.intervals_icu_id} />
+              <Field label={tr('Note')}>
+                <textarea name="notes" defaultValue={editAthlete?.notes || ''} />
+              </Field>
+              <Save busy={busy} />
+            </form>
+          )}
+          {['membership', 'group-membership'].includes(modal) && (
+            <MembershipEditor
+              athletes={athletes}
+              groups={assignableGroups}
+              memberships={state.membership}
+              athleteId={modal === 'membership' ? selected : undefined}
+              groupId={modal === 'group-membership' ? membershipGroup : undefined}
+              categoryId={modal === 'group-membership' ? membershipCategory : undefined}
+              api={api}
+              run={run}
+              busy={busy}
+              done={async (result: Row) => {
+                await refresh();
+                setModal('');
+                setNotice(`${tr('Appartenenze aggiunte:')} ${result.added} · ${tr('già presenti')}: ${result.skipped}`);
+              }}
+            />
+          )}
+          {modal === 'measurement' && (
+            <MeasurementEditor
+              athlete={selected}
+              original={editMeasurement}
+              api={api}
+              run={run}
+              done={async () => {
+                await refresh();
+                setModal('');
+              }}
+            />
+          )}
+          {modal === 'protocol' && (
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                const f = new FormData(e.currentTarget);
+                f.append('organization_id', org);
+                run(async () => {
+                  await api('protocols', f);
+                  await refresh();
+                  setModal('');
+                  setNotice(tr('Versione del protocollo archiviata.'));
+                });
+              }}
+            >
+              <h2>{tr('Protocollo da ERG')}</h2>
+              <p className="muted">
+                {tr('Il file definisce il carico. Completa l’identità e la fase di riscaldamento.')}
+              </p>
+              <Field label={tr('File ERG')}>
+                <input name="file" type="file" accept=".erg" required />
+              </Field>
+              <Field label={tr('Nome')}>
+                <input name="name" required placeholder={tr('Incrementale Allievi')} />
+              </Field>
+              <div className="form-grid">
+                <Field label={tr('Codice')}>
+                  <input name="family" required defaultValue="incremental" />
+                </Field>
+                <Field label={tr('Versione')}>
+                  <input name="version" defaultValue="1.0" required />
+                </Field>
+              </div>
+              <Field label={tr('Fine riscaldamento · secondi')}>
+                <input name="warmup_s" type="number" defaultValue="600" min="0" required />
+              </Field>
+              <Field label={tr('Versione precedente (per evoluzioni)')}>
+                <select name="parent_id">
+                  <option value="">{tr('Nuovo protocollo')}</option>
+                  {state.protocol.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} · {p.version}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label={tr('Motivo / descrizione')}>
+                <textarea name="reason" />
+              </Field>
+              <Save busy={busy} />
+            </form>
+          )}
+          {modal === 'test' && (
+            <>
+              <div className="eyebrow">{tr('NUOVO TEST')}</div>
+              <h2>{tr('Dal tracciato al risultato.')}</h2>
+              {!editTest && (
+                <div className="hint">
+                  {tr('Non hai un file?')}{' '}
+                  <button onClick={() => open('manual-test')}>{tr('Inserisci solo dati manuali')}</button>
+                </div>
+              )}
+              <div className="form-grid">
+                <Field label={tr('Atleta')}>
+                  <select
+                    disabled={!!editTest}
+                    value={draft.athlete_id}
+                    onChange={e => change('athlete_id', e.target.value)}
+                  >
+                    {(editTest ? athletes : activeAthletes).map(a => (
+                      <option key={a.id} value={a.id}>
+                        {a.surname} {a.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label={tr('Protocollo e versione')}>
+                  <select value={draft.protocol_id} onChange={e => change('protocol_id', e.target.value)}>
+                    {(editTest ? state.protocol : activeProtocols).map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} · {p.version}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </div>
+              <TraceImporter
+                api={api}
+                run={run}
+                disabled={!!editTest}
+                done={async (t: Row) => {
+                  setTrace(t);
+                  setPreview(null);
+                  setDraft(d => ({...d, end_s: t.duration_s, date: t.started_at ? t.started_at.slice(0, 10) : d.date}));
+                }}
+              />
+              <label>
+                Selezione sul grafico
+                <select value={pickTarget} onChange={e => setPickTarget(e.target.value)}>
+                  <option value="">Solo navigazione</option>
+                  <option value="offset_s">Imposta inizio protocollo</option>
+                  <option value="end_s">Imposta fine sforzo</option>
+                </select>
+              </label>
+              {trace && (
+                <>
+                  <Trace
+                    samples={trace.samples}
+                    protocol={protocol}
+                    offset={Number(draft.offset_s)}
+                    end={Number(draft.end_s)}
+                    excluded={draft.excluded_intervals || []}
+                    markers={draft.alignment_markers || []}
+                    lactate={draft.lactate || []}
+                    vo2={draft.vo2 || []}
+                    onPick={t => {
+                      if (pickTarget) change(pickTarget, Math.round(t * 1000) / 1000);
+                    }}
+                  />
+                  <div className="hint">
+                    {tr(
+                      'Conferma fine sforzo e offset: il valore iniziale di fine coincide con la fine del file, non necessariamente con l’esaurimento.'
+                    )}
+                  </div>
+                </>
+              )}
+              <div className="form-grid">
+                <TimeInput
+                  label="Inizio protocollo dal file"
+                  value={draft.offset_s}
+                  onChange={v => change('offset_s', v)}
+                />
+                <TimeInput label="Fine sforzo dal file" value={draft.end_s} onChange={v => change('end_s', v)} />
+              </div>
+              <div className="form-grid">
+                {[
+                  ['date', tr('Data'), 'date'],
+                  ['weight_kg', tr('Peso · kg'), 'number'],
+                  ['height_cm', tr('Statura · cm'), 'number'],
+                  ['rest_hr', tr('FC a riposo · bpm'), 'number'],
+                  ['rest_after_s', tr('Dopo quanto riposo · s'), 'number'],
+                  ['rpe', 'RPE (scala indicata)', 'number'],
+                  ['threshold_w', tr('Watt Soglia dichiarati'), 'number'],
+                  ['threshold_coefficient', tr('Coefficiente MAP → soglia (se non dichiarata)'), 'number'],
+                  ['fthr_bpm', 'FTHR · bpm', 'number'],
+                  ['ftp_w', tr('FTP dichiarata · W'), 'number'],
+                  ['fc_max_reference_bpm', tr('FC massima riferimento · bpm'), 'number']
+                ].map(([k, label, type]) => (
+                  <Field key={k} label={label}>
+                    <input
+                      type={type}
+                      value={draft[k] ?? ''}
+                      min={type === 'number' ? 0 : undefined}
+                      step={type === 'number' ? 'any' : undefined}
+                      onChange={e => change(k, e.target.value)}
+                    />
+                  </Field>
+                ))}
+              </div>
+              <Field label={tr('Note e condizioni')}>
+                <textarea value={draft.notes} onChange={e => change('notes', e.target.value)} />
+              </Field>
+              <button
+                onClick={() =>
+                  run(async () => {
+                    const r = await api(`athletes/${draft.athlete_id}/defaults?on=${draft.date}`);
+                    if (r.measurement) {
+                      const m = r.measurement;
+                      setDraft(d => ({
+                        ...d,
+                        weight_kg: m.weight_kg ?? '',
+                        height_cm: m.height_cm ?? '',
+                        weight_source: m.source,
+                        measurement_id: m.id
+                      }));
+                      setPreview(null);
+                      setNotice(`Rilevazione proposta del ${m.date}, fonte ${m.source}. Verifica prima di confermare.`);
+                    } else if (r.suggestion) {
+                      const m = r.suggestion;
+                      setDraft(d => ({
+                        ...d,
+                        weight_kg: m.weight_kg ?? '',
+                        height_cm: m.height_cm ?? '',
+                        weight_source: 'stimato'
+                      }));
+                      setPreview(null);
+                      setNotice(
+                        `Valori stimati proposti: ${m.population}. Fonte: ${m.source}. Non sono misure dell’atleta.`
+                      );
+                    } else
+                      setNotice(tr('Nessuna misura precedente: lascia vuoto o inserisci un dato con provenienza.'));
+                  })
+                }
+              >
+                {tr('Proponi ultima antropometria')}
+              </button>
+              <Field label={tr('Fonte del peso')}>
+                <select
+                  value={draft.weight_source || 'dichiarato'}
+                  onChange={e => change('weight_source', e.target.value)}
+                >
+                  {['misurato', 'arrotondato', 'dichiarato', 'stimato'].map(v => (
+                    <option key={v}>{v}</option>
+                  ))}
+                </select>
+              </Field>
+              <h3>{tr('FC di recupero manuale')}</h3>
+              {(draft.recovery_manual || []).map((r: Row, i: number) => (
+                <div className="form-grid" key={i}>
+                  <Field label={tr('Dopo s')}>
+                    <input
+                      type="number"
+                      value={r.after_s}
+                      onChange={e =>
+                        change(
+                          'recovery_manual',
+                          draft.recovery_manual.map((x: Row, j: number) =>
+                            i === j ? {...x, after_s: Number(e.target.value)} : x
+                          )
+                        )
+                      }
+                    />
+                  </Field>
+                  <Field label={tr('FC bpm')}>
+                    <input
+                      type="number"
+                      value={r.hr_bpm}
+                      onChange={e =>
+                        change(
+                          'recovery_manual',
+                          draft.recovery_manual.map((x: Row, j: number) =>
+                            i === j ? {...x, hr_bpm: Number(e.target.value)} : x
+                          )
+                        )
+                      }
+                    />
+                  </Field>
+                  <button
+                    onClick={() =>
+                      change(
+                        'recovery_manual',
+                        draft.recovery_manual.filter((_: Row, j: number) => j !== i)
+                      )
+                    }
+                  >
+                    {tr('Rimuovi misura')}
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() =>
+                  change('recovery_manual', [...(draft.recovery_manual || []), {after_s: 60, hr_bpm: 100}])
+                }
+              >
+                {tr('Aggiungi recupero')}
+              </button>
+              <h3>{tr('Lattato')}</h3>
+              {(draft.lactate || []).map((r: Row, i: number) => (
+                <div className="form-grid" key={i}>
+                  <Field label={tr('Istante dal file · s')}>
+                    <input
+                      type="number"
+                      value={r.at_s}
+                      onChange={e =>
+                        change(
+                          'lactate',
+                          draft.lactate.map((x: Row, j: number) => (i === j ? {...x, at_s: Number(e.target.value)} : x))
+                        )
+                      }
+                    />
+                  </Field>
+                  <Field label="mmol/L">
+                    <input
+                      type="number"
+                      step="any"
+                      value={r.mmol_l}
+                      onChange={e =>
+                        change(
+                          'lactate',
+                          draft.lactate.map((x: Row, j: number) =>
+                            i === j ? {...x, mmol_l: Number(e.target.value)} : x
+                          )
+                        )
+                      }
+                    />
+                  </Field>
+                  <button
+                    onClick={() =>
+                      change(
+                        'lactate',
+                        draft.lactate.filter((_: Row, j: number) => j !== i)
+                      )
+                    }
+                  >
+                    {tr('Rimuovi misura')}
+                  </button>
+                </div>
+              ))}
+              <button onClick={() => change('lactate', [...(draft.lactate || []), {at_s: 0, mmol_l: 1, note: ''}])}>
+                {tr('Aggiungi prelievo')}
+              </button>
+              <AnalysisInput draft={draft} change={change} api={api} run={run} protocol={protocol} />
+              {draft.zone_schemes && (
+                <ZoneEditor value={draft.zone_schemes} onChange={v => change('zone_schemes', v)} />
+              )}
+              {editTest && (
+                <Field label={tr('Motivo della revisione')}>
+                  <input value={draft.reason || ''} onChange={e => change('reason', e.target.value)} />
+                </Field>
+              )}
+              {preview && (
+                <>
+                  <ReferenceSummary test={{analysis: preview, settings: draft}} />
+                  <Zones analysis={preview} />
+                  <AnalysisResults analysis={preview} Plot={Plot} />
+                  {preview.warnings.map((w: string) => (
+                    <div className="hint" key={w}>
+                      {w}
+                    </div>
+                  ))}
+                  <p className="muted">{preview.method}</p>
+                </>
+              )}
+              <TestExtensions
+                protocol={protocol}
+                values={draft.custom_values || {}}
+                onChange={(v: Row) => change('custom_values', v)}
+                extraFields={draft.extra_fields || []}
+                onFieldsChange={(v: Row[]) => change('extra_fields', v)}
+              />
+              <FormActions>
+                <button
+                  disabled={busy || !trace || !protocol?.definition.segments.length}
+                  onClick={e => {
+                    if (validTimes(e.currentTarget)) run(async () => setPreview(await api('tests/preview', payload())));
+                  }}
+                >
+                  {tr('Calcola anteprima')}
+                </button>
+                <button
+                  className="primary"
+                  disabled={busy || !preview}
+                  onClick={e => {
+                    if (!validTimes(e.currentTarget)) return;
+                    run(async () => {
+                      const saved = editTest
+                        ? await api(
+                            `tests/${editTest.id}`,
+                            {base: editTest.revision, reason: draft.reason || '', test: payload()},
+                            'PUT'
+                          )
+                        : await api('tests', payload());
+                      await refresh();
+                      setModal('');
+                      setActiveTest(saved);
+                      setNotice(tr('Test archiviato con il protocollo e il metodo utilizzati.'));
+                    });
+                  }}
+                >
+                  {tr('Conferma e archivia')}
+                </button>
+              </FormActions>
+            </>
+          )}
+          <Glossary
+            keys={
+              contextualCsvProfiles[modal]
+                ? []
+                : modal === 'test'
+                  ? ['MAP', 'FTHR', 'FC', 'RPE', 'mmol', 'HRR']
+                  : modal === 'measurement'
+                    ? ['HV', 'PHV', 'PAH']
+                    : ['protocol']
+            }
+          />
+        </Dialog>
+      )}
+      {activeTest && (
+        <Dialog
+          busy={busy}
+          title={
+            android
+              ? [
+                  tr('Dettaglio test'),
+                  activeTest.date,
+                  state.athlete.find(a => a.id === activeTest.athlete_id)?.surname,
+                  state.athlete.find(a => a.id === activeTest.athlete_id)?.name
+                ]
+                  .filter(Boolean)
+                  .join(' · ')
+              : tr('Dettaglio test')
+          }
+          onClose={() => setActiveTest(null)}
+        >
+          <div className="eyebrow">
+            {android && <span>{state.organization.find(o => o.id === org)?.name} · </span>}
+            {tr('TEST ARCHIVIATO ·')} {activeTest.date}
+          </div>
+          <h2>
+            {state.athlete.find(a => a.id === activeTest.athlete_id)?.surname}{' '}
+            {state.athlete.find(a => a.id === activeTest.athlete_id)?.name}
+          </h2>
+          <p>
+            {state.protocol.find(p => p.id === activeTest.protocol_id)?.name} ·{' '}
+            {state.protocol.find(p => p.id === activeTest.protocol_id)?.version}
+          </p>
+          <div className="actions">
+            <button
+              disabled={!state.athlete.some(a => a.id === activeTest.athlete_id)}
+              onClick={() => {
+                setSelected(activeTest.athlete_id);
+                setPage('athletes');
+                setActiveTest(null);
+              }}
+            >
+              <Users size={16} />
+              {language === 'en' ? 'Open athlete profile' : 'Apri profilo atleta'}
+            </button>
+            <button
+              disabled={!canEdit}
+              onClick={() => {
+                const t = activeTest;
+                setEditTest(t);
+                setTestProtocol(state.protocol.find(p => p.id === t.protocol_id));
+                if (t.test_type === 'custom') {
+                  setActiveTest(null);
+                  open('custom-test');
+                } else if (anaerobicTypes[t.test_type]) {
+                  setActiveTest(null);
+                  open('anaerobic-test');
+                } else if (t.historical) {
+                  setActiveTest(null);
+                  open('historical-test');
+                } else reviseTest();
+              }}
+            >
+              {tr('Correggi test')}
+            </button>
+          </div>
+          {testHasChart && (
+            <TestSignals
+              test={activeTest}
+              protocol={state.protocol.find(p => p.id === activeTest.protocol_id)}
+              Plot={Plot}
+            />
+          )}
+          {activeTest.test_type === 'custom' ? (
+            <p>{activeTest.analysis.method}</p>
+          ) : anaerobicTypes[activeTest.test_type] ? (
+            <AnaerobicResults analysis={activeTest.analysis} Plot={Plot} />
+          ) : (
+            <>
+              <ReferenceSummary test={activeTest} />
+              <TestZones test={activeTest} api={api} run={run} />
+              {!!activeTest.analysis.recovery?.length && (
+                <>
+                  <h3>Recupero dalla fine sforzo</h3>
+                  <div className="stats">
+                    {activeTest.analysis.recovery.map((r: Row) => (
+                      <Stat
+                        key={r.after_s}
+                        label={`DOPO ${r.after_s} S`}
+                        value={n(r.hr_bpm, ' bpm')}
+                        text={`HRR ${n(r.hrr_bpm, ' bpm')}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+              <AnalysisResults analysis={activeTest.analysis} Plot={Plot} />
+              {(activeTest.analysis.warnings || []).map((w: string) => (
+                <p className="hint" key={w}>
+                  {w}
+                </p>
+              ))}
+              <p className="muted">{activeTest.analysis.method}</p>
+            </>
+          )}
+          {!testHasChart && (
+            <TestSignals
+              test={activeTest}
+              protocol={state.protocol.find(p => p.id === activeTest.protocol_id)}
+              Plot={Plot}
+            />
+          )}
+          {activeTest.settings.conditions && (
+            <p>
+              {Object.entries(activeTest.settings.conditions)
+                .filter(([, v]) => v)
+                .map(
+                  ([k, v]) =>
+                    `${({device: 'Ergometro', power_meter: 'Misuratore di potenza', firmware: 'Firmware', calibration: 'Calibrazione', temperature_c: 'Temperatura °C', cadence_instruction: 'Cadenza prescritta', pre_test: 'Condizioni prima del test', stop_reason: 'Motivo di arresto', recovery_mode: 'Modalità di recupero', posture: 'Postura', repeatability_session: 'Sessione di ripetibilità', observations: 'Osservazioni'} as Row)[k] || metricLabel(k)}: ${v}`
+                )
+                .join(' · ')}
+            </p>
+          )}
+          <p>{activeTest.notes}</p>
+          <CustomValuesDisplay analysis={activeTest.analysis} />
+          <div className="actions">
+            {['md', 'pdf'].map(f => (
+              <button
+                key={f}
+                disabled={busy}
+                onClick={() =>
+                  run(() => download(`tests/${activeTest.id}/report/${f}`, 'report.' + (f === 'pdf' ? 'pdf' : 'zip')))
+                }
+              >
+                Report {f.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <Glossary
+            keys={
+              activeTest.test_type === 'custom'
+                ? ['protocol', 'FC', 'Wkg']
+                : anaerobicTypes[activeTest.test_type]
+                  ? ['anaerobic', 'FC', 'Wkg', 'protocol']
+                  : ['MAP', 'FTHR', 'FC', 'FTP', 'RPE', 'mmol', 'HRR', 'Wkg', 'quality', 'VO2', 'Dmax']
+            }
+          />
+        </Dialog>
+      )}
+    </div>
+  );
 }
-function Stat({label,value,text}:{label:string,value:any,text:string}){return <div className="stat"><small>{label}</small><strong>{value}</strong><span>{text}</span></div>}
-function Empty({text}:{text:string}){return <div className="empty compact"><Activity size={28}/><p>{text}</p></div>}
-function Save({busy}:{busy:boolean}){return <FormActions><button className="primary save" disabled={busy} type="submit">{busy?tr("Salvataggio…"):tr("Salva nell’archivio")}</button></FormActions>}
-function TestList({list,state,open,filters,changeFilters}:{list:Row[],state:State,open:(id:string)=>void,filters:TestFilters,changeFilters:(value:TestFilters)=>void}){
- const {source,query,protocol}=filters;
- const setSource=(value:string)=>changeFilters({...filters,source:value,page:0});
- const setQuery=(value:string)=>changeFilters({...filters,query:value,page:0});
- const setProtocol=(value:string)=>changeFilters({...filters,protocol:value,page:0});
- const shown=list.filter(t=>{const a=state.athlete.find(a=>a.id===t.athlete_id),p=state.protocol.find(p=>p.id===t.protocol_id);return (source==='all'||hasRecordedTrace(t)===(source==='trace'))&&(!android||(!protocol||t.protocol_id===protocol)&&`${a?.surname} ${a?.name} ${p?.name} ${t.date}`.toLowerCase().includes(query.toLowerCase()))});
- const sourceControl=<label>{tr('Dati disponibili')}<select value={source} onChange={e=>setSource(e.target.value)}><option value="all">{tr('Tutti i test')}</option><option value="trace">{tr('Con tracciato FIT/CSV')}</option><option value="manual">{tr('Solo riepiloghi manuali')}</option></select></label>;
- return <section className="panel"><div className="panel-head" style={android?{display:'block'}:undefined}><h2>{tr('Storico test')} <span className="count">{shown.length} / {list.length}</span></h2>{android?<CollapsibleFilters label={tr('Filtri test')}><label>{tr('Cerca atleta, protocollo o data')}<input type="search" value={query} onChange={e=>setQuery(e.target.value)}/></label>{sourceControl}<label>{tr('Protocollo e versione')}<select value={protocol} onChange={e=>setProtocol(e.target.value)}><option value="">{tr('Tutti i protocolli')}</option>{state.protocol.filter(p=>list.some(t=>t.protocol_id===p.id)).map(p=><option key={p.id} value={p.id}>{p.name} · {p.version}</option>)}</select></label></CollapsibleFilters>:sourceControl}</div>
- {!shown.length?<Empty text={list.length?tr('Nessun test corrisponde ai filtri.'):tr('Nessun test archiviato.')}/>:android?<RecordCards pageSize={15} pageIndex={filters.page} onPageChange={page=>changeFilters({...filters,page})} locale={language==='en'?'en':'it'} resetKey={[source,query,protocol,list[0]?.organization_id].join('|')} actionLabel={tr('Analizza')} onOpen={open} items={[...shown].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>{const a=state.athlete.find(a=>a.id===t.athlete_id),p=state.protocol.find(p=>p.id===t.protocol_id);return {id:t.id,title:`${a?.surname||''} ${a?.name||''}`,subtitle:`${t.date} · ${p?.name||'—'} · ${tr('Versione')} ${p?.version||'—'}`,badge:<span className={'tag '+(hasRecordedTrace(t)?'':'amber')}>{tr(hasRecordedTrace(t)?'Con tracciato':'Solo riepilogo')}</span>,details:[{label:tr('Risultato principale'),value:t.test_type==='custom'?tr('Osservazioni personalizzate'):anaerobicTypes[t.test_type]?'Picco '+n(t.analysis.peak_w,' W'):'MAP '+n(t.analysis.map_w,' W')}]}})}/>:<ChronologicalTable label={tr("Storico test")} pageIndex={filters.page} onPageChange={page=>changeFilters({...filters,page})}><thead><tr><th>{tr("DATA")}</th><th>{tr("ATLETA")}</th><th>{tr("PROTOCOLLO")}</th><th>Dati disponibili</th><th>Risultato principale</th><th/></tr></thead><tbody>{[...shown].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>{const a=state.athlete.find(a=>a.id===t.athlete_id),p=state.protocol.find(p=>p.id===t.protocol_id);return <tr key={t.id}><td>{t.date}</td><td>{a?.surname} {a?.name}</td><td>{p?.name}<small>{tr("Versione")} {p?.version}</small></td><td><span className={'tag '+(hasRecordedTrace(t)?'':'amber')}>{hasRecordedTrace(t)?'Con tracciato':'Solo riepilogo'}</span></td><td>{t.test_type==='custom'?'Osservazioni personalizzate':anaerobicTypes[t.test_type]?'Picco '+n(t.analysis.peak_w,' W'):'MAP '+n(t.analysis.map_w,' W')}</td><td><button onClick={()=>open(t.id)}>{tr("Analizza")}<ArrowUpRight size={15}/></button></td></tr>})}</tbody></ChronologicalTable>}</section>;
+function Stat({label, value, text}: {label: string; value: any; text: string}) {
+  return (
+    <div className="stat">
+      <small>{label}</small>
+      <strong>{value}</strong>
+      <span>{text}</span>
+    </div>
+  );
 }
-createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);
+function Empty({text}: {text: string}) {
+  return (
+    <div className="empty compact">
+      <Activity size={28} />
+      <p>{text}</p>
+    </div>
+  );
+}
+function Save({busy}: {busy: boolean}) {
+  return (
+    <FormActions>
+      <button className="primary save" disabled={busy} type="submit">
+        {busy ? tr('Salvataggio…') : tr('Salva nell’archivio')}
+      </button>
+    </FormActions>
+  );
+}
+function TestList({
+  list,
+  state,
+  open,
+  filters,
+  changeFilters
+}: {
+  list: Row[];
+  state: State;
+  open: (id: string) => void;
+  filters: TestFilters;
+  changeFilters: (value: TestFilters) => void;
+}) {
+  const {source, query, protocol} = filters;
+  const setSource = (value: string) => changeFilters({...filters, source: value, page: 0});
+  const setQuery = (value: string) => changeFilters({...filters, query: value, page: 0});
+  const setProtocol = (value: string) => changeFilters({...filters, protocol: value, page: 0});
+  const shown = list.filter(t => {
+    const a = state.athlete.find(a => a.id === t.athlete_id),
+      p = state.protocol.find(p => p.id === t.protocol_id);
+    return (
+      (source === 'all' || hasRecordedTrace(t) === (source === 'trace')) &&
+      (!android ||
+        ((!protocol || t.protocol_id === protocol) &&
+          `${a?.surname} ${a?.name} ${p?.name} ${t.date}`.toLowerCase().includes(query.toLowerCase())))
+    );
+  });
+  const sourceControl = (
+    <label>
+      {tr('Dati disponibili')}
+      <select value={source} onChange={e => setSource(e.target.value)}>
+        <option value="all">{tr('Tutti i test')}</option>
+        <option value="trace">{tr('Con tracciato FIT/CSV')}</option>
+        <option value="manual">{tr('Solo riepiloghi manuali')}</option>
+      </select>
+    </label>
+  );
+  return (
+    <section className="panel">
+      <div className="panel-head" style={android ? {display: 'block'} : undefined}>
+        <h2>
+          {tr('Storico test')}{' '}
+          <span className="count">
+            {shown.length} / {list.length}
+          </span>
+        </h2>
+        {android ? (
+          <CollapsibleFilters label={tr('Filtri test')}>
+            <label>
+              {tr('Cerca atleta, protocollo o data')}
+              <input type="search" value={query} onChange={e => setQuery(e.target.value)} />
+            </label>
+            {sourceControl}
+            <label>
+              {tr('Protocollo e versione')}
+              <select value={protocol} onChange={e => setProtocol(e.target.value)}>
+                <option value="">{tr('Tutti i protocolli')}</option>
+                {state.protocol
+                  .filter(p => list.some(t => t.protocol_id === p.id))
+                  .map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} · {p.version}
+                    </option>
+                  ))}
+              </select>
+            </label>
+          </CollapsibleFilters>
+        ) : (
+          sourceControl
+        )}
+      </div>
+      {!shown.length ? (
+        <Empty text={list.length ? tr('Nessun test corrisponde ai filtri.') : tr('Nessun test archiviato.')} />
+      ) : android ? (
+        <RecordCards
+          pageSize={15}
+          pageIndex={filters.page}
+          onPageChange={page => changeFilters({...filters, page})}
+          locale={language === 'en' ? 'en' : 'it'}
+          resetKey={[source, query, protocol, list[0]?.organization_id].join('|')}
+          actionLabel={tr('Analizza')}
+          onOpen={open}
+          items={[...shown]
+            .sort((a, b) => b.date.localeCompare(a.date))
+            .map(t => {
+              const a = state.athlete.find(a => a.id === t.athlete_id),
+                p = state.protocol.find(p => p.id === t.protocol_id);
+              return {
+                id: t.id,
+                title: `${a?.surname || ''} ${a?.name || ''}`,
+                subtitle: `${t.date} · ${p?.name || '—'} · ${tr('Versione')} ${p?.version || '—'}`,
+                badge: (
+                  <span className={'tag ' + (hasRecordedTrace(t) ? '' : 'amber')}>
+                    {tr(hasRecordedTrace(t) ? 'Con tracciato' : 'Solo riepilogo')}
+                  </span>
+                ),
+                details: [
+                  {
+                    label: tr('Risultato principale'),
+                    value:
+                      t.test_type === 'custom'
+                        ? tr('Osservazioni personalizzate')
+                        : anaerobicTypes[t.test_type]
+                          ? 'Picco ' + n(t.analysis.peak_w, ' W')
+                          : 'MAP ' + n(t.analysis.map_w, ' W')
+                  }
+                ]
+              };
+            })}
+        />
+      ) : (
+        <ChronologicalTable
+          label={tr('Storico test')}
+          pageIndex={filters.page}
+          onPageChange={page => changeFilters({...filters, page})}
+        >
+          <thead>
+            <tr>
+              <th>{tr('DATA')}</th>
+              <th>{tr('ATLETA')}</th>
+              <th>{tr('PROTOCOLLO')}</th>
+              <th>Dati disponibili</th>
+              <th>Risultato principale</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {[...shown]
+              .sort((a, b) => b.date.localeCompare(a.date))
+              .map(t => {
+                const a = state.athlete.find(a => a.id === t.athlete_id),
+                  p = state.protocol.find(p => p.id === t.protocol_id);
+                return (
+                  <tr key={t.id}>
+                    <td>{t.date}</td>
+                    <td>
+                      {a?.surname} {a?.name}
+                    </td>
+                    <td>
+                      {p?.name}
+                      <small>
+                        {tr('Versione')} {p?.version}
+                      </small>
+                    </td>
+                    <td>
+                      <span className={'tag ' + (hasRecordedTrace(t) ? '' : 'amber')}>
+                        {hasRecordedTrace(t) ? 'Con tracciato' : 'Solo riepilogo'}
+                      </span>
+                    </td>
+                    <td>
+                      {t.test_type === 'custom'
+                        ? 'Osservazioni personalizzate'
+                        : anaerobicTypes[t.test_type]
+                          ? 'Picco ' + n(t.analysis.peak_w, ' W')
+                          : 'MAP ' + n(t.analysis.map_w, ' W')}
+                    </td>
+                    <td>
+                      <button onClick={() => open(t.id)}>
+                        {tr('Analizza')}
+                        <ArrowUpRight size={15} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </ChronologicalTable>
+      )}
+    </section>
+  );
+}
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);

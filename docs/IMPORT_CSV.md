@@ -39,6 +39,10 @@ Compilare `tipo_test` con `sprint`, `wingate15` o `wingate30`, e `durata_s` risp
 
 Il codice storico `ANA-15-070` resta associato a 15 s e 0,70 N·m/kg anche nei CSV privi di tipo e durata. Se tali colonne vengono compilate, devono essere coerenti; un altro tipo o carico richiede un codice distinto. Non estendere quelle condizioni agli altri protocolli.
 
+## Testi protetti dalle formule — 14 novembre 2026
+
+Negli export CSV di Fuorigiri i testi che iniziano con `=`, `+`, `-`, `@`, tabulazione o a capo sono preceduti da un apice (`'`), così un foglio di calcolo li mostra come testo invece di eseguirli come formule. I numeri restano invariati, anche quelli negativi. L'import rimuove l'apice: esportare e reimportare restituisce gli stessi testi. Un testo che inizia per apice seguito da uno di quei caratteri va quindi scritto con un apice in più.
+
 ## Anteprima e conferma
 
 Le cinque anteprime mostrano colonne adatte ai dati: per i test, ID, atleta riconciliato, data, protocollo e risultati principali; per antropometria, peso, statura, fonte e origine. La vista mostra fino a 20 record e ne dichiara il numero; il lotto conserva tutte le righe. I protocolli d’archivio da creare sono elencati separatamente e non aumentano il conteggio delle righe pronte mostrato all’operatore.

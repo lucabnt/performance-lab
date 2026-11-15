@@ -92,7 +92,7 @@ def install_analysis(app,store,require,download):
             with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED) as z:
                 z.writestr('report.md',text+'\n'+ATTRIBUTION)
                 z.writestr('manifest.json',json.dumps(result,ensure_ascii=False,allow_nan=False))
-                buffer=io.StringIO();writer=csv.writer(buffer);writer.writerows(rows);z.writestr('ripetibilita.csv',buffer.getvalue())
+                from .csv_safety import writer as safe_writer;buffer=io.StringIO();writer=safe_writer(buffer);writer.writerows(rows);z.writestr('ripetibilita.csv',buffer.getvalue())
         else:
             doc=document(out,'Ripetibilità');story=[Paragraph('Ripetibilità - '+escape(data.metric),ss['Title']),p(data.reason),p(note),Spacer(1,.5*cm),table([[p(c) for c in row] for row in rows],[4.2*cm,1.4*cm,2.2*cm,2.7*cm,2.2*cm,5*cm])]
             doc.build(story,onFirstPage=footer,onLaterPages=footer)

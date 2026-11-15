@@ -10,7 +10,12 @@ Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVIS
 - RT-14/RT-17: allegato assente → 422 «Allegato non presente nell’archivio locale.»; rimossi i rami irraggiungibili del percorso sync legacy.
 - RT-13: le anteprime di ripristino in `restore-staging` più vecchie di 24 ore vengono rimosse all’avvio e a ogni nuova anteprima.
 
-Restano da eseguire i blocchi 2–5 del piano.
+**Blocco 2 — implementato nei sorgenti, 14 novembre 2026:**
+
+- RT-15: negli export CSV (archivio, estesi, maturazione, ripetibilità) i testi che iniziano con `=`, `+`, `-`, `@`, tabulazione o a capo ricevono un apice; numeri intatti. Tutti gli import CSV lo rimuovono in lettura; la trasformazione è reversibile anche per testi che iniziano già con un apice. Manifest dell’export aggiornato. Guida in IMPORT_CSV.md.
+- RT-11: nota sulla cifratura del dispositivo (IT/EN) nella finestra «Licenza, limiti e backup», mostrata nella vista Info su Android e nel piè di pagina desktop; sezione «Proteggere i dati sul dispositivo» in SOCIETA_BACKUP_E_ACCESSI.md. Verificata nella GUI web desktop; vista Info Android non ricatturata.
+
+Restano da eseguire i blocchi 3–5 del piano.
 
 ## PUB-ALPHA-01 — prima distribuzione pubblica
 

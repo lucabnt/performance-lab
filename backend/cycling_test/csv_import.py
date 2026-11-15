@@ -40,7 +40,9 @@ def read(raw):
     try:
         if not reader.fieldnames or len(reader.fieldnames)!=len(set(reader.fieldnames)):
             raise ValueError('Intestazioni CSV mancanti o duplicate.')
-        rows=list(reader)
+        from .csv_safety import restore
+        # Apostrophes added by Fuorigiri exports against spreadsheet formulas are removed.
+        rows=[{k:restore(v) for k,v in row.items()} for row in reader]
     except csv.Error:
         raise ValueError('CSV non valido: controllare virgolette e dimensione dei campi.') from None
     if any(None in row or any(v is None for v in row.values()) for row in rows):

@@ -1,5 +1,11 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 14 novembre 2026 — revisione tecnica, blocco 2
+
+- RT-15: 17 nuovi test in `tests/test_csv_safety.py`. Reversibilità per i sei caratteri iniziali, apice preesistente e testo vuoto; numeri (`-12.5`, `-12,5`, `+3`, valori numerici) invariati. Export reale: cognome, nome e note con prefissi pericolosi preceduti da apice, misure `50.5,160` intatte; reimport con profilo `atleti` in un archivio nuovo restituisce i testi originali.
+- RT-11: build frontend e `tsc` riusciti; nella GUI web desktop (archivio QA nuovo `.local/qa-rt11-20261114`, porta 8797) la finestra «Licenza e limiti» mostra la nota in italiano e, cambiata la lingua, in inglese. Vista Info Android non provata sull'emulatore; la nota è nello stesso componente `Legal` che la vista Info già include.
+- Suite: `pytest -q` 334 superati, 1 saltato, 2 avvisi; `test:signals` 43/43; `git diff --check` pulito.
+
 ## 14 novembre 2026 — revisione tecnica, blocco 1
 
 Sei nuovi test, ciascuno fallito sui sorgenti precedenti (tranne il caso RT-14 e RT-13, scritti insieme alla correzione) e superato dopo la modifica:

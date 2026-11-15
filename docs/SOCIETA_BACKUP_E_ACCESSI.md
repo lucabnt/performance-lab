@@ -50,6 +50,16 @@ La revoca viene pubblicata dal fondatore con uno scambio e recepita dai PC quand
 
 Conservare entrambi e aggiornarli dopo modifiche agli accessi. Il file di recupero può essere usato con backup dati successivi della stessa società: il ripristino verifica le firme degli eventi e i metadati pubblici più recenti. Un file del fondatore di un'altra società, una password errata o uno storico non autenticabile vengono rifiutati. Il backup dati ordinario continua a escludere le credenziali.
 
+## Proteggere i dati sul dispositivo
+
+Archivio locale, allegati e backup ZIP **non sono cifrati** dall'app; `identity.json` contiene le chiavi dell'operatore in chiaro nella cartella dati. Contengono dati sanitari di atleti, spesso minorenni. La protezione a riposo è affidata al sistema (decisione del 14 novembre 2026, [revisione tecnica](REVISIONE_TECNICA.md) RT-11):
+
+- **Windows:** attivare BitLocker o *Crittografia dispositivo* (Impostazioni → Privacy e sicurezza) sul disco che contiene la cartella dati; usare un account con password o PIN, senza accesso automatico, e non condividerlo.
+- **Android:** impostare un blocco schermo (PIN, password o sequenza); sui dispositivi recenti la cifratura dell'archivio è attiva e legata al blocco. Il backup automatico Android dell'app è disattivato.
+- **Backup:** conservarli su un supporto cifrato o in una posizione ad accesso controllato, separata dalla cartella di scambio. Chi ottiene una copia del backup ne legge il contenuto.
+
+Un backup cifrato con password, facoltativo, è pianificato e non ancora disponibile.
+
 ## Tre modalità di ripristino
 
 Dopo il caricamento ZIP l'anteprima mostra società, conteggi, allegati e verifiche di integrità. Il ripristino ricostruisce uno schema SQLite noto in una cartella temporanea, conserva dati/revisioni e pubblica il nuovo archivio solo a operazione completa. Rifiuta percorsi ZIP non previsti, allegati mancanti/corrotti, schemi non supportati e destinazioni occupate o sovrapposte. Limiti attuali: 100 MB compressi, 1 GB espanso e 10.002 voci ZIP. Non estrae percorsi arbitrari e non esegue definizioni SQL provenienti dal file caricato.

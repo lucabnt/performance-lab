@@ -1,4 +1,3 @@
-import csv
 import json
 import io
 import zipfile
@@ -17,6 +16,7 @@ from .report_labels import metric_label
 from .scientific_labels import reason as scientific_reason, METHODS
 
 from .anaerobic import CSV_HEADER as ANAEROBIC_HEADER
+from . import csv_safety as safe_csv
 RENDERER_VERSION='0.10-vo2-1'
 CSV_HEADERS = {
     'test_anaerobico': ANAEROBIC_HEADER,
@@ -272,18 +272,18 @@ def export_csv(store, organization_id):
     with zipfile.ZipFile(out,"w",zipfile.ZIP_DEFLATED) as z:
         for name, header in CSV_HEADERS.items():
             text = io.StringIO(newline="")
-            writer = csv.DictWriter(text,fieldnames=header.split(","))
+            writer = safe_csv.DictWriter(text,fieldnames=header.split(","))
             writer.writeheader()
             writer.writerows({k:v for k,v in row.items() if k in header.split(',')} for row in rows[name])
             z.writestr(name+".csv",text.getvalue())
         lactate_csv=io.StringIO(newline='')
-        lw=csv.DictWriter(lactate_csv,fieldnames=['test_id','test_revision','atleta_id','data','protocol_id','mmol_l','power_w','power_wkg','hr_bpm','method_id','hr_window_s','status','power_reason','hr_reason','weight_reason']);lw.writeheader();lw.writerows(lactate_rows)
+        lw=safe_csv.DictWriter(lactate_csv,fieldnames=['test_id','test_revision','atleta_id','data','protocol_id','mmol_l','power_w','power_wkg','hr_bpm','method_id','hr_window_s','status','power_reason','hr_reason','weight_reason']);lw.writeheader();lw.writerows(lactate_rows)
         z.writestr('extended/lattato_livelli.csv',lactate_csv.getvalue())
         vo2_csv=io.StringIO(newline='')
-        vw=csv.DictWriter(vo2_csv,fieldnames=['test_id','test_revision','atleta_id','data','source','vo2peak_l_min','vo2peak_ml_kg_min','window_s','coverage','method_id','weight_source','vo2max_l_min','verification_evidence'])
+        vw=safe_csv.DictWriter(vo2_csv,fieldnames=['test_id','test_revision','atleta_id','data','source','vo2peak_l_min','vo2peak_ml_kg_min','window_s','coverage','method_id','weight_source','vo2max_l_min','verification_evidence'])
         vw.writeheader();vw.writerows(vo2_rows)
         z.writestr('extended/vo2.csv',vo2_csv.getvalue())
-        observations_csv=io.StringIO(newline='');ow=csv.writer(observations_csv)
+        observations_csv=io.StringIO(newline='');ow=safe_csv.writer(observations_csv)
         ow.writerow(['test_id','test_revision','atleta_id','t_s','vo2_l_min','source','note'])
         for t in store.list('test'):
             if t['athlete_id'] not in ids or t.get('status')=='deleted':continue
@@ -292,7 +292,7 @@ def export_csv(store, organization_id):
                 ow.writerow([t['id'],t['revision'],t['athlete_id'],r['t'],r.get('vo2'),g.get('source','gas_csv'),notes.get(r['t'],'')])
         z.writestr('extended/vo2_osservazioni.csv',observations_csv.getvalue())
         from .custom_fields import display_rows
-        custom_csv=io.StringIO(newline='');cw=csv.writer(custom_csv);cw.writerow(['test_id','protocol_id','scope','field_key','label','type','unit','value_json'])
+        custom_csv=io.StringIO(newline='');cw=safe_csv.writer(custom_csv);cw.writerow(['test_id','protocol_id','scope','field_key','label','type','unit','value_json'])
         for t in store.list('test'):
             if t['athlete_id'] not in ids or t.get('status')=='deleted':continue
             for f in t['analysis'].get('custom_fields',[]):
@@ -300,12 +300,12 @@ def export_csv(store, organization_id):
                 cw.writerow([t['id'],t['protocol_id'],f['scope'],f['key'],f['label'],f['type'],f.get('unit',''),json.dumps(data.get(f['key']),ensure_ascii=False)])
         z.writestr('extended/campi_personalizzati.csv',custom_csv.getvalue())
         from .anaerobic import EXTENDED_HEADER
-        extended_ana=io.StringIO(newline='');ana_writer=csv.DictWriter(extended_ana,fieldnames=EXTENDED_HEADER.split(','));ana_writer.writeheader();ana_writer.writerows({k:row.get(k) for k in EXTENDED_HEADER.split(',')} for row in anaerobic_rows)
+        extended_ana=io.StringIO(newline='');ana_writer=safe_csv.DictWriter(extended_ana,fieldnames=EXTENDED_HEADER.split(','));ana_writer.writeheader();ana_writer.writerows({k:row.get(k) for k in EXTENDED_HEADER.split(',')} for row in anaerobic_rows)
         z.writestr('extended/test_anaerobico.csv',extended_ana.getvalue())
         from .store import encoded
-        z.writestr("manifest.json",encoded({"schema":1,"protocol_versions":versions,"note":"CSV dati grezzi: i campi testuali non sono neutralizzati per fogli di calcolo. Campi non misurati vuoti; map_alt_w è interpolazione fra step, non equivalente a metodi storici non documentati."}))
+        z.writestr("manifest.json",encoded({"schema":1,"protocol_versions":versions,"note":"CSV dati: i testi che iniziano con =, +, -, @, tabulazione o a capo sono preceduti da un apice per impedirne l'esecuzione come formule; l'import di Fuorigiri lo rimuove. Campi non misurati vuoti; map_alt_w è interpolazione fra step, non equivalente a metodi storici non documentati."}))
         extended=io.StringIO(newline='')
-        writer=csv.DictWriter(extended,fieldnames=['test_id','test_revision','channel','schema_name','schema_version','reference','reference_value','zone','lower_value','lower_inclusive','upper_value','upper_inclusive','seconds'])
+        writer=safe_csv.DictWriter(extended,fieldnames=['test_id','test_revision','channel','schema_name','schema_version','reference','reference_value','zone','lower_value','lower_inclusive','upper_value','upper_inclusive','seconds'])
         writer.writeheader()
         for t in store.list('test'):
             if t['athlete_id'] not in ids or t.get('status')=='deleted':continue

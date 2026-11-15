@@ -203,7 +203,8 @@ def snapshots(store,athlete_id,on=None):
 
 
 def export_files(z,store,athlete_ids):
-    import csv,io
+    import io
+    from . import csv_safety as csv
     measures=[m for m in store.list('measurement') if m['athlete_id'] in athlete_ids and m.get('status')!='deleted']
     fields=['id','revision',*MeasurementPayload.model_fields]
     raw=io.StringIO(newline='');w=csv.DictWriter(raw,fieldnames=fields);w.writeheader();w.writerows({k:m.get(k) for k in fields} for m in measures)

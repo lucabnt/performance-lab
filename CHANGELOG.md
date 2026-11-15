@@ -1,5 +1,11 @@
 # Changelog
 
+## 14 novembre 2026 — revisione tecnica, blocco 2 (sorgenti)
+
+- CSV esportati: i testi che iniziano con `=`, `+`, `-`, `@`, tabulazione o a capo sono preceduti da un apice per non essere eseguiti come formule; i numeri restano invariati e l’import di Fuorigiri rimuove l’apice (RT-15). Cambia l’output visibile dei CSV.
+- Nota IT/EN sulla cifratura del dispositivo e sulla custodia dei backup nella finestra «Licenza, limiti e backup» e nella guida società/backup (RT-11).
+- Versione prodotto 0.10.0 invariata, nessun nuovo EXE/APK.
+
 ## 14 novembre 2026 — revisione tecnica, blocco 1 (sorgenti)
 
 - Report: un solo record salvato per report con gli stessi input (singolo test, storico, archivio); ai download successivi non si aggiungono record né oggetti al canale di sync. Un admin revocato scarica i report senza tentare il salvataggio, invece di ricevere un errore (RT-03, RT-04). I duplicati esistenti non vengono toccati.

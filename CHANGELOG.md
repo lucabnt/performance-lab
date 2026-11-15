@@ -1,5 +1,12 @@
 # Changelog
 
+## 15 novembre 2026 — revisione tecnica, blocco 3 voce 9 (formattazione)
+
+- Formattazione automatica dei sorgenti (RT-05): Python con `ruff format` (righe da 120, apici conservati), frontend con `prettier` 3.6.2 (dipendenza di sviluppo, configurazione in `frontend/.prettierrc.json`; esclusi `index.html`, `public/`, `vendor/`). Un'istruzione per riga al posto delle righe fino a 3221 caratteri.
+- Nessuna modifica semantica: AST Python identico per tutti i file; bundle frontend identico salvo testi JSX adiacenti divisi e uno spazio multiplo ridotto, con resa invariata.
+- `scripts/verify.py` controlla anche il formato (`format-py`, `format-js`); `npm run format` e `ruff format .` per riformattare.
+- Commit di formattazione elencati in `.git-blame-ignore-revs` (`git config blame.ignoreRevsFile .git-blame-ignore-revs`).
+
 ## 14 novembre 2026 — revisione tecnica, blocco 3 voce 8 (strumenti)
 
 - Nuovo `scripts/verify.py`: versioni, UI comune, common Python, linter, `pytest`, `test:signals`, build frontend con `tsc` e `git diff --check` con un solo comando (RT-06).

@@ -29,6 +29,12 @@ testpaths = ["tests"]
 src = ["backend", "tests", "scripts"]
 extend-exclude = ["android", "frontend", "packaging", "vendor", ".local", "tmp", "output", "dist", "build", "wheelhouse"]
 
+line-length = 120
+
+[tool.ruff.format]
+# RT-05: readable layout without rewriting every string literal.
+quote-style = "preserve"
+
 [tool.ruff.lint]
 # Errors only (pyflakes and syntax); style rules wait for the formatting step (RT-05).
 select = ["F", "E9"]

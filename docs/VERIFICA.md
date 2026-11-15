@@ -1,5 +1,12 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 15 novembre 2026 — revisione tecnica, blocco 3 voce 9
+
+- Python: `ruff format` su 124 file; l'AST di tutti i 126 file Python tracciati (escluso `android/`) coincide con quello del commit precedente, a meno della sola indentazione dei docstring.
+- Frontend: `prettier` su 76 file. Bundle Vite confrontato con quello precedente a parità di nomi con hash: CSS, `index`, Plotly e risorse identici. In `main` cambiano solo testi JSX adiacenti divisi (`"misurata "` → `"misurata"," "`), con stesso testo concatenato, e uno spazio di cinque caratteri tra `<summary>` e `<section>` dentro `<details>`, ridotto a uno (stessa resa, nessun `white-space: pre` applicato).
+- `scripts/verify.py`: dieci passi riusciti, inclusi `format-py` e `format-js`; `pytest` 334 superati, 1 saltato; `test:signals` 43/43; build con `tsc` riuscita.
+- GUI web su archivio QA nuovo (`.local/qa-rt05-20261115`, porta 8798): schermata iniziale resa correttamente, nessun errore in console. Android ed EXE non ricostruiti.
+
 ## 14 novembre 2026 — revisione tecnica, blocco 3 voce 8
 
 - `scripts/verify.py` eseguito in locale (Windows, `.venv`): tutti gli otto passi riusciti. Versioni, UI comune e common Python coerenti; `ruff check` senza rilievi; `pytest` 334 superati, 1 saltato (335 raccolti); `test:signals` riuscito; build frontend con `tsc` riuscita; `git diff --check` pulito. `--list` e il rifiuto di un passo sconosciuto sono stati provati a mano.

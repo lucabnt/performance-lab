@@ -9,6 +9,7 @@ interpreter that has the development dependencies installed, for example
     python scripts/verify.py --skip build    # skip one or more steps
     python scripts/verify.py --list          # show step names
 """
+
 import argparse
 import shutil
 import subprocess
@@ -27,6 +28,8 @@ def steps():
         ('suite-ui', 'UI comune incorporata', [python, 'scripts/verify_suite_ui.py'], ROOT),
         ('core', 'Common Python incorporato', [python, 'scripts/verify_core.py'], ROOT),
         ('lint', 'Linter Python (ruff)', [python, '-m', 'ruff', 'check', '.'], ROOT),
+        ('format-py', 'Formato Python (ruff format)', [python, '-m', 'ruff', 'format', '--check', '.'], ROOT),
+        ('format-js', 'Formato frontend (prettier)', [npm, 'run', 'format:check'], ROOT / 'frontend'),
         ('pytest', 'Test Python', [python, '-m', 'pytest', '-q', '-p', 'no:cacheprovider'], ROOT),
         ('signals', 'Test dei modelli frontend', [npm, 'run', 'test:signals'], ROOT / 'frontend'),
         ('build', 'Build frontend con controllo dei tipi (tsc)', [npm, 'run', 'build'], ROOT / 'frontend'),

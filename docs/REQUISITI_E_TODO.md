@@ -20,7 +20,11 @@ Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVIS
 - RT-06: `scripts/verify.py` esegue tutte le verifiche locali con un solo comando e riepilogo; linter `ruff` 0.17.5 (dipendenza di sviluppo, solo errori pyflakes/sintassi) e workflow `verify.yml` su Windows, per ora solo manuale. Corretti i 70 rilievi iniziali (import e variabili inutilizzati), senza modifiche di comportamento; le riesportazioni di `transports.py` e gli import di prova di `desktop.py` sono esclusi per file.
 - Criterio «workflow verde» non ancora verificato: richiede push e avvio su GitHub.
 
-Restano la voce 9 (formattazione, RT-05) e i blocchi 4–5 del piano.
+**Blocco 3, voce 9 — implementata nei sorgenti, 15 novembre 2026:**
+
+- RT-05: formattazione automatica con `ruff format` e `prettier`, senza modifiche semantiche (AST Python identico, bundle frontend equivalente); controllo del formato in `scripts/verify.py`. Estrazione dei router API rinviata come previsto dal piano.
+
+Restano i blocchi 4–5 del piano.
 
 ## PUB-ALPHA-01 — prima distribuzione pubblica
 

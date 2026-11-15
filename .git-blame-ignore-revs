@@ -1,0 +1,9 @@
+# Commit di sola formattazione (RT-05, 15 novembre 2026), esclusi da git blame.
+# Attivazione locale: git config blame.ignoreRevsFile .git-blame-ignore-revs
+20f4f0ad5e39531b0aa96b1a0fd0e0413daf19c2
+9ad1dd2cf2b8289ce6d1b5bef51ff2402877fbc6
+e27c3d79c63462892ba9d96648f5b94cad40e0c3
+5cdd2be7989914e2fbe93a6961ea615cfde4f7b0
+58fd39ceea6b3155b2b520b9b7e3e424ffdcdb2a
+11b980c1a150e7155e37753add2d8e2c8c02a7ee
+17791e3da7e91b2c794a60e66f86b857620ee03b

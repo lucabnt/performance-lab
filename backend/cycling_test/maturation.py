@@ -11,14 +11,14 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typing import Literal
 from .store import encoded, ConflictError
 
-VERSION = 'growth-maturity/2'
+VERSION = 'growth-maturity/3'
 POLICY = {
     'anthropometric_quality': 'warn-unless-excluded',
     'hv_min_days': 90,
     'hv_max_days': 400,
     'hv_max_cm_year': 20,
-    'phv_min_measures': 7,
-    'phv_min_span_days': 730,
+    'phv_min_segment_measures': 6,
+    'phv_side_intervals': 2,
     'phv_support_days': 180,
     'phv_local_points': 5,
     'height_precision_default_cm': 0.1,
@@ -31,6 +31,7 @@ REFERENCE = 'https://doi.org/10.1007/s40279-017-0750-y'
 LABELS = {
     'hv': 'Velocità di crescita · cm/anno',
     'phv': 'PHV longitudinale esplorativo · cm/anno',
+    'hv_max_observed': 'HV massima osservata · cm/anno',
     'aphv': 'APHV longitudinale esplorativa · anni',
     'offset': 'Maturity offset stimato · anni',
     'aphv_estimated': 'APHV stimata · anni',
@@ -222,63 +223,209 @@ def anthropometric(athlete, m):
     return result
 
 
+def usable_height(m):
+    return m.get('source') == 'misurato' and m.get('quality', 'valid') == 'valid'
+
+
+def interval(a, b, reason=None):
+    days = (date.fromisoformat(b['date']) - date.fromisoformat(a['date'])).days
+    delta = b['height_cm'] - a['height_cm']
+    precision = sum(m.get('precision_cm', 0.1) for m in (a, b))
+    return {
+        'method_id': 'hv-interval/1',
+        'from': a['date'],
+        'to': b['date'],
+        'days': days,
+        'delta_cm': delta,
+        'value': delta * 365.25 / days if not reason else None,
+        'reason': reason,
+        'precision_bound_cm_year': precision * 365.25 / days if days > 0 else None,
+        'measurement_ids': [a['id'], b['id']],
+        'revisions': [a['revision'], b['revision']],
+        'mid_date': (date.fromisoformat(a['date']) + timedelta(days=days / 2)).isoformat(),
+    }
+
+
+def interval_problem(a, b):
+    days = (date.fromisoformat(b['date']) - date.fromisoformat(a['date'])).days
+    delta = b['height_cm'] - a['height_cm']
+    if days < POLICY['hv_min_days']:
+        return 'close', 'Intervallo inferiore a 90 giorni o stessa data; annualizzazione non utilizzabile.'
+    if days > POLICY['hv_max_days']:
+        return 'gap', 'Intervallo superiore a 400 giorni; serie troppo rada.'
+    if delta < 0:
+        return 'decrease', 'Statura diminuita: verificare le misure.'
+    if delta * 365.25 / days > POLICY['hv_max_cm_year']:
+        return 'velocity', 'Velocità oltre il controllo prudenziale del preset: verificare le misure.'
+    return None, None
+
+
+def sorted_heights(measures):
+    return sorted((m for m in measures if m.get('height_cm') is not None), key=lambda m: (m['date'], m['id']))
+
+
 def height_velocity(measures):
-    heights = sorted((m for m in measures if m.get('height_cm') is not None), key=lambda m: (m['date'], m['id']))
+    heights = sorted_heights(measures)
     rows = []
     for a, b in zip(heights, heights[1:]):
-        days = (date.fromisoformat(b['date']) - date.fromisoformat(a['date'])).days
-        delta = b['height_cm'] - a['height_cm']
-        reason = None
-        if any(m.get('source') != 'misurato' or m.get('quality', 'valid') != 'valid' for m in (a, b)):
-            reason = 'Usare due misure confermate come misurate e valide.'
-        elif days < POLICY['hv_min_days']:
-            reason = 'Intervallo inferiore a 90 giorni o stessa data; annualizzazione non utilizzabile.'
-        elif days > POLICY['hv_max_days']:
-            reason = 'Intervallo superiore a 400 giorni; serie troppo rada.'
-        elif delta < 0:
-            reason = 'Statura diminuita: verificare le misure.'
-        elif delta * 365.25 / days > POLICY['hv_max_cm_year']:
-            reason = 'Velocità oltre il controllo prudenziale del preset: verificare le misure.'
-        precision = sum(m.get('precision_cm', 0.1) for m in (a, b))
-        rows.append(
-            {
-                'method_id': 'hv-interval/1',
-                'from': a['date'],
-                'to': b['date'],
-                'days': days,
-                'delta_cm': delta,
-                'value': delta * 365.25 / days if not reason else None,
-                'reason': reason,
-                'precision_bound_cm_year': precision * 365.25 / days if days > 0 else None,
-                'measurement_ids': [a['id'], b['id']],
-                'revisions': [a['revision'], b['revision']],
-                'mid_date': (date.fromisoformat(a['date']) + timedelta(days=days / 2)).isoformat(),
-            }
+        reason = (
+            'Usare due misure confermate come misurate e valide.'
+            if not (usable_height(a) and usable_height(b))
+            else interval_problem(a, b)[1]
         )
+        rows.append(interval(a, b, reason))
     return rows
 
 
-def longitudinal_phv(athlete, measures, hv):
-    method = 'phv-local-quadratic/1'
-    if len(hv) < POLICY['phv_min_measures'] - 1 or any(r['value'] is None for r in hv):
-        return unavailable('Servono almeno 7 stature con intervalli validi e senza discontinuità.', method)
-    span = (date.fromisoformat(hv[-1]['to']) - date.fromisoformat(hv[0]['from'])).days
-    if span < POLICY['phv_min_span_days']:
-        return unavailable('Servono almeno due anni di osservazioni attorno al picco.', method)
-    peak = int(np.argmax([r['value'] for r in hv]))
-    if peak < 2 or peak > len(hv) - 3:
-        return unavailable('Picco al bordo o senza due intervalli di supporto per lato.', method)
-    rows = hv[peak - 2 : peak + 3]
-    origin = date.fromisoformat(rows[2]['mid_date'])
+def phv_series(measures):
+    """Measured-height sequence used by PHV/2 and the observed maximum; nothing is interpolated or corrected.
+
+    Unusable (not measured / not valid) and too-close statures are skipped and listed; gaps over 400 days and
+    anomalous intervals (decrease, implausible velocity) split the series into contiguous segments.
+    """
+    excluded, segments, anchor = [], [], None
+    for m in sorted_heights(measures):
+        if not usable_height(m):
+            excluded.append(
+                {
+                    'cause': 'not_measured',
+                    'date': m['date'],
+                    'measurement_ids': [m['id']],
+                    'reason': 'Statura non misurata o qualità non confermata: non usata.',
+                }
+            )
+            continue
+        if anchor is None:
+            anchor = m
+            segments.append({'measurement_ids': [m['id']], 'intervals': []})
+            continue
+        cause, reason = interval_problem(anchor, m)
+        if cause == 'close':
+            excluded.append(
+                {
+                    'cause': 'close',
+                    'date': m['date'],
+                    'after': anchor['date'],
+                    'days': (date.fromisoformat(m['date']) - date.fromisoformat(anchor['date'])).days,
+                    'measurement_ids': [m['id']],
+                    'reason': 'Meno di 90 giorni dalla statura precedente usata: saltata, non bloccante.',
+                }
+            )
+            continue
+        if cause:
+            excluded.append(
+                {
+                    'cause': cause,
+                    'from': anchor['date'],
+                    'to': m['date'],
+                    'measurement_ids': [anchor['id'], m['id']],
+                    'reason': reason,
+                }
+            )
+            segments.append({'measurement_ids': [m['id']], 'intervals': []})
+        else:
+            segments[-1]['intervals'].append(interval(anchor, m))
+            segments[-1]['measurement_ids'].append(m['id'])
+        anchor = m
+    return segments, excluded
+
+
+def max_observed_hv(segments):
+    method = 'hv-max-observed/1'
+    rows = [(r, i == len(s['intervals']) - 1) for s in segments for i, r in enumerate(s['intervals'])]
+    if not rows:
+        return unavailable('Serve almeno un intervallo di 90–400 giorni tra due stature misurate e valide.', method)
+    best, last = max(rows, key=lambda x: x[0]['value'])
+    return {
+        **{k: best[k] for k in ('from', 'to', 'days', 'mid_date', 'delta_cm', 'measurement_ids', 'revisions')},
+        'value': best['value'],
+        'method_id': method,
+        'reason': None,
+        'at_segment_end': last,
+        'note': 'Massimo delle velocità medie osservate finora; non è il PHV e non conferma il picco.',
+    }
+
+
+def longitudinal_phv(athlete, measures):
+    method = 'phv-local-quadratic/2'
+    need, side = POLICY['phv_min_segment_measures'], POLICY['phv_side_intervals']
+    segments, excluded = phv_series(measures)
+    longest = max((len(s['measurement_ids']) for s in segments), default=0)
+    candidates = [(r['value'], si, i) for si, s in enumerate(segments) for i, r in enumerate(s['intervals'])]
+
+    def blocked(status, reason, progress):
+        return {
+            'value': None,
+            'method_id': method,
+            'status': status,
+            'reason': reason,
+            'progress': progress,
+            'excluded': excluded,
+        }
+
+    progress = {'statures': longest, 'required_statures': need, 'required_each_side': side}
+    if not candidates:
+        return blocked(
+            'insufficient',
+            f'Servono almeno {need} stature misurate valide consecutive a 90–400 giorni: disponibili {longest}.',
+            progress,
+        )
+    _, si, peak = max(candidates, key=lambda c: c[0])
+    seg = segments[si]['intervals']
+    progress.update(
+        statures=len(segments[si]['measurement_ids']),
+        before_peak=peak,
+        after_peak=len(seg) - 1 - peak,
+        segment_from=seg[0]['from'],
+        segment_to=seg[-1]['to'],
+        max_interval=[seg[peak]['from'], seg[peak]['to']],
+    )
+    anomalies = [set(e['measurement_ids']) for e in excluded if e['cause'] in ('decrease', 'velocity')]
+    if any(set(seg[peak]['measurement_ids']) & ids for ids in anomalies):
+        return blocked(
+            'anomaly',
+            'Il massimo osservato confina con un calo di statura o una velocità anomala: verificare le misure.',
+            progress,
+        )
+    if progress['statures'] < need:
+        return blocked(
+            'insufficient',
+            f'Servono almeno {need} stature misurate valide consecutive a 90–400 giorni: '
+            f'nel tratto del massimo {progress["statures"]}.',
+            progress,
+        )
+    if progress['after_peak'] < side:
+        return blocked(
+            'not_confirmed',
+            f'Massimo osservato negli ultimi intervalli: picco non ancora confermato; servono {side} intervalli '
+            f'validi dopo il massimo (ora {progress["after_peak"]}).',
+            progress,
+        )
+    if peak < side:
+        return blocked(
+            'before_data',
+            'Massimo nei primi intervalli del tratto valido: il picco potrebbe precedere le misure disponibili; '
+            f'servono {side} intervalli prima del massimo (ora {peak}).',
+            progress,
+        )
+    rows = seg[peak - side : peak + side + 1]
+    window_ids = {i for r in rows for i in r['measurement_ids']}
+    if any(window_ids & ids for ids in anomalies):
+        return blocked(
+            'anomaly',
+            'Calo di statura o velocità anomala a ridosso della finestra del picco: verificare le misure.',
+            progress,
+        )
+    origin = date.fromisoformat(rows[side]['mid_date'])
     x = np.array([(date.fromisoformat(r['mid_date']) - origin).days / 365.25 for r in rows])
     y = np.array([r['value'] for r in rows])
     a, b, c = np.polyfit(x, y, 2)
     if a >= -1e-6:
-        return unavailable('Nessun massimo interno della curva locale.', method)
+        return blocked('no_maximum', 'Nessun massimo interno della curva locale.', progress)
     t = -b / (2 * a)
     predicted = a * t * t + b * t + c
     if not x[0] < t < x[-1] or predicted <= 0:
-        return unavailable('Massimo locale fuori dalla finestra o non valido.', method)
+        return blocked('no_maximum', 'Massimo locale fuori dalla finestra o non valido.', progress)
     when = origin + timedelta(days=float(t) * 365.25)
     if (
         min(
@@ -287,11 +434,17 @@ def longitudinal_phv(athlete, measures, hv):
         )
         < POLICY['phv_support_days']
     ):
-        return unavailable('Copertura insufficiente prima/dopo il massimo locale (180 giorni per lato).', method)
+        return blocked(
+            'support', 'Copertura insufficiente prima/dopo il massimo locale (180 giorni per lato).', progress
+        )
     return {
         'value': float(predicted),
         'method_id': method,
+        'status': 'available',
         'reason': None,
+        'progress': progress,
+        'excluded': excluded,
+        'window': {'from': rows[0]['from'], 'to': rows[-1]['to']},
         'date': when.isoformat(),
         'aphv_years': age_at(athlete.get('birth_date'), when.isoformat()),
         'origin': 'Ricostruzione longitudinale esplorativa, non misura istantanea del PHV.',
@@ -309,7 +462,8 @@ def analyze(athlete, measures, on):
     source = {'athlete': athlete, 'measurements': measures, 'on': on, 'engine': VERSION, 'policy': POLICY}
     series = [anthropometric(athlete, m) for m in measures]
     hv = height_velocity(measures)
-    phv = longitudinal_phv(athlete, measures, hv)
+    phv = longitudinal_phv(athlete, measures)
+    hv_max = max_observed_hv(phv_series(measures)[0])
     previous = None
     for m, s in zip(measures, series):
         limb = m.get('lower_limb_cm')
@@ -383,6 +537,7 @@ def analyze(athlete, measures, on):
         'series': series,
         'hv': hv,
         'phv': phv,
+        'hv_max_observed': hv_max,
         'stability': stability,
         'warnings': WARNINGS,
         'inputs': {'athlete': athlete, 'measurements': measures},
@@ -461,6 +616,8 @@ def export_files(z, store, athlete_ids):
         for h in a['hv']:
             row(h['to'], 'hv_cm_year', h)
         row(a['phv'].get('date', ''), 'phv_cm_year', a['phv'])
+        if a.get('hv_max_observed'):
+            row(a['hv_max_observed'].get('to', ''), 'hv_max_observed_cm_year', a['hv_max_observed'])
         if a.get('stability'):
             row(a['on'], 'height_stability_range_cm', a['stability'])
         for s in a['series']:
@@ -542,6 +699,22 @@ def report_section(entry, text, grid, image):
         ),
         'Small',
     )
+    observed = a.get('hv_max_observed') or {}
+    if observed.get('value') is not None:
+        text(
+            'HV massima osservata: '
+            + str(round(observed['value'], 2))
+            + ' cm/anno, '
+            + observed['from']
+            + ' / '
+            + observed['to']
+            + '. '
+            + observed['note'],
+            'Small',
+        )
+    for item in phv.get('excluded', []):
+        when = item.get('date') or item.get('from', '') + ' / ' + item.get('to', '')
+        text('Non usata per il PHV — ' + when + ': ' + item['reason'], 'Small')
     if a.get('stability', {}).get('value') is not None:
         text('Statura: ' + a['stability']['interpretation'], 'Small')
     optional = [s for s in a['series'] if s['optional']['pah']['value'] is not None]

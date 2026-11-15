@@ -184,6 +184,58 @@ export function MeasurementEditor({
     </form>
   );
 }
+function phvStatusText(phv: Row, en: boolean) {
+  const p = phv.progress || {};
+  const texts: Record<string, [string, string]> = {
+    insufficient: [
+      `Servono almeno ${p.required_statures} stature misurate valide consecutive a 90–400 giorni.`,
+      `At least ${p.required_statures} consecutive valid measured heights 90–400 days apart are required.`
+    ],
+    not_confirmed: [
+      'Picco non ancora confermato: il massimo è negli ultimi intervalli.',
+      'Peak not yet confirmed: the maximum is in the latest intervals.'
+    ],
+    before_data: [
+      'Il massimo è nei primi intervalli: il picco potrebbe precedere le misure disponibili.',
+      'The maximum is in the first intervals: the peak may precede the available measurements.'
+    ],
+    anomaly: [
+      'Calo di statura o velocità anomala vicino al massimo: verificare le misure.',
+      'Height decrease or anomalous velocity near the maximum: verify the measurements.'
+    ]
+  };
+  const t = texts[phv.status];
+  return t ? t[en ? 1 : 0] : maturityText(phv.reason);
+}
+function phvProgressText(p: Row, en: boolean) {
+  const statures = en
+    ? `Valid stretch: ${p.statures} heights (minimum ${p.required_statures})`
+    : `Tratto valido: ${p.statures} stature (minimo ${p.required_statures})`;
+  if (p.before_peak == null) return statures;
+  return en
+    ? `${statures} · ${p.before_peak} intervals before and ${p.after_peak} after the maximum (${p.required_each_side} needed on each side)`
+    : `${statures} · ${p.before_peak} intervalli prima e ${p.after_peak} dopo il massimo (ne servono ${p.required_each_side} per lato)`;
+}
+function excludedText(e: Row, en: boolean) {
+  const texts: Record<string, [string, string]> = {
+    not_measured: [
+      'statura non misurata o qualità non confermata, non usata.',
+      'height not measured or quality unconfirmed, not used.'
+    ],
+    close: [
+      `a ${e.days} giorni dalla statura precedente usata (${e.after}): saltata, non bloccante.`,
+      `${e.days} days after the previous used height (${e.after}): skipped, not blocking.`
+    ],
+    gap: ['intervallo oltre 400 giorni: la serie viene divisa.', 'interval over 400 days: the series is split.'],
+    decrease: ['statura diminuita: verificare le misure.', 'height decreased: verify the measurements.'],
+    velocity: [
+      'velocità oltre il controllo prudenziale: verificare le misure.',
+      'velocity above the conservative check: verify the measurements.'
+    ]
+  };
+  const t = texts[e.cause];
+  return t ? t[en ? 1 : 0] : e.reason;
+}
 function Value({r, unit = ''}: {r?: Row; unit?: string}) {
   return (
     <span title={maturityText(r?.reason || r?.uncertainty)}>
@@ -306,14 +358,58 @@ export function MaturationPanel({
             <div className="stat">
               <small>{en ? 'Longitudinal exploratory PHV' : 'PHV longitudinale esplorativo'}</small>
               <strong>{numberText(a.phv.value)} cm/anno</strong>
-              <span>{a.phv.date || maturityText(a.phv.reason)}</span>
+              <span>{a.phv.date || (a.phv.status ? phvStatusText(a.phv, en) : maturityText(a.phv.reason))}</span>
               {a.phv.aphv_years != null && (
                 <p>
                   APHV {numberText(a.phv.aphv_years)} {en ? 'years' : 'anni'}
                 </p>
               )}
+              {a.phv.progress && <p>{phvProgressText(a.phv.progress, en)}</p>}
             </div>
+            {a.hv_max_observed && (
+              <div className="stat">
+                <small>{en ? 'Highest observed HV' : 'HV massima osservata'}</small>
+                <strong>{numberText(a.hv_max_observed.value)} cm/anno</strong>
+                <span>
+                  {a.hv_max_observed.value != null
+                    ? `${a.hv_max_observed.from} → ${a.hv_max_observed.to}`
+                    : en
+                      ? 'Needs one 90–400 day interval between valid measured heights'
+                      : 'Serve un intervallo di 90–400 giorni tra stature misurate e valide'}
+                </span>
+                {a.hv_max_observed.value != null && (
+                  <p>
+                    {en
+                      ? 'Highest mean velocity observed so far; it is not PHV and does not confirm the peak.'
+                      : 'Massimo delle velocità medie osservate finora; non è il PHV e non conferma il picco.'}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
+          {a.phv.status && a.phv.status !== 'available' && (
+            <p className="hint">
+              {en
+                ? 'To follow the growth peak, measure height every 3–4 months with the same procedure (source “measured”, quality confirmed). PHV is only recognised once the velocity has started to decrease.'
+                : 'Per seguire il picco di crescita misurare la statura ogni 3–4 mesi con la stessa procedura (fonte «misurato», qualità confermata). Il PHV si riconosce solo dopo che la velocità ha iniziato a diminuire.'}
+            </p>
+          )}
+          {a.phv.excluded?.length > 0 && (
+            <details>
+              <summary>
+                {en
+                  ? `Heights not used for PHV (${a.phv.excluded.length})`
+                  : `Stature non usate per il PHV (${a.phv.excluded.length})`}
+              </summary>
+              <ul>
+                {a.phv.excluded.map((e: Row, i: number) => (
+                  <li key={i}>
+                    {e.date || `${e.from} → ${e.to}`}: {excludedText(e, en)}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
           {a.age_years >= 18 && a.stability && (
             <p className="hint">{a.stability.interpretation || a.stability.reason}</p>
           )}
@@ -433,10 +529,14 @@ export function MaturationPanel({
                 : 'Limiti prudenziali del prodotto, non intervalli diagnostici.'}
             </p>
             <p>
-              HV: 90–400 {en ? 'days between valid measured heights' : 'giorni tra stature misurate e valide'}. PHV: ≥7{' '}
-              {en
-                ? 'heights, ≥2 years; local quadratic fit to five interval velocities and at least 180 days support on each side.'
-                : 'stature, ≥2 anni; fit quadratico locale su cinque velocità con supporto di almeno 180 giorni per lato.'}
+              HV: 90–400 {en ? 'days between valid measured heights' : 'giorni tra stature misurate e valide'}.{' '}
+              {a.phv.method_id === 'phv-local-quadratic/2'
+                ? en
+                  ? 'PHV: at least 6 consecutive valid measured heights in the stretch containing the maximum, two intervals on each side; heights closer than 90 days or not measured are skipped, gaps over 400 days split the series, a decrease or anomalous velocity touching the window blocks it. Local quadratic fit to five interval velocities with at least 180 days support on each side. No interpolation.'
+                  : 'PHV: almeno 6 stature misurate valide consecutive nel tratto del massimo, due intervalli per lato; stature a meno di 90 giorni o non misurate vengono saltate, buchi oltre 400 giorni dividono la serie, un calo o una velocità anomala a ridosso della finestra la bloccano. Fit quadratico locale su cinque velocità con supporto di almeno 180 giorni per lato. Nessuna interpolazione.'
+                : en
+                  ? 'PHV (earlier version): ≥7 heights, ≥2 years; local quadratic fit to five interval velocities and at least 180 days support on each side.'
+                  : 'PHV (versione precedente): ≥7 stature, ≥2 anni; fit quadratico locale su cinque velocità con supporto di almeno 180 giorni per lato.'}
             </p>
             {a.warnings.map((w: string) => (
               <p key={w}>{maturityText(w)}</p>

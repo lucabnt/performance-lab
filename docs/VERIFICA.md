@@ -1,5 +1,11 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 15 novembre 2026 — MAT-PHV-01 (PHV raggiungibile, `growth-maturity/3`)
+
+- `pytest` completo: **362 passati**. In `tests/test_maturation.py` nuovi casi: curva cubica nota invariata (≈8,96 cm/anno al 01/01/2024, stato `available`); stature ravvicinate, dichiarate, da verificare e buco oltre 400 giorni saltati senza cambiare il risultato; calo lontano dal picco elencato, calo che tocca la finestra bloccante; picco non ancora confermato, picco forse precedente ai dati, HV massima osservata.
+- `ruff` (F/E9) e formato Python/prettier senza differenze; build frontend `tsc`/Vite riuscita. `npm run test:signals` superato; `scripts/verify.py` completo non eseguito in questo intervento.
+- GUI su archivio sintetico nuovo `.local/qa-phv-20261115-01` (`demo_maturation.py`) più un atleta sintetico aggiunto via API: card PHV con «Picco non ancora confermato» e avanzamento 6/6 stature, 4 intervalli prima e 0 dopo; card HV massima osservata; elenco di due stature non usate (dichiarata, a 10 giorni). Profilo «Crescita DEMO peak Andrea» al 20/10/2026: PHV 8,96 cm/anno con «Tratto valido: 9 stature (minimo 6) · 3 intervalli prima e 4 dopo il massimo» e HV massima osservata 8,84. Solo italiano verificato a schermo. `docs/screenshots/crescita-maturazione.jpg` **non ancora aggiornata** (il pannello ora ha la card HV massima): il browser integrato produce solo catture ridotte. Nessun nuovo EXE/APK.
+
 ## 15 novembre 2026 — consegna revisione-tecnica-20261115-01
 
 Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`, prodotto **0.10.0**, commit `c9806ae` con working tree pulito. Contiene la revisione tecnica del 14–15 novembre (RT-01/02/09/10/11/12/16/18/19/20, RT-05, CSV protetti) oltre alle funzioni di alpha.1. Nessun commit, pubblicazione, firma release o sostituzione di candidati precedenti.

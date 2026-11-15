@@ -1,5 +1,14 @@
 # Requisiti e to-do
 
+## MAT-PHV-01 — PHV longitudinale raggiungibile, 15 novembre 2026
+
+Richiesta dell'utente sul messaggio «Servono almeno 7 stature con intervalli validi e senza discontinuità»: valutare l'interpolazione e affrontare il rischio che l'indicatore non venga mai calcolato. Interpolazione scartata (nessuna informazione nuova, supporto del fit gonfiato). Approvati i tre livelli proposti; **implementato nei sorgenti e verificato con test automatici e GUI**, nessun nuovo EXE/APK.
+
+- Motore `growth-maturity/3`, metodo `phv-local-quadratic/2`: stature non misurate/non valide e stature a meno di 90 giorni dalla precedente usata vengono saltate ed elencate; intervalli oltre 400 giorni dividono la serie in tratti; il picco si cerca nel tratto del massimo osservato con almeno 6 stature e 2 intervalli per lato. Calo o velocità anomala bloccano solo se toccano il massimo o la finestra del fit. Fit, concavità e 180 giorni di supporto invariati. Nessuna statura interpolata.
+- Stato e avanzamento (`status`, `progress`, `excluded`): insufficiente, picco non ancora confermato, picco forse precedente ai dati, anomalia, nessun massimo; pagina atleta con conteggi, cadenza consigliata (3–4 mesi) e elenco delle stature non usate.
+- `hv-max-observed/1`: HV massima osservata con intervallo e misure di origine, sempre etichettata come non-PHV; in pagina, CSV esteso e report.
+- Criteri di accettazione: curva cubica nota invariata (≈8,96 cm/anno al 01/01/2024); misure ravvicinate, dichiarate o lontane non cambiano il risultato; anomalia vicina al picco blocca, lontana no; snapshot `growth-maturity/1–2` letti invariati.
+
 ## REV-TEC-01 — blocco 1 della revisione tecnica, 14 novembre 2026
 
 Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVISIONE_TECNICA.md), partendo dal blocco 1 (correttezza). **Implementato nei sorgenti e verificato con test automatici**; nessun nuovo EXE/APK.

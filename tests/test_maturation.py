@@ -146,9 +146,58 @@ def test_longitudinal_peak_known_cubic_and_missing_edges():
     assert r['phv']['value'] == pytest.approx(9 - (180 / 365.25) ** 2 / 6)
     assert r['phv']['date'] == '2024-01-01'
     assert r['phv']['rmse_cm_year'] < 1e-10
-    assert analyze(athlete(), rows[:5], '2026-01-01')['phv']['value'] is None
-    rows[-1]['height_cm'] = rows[-2]['height_cm'] - 1
-    assert analyze(athlete(), rows, '2026-01-01')['phv']['value'] is None
+    assert r['phv']['status'] == 'available' and r['phv']['method_id'] == 'phv-local-quadratic/2'
+    assert r['phv']['excluded'] == []
+    short = analyze(athlete(), rows[:5], '2026-01-01')['phv']
+    assert short['value'] is None and short['status'] == 'insufficient'
+    assert short['progress']['statures'] == 5 and short['progress']['required_statures'] == 6
+
+
+def test_phv_anomaly_blocks_only_near_the_window():
+    expected = analyze(athlete(), curve(), '2026-01-01')['phv']['value']
+    far = curve()
+    far[-1]['height_cm'] = far[-2]['height_cm'] - 1
+    r = analyze(athlete(), far, '2026-01-01')['phv']
+    assert r['value'] == pytest.approx(expected)
+    assert [e['cause'] for e in r['excluded']] == ['decrease']
+    near = curve()
+    near[7]['height_cm'] = near[6]['height_cm'] - 1
+    r = analyze(athlete(), near, '2026-01-01')['phv']
+    assert r['value'] is None and r['status'] == 'anomaly'
+
+
+def test_phv_skips_close_and_unusable_measures_without_interpolating():
+    rows = curve()
+    expected = analyze(athlete(), rows, '2026-01-01')['phv']
+    extra = [
+        measurement((date.fromisoformat(m['date']) + timedelta(days=30)).isoformat(), height_cm=m['height_cm'] + 0.3)
+        for m in rows[:-1]
+    ]
+    extra += [
+        measurement('2020-06-01', height_cm=140),  # gap > 400 days before the series
+        measurement('2022-06-01', height_cm=150, source='dichiarato'),
+        measurement('2024-02-15', height_cm=200, quality='uncertain'),
+    ]
+    r = analyze(athlete(), rows + extra, '2026-01-01')
+    assert r['phv']['value'] == pytest.approx(expected['value'])
+    assert r['phv']['date'] == expected['date']
+    causes = [e['cause'] for e in r['phv']['excluded']]
+    assert causes.count('close') == len(rows) - 1 and causes.count('not_measured') == 2 and 'gap' in causes
+    # Raw HV table keeps every consecutive pair and its reason.
+    assert len(r['hv']) == len(rows + extra) - 1
+
+
+def test_phv_not_yet_confirmed_and_peak_before_data_with_observed_maximum():
+    rows = curve()
+    r = analyze(athlete(), rows[:6], '2026-01-01')
+    assert r['phv']['status'] == 'not_confirmed' and r['phv']['progress']['after_peak'] < 2
+    observed = r['hv_max_observed']
+    assert observed['method_id'] == 'hv-max-observed/1'
+    assert observed['value'] == pytest.approx(max(h['value'] for h in r['hv']))
+    late = analyze(athlete(), rows[3:], '2026-01-01')
+    assert late['phv']['status'] == 'before_data' and late['phv']['progress']['before_peak'] < 2
+    none = analyze(athlete(), [measurement('2024-01-01')], '2026-01-01')
+    assert none['hv_max_observed']['value'] is None and none['phv']['progress']['statures'] == 1
 
 
 def test_validation_external_prediction_and_measurement_only_advanced():

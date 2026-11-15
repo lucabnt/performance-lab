@@ -1,5 +1,21 @@
 # Crescita e maturazione — metodi e uso, versione 1
 
+## PHV raggiungibile e HV massima osservata — 15 novembre 2026
+
+MAT-PHV-01 introduce `growth-maturity/3`. Con `phv-local-quadratic/1` bastava una sola statura dichiarata, ravvicinata o un buco di anni prima per rendere il PHV non calcolabile in tutta la serie. `phv-local-quadratic/2`:
+
+- usa soltanto stature misurate e valide; quelle non misurate o da verificare vengono **saltate ed elencate**, non corrette;
+- salta (ed elenca) una statura a meno di 90 giorni dall'ultima usata: la velocità si calcola sulla coppia successiva distante almeno 90 giorni;
+- divide la serie in tratti contigui dove un intervallo supera 400 giorni o mostra un calo/velocità oltre 20 cm/anno;
+- cerca il picco nel tratto che contiene la massima HV valida: servono almeno 6 stature in quel tratto e 2 intervalli prima e dopo il massimo. Un calo o una velocità anomala che condivide una statura con il massimo o con la finestra del fit blocca il calcolo; più lontano resta solo elencato;
+- fit quadratico locale su cinque velocità, concavità negativa, vertice interno e 180 giorni di supporto per lato restano invariati. **Nessuna statura viene interpolata**: inserire punti tra due misure dividerebbe la stessa velocità media, gonfiando il supporto del fit senza aggiungere informazione.
+
+Il risultato conserva `status` (`available`, `insufficient`, `not_confirmed`, `before_data`, `anomaly`, `no_maximum`, `support`), `progress` (stature del tratto, intervalli prima/dopo il massimo, requisiti) ed `excluded` (date, misure e causa). La pagina atleta mostra l'avanzamento, l'elenco delle stature non usate e la cadenza utile: una statura misurata ogni 3–4 mesi. Il PHV si riconosce soltanto dopo il picco: finché la velocità cresce lo stato è «picco non ancora confermato», non un errore.
+
+`hv-max-observed/1` riporta la massima HV media valida osservata finora, con intervallo e misure di origine. È un valore misurato, non una stima del picco: non è il PHV e non conferma che il picco sia avvenuto. Compare in pagina, nel report e in `extended/maturazione.csv` (`hv_max_observed_cm_year`).
+
+La tabella HV (`hv-interval/1`) resta invariata e mostra ogni coppia consecutiva con il proprio motivo. Gli snapshot `growth-maturity/1` e `/2` restano invariati e leggibili; la descrizione dei gate PHV più sotto è storica per quelle versioni.
+
 ## Avvisi non bloccanti — 9 novembre 2026
 
 MAT-AVVISI-01 introduce `growth-maturity/2`: formule e domini invariati, ma fonte dichiarata/arrotondata/derivata/stimata e qualità incerta non impediscono Moore/Mirwald, %PAH/residuo e proporzioni. Ogni valore disponibile conserva un avviso in `reason`, visibile anche negli export/report che lo leggono: un motivo presente non implica valore assente. Nascita completa per gli offset, M/F, input specifici e dominio restano necessari; qualità excluded resta bloccante. HV, PHV longitudinale, crescita arti e stabilità mantengono i gate di misurazione validata. Questa è una scelta di presentazione/calcolo esplorativo del prodotto, non una validazione scientifica di input dichiarati. Fonte primaria ricontrollata: [Kozieł e Malina](https://pmc.ncbi.nlm.nih.gov/articles/PMC5752743/).
@@ -43,6 +59,8 @@ Età decimale = giorni dalla nascita / 365,25. Unità delle equazioni: anni, cm 
 | `moore-standing/2015-1` F | −7,709133 + 0,0042232 × età × statura | Equazione femminile Moore, offset stimato |
 | `mirwald/2002-1` | Equazioni specifiche M/F con età, statura, massa e statura seduta; lunghezza della gamba per il modello = statura − statura seduta | Modello avanzato; la lunghezza arti inserita separatamente non sostituisce questa definizione |
 | APHV stimata | Età alla rilevazione − offset del modello specifico | Non è l'età di un picco osservato |
+| `hv-max-observed/1` | Massima HV valida fra le stature usate per il PHV | Valore osservato; non è il PHV né la conferma del picco |
+| `phv-local-quadratic/2` | Come /1, sul tratto valido del massimo con stature saltate/elencate (vedi sezione 15 novembre) | Ricostruzione esplorativa con stato, avanzamento ed esclusioni |
 | `phv-local-quadratic/1` | Fit quadratico locale su cinque velocità HV attorno al massimo interno, con supporto longitudinale | Ricostruzione esplorativa: picco, data, APHV se nascita nota, RMSE e revisioni di supporto |
 | `pah-external/1` | 100 × statura / statura adulta prevista esternamente | Previsione con metodo/fonte obbligatori; nessuna previsione adulta automatica |
 | `residual-external/1` | Previsione adulta esterna − statura | Residuo condizionato alla previsione e alla sua incertezza, non crescita garantita |

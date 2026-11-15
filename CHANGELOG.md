@@ -1,5 +1,12 @@
 # Changelog
 
+## 15 novembre 2026 — PHV longitudinale raggiungibile (MAT-PHV-01)
+
+- Motore crescita `growth-maturity/3` con `phv-local-quadratic/2`: stature non misurate o a meno di 90 giorni dalla precedente vengono saltate ed elencate invece di bloccare tutto; buchi oltre 400 giorni dividono la serie; calo o velocità anomala bloccano solo vicino al picco. Soglia: 6 stature nel tratto del massimo e 2 intervalli per lato (prima 7 stature e 2 anni sull'intera serie). Nessuna interpolazione.
+- Stato e avanzamento del PHV nella pagina atleta (stature del tratto, intervalli prima/dopo il massimo, cadenza consigliata) ed elenco delle stature non usate con il motivo.
+- Nuovo indicatore «HV massima osservata» (`hv-max-observed/1`), etichettato come non-PHV, anche nel report e in `extended/maturazione.csv`.
+- Snapshot conservati con le versioni precedenti invariati. Versione prodotto 0.10.0 invariata, nessun nuovo EXE/APK.
+
 ## 15 novembre 2026 — candidato revisione-tecnica-20261115-01
 
 - Nuove build locali Windows (installer e portabile) e Android (debug di test, release non firmato, supporto strumentale) dal commit `c9806ae`, in `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Prove in [VERIFICA.md](docs/VERIFICA.md).

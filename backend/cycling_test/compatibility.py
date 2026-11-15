@@ -3,6 +3,7 @@
 The split spelling describes a retired brand, solely for on-disk compatibility.
 All current product identifiers use Fuorigiri.
 """
+
 from pathlib import Path
 
 LEGACY_BRAND_PARTS = ('Ciclo', 'Test')

@@ -92,7 +92,8 @@ def test_presets_new_version_and_legacy_migration(tmp_path):
     backup = root / 'migrations/before-v3.sqlite'
     with sqlite3.connect(backup) as db:
         assert db.execute('PRAGMA user_version').fetchone()[0] == 2
-    c = TestClient(create_app(tmp_path / 'api', token='t'))
+    # No frontend: otherwise the static mount answers 405 to any PUT and hides a missing route.
+    c = TestClient(create_app(tmp_path / 'api', token='t', frontend=tmp_path / 'no-frontend'))
     c.headers['X-Fuorigiri-Token'] = 't'
     p = {k: v for k, v in DEFAULT.items() if k in ('name', 'version', 'method_id', 'parameters')}
     p.update(family='custom', version='2', reason='Finestra FC')
@@ -101,7 +102,9 @@ def test_presets_new_version_and_legacy_migration(tmp_path):
     saved = c.post('/api/v1/analysis-presets', json=p)
     assert saved.status_code == 200
     assert c.post('/api/v1/analysis-presets', json=p).status_code == 422
-    assert c.put('/api/v1/analysis-presets/' + saved.json()['id'], json=p).status_code == 405
+    assert (
+        c.put('/api/v1/analysis-presets/' + saved.json()['id'], json=p).status_code == 404
+    )  # presets are immutable: no update route
 
 
 def test_lactate_fixed_and_dmax_and_ambiguity():

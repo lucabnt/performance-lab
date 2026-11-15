@@ -487,7 +487,7 @@ Verifiche automatiche dai sorgenti, senza rigenerare dati. Un solo comando esegu
 .venv/Scripts/python.exe scripts/verify.py
 ```
 
-Lo stesso script gira nel workflow GitHub «Verify» (`.github/workflows/verify.yml`), a ogni push su `main`, sulle pull request e ad avvio manuale (job `verify` e `android-versions`). I singoli comandi restano utilizzabili:
+Lo stesso script gira nel workflow GitHub «Verify» (`.github/workflows/verify.yml`), a ogni push su `main`, sulle pull request e ad avvio manuale (job `verify` e `android-versions`). Lo script compila il frontend prima di pytest, perché lo smoke test desktop serve `frontend/dist`; lanciando pytest da solo su un clone appena scaricato serve prima `npm run build`. I singoli comandi restano utilizzabili:
 
 ```powershell
 .venv/Scripts/python.exe scripts/verify_versions.py

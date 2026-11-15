@@ -1,5 +1,12 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 15 novembre 2026 — primo run del workflow Verify e correzioni
+
+- Run #1 su GitHub (commit `3602370`): falliti `verify` e `android-versions`. Cause: `test_smoke_starts_http_without_console` richiede `frontend/dist`, che `verify.py` compilava dopo pytest; `test_presets_new_version_and_legacy_migration` riceveva il 405 dal mount statico del frontend (in locale `dist` esiste), mentre senza frontend la PUT dà 404 perché la rotta non esiste. Nessun difetto dell'app.
+- Correzioni: build prima di pytest in `verify.py`; test dei preset senza frontend, con 404 atteso.
+- Riproduzione in un checkout pulito senza `frontend/dist` né `node_modules`: pytest da solo 358 superati e 1 fallito (solo lo smoke desktop, atteso senza build); `verify.py` dopo `npm ci` con tutti i passi riusciti (`whitespace` saltato perché il diff era applicato a mano). Esito su GitHub da confermare con un nuovo push.
+- Avvisi non bloccanti del run: le azioni fissate (`checkout`, `setup-python`, `setup-node` v4/v5) dichiarano Node.js 20, deprecato su GitHub.
+
 ## 15 novembre 2026 — rotte API per area (RT-05) e CI su push
 
 - Estrazione dei router: elenco delle rotte di `create_app` (percorso, metodi, nome della funzione, marcatore `viewer_allowed`, ordine) e schema `app.openapi()` serializzati prima e dopo la modifica: file identici, 112 rotte. Il codice spostato nei quattro moduli coincide riga per riga con l'originale (443 righe non vuote, stessa indentazione).

@@ -31,9 +31,10 @@ def steps():
         ('lint', 'Linter Python (ruff)', [python, '-m', 'ruff', 'check', '.'], ROOT),
         ('format-py', 'Formato Python (ruff format)', [python, '-m', 'ruff', 'format', '--check', '.'], ROOT),
         ('format-js', 'Formato frontend (prettier)', [npm, 'run', 'format:check'], ROOT / 'frontend'),
+        # Build before pytest: the desktop smoke test serves frontend/dist.
+        ('build', 'Build frontend con controllo dei tipi (tsc)', [npm, 'run', 'build'], ROOT / 'frontend'),
         ('pytest', 'Test Python', [python, '-m', 'pytest', '-q', '-p', 'no:cacheprovider'], ROOT),
         ('signals', 'Test dei modelli frontend', [npm, 'run', 'test:signals'], ROOT / 'frontend'),
-        ('build', 'Build frontend con controllo dei tipi (tsc)', [npm, 'run', 'build'], ROOT / 'frontend'),
         ('whitespace', 'Spazi e conflitti nel diff (git diff --check)', ['git', 'diff', '--check'], ROOT),
     ]
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 15 novembre 2026 — correzioni del primo run CI
+
+- `scripts/verify.py` compila il frontend prima di pytest: lo smoke test desktop richiede `frontend/dist`, assente su un runner appena clonato.
+- `test_presets_new_version_and_legacy_migration` crea l'app senza frontend e attende 404 sulla PUT di un preset: il 405 atteso finora arrivava dal mount statico del frontend, non da una rotta API, quindi il test passava solo con `frontend/dist` presente. Nessun cambio dell'app.
+
 ## 15 novembre 2026 — rotte API per area (RT-05)
 
 - `create_app` (`api.py`, da 901 a 423 righe) mantiene middleware, gestori di errore, `/health`, `/api/v1/state` e `/api/v1/legal`; le altre rotte sono in `registry_api.py`, `incremental_api.py`, `backup_api.py` ed `exchange_api.py`, registrate con `install(...)` come i moduli già esistenti. Nessun cambio di API o comportamento: codice spostato identico, elenco delle rotte (percorso, metodi, funzione, `viewer_allowed`, ordine) e schema OpenAPI confrontati prima e dopo. `Measurement` resta importabile da `cycling_test.api`.

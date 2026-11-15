@@ -6,6 +6,7 @@ that already reads as a number (``-12.5``, ``-12,5``), are left untouched.
 Fuorigiri imports remove the apostrophe again: the mapping is reversible, also
 for text that originally started with an apostrophe.
 """
+
 import csv
 
 PREFIXES = ('=', '+', '-', '@', '\t', '\r')

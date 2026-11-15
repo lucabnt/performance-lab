@@ -1,4 +1,5 @@
 """ERG is an import format; the resulting version is the durable protocol."""
+
 import math
 
 
@@ -42,10 +43,19 @@ def parse_erg(content: str) -> dict:
     for a, b in zip(points, points[1:]):
         if b[0] == a[0]:
             continue  # Retain repeated points; they define discontinuities.
-        if segments and segments[-1]["end_s"] == a[0] and segments[-1]["start_w"] == segments[-1]["end_w"] == a[1] == b[1]:
+        if (
+            segments
+            and segments[-1]["end_s"] == a[0]
+            and segments[-1]["start_w"] == segments[-1]["end_w"] == a[1] == b[1]
+        ):
             segments[-1]["end_s"] = b[0]
         else:
             segments.append({"start_s": a[0], "end_s": b[0], "start_w": a[1], "end_w": b[1], "phase": "increment"})
     if not segments:
         raise ValueError("Durata ERG nulla.")
-    return {"points": points, "segments": segments, "description": metadata.get("DESCRIPTION", ""), "duration_s": points[-1][0]}
+    return {
+        "points": points,
+        "segments": segments,
+        "description": metadata.get("DESCRIPTION", ""),
+        "duration_s": points[-1][0],
+    }

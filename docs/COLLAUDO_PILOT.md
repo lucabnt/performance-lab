@@ -1,5 +1,9 @@
 # Collaudo del candidato pilot — Windows e Android
 
+## Candidato corrente — revisione tecnica, 15 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`: build Windows/Android **0.10.0** con la revisione tecnica del 14–15 novembre (backup protetto da password, prestazioni, inviti, CSP, permessi, CSV) e le funzioni di alpha.1. Windows: installer da eseguire sopra l’installazione esistente dopo un backup e con l’app chiusa (W-04), oppure portabile completo. Android: `debug-test.apk` con la firma di test abituale, da installare come aggiornamento senza disinstallare; release non firmato e non distribuibile (percorsi del builder nelle wheel). Smoke, scansioni Defender, firme e 26 checksum verificati; [prove e digest](VERIFICA.md). Restano Windows pulito/WIN-AV-01, runtime Android della build, 16 KB, firma release e provider reali. Gli inviti nuovi richiedono che tutti i dispositivi siano aggiornati.
+
 ## Prima pre-release del 10 novembre 2026
 
 Per alpha.1 consultare [allegati e limiti](DISTRIBUZIONE.md) e [verifiche](VERIFICA.md). L’APK candidato richiede bonifica delle dipendenze e firma. I risultati storici sotto riguardano le rispettive build.

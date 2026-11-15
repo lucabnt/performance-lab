@@ -1,5 +1,18 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 15 novembre 2026 — consegna revisione-tecnica-20261115-01
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`, prodotto **0.10.0**, commit `c9806ae` con working tree pulito. Contiene la revisione tecnica del 14–15 novembre (RT-01/02/09/10/11/12/16/18/19/20, RT-05, CSV protetti) oltre alle funzioni di alpha.1. Nessun commit, pubblicazione, firma release o sostituzione di candidati precedenti.
+
+- `scripts/verify.py` completo: tutti i passi riusciti, **359 Python passati** (nessuno saltato), **43 frontend passati**, build `tsc`/Vite.
+- Windows: PyInstaller in nuova `.local/candidate-windows-20261115-01` (325 s), Inno Setup in 134 s. Avvisi PyInstaller invariati (tzdata e plugin QML assetdownloader opzionali, pycparser lextab/yacctab). Smoke dell’EXE su `.local/qa-windows-package-20261115-01` nuovo con PATH limitato alle directory Windows: import, logo e backend HTTP in 10,1 s. Defender attivo, definizioni 1.463.310.0: bundle, installer e intera consegna senza rilevamenti.
+- Android: JDK 21/Gradle 8.13 offline, nuova `.local/candidate-android-20261115-01`, `assembleDebug assembleRelease assembleDebugAndroidTest` riuscito in 5m19s; 39 dipendenze per variante. Debug con firma v2 valida e certificato di test invariato `89d904a5…09e160b3`; release senza firma. Zipalign `-P 16` superato per entrambi; audit **222 ELF / 6 problemi LOAD 16 KB** invariati. `scan_build_paths.py` sul release: 10 voci, solo le wheel native note (pydantic-core, cryptography, Pillow), nessun `direct_url.json` né percorso del checkout: release non distribuibile.
+- Contenuti: 19 asset frontend identici in Windows/debug/release, 56 moduli backend nell’APK, `backup_crypto` (FGBAKENC) e `viewer_allowed` presenti nel PYZ Windows. ZIP sorgenti (408 file tracciati) confrontato con lo snapshot, portabile confrontato file per file con il bundle, CRC ZIP e **26 checksum** ricontrollati.
+- Installer: **197.763.339 byte**, SHA-256 `0491736b9b1c0d8ef2a9393cbc45cf443028cae56a0a43a4d2e2842250ea9c0f`.
+- Debug test: **105.080.831 byte**, SHA-256 `882fec35fa4275b55b8d0e1a9eb59e322539a248e7a095235f49e9e7157ad495`.
+- Release non firmato: **104.019.396 byte**, SHA-256 `5936d1637fff8c79591abc7bb18adcb0b9a75e017eec6331019675f2226913be`.
+- Non provati: installazione/aggiornamento sopra l’installazione dell’utente, Windows pulito e WIN-AV-01, runtime della build su emulatore o telefono, provider reali. Gli inviti emessi da questa build non si aprono con app precedenti (RT-12): aggiornare tutti i dispositivi prima di emettere nuovi inviti.
+
 ## 15 novembre 2026 — primo run del workflow Verify e correzioni
 
 - Run #1 su GitHub (commit `3602370`): falliti `verify` e `android-versions`. Cause: `test_smoke_starts_http_without_console` richiede `frontend/dist`, che `verify.py` compilava dopo pytest; `test_presets_new_version_and_legacy_migration` riceveva il 405 dal mount statico del frontend (in locale `dist` esiste), mentre senza frontend la PUT dà 404 perché la rotta non esiste. Nessun difetto dell'app.

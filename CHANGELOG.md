@@ -1,5 +1,9 @@
 # Changelog
 
+## 15 novembre 2026 — candidato revisione-tecnica-20261115-01
+
+- Nuove build locali Windows (installer e portabile) e Android (debug di test, release non firmato, supporto strumentale) dal commit `c9806ae`, in `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Prove in [VERIFICA.md](docs/VERIFICA.md).
+
 ## 15 novembre 2026 — correzioni del primo run CI
 
 - `scripts/verify.py` compila il frontend prima di pytest: lo smoke test desktop richiede `frontend/dist`, assente su un runner appena clonato.

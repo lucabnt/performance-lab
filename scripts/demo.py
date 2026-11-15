@@ -1,7 +1,6 @@
 """Build an isolated demo using actual original ERGs and reproducible synthetic FITs."""
 import argparse
 import json
-from pathlib import Path
 from cycling_test.store import Store
 from cycling_test.erg import parse_erg
 from cycling_test.fit import decode_fit

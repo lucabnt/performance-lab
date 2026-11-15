@@ -479,7 +479,13 @@ Usare società e repliche sintetiche separate. La connessione in Archivio e scam
 4. Su repliche di prova fare due sync senza modifiche: la seconda evita i pacchetti già acquisiti. «Verifica completa del canale» li rilegge; accessi/revoche vengono acquisiti anche nella sync ordinaria. Non alterare pacchetti reali per il collaudo.
 5. Verificare che sincronizzare una società non aggiunga dati dell'altra e che le connessioni rimangano distinte.
 
-Verifiche automatiche dai sorgenti, senza rigenerare dati:
+Verifiche automatiche dai sorgenti, senza rigenerare dati. Un solo comando esegue in sequenza versioni, UI comune, common Python, linter `ruff`, `pytest`, `test:signals`, build frontend con `tsc` e `git diff --check`; continua dopo un errore e termina con un riepilogo (`--list` elenca i passi, `--skip build` ne salta uno). Richiede `ruff` dalle dipendenze di sviluppo (`requirements-lock-windows.txt` o `pip install -e .[dev]`):
+
+```powershell
+.venv/Scripts/python.exe scripts/verify.py
+```
+
+Lo stesso script gira nel workflow GitHub «Verify» (`.github/workflows/verify.yml`), per ora solo ad avvio manuale. I singoli comandi restano utilizzabili:
 
 ```powershell
 .venv/Scripts/python.exe scripts/verify_versions.py

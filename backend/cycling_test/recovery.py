@@ -6,7 +6,6 @@ known schema in a new folder; they never execute SQL supplied by an archive.
 import hashlib
 import io
 import json
-import os
 import re
 import shutil
 import sqlite3
@@ -14,7 +13,7 @@ import tempfile
 import zipfile
 from datetime import datetime,timezone
 from pathlib import Path
-from uuid import uuid4,UUID
+from uuid import uuid4
 from .store import Store,KINDS,encoded
 from .workspaces import ArchiveStore,fresh_identity,validate_identity,seal,unseal,write_json,verify
 

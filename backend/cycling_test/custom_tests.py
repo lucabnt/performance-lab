@@ -3,7 +3,6 @@ import json
 from datetime import date
 from pydantic import BaseModel,ConfigDict,Field
 from .custom_fields import FieldDefinition,protocol_metadata,attach
-from .store import encoded
 
 class Model(BaseModel):model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
 class Protocol(Model):

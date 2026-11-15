@@ -1,14 +1,11 @@
-import io
 import json
 import os
 import secrets
-import sqlite3
-import zipfile
 from datetime import date
 from pathlib import Path
 from typing import Annotated, Literal
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
+from fastapi import FastAPI, Form, UploadFile, Request
 from fastapi.responses import JSONResponse, Response, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
@@ -545,7 +542,6 @@ def create_app(root=None, token=None, frontend=None):
     @app.get('/api/v1/backup/scalable')
     def scalable_backup():
         from .backup_stream import write_backup
-        from fastapi.responses import FileResponse
         from starlette.background import BackgroundTask
         import tempfile,shutil
         stage=Path(tempfile.mkdtemp(prefix='fuorigiri-download-'))

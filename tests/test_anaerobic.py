@@ -1,6 +1,5 @@
 import csv
 import io
-import json
 import zipfile
 import pytest
 from fastapi.testclient import TestClient

@@ -6,7 +6,6 @@ import os
 import platform
 import shutil
 import sys
-import zipfile
 from pathlib import Path
 from android_native_tools import elf_info, native_wheel, modules_in_zip
 from build_android_pillow import unpack, run

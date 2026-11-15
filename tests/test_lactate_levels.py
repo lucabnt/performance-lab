@@ -1,6 +1,5 @@
 import csv
 import io
-import json
 import zipfile
 from copy import deepcopy
 
@@ -8,7 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 from cycling_test.api import Settings,create_app
 from cycling_test.specialist import lactate
-from cycling_test.lactate_levels import validate_levels,metric_key
+from cycling_test.lactate_levels import validate_levels
 from cycling_test.methods import comparison_key
 from synthetic import ERG,fit_bytes
 

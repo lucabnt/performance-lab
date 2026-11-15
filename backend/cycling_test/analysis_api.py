@@ -69,7 +69,7 @@ def install_analysis(app,store,require,download):
 
     @app.post('/api/v1/repeatability/report/{format}')
     def repeat_report(format:str,data:Repeatability):
-        import io,csv,zipfile
+        import io,zipfile
         from xml.sax.saxutils import escape
         from reportlab.platypus import Paragraph,Spacer
         from reportlab.lib.units import cm

@@ -3,7 +3,6 @@ from typing import Literal
 from fastapi import UploadFile, Form, File
 from pydantic import BaseModel,Field
 from .workspaces import invitation, join, revoke_member, member_directory, apply_invitation
-from .store import encoded
 
 
 RESTORE_STAGING_MAX_AGE_S=24*3600
@@ -126,7 +125,7 @@ def install_workspaces(app,manager,store,download):
     def restore_archive(backup_hash: str=Form(),mode: Literal['snapshot','independent','recover']=Form(),path: str=Form(''),operator: str=Form(''),
                         password: str=Form(''),recovery_file: UploadFile | None=File(default=None)):
         from .recovery import restore
-        import re,hashlib
+        import re
         if not re.fullmatch('[0-9a-f]{64}',backup_hash):raise ValueError('Identificatore backup non valido.')
         pending=manager.root/'restore-staging'/backup_hash
         from .backup_stream import digest_file
@@ -209,7 +208,7 @@ def install_workspaces(app,manager,store,download):
     def members():
         if not hasattr(store,'identity'):return {'members':[],'folder':'','managed':False}
         if store.identity.get('snapshot'):return {'members':[],'folder':'','managed':False,'snapshot':True,'current':store.identity['certificate'],'owner':False}
-        path=store.root/'members.json';folder=store.root/'sync-folder.txt'
+        folder=store.root/'sync-folder.txt'
         directory=store.root/'access.json'
         directory_data=json.loads(directory.read_text(encoding='utf-8')) if directory.exists() else {}
         members=directory_data.get('members',member_directory(store))

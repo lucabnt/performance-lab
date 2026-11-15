@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 import pytest
 from cryptography.fernet import Fernet
 from fastapi.testclient import TestClient
@@ -34,7 +33,7 @@ def test_v2_deduplicates_and_preserves_original_signatures_and_history(tmp_path)
     channel=next(folder.iterdir());chunks={p.name:p.read_bytes() for p in channel.glob('*.ctobj')}
     assert chunks and first['errors']==[]
     corrected=owner.save('test',{**test,'notes':'corrected'},test['id'],test['revision'])
-    next_sync=exchange(owner,folder,key,protocol=2,verify_existing=False)
+    exchange(owner,folder,key,protocol=2,verify_existing=False)
     assert {p.name:p.read_bytes() for p in channel.glob('*.ctobj')}==chunks
     # Published history pages contain no inlined sample array or base64 object.
     for path in channel.glob('*.ctsync2'):

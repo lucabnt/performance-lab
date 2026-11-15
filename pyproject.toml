@@ -12,7 +12,7 @@ dependencies = ["cycling-suite-core==0.1.2", "fastapi", "uvicorn", "python-multi
 
 [project.optional-dependencies]
 desktop = ["PySide6", "keyring==25.7.0"]
-dev = ["pytest", "httpx", "pyinstaller", "pypdf>=6.21.4"]
+dev = ["pytest", "httpx", "pyinstaller", "pypdf>=6.21.4", "ruff==0.17.5"]
 
 [project.scripts]
 fuorigiri-performance-lab = "cycling_test.desktop:main"
@@ -24,3 +24,17 @@ where = ["backend"]
 [tool.pytest.ini_options]
 pythonpath = ["backend"]
 testpaths = ["tests"]
+
+[tool.ruff]
+src = ["backend", "tests", "scripts"]
+extend-exclude = ["android", "frontend", "packaging", "vendor", ".local", "tmp", "output", "dist", "build", "wheelhouse"]
+
+[tool.ruff.lint]
+# Errors only (pyflakes and syntax); style rules wait for the formatting step (RT-05).
+select = ["F", "E9"]
+
+[tool.ruff.lint.per-file-ignores]
+# Product adapter: re-exports the shared transport helpers used by cloud/sync modules.
+"backend/cycling_test/transports.py" = ["F401"]
+# Smoke test imports modules only to prove the bundle contains them; the Qt app must stay referenced.
+"backend/cycling_test/desktop.py" = ["F401", "F841"]

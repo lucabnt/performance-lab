@@ -1,5 +1,12 @@
 # Changelog
 
+## 14 novembre 2026 — revisione tecnica, blocco 3 voce 8 (strumenti)
+
+- Nuovo `scripts/verify.py`: versioni, UI comune, common Python, linter, `pytest`, `test:signals`, build frontend con `tsc` e `git diff --check` con un solo comando (RT-06).
+- Linter `ruff` 0.17.5 come dipendenza di sviluppo (`pyproject.toml`, `requirements-lock-windows.txt`), limitato agli errori; rimossi import e variabili inutilizzati in backend, script e test senza cambi di comportamento.
+- Workflow GitHub `verify.yml` (Windows) predisposto ad avvio manuale; l’attivazione su push resta da decidere.
+- Nessuna modifica al prodotto, versione 0.10.0 invariata.
+
 ## 14 novembre 2026 — revisione tecnica, blocco 2 (sorgenti)
 
 - CSV esportati: i testi che iniziano con `=`, `+`, `-`, `@`, tabulazione o a capo sono preceduti da un apice per non essere eseguiti come formule; i numeri restano invariati e l’import di Fuorigiri rimuove l’apice (RT-15). Cambia l’output visibile dei CSV.

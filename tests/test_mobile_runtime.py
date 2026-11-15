@@ -1,6 +1,5 @@
 import base64
 import json
-import pytest
 from cycling_test.mobile_runtime import MobileRuntime
 
 

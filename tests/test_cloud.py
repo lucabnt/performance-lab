@@ -1,6 +1,5 @@
 import io
 import json
-import time
 from urllib.parse import urlsplit,parse_qs
 from urllib.error import HTTPError
 import pytest

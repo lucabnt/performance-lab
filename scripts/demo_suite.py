@@ -8,7 +8,6 @@ import random
 import struct
 from pathlib import Path
 from copy import deepcopy
-from datetime import date
 from cycling_test.store import Store,encoded
 from cycling_test.workspaces import Workspaces,invitation,join
 from cycling_test.sync import exchange
@@ -21,7 +20,7 @@ from cycling_test.analysis import analyze
 from cycling_test.observations import enrich
 from cycling_test.anaerobic import Protocol as AnaProtocol,Settings as AnaSettings,analyze as anaerobic,CSV_HEADER
 from cycling_test.custom_fields import attach
-from cycling_test.methods import DEFAULT,identity
+from cycling_test.methods import DEFAULT
 from cycling_test.specialist import gas_analysis
 from generate_examples import fit_bytes,recording,crc
 from demo_reset import reset_notice
@@ -59,14 +58,14 @@ def generate(destination,small=False):
             raw=(ROOT/f'examples/protocols/{family}.erg').read_bytes();definition=parse_erg(raw.decode('utf-8-sig'))
             for stage in definition['segments']:stage['phase']='warmup' if stage['end_s']<=600 else 'increment'
             protocols[family]=s.save('protocol',{'organization_id':org['id'],'name':family+' laboratorio','family':family,'version':'1','definition':definition,'custom_fields':extension,'custom_values':{'modello_rullo':'Rullo laboratorio SIMULATO'},'objects':[s.object(raw)],'status':'active'})
-        catalog=s.save('protocol',{'organization_id':org['id'],'name':'Incrementale storico senza programma','family':'AER-STORICO','version':'1','definition':{'points':[],'segments':[],'duration_s':0},'status':'active','custom_fields':[],'objects':[]})
+        s.save('protocol',{'organization_id':org['id'],'name':'Incrementale storico senza programma','family':'AER-STORICO','version':'1','definition':{'points':[],'segments':[],'duration_s':0},'status':'active','custom_fields':[],'objects':[]})
         ana={}
         for family in ('sprint','wingate30','wingate15'):
             spec=AnaProtocol(organization_id=org['id'],name={'sprint':'Sprint lanciato 6 s','wingate30':'Wingate 30 s laboratorio','wingate15':'Wingate 15 s 0,70 N·m/kg'}[family],family=family,device='Ergometro DEMO con misuratore 1 Hz',start='flying',position='seated',warmup='10 min progressivi + 2 accelerazioni, simulazione',torque_nm_kg=.70 if family=='wingate15' else None).model_dump()
             ana[family]=s.save('protocol',{'organization_id':org['id'],'name':spec['name'],'family':family,'version':'1','test_type':family,'anaerobic_spec':spec,'definition':{'points':[],'segments':[],'duration_s':spec['duration_s']},'status':'active','objects':[],'custom_fields':[{'key':'carico_percepito','label':'Difficoltà percepita','type':'number','unit':'CR10','scope':'test','minimum':0,'maximum':10}]})
         old=ana['wingate15'];new=deepcopy(old);new.pop('id');new.pop('revision');new.update(version='2',parent_id=old['id'],reason='Finestra del picco portata a 5 s: confronto separato');new['anaerobic_spec'].update(peak_window_s=5,version='2');ana['wingate15-v2']=s.save('protocol',new)
         custom=s.save('protocol',{'organization_id':org['id'],'name':'Sprint ripetuti 5 × 6 s - osservazioni','family':'CUSTOM-RSA','version':'1','test_type':'custom','description':'Cinque sprint con recupero dichiarato. Risultati inseriti dal valutatore; nessuna stima automatica della capacità anaerobica. '+MARKER,'status':'active','definition':{'points':[],'segments':[],'duration_s':0},'objects':[], 'custom_fields':[{'key':'ripetizioni','label':'Numero di ripetizioni','type':'number','scope':'protocol','unit':'','minimum':1,'maximum':20},{'key':'picco_migliore','label':'Migliore picco dichiarato','type':'number','scope':'test','unit':'W','minimum':0,'maximum':3000},{'key':'calo_ultima','label':'Calo nell’ultima ripetizione','type':'number','scope':'test','unit':'%','minimum':0,'maximum':100},{'key':'completato','label':'Tutte le ripetizioni completate','type':'boolean','scope':'test','unit':''},{'key':'recupero','label':'Tipo di recupero','type':'choice','choices':['Attivo','Passivo'],'scope':'test','unit':''}], 'custom_values':{'ripetizioni':5}})
-        previous=s.save('protocol',{**protocols['AER-RULLO-ALL'],'version':'0','status':'archived','reason':'Versione precedente conservata per testare archivio/ripristino.'})
+        s.save('protocol',{**protocols['AER-RULLO-ALL'],'version':'0','status':'archived','reason':'Versione precedente conservata per testare archivio/ripristino.'})
         s.save('default_profile',{'organization_id':org['id'],'source':'Valori fittizi per collaudare la scelta esplicita di una stima','population':'SOLO DEMO, non usare su atleti reali','weight_kg':58,'height_cm':168})
         preset=deepcopy(DEFAULT);preset.pop('id');preset.update(name='Step con tolleranza 10 W - DEMO',family='incremental-demo',version='1',reason=MARKER);preset['parameters']['adherence_tolerance_w']=10;s.save('analysis_preset',preset)
         athletes=[]

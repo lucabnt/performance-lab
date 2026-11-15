@@ -30,7 +30,7 @@ def test_custom_full_path_revision_history_reports_and_export(tmp_path):
     c,post,org,a=client(tmp_path)
     p=post('custom/protocols',{'organization_id':org['id'],'name':'Sprint ripetuti','family':'RSA','version':'1','custom_fields':FIELDS,'custom_values':{'repetitions':5}})
     def payload(peak):return {'athlete_id':a['id'],'protocol_id':p['id'],'date':'2026-10-01','settings':{'custom_values':{'peak':peak,'completed':False}}}
-    first=post('custom/tests',payload(800));second=post('custom/tests',payload(1000))
+    first=post('custom/tests',payload(800));post('custom/tests',payload(1000))
     assert first['analysis']['custom_values']['completed'] is False
     assert 'map_w' not in first['analysis']
     key=next(k for k in first['analysis'] if k.startswith('custom:'))

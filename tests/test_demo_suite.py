@@ -13,7 +13,7 @@ from cycling_test.history import summarize
 from cycling_test.recovery import inspect_backup
 
 sys.path.insert(0,str(Path(__file__).parents[1]/'scripts'))
-from demo_suite import generate,PASSWORD,export_portable
+from demo_suite import generate,export_portable
 
 def test_acceptance_corpus_and_replicas(tmp_path):
     root=tmp_path/'demo';manifest=generate(root,small=True)

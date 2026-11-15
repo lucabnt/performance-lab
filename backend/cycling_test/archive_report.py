@@ -4,12 +4,11 @@ import json
 import zipfile
 from collections import defaultdict
 from datetime import datetime,timezone
-from statistics import mean,median
 from xml.sax.saxutils import escape
 from matplotlib.figure import Figure
 from reportlab.platypus import Paragraph,Image,Spacer,PageBreak,CondPageBreak
 from reportlab.lib.units import cm
-from .history import summarize, METRICS
+from .history import summarize
 from .methods import comparison_key
 from .report_labels import metric_label
 from .archive_pdf import ArchiveDocument,WIDTH,styles,table,contents

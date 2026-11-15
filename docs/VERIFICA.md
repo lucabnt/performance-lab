@@ -1,5 +1,11 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 14 novembre 2026 — revisione tecnica, blocco 3 voce 8
+
+- `scripts/verify.py` eseguito in locale (Windows, `.venv`): tutti gli otto passi riusciti. Versioni, UI comune e common Python coerenti; `ruff check` senza rilievi; `pytest` 334 superati, 1 saltato (335 raccolti); `test:signals` riuscito; build frontend con `tsc` riuscita; `git diff --check` pulito. `--list` e il rifiuto di un passo sconosciuto sono stati provati a mano.
+- Linter: 70 rilievi iniziali (63 import inutilizzati, 6 variabili, 1 ridefinizione) corretti. Prima della rimozione ho verificato che nessun modulo o test importasse quei nomi dai moduli toccati. Le chiamate con effetti sono conservate dove veniva tolta solo l'assegnazione.
+- Workflow `verify.yml` non eseguito su GitHub: «workflow verde» non verificato.
+
 ## 14 novembre 2026 — revisione tecnica, blocco 2
 
 - RT-15: 17 nuovi test in `tests/test_csv_safety.py`. Reversibilità per i sei caratteri iniziali, apice preesistente e testo vuoto; numeri (`-12.5`, `-12,5`, `+3`, valori numerici) invariati. Export reale: cognome, nome e note con prefissi pericolosi preceduti da apice, misure `50.5,160` intatte; reimport con profilo `atleti` in un archivio nuovo restituisce i testi originali.

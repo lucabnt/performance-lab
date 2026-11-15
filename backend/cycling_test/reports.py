@@ -6,10 +6,8 @@ from xml.sax.saxutils import escape
 import matplotlib
 matplotlib.use("Agg")
 from matplotlib.figure import Figure
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.platypus import Paragraph, Spacer, TableStyle, Image
 from .branding import ATTRIBUTION, logo_path
 from .locales import tr
 from .report_labels import metric_label
@@ -187,7 +185,6 @@ def report(test, athlete, protocol, format, language='it'):
             z.writestr('manifest.json',encoded({'test_id':test['id'],'revision':test['revision'],'settings':test['settings'],'analysis':a}))
         return out.getvalue()
     from .pdf_style import document, styles as report_styles, table as styled_table, footer
-    from reportlab.platypus import PageBreak, KeepTogether
     out=io.BytesIO();doc=document(out,title);styles=report_styles()
     def p(text,style='BodyText'):
         return Paragraph(escape(str(tr(text,language) if isinstance(text,str) else text)),styles[style])
@@ -291,7 +288,6 @@ def export_csv(store, organization_id):
             for r in g.get('samples',[]):
                 ow.writerow([t['id'],t['revision'],t['athlete_id'],r['t'],r.get('vo2'),g.get('source','gas_csv'),notes.get(r['t'],'')])
         z.writestr('extended/vo2_osservazioni.csv',observations_csv.getvalue())
-        from .custom_fields import display_rows
         custom_csv=io.StringIO(newline='');cw=safe_csv.writer(custom_csv);cw.writerow(['test_id','protocol_id','scope','field_key','label','type','unit','value_json'])
         for t in store.list('test'):
             if t['athlete_id'] not in ids or t.get('status')=='deleted':continue

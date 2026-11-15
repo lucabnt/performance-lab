@@ -3,7 +3,7 @@ import pytest
 from fastapi.testclient import TestClient
 from cycling_test.api import create_app
 from cycling_test.store import Store
-from cycling_test.training_zones import for_test,profile
+from cycling_test.training_zones import for_test
 from cycling_test.zones import preset
 
 

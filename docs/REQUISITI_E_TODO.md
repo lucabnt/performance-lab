@@ -15,7 +15,12 @@ Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVIS
 - RT-15: negli export CSV (archivio, estesi, maturazione, ripetibilità) i testi che iniziano con `=`, `+`, `-`, `@`, tabulazione o a capo ricevono un apice; numeri intatti. Tutti gli import CSV lo rimuovono in lettura; la trasformazione è reversibile anche per testi che iniziano già con un apice. Manifest dell’export aggiornato. Guida in IMPORT_CSV.md.
 - RT-11: nota sulla cifratura del dispositivo (IT/EN) nella finestra «Licenza, limiti e backup», mostrata nella vista Info su Android e nel piè di pagina desktop; sezione «Proteggere i dati sul dispositivo» in SOCIETA_BACKUP_E_ACCESSI.md. Verificata nella GUI web desktop; vista Info Android non ricatturata.
 
-Restano da eseguire i blocchi 3–5 del piano.
+**Blocco 3, voce 8 — implementata nei sorgenti, 14 novembre 2026:**
+
+- RT-06: `scripts/verify.py` esegue tutte le verifiche locali con un solo comando e riepilogo; linter `ruff` 0.17.5 (dipendenza di sviluppo, solo errori pyflakes/sintassi) e workflow `verify.yml` su Windows, per ora solo manuale. Corretti i 70 rilievi iniziali (import e variabili inutilizzati), senza modifiche di comportamento; le riesportazioni di `transports.py` e gli import di prova di `desktop.py` sono esclusi per file.
+- Criterio «workflow verde» non ancora verificato: richiede push e avvio su GitHub.
+
+Restano la voce 9 (formattazione, RT-05) e i blocchi 4–5 del piano.
 
 ## PUB-ALPHA-01 — prima distribuzione pubblica
 

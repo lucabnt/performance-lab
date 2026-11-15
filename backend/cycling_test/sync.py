@@ -1,8 +1,6 @@
 """Signed encrypted exchange over an immutable-object transport."""
 import hashlib
 import json
-from pathlib import Path
-from uuid import uuid4
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.exceptions import InvalidSignature
 from .store import encoded, KINDS

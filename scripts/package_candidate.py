@@ -6,7 +6,6 @@ import platform
 import re
 import shutil
 import subprocess
-import sys
 import struct
 import zipfile
 from importlib.metadata import distributions

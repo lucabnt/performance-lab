@@ -1,8 +1,6 @@
 """Isolated synthetic QA archive and five report examples. Never imports private data."""
-import io
 import json
 from pathlib import Path
-from copy import deepcopy
 import argparse
 from cycling_test.store import Store
 from cycling_test.erg import parse_erg

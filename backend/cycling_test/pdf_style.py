@@ -1,10 +1,9 @@
 """Shared fixed suite identity and restrained report typography."""
-from xml.sax.saxutils import escape
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from .branding import ATTRIBUTION, logo_path
 
 BLUE=colors.HexColor('#1a62b7')

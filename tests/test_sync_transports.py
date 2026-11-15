@@ -8,7 +8,7 @@ from xml.sax.saxutils import escape
 import pytest
 from fastapi.testclient import TestClient
 from cycling_test.api import create_app
-from cycling_test.store import Store,encoded
+from cycling_test.store import Store
 from cycling_test.workspaces import Workspaces,invitation,join,write_json,sign
 from cycling_test.transports import WebDAVTransport,FolderTransport,validate_url
 from cycling_test.sync import exchange

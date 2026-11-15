@@ -5,7 +5,7 @@ import math
 from statistics import mean, stdev
 import numpy as np
 from numpy.polynomial import Polynomial
-from .analysis import valid_number, window, intervals
+from .analysis import intervals
 
 
 def integrator(samples,field,max_gap,excluded):

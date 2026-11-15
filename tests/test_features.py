@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from cycling_test.api import create_app
 from cycling_test.zones import preset, validate, classify, calculate
 from cycling_test.csv_import import decode_trace_csv
-from synthetic import ERG, fit_bytes
+from synthetic import fit_bytes
 
 
 @pytest.mark.parametrize('channel,values,expected',[

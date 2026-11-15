@@ -1,4 +1,3 @@
-from copy import deepcopy
 from datetime import date,timedelta
 import csv,io,json,zipfile
 import pytest

@@ -1,5 +1,9 @@
 # Changelog
 
+## 15 novembre 2026 — rotte API per area (RT-05)
+
+- `create_app` (`api.py`, da 901 a 423 righe) mantiene middleware, gestori di errore, `/health`, `/api/v1/state` e `/api/v1/legal`; le altre rotte sono in `registry_api.py`, `incremental_api.py`, `backup_api.py` ed `exchange_api.py`, registrate con `install(...)` come i moduli già esistenti. Nessun cambio di API o comportamento: codice spostato identico, elenco delle rotte (percorso, metodi, funzione, `viewer_allowed`, ordine) e schema OpenAPI confrontati prima e dopo. `Measurement` resta importabile da `cycling_test.api`.
+
 ## 15 novembre 2026 — CI attiva su push
 
 - Il workflow `verify.yml` (job `verify` e `android-versions`) parte a ogni push su `main`, sulle pull request e ad avvio manuale; prima era solo manuale (RT-06, decisione dell'utente del 15 novembre). `desktop-build` e `android-build` restano ad avvio manuale. Esito su GitHub non ancora osservato: serve il primo push.

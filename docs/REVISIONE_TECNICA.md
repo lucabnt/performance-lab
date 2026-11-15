@@ -170,6 +170,7 @@ Per RT-01 si adotta solo la proiezione in lettura; la rimozione dei campioni dai
 | 15 novembre 2026 | Blocco 5, voce 11 (RT-01, RT-09, RT-10, RT-02) | Implementato nei sorgenti, test e misure | Misura preliminare di RT-01: `/state` 513 ms su 300 test sintetici da 30 minuti, 93 ms con la proiezione SQL e risposta identica. Sync, apertura dello store e storico misurati in [VERIFICA.md](VERIFICA.md). La sync v2 verifica ancora tutto lo storico per comporre le pagine. |
 | 15 novembre 2026 | Blocco 5, voce 12 (RT-12, RT-18, RT-19, RT-20, RT-16) | Implementato nei sorgenti, test; CSP verificata con Plotly in Chrome headless; RT-16 eseguito su Python 3.12 | I nuovi inviti e recuperi richiedono un'app aggiornata. RT-20 consente anche lo scollegamento da visualizzatore. Hash del lockfile in un file distinto per non entrare in conflitto con `sync-core.py` del common. RT-16 usa Python 3.12, perché le versioni Android di numpy e matplotlib non hanno wheel per 3.13. |
 | 15 novembre 2026 | RT-06, attivazione CI | Workflow `verify.yml` attivo su push a `main` e pull request | Decisione dell'utente. Esito su GitHub da osservare al primo push. |
+| 15 novembre 2026 | RT-05, estrazione dei router | Implementato nei sorgenti, equivalenza verificata | Moduli per area con `install(...)` invece di `APIRouter`, per restare coerenti con gli altri moduli e conservare l'ordine di registrazione (per esempio `/tests/preview` prima di `/tests/{id}`). Stesse 112 rotte e stesso schema OpenAPI. |
 
 ## Architettura target
 

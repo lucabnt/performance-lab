@@ -46,7 +46,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 
 - Report archivio: layout e indice multipass in `backend/cycling_test/archive_pdf.py`, contenuti in `archive_report.py` (renderer `archive-5`, manifest schema 2). Font DejaVu da matplotlib; test PDF con `pypdf` nella dipendenza dev. Non modificare i criteri scientifici per correzioni di impaginazione. Stato export in `frontend/src/ArchiveReports.tsx`, spinner dalla UI comune. Per il primo consenso cloud usare [guida Drive](docs/GOOGLE_DRIVE_PRIMO_COLLEGAMENTO.md); build APK e test simulati non qualificano il provider reale.
 
-- `backend/cycling_test/`: API, archivio, importatori, motori scientifici, report e sincronizzazione.
+- `backend/cycling_test/`: API, archivio, importatori, motori scientifici, report e sincronizzazione. `api.py` contiene modelli, middleware, `/state` e la composizione; le rotte stanno nei moduli per area (`registry_api`, `incremental_api`, `backup_api`, `exchange_api`, `workspace_api`, `analysis_api`, …) registrati con `install(app, …)`. L'ordine delle chiamate in `create_app` è l'ordine delle rotte: non riordinarlo senza verificare i percorsi sovrapposti.
 - `frontend/src/`: interfaccia, grafici e modelli di presentazione; `frontend/tests/`: verifiche dei modelli e dello stato.
 - `tests/`: test Python e regressioni.
 - `scripts/`: sviluppo, corpus dimostrativi, verifiche e packaging. `archive_tools.py` per backup/migrazione su percorsi espliciti; `verify_storage_v2.py --large` prova sintetica oltre 100 MB, solo destinazione nuova.

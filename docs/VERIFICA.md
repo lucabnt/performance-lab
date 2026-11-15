@@ -1,5 +1,11 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 15 novembre 2026 — rotte API per area (RT-05) e CI su push
+
+- Estrazione dei router: elenco delle rotte di `create_app` (percorso, metodi, nome della funzione, marcatore `viewer_allowed`, ordine) e schema `app.openapi()` serializzati prima e dopo la modifica: file identici, 112 rotte. Il codice spostato nei quattro moduli coincide riga per riga con l'originale (443 righe non vuote, stessa indentazione).
+- `scripts/verify.py`: tutti gli 11 passi riusciti (versioni, UI comune, core, hash del lock, ruff, formato Python e frontend, pytest, test dei segnali, build con `tsc`, `git diff --check`).
+- Workflow `verify.yml` attivato su push a `main` e pull request: non ancora eseguito su GitHub (serve il push). GUI non riaperta: nessun cambio di comportamento atteso, coperto dai test API.
+
 ## 15 novembre 2026 — revisione tecnica, blocco 5 voce 12
 
 - RT-12: nuovo involucro con `kdf` n = 2^17 aperto; password errata rifiutata; n = 2^21, n non potenza di due e r diverso rifiutati con invito ad aggiornare; involucro costruito come prima di RT-12 (n = 2^14, senza parametri) ancora aperto. Test esistenti di invito, rinnovo e recupero riusciti. La suite `pytest` passa da circa 95 a 120 s per il costo maggiore di scrypt negli inviti dei test.

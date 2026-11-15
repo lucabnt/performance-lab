@@ -22,7 +22,7 @@ Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVIS
 
 **Blocco 3, voce 9 — implementata nei sorgenti, 15 novembre 2026:**
 
-- RT-05: formattazione automatica con `ruff format` e `prettier`, senza modifiche semantiche (AST Python identico, bundle frontend equivalente); controllo del formato in `scripts/verify.py`. Estrazione dei router API rinviata come previsto dal piano.
+- RT-05: formattazione automatica con `ruff format` e `prettier`, senza modifiche semantiche (AST Python identico, bundle frontend equivalente); controllo del formato in `scripts/verify.py`. Il 15 novembre 2026 le rotte di `create_app` sono state spostate in `registry_api.py` (società, gruppi, atleti, appartenenze, misure), `incremental_api.py` (protocolli, tracciati, test incrementali e report del singolo test), `backup_api.py` (export e backup) ed `exchange_api.py` (scambio su cartella, chiave, conflitti), con la stessa funzione `install` già usata dagli altri moduli: codice spostato identico, stesse 112 rotte nello stesso ordine e schema OpenAPI invariato.
 
 **Blocco 4, voce 10 — implementato nei sorgenti, 15 novembre 2026:**
 

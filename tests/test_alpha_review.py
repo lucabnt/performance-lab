@@ -35,9 +35,11 @@ def test_unreadable_zip_is_validation_error_without_staging(tmp_path, encrypted,
             pytest.fail('Invalid archive accepted')
     root = tmp_path / 'app'
     client = TestClient(create_app(root, token='test'))
-    response = client.post('/api/v1/workspaces/restore/preview',
-                           headers={'X-Fuorigiri-Token': 'test'},
-                           files={'file': ('bad.zip', bytes(raw))})
+    response = client.post(
+        '/api/v1/workspaces/restore/preview',
+        headers={'X-Fuorigiri-Token': 'test'},
+        files={'file': ('bad.zip', bytes(raw))},
+    )
     assert response.status_code == 422
     assert list((root / 'restore-staging').iterdir()) == []
     assert client.get('/api/v1/workspaces', headers={'X-Fuorigiri-Token': 'test'}).json() == []

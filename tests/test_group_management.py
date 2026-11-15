@@ -56,7 +56,12 @@ def test_category_requires_children_removed_and_restore_parent_first(tmp_path):
     assert c.post(f"/api/v1/groups/{root['id']}/lifecycle", json=payload).status_code == 422
     removed_child = lifecycle(c, child, 'deleted')
     removed_root = lifecycle(c, root, 'deleted')
-    assert c.post(f"/api/v1/groups/{child['id']}/lifecycle", json={'base': removed_child['revision'], 'status': 'active'}).status_code == 422
+    assert (
+        c.post(
+            f"/api/v1/groups/{child['id']}/lifecycle", json={'base': removed_child['revision'], 'status': 'active'}
+        ).status_code
+        == 422
+    )
     lifecycle(c, removed_root, 'active')
     lifecycle(c, removed_child, 'active')
 
@@ -65,7 +70,13 @@ def test_edit_and_move_season_changes_only_group_and_rejects_stale_revision(tmp_
     c, org, root, child, _ = setup(tmp_path)
     other = post(c, 'groups', {'organization_id': org['id'], 'name': 'Esordienti'})
     before = c.get('/api/v1/state').json()
-    payload = {'base': child['revision'], 'organization_id': org['id'], 'name': 'Rosa futura', 'season': '2028', 'parent_id': other['id']}
+    payload = {
+        'base': child['revision'],
+        'organization_id': org['id'],
+        'name': 'Rosa futura',
+        'season': '2028',
+        'parent_id': other['id'],
+    }
     r = c.put(f"/api/v1/groups/{child['id']}", json=payload)
     assert r.status_code == 200, r.text
     assert r.json()['parent_id'] == other['id'] and r.json()['season'] == '2028'
@@ -76,7 +87,13 @@ def test_edit_and_move_season_changes_only_group_and_rejects_stale_revision(tmp_
 
 def test_reject_cycles_foreign_organization_and_deleted_parents(tmp_path):
     c, org, root, child, _ = setup(tmp_path)
-    payload = {'base': root['revision'], 'organization_id': org['id'], 'name': root['name'], 'season': '2026', 'parent_id': root['id']}
+    payload = {
+        'base': root['revision'],
+        'organization_id': org['id'],
+        'name': root['name'],
+        'season': '2026',
+        'parent_id': root['id'],
+    }
     assert c.put(f"/api/v1/groups/{root['id']}", json=payload).status_code == 422
     payload['parent_id'] = child['id']
     assert c.put(f"/api/v1/groups/{root['id']}", json=payload).status_code == 422
@@ -98,4 +115,10 @@ def test_deleted_group_and_legacy_season_reject_new_memberships(tmp_path):
         body.pop('athlete_id')
         body['athlete_ids'] = [athlete['id']]
         assert c.post('/api/v1/memberships/batch', json=body).status_code == 422
-    assert c.post('/api/v1/groups', json={'organization_id': root['organization_id'], 'parent_id': child['id'], 'season': '2028'}).status_code == 422
+    assert (
+        c.post(
+            '/api/v1/groups',
+            json={'organization_id': root['organization_id'], 'parent_id': child['id'], 'season': '2028'},
+        ).status_code
+        == 422
+    )

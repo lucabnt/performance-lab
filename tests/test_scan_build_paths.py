@@ -19,20 +19,32 @@ def nested_apk(path, inner_files):
 
 def test_nested_member_is_found_and_account_is_redacted(tmp_path):
     apk = tmp_path / 'app.apk'
-    nested_apk(apk, {'pkg/sbom.json': b'path+file:///var/home/qa-account/build/src',
-                     'pkg/_ext.so': b'\x7fELF /home/qa-account/.cargo/registry/src/x.rs'})
+    nested_apk(
+        apk,
+        {
+            'pkg/sbom.json': b'path+file:///var/home/qa-account/build/src',
+            'pkg/_ext.so': b'\x7fELF /home/qa-account/.cargo/registry/src/x.rs',
+        },
+    )
     findings = scan([apk])
     labels = sorted(findings)
-    assert labels == [f'{apk}!assets/chaquopy/requirements-common.imy!pkg/_ext.so',
-                      f'{apk}!assets/chaquopy/requirements-common.imy!pkg/sbom.json']
+    assert labels == [
+        f'{apk}!assets/chaquopy/requirements-common.imy!pkg/_ext.so',
+        f'{apk}!assets/chaquopy/requirements-common.imy!pkg/sbom.json',
+    ]
     # The account learnt from /var/home is also searched as /home/<account>.
     assert all('qa-account' not in value for values in findings.values() for value in values)
 
 
 def test_checkout_path_and_strict_mode(tmp_path):
     apk = tmp_path / 'app.apk'
-    nested_apk(apk, {'core.dist-info/direct_url.json': b'{"url": "file:///X:/Work/checkout/vendor/core.whl"}',
-                     'numpy/_datasource.pyc': b'/home/upstream/docs'})
+    nested_apk(
+        apk,
+        {
+            'core.dist-info/direct_url.json': b'{"url": "file:///X:/Work/checkout/vendor/core.whl"}',
+            'numpy/_datasource.pyc': b'/home/upstream/docs',
+        },
+    )
     default = scan([apk], extra=['X:\\Work\\checkout'])
     assert list(default) == [f'{apk}!assets/chaquopy/requirements-common.imy!core.dist-info/direct_url.json']
     strict = scan([apk], strict=True)

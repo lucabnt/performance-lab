@@ -1,4 +1,5 @@
 """Source integrity and non-destructive behavior of the experimental builder."""
+
 import hashlib
 import importlib.util
 import io
@@ -9,7 +10,9 @@ from pathlib import Path
 import pytest
 
 
-spec = importlib.util.spec_from_file_location('pillow_builder', Path(__file__).resolve().parents[1] / 'scripts/build_android_pillow.py')
+spec = importlib.util.spec_from_file_location(
+    'pillow_builder', Path(__file__).resolve().parents[1] / 'scripts/build_android_pillow.py'
+)
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
 

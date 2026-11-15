@@ -3,6 +3,7 @@
 Build tool only: requires lief==1.0.0. Never overwrites the input wheel.
 The output directory must be new. A provenance JSON accompanies the wheel.
 """
+
 import argparse
 import base64
 import csv
@@ -62,8 +63,15 @@ def repair(source: Path, destination: Path):
                 if segment.alignment < 16384 or (segment.virtual_address - segment.file_offset) % 16384:
                     raise ValueError('Segmento non allineato a 16 KB.')
         entries[name] = (info, patched)
-        changes.append({'module': name, 'before': before, 'after': list(checked.libraries),
-                        'original_sha256': sha256(original), 'repaired_sha256': sha256(patched)})
+        changes.append(
+            {
+                'module': name,
+                'before': before,
+                'after': list(checked.libraries),
+                'original_sha256': sha256(original),
+                'repaired_sha256': sha256(patched),
+            }
+        )
     record = records[0]
     out = io.StringIO(newline='')
     writer = csv.writer(out, lineterminator='\n')
@@ -78,10 +86,15 @@ def repair(source: Path, destination: Path):
     with zipfile.ZipFile(wheel, 'w') as archive:
         for info, content in entries.values():
             archive.writestr(info, content)
-    report = {'tool': 'repair_android_abi3/1', 'lief': lief.__version__,
-              'wheel': source.name, 'original_sha256': sha256(source.read_bytes()),
-              'repaired_sha256': sha256(wheel.read_bytes()), 'changes': changes,
-              'runtime_verified': False}
+    report = {
+        'tool': 'repair_android_abi3/1',
+        'lief': lief.__version__,
+        'wheel': source.name,
+        'original_sha256': sha256(source.read_bytes()),
+        'repaired_sha256': sha256(wheel.read_bytes()),
+        'changes': changes,
+        'runtime_verified': False,
+    }
     (destination / 'repair.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     return report
 

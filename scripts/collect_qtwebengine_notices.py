@@ -8,6 +8,7 @@ license files; their texts are copied verbatim. The output is written to a new
 file. Components without a matching README remain listed as unresolved, never
 silently dropped.
 """
+
 import argparse
 import hashlib
 import html
@@ -22,7 +23,9 @@ def listed_components(page):
     title = html.unescape(re.search(r'<title>(.*?)</title>', page, re.S).group(1)).strip()
     clean = lambda value: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', value))).strip()
     pairs = []
-    pattern = r'<a href="(qtwebengine-3rdparty-[^"]+)">(.*?)</a>(.*?)(?=<a href="qtwebengine-3rdparty-|</table>|</dl>|</ul>)'
+    pattern = (
+        r'<a href="(qtwebengine-3rdparty-[^"]+)">(.*?)</a>(.*?)(?=<a href="qtwebengine-3rdparty-|</table>|</dl>|</ul>)'
+    )
     for href, name, rest in re.findall(pattern, page, re.S):
         pairs.append((html.unescape(clean(name)), clean(rest), href))
     if not pairs:
@@ -74,7 +77,11 @@ def collect(archive, page, output, pages=None):
             continue
         path, fields = sorted(matches, key=lambda item: len(item[0]))[0]
         folder = PurePosixPath(path).parent
-        files = [f.strip() for f in re.split(r',', fields.get('License File', '')) if f.strip() and f.strip() != 'NOT_SHIPPED']
+        files = [
+            f.strip()
+            for f in re.split(r',', fields.get('License File', ''))
+            if f.strip() and f.strip() != 'NOT_SHIPPED'
+        ]
         targets = []
         for item in files:
             # Paths starting with / are relative to the Chromium source root.
@@ -98,15 +105,21 @@ def collect(archive, page, output, pages=None):
             digest = hashlib.sha256(body.encode('utf-8')).hexdigest()[:12]
             texts.setdefault(digest, body)
             refs.append('[testo ' + digest + ']')
-        sections.append(f'{name}\n  Licenza dichiarata: {licenses}\n  Sorgente: {url or "n/d"}\n  Testi: {", ".join(refs) or "nessun file indicato"}\n')
+        sections.append(
+            f'{name}\n  Licenza dichiarata: {licenses}\n  Sorgente: {url or "n/d"}\n  Testi: {", ".join(refs) or "nessun file indicato"}\n'
+        )
     for name, licenses, href, text in official:
         digest = hashlib.sha256(text.encode('utf-8')).hexdigest()[:12]
         texts.setdefault(digest, text)
-        sections.append(f'{name}\n  Licenza dichiarata: {licenses}\n  Testi: [testo {digest}] dalla pagina ufficiale {href}\n')
-    header = (f'Avvisi di terze parti di Chromium in {title.split("|", 1)[1].strip()}\n'
-              f'Generato da {archive.name} (download.qt.io) e dalla pagina ufficiale "Qt WebEngine Licensing".\n'
-              f'Componenti elencati: {len(components)}; testi dai sorgenti: {len(resolved)}; '
-              f'dalle pagine ufficiali: {len(official)}; senza testo: {len(unresolved)}.\n\n')
+        sections.append(
+            f'{name}\n  Licenza dichiarata: {licenses}\n  Testi: [testo {digest}] dalla pagina ufficiale {href}\n'
+        )
+    header = (
+        f'Avvisi di terze parti di Chromium in {title.split("|", 1)[1].strip()}\n'
+        f'Generato da {archive.name} (download.qt.io) e dalla pagina ufficiale "Qt WebEngine Licensing".\n'
+        f'Componenti elencati: {len(components)}; testi dai sorgenti: {len(resolved)}; '
+        f'dalle pagine ufficiali: {len(official)}; senza testo: {len(unresolved)}.\n\n'
+    )
     body = header + '=' * 78 + '\nCOMPONENTI\n' + '=' * 78 + '\n\n' + '\n'.join(sections)
     if unresolved:
         body += '\nComponenti senza README.chromium corrispondente (licenza dalla pagina ufficiale):\n'
@@ -117,10 +130,15 @@ def collect(archive, page, output, pages=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open('x', encoding='utf-8', newline='\n') as stream:
         stream.write(body)
-    summary = {'components': len(components), 'resolved': len(resolved), 'official_pages': len(official),
-               'unresolved': [n for n, _ in unresolved], 'texts': len(texts),
-               'source_sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
-               'output_sha256': hashlib.sha256(output.read_bytes()).hexdigest()}
+    summary = {
+        'components': len(components),
+        'resolved': len(resolved),
+        'official_pages': len(official),
+        'unresolved': [n for n, _ in unresolved],
+        'texts': len(texts),
+        'source_sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
+        'output_sha256': hashlib.sha256(output.read_bytes()).hexdigest(),
+    }
     print(json.dumps(summary, indent=2, ensure_ascii=False))
 
 
@@ -128,7 +146,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True, help='qtwebengine-everywhere-src-<version>.tar.xz')
     parser.add_argument('--page', type=Path, required=True, help='Saved qtwebengine-licensing.html')
-    parser.add_argument('--pages', type=Path, help='Folder with saved qtwebengine-3rdparty-*.html pages of the same version')
+    parser.add_argument(
+        '--pages', type=Path, help='Folder with saved qtwebengine-3rdparty-*.html pages of the same version'
+    )
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     collect(args.source, args.page, args.output, args.pages)

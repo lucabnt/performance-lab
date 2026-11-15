@@ -6,6 +6,7 @@ read recursively (APK -> Chaquopy .imy -> files). Output never prints account
 names. Upstream wheels may keep historical paths of their own builders: they are
 outside this gate. A clean result covers only the listed patterns.
 """
+
 import argparse
 import io
 import re
@@ -19,8 +20,12 @@ ARCHIVES = ('.zip', '.whl', '.apk', '.imy', '.jar', '.aar')
 LIMIT = 64 * 1024 * 1024
 SLASH = rb'[\\/]{1,2}'
 # Strict mode, for wheels built by the project: any home directory is a finding.
-STRICT = [rb'/(?:var/)?home/[A-Za-z0-9._-]+', rb'/Users/[A-Za-z0-9._-]+', rb'/root/',
-          rb'[A-Za-z]:' + SLASH + rb'Users' + SLASH + rb'[A-Za-z0-9._ -]+']
+STRICT = [
+    rb'/(?:var/)?home/[A-Za-z0-9._-]+',
+    rb'/Users/[A-Za-z0-9._-]+',
+    rb'/root/',
+    rb'[A-Za-z]:' + SLASH + rb'Users' + SLASH + rb'[A-Za-z0-9._ -]+',
+]
 
 
 def patterns(accounts, extra, strict=False):
@@ -78,12 +83,21 @@ def scan(paths, extra=(), accounts=(), strict=False):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('paths', nargs='+', type=Path)
-    parser.add_argument('--forbid', action='append', default=[],
-                        help='Additional literal path, e.g. the source checkout used for the build')
-    parser.add_argument('--account', action='append', default=[],
-                        help='Builder account name to search under home directories (not printed)')
-    parser.add_argument('--strict', action='store_true',
-                        help='Any home directory is a finding (for wheels built by the project)')
+    parser.add_argument(
+        '--forbid',
+        action='append',
+        default=[],
+        help='Additional literal path, e.g. the source checkout used for the build',
+    )
+    parser.add_argument(
+        '--account',
+        action='append',
+        default=[],
+        help='Builder account name to search under home directories (not printed)',
+    )
+    parser.add_argument(
+        '--strict', action='store_true', help='Any home directory is a finding (for wheels built by the project)'
+    )
     args = parser.parse_args(argv)
     findings = scan(args.paths, args.forbid, args.account, args.strict)
     for label, values in sorted(findings.items()):

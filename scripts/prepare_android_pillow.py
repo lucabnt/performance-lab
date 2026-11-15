@@ -1,4 +1,5 @@
 """Prepare a source kit, never install wheels or change the application's pins."""
+
 import argparse
 import hashlib
 import json
@@ -55,11 +56,24 @@ def prepare(output):
             raise ValueError(f'Checksum mismatch: {name}')
         filename = f'{name}.tar.gz'
         (output / filename).write_bytes(data)
-        manifest['sources'][name] = dict(source, filename=filename, sha256=digest,
-            checksum_kind=('publisher-PyPI' if name == 'pillow' else
-                           'publisher-GitHub-release' if name == 'jpeg' else
-                           'observed-download-pinned-commit'))
-    for name in ['build_android_pillow.py', 'check_android_pillow_runtime.py', 'scan_build_paths.py', 'android_neutral_env.sh']:
+        manifest['sources'][name] = dict(
+            source,
+            filename=filename,
+            sha256=digest,
+            checksum_kind=(
+                'publisher-PyPI'
+                if name == 'pillow'
+                else 'publisher-GitHub-release'
+                if name == 'jpeg'
+                else 'observed-download-pinned-commit'
+            ),
+        )
+    for name in [
+        'build_android_pillow.py',
+        'check_android_pillow_runtime.py',
+        'scan_build_paths.py',
+        'android_neutral_env.sh',
+    ]:
         shutil.copy2(Path(__file__).with_name(name), output / name)
     shutil.copy2(Path(__file__).resolve().parents[1] / 'docs/ANDROID_PILLOW.md', output / 'README.md')
     (output / 'sources.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')

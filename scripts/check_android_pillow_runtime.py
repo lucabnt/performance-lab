@@ -1,4 +1,5 @@
 """Run via Python inside the Android app, never use host success as Android proof."""
+
 import io
 import json
 import sys
@@ -15,6 +16,7 @@ def check(output_directory=None, logo_path=None):
     from matplotlib.backends.backend_agg import FigureCanvasAgg
     from matplotlib import get_data_path
     from pathlib import Path
+
     assert PIL.__version__ == '13.0.0', PIL.__version__
     assert features.check('jpg') and features.check('zlib') and features.check('freetype2')
     assert features.version('freetype2') == '2.14.3', features.version('freetype2')
@@ -42,22 +44,27 @@ def check(output_directory=None, logo_path=None):
         with Image.open(logo_path) as logo:
             logo.load()
             assert logo.width > 0 and logo.height > 0
-        canvas.drawImage(logo_path, 30, 700, width=100, height=60,
-                         preserveAspectRatio=True, mask='auto')
+        canvas.drawImage(logo_path, 30, 700, width=100, height=60, preserveAspectRatio=True, mask='auto')
     canvas.save()
     assert pdf.getvalue().startswith(b'%PDF-') and len(pdf.getvalue()) > 1000
     pdf_path = None
     if output_directory is not None:
         import uuid
+
         destination = Path(output_directory) / f'pillow-native-{uuid.uuid4().hex}.pdf'
         with destination.open('xb') as stream:
             stream.write(pdf.getvalue())
         pdf_path = str(destination)
-    result = {'pillow': PIL.__version__, 'python_build_api': sys.getandroidapilevel(),
-              'codecs': {name: features.version(name) for name in ['jpg', 'libjpeg_turbo', 'zlib', 'freetype2']},
-              'png_jpeg_font_matplotlib_reportlab': 'passed', 'pdf_bytes': len(pdf.getvalue()),
-              'pdf_path': pdf_path, 'fixed_logo': 'passed' if logo_path is not None else 'not-tested',
-              'limits': 'No UI export/open, app update, archive or device qualification'}
+    result = {
+        'pillow': PIL.__version__,
+        'python_build_api': sys.getandroidapilevel(),
+        'codecs': {name: features.version(name) for name in ['jpg', 'libjpeg_turbo', 'zlib', 'freetype2']},
+        'png_jpeg_font_matplotlib_reportlab': 'passed',
+        'pdf_bytes': len(pdf.getvalue()),
+        'pdf_path': pdf_path,
+        'fixed_logo': 'passed' if logo_path is not None else 'not-tested',
+        'limits': 'No UI export/open, app update, archive or device qualification',
+    }
     print(json.dumps(result))
     return result
 

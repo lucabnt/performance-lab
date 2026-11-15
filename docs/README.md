@@ -25,6 +25,7 @@ Per installazione, scelta degli allegati, licenze e limiti operativi consultare 
 - [Galleria dell’interfaccia](screenshots/README.md): viste del README e procedura per mantenerle aggiornate con dati sintetici.
 - [Società, backup e accessi](SOCIETA_BACKUP_E_ACCESSI.md): creazione, inviti, ruoli e ripristino.
 - [Sync v2, backup v3 e separazione società](SYNC_V2_E_BACKUP.md): attivazione, compatibilità, flussi GUI/CLI e limiti.
+- [Backup protetto da password](BACKUP_CIFRATO.md): formato `.fgbak`, uso, garanzie e limiti.
 - [Configurare la sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md): cartelle, WebDAV, Drive, Dropbox, OneDrive e prerequisiti OAuth.
 - [Distribuzione](DISTRIBUZIONE.md): bundle Windows, dipendenze incluse, installer e prerequisiti Fedora/Android.
 

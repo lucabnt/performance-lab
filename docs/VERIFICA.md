@@ -1,5 +1,26 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 15 novembre 2026 — revisione tecnica, blocco 4 (backup protetto da password)
+
+- `tests/test_backup_crypto.py`, 16 test:
+  - andata e ritorno con 0, 1, 1 MiB − 1, 1 MiB, 1 MiB + 1 e 2 MiB;
+  - password errata o vuota senza file di uscita;
+  - blocco finale rimosso, blocchi riordinati, byte alterato, blocco tagliato e blocco aggiunto rifiutati;
+  - dimensione dei blocchi modificata e costo scrypt fuori limite rifiutati;
+  - nessuna sovrascrittura di destinazioni esistenti; password corta rifiutata.
+- Ripristino reale via API: download `.fgbak` senza testo in chiaro riconoscibile; salvataggio su disco senza file temporanei residui; anteprima senza password o con password errata respinta e area temporanea vuota; anteprima corretta, poi ripristino indipendente con storico e allegati identici; v3 in chiaro ancora scaricato e ripristinabile.
+- Costo misurato di scrypt con n = 2^17: 0,27 s sul PC di sviluppo.
+- GUI web, archivio QA nuovo `.local/qa-rt11b-20261115`, porta 8799, società e atleta sintetici:
+  - con password diverse il pulsante si disattiva con l'avviso, e lo stesso con una password corta;
+  - download di `fuorigiri-backup-v3.fgbak`, con intestazione `FGBAKENC`;
+  - il ripristino dello stesso file chiede la password e segnala la password errata; con la password corretta l'anteprima mostra 1 atleta e i checksum verificati;
+  - il ripristino come copia indipendente apre la società con «Ada Sintetica»; `restore-staging` è vuota dopo il ripristino;
+  - etichette verificate anche in inglese.
+- Il file è stato passato al selettore tramite script, perché il pannello browser non consente di scegliere file dal disco.
+- Una prima impaginazione dei campi password allargava la colonna; corretta con uno stile dedicato e verificata a schermo.
+- `scripts/verify.py`: dieci passi riusciti, `pytest` 350 superati e 1 saltato.
+- Non provati: emulatore o telefono Android, EXE ricompilato, backup cifrati di grandi dimensioni oltre i test a 2 MiB.
+
 ## 15 novembre 2026 — revisione tecnica, blocco 3 voce 9
 
 - Python: `ruff format` su 124 file; l'AST di tutti i 126 file Python tracciati (escluso `android/`) coincide con quello del commit precedente, a meno della sola indentazione dei docstring.

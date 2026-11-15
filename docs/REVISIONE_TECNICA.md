@@ -1,6 +1,6 @@
 # Revisione tecnica e piano di intervento
 
-Revisione del **14 novembre 2026** sui sorgenti **0.10.0** (commit `b12aaa4`). Stato: **analisi e piano approvati; blocchi 1–3 implementati nei sorgenti il 14 e 15 novembre 2026** (vedi [Avanzamento](#avanzamento)). Le altre voci restano proposte. L'avanzamento va registrato in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), [CHANGELOG.md](../CHANGELOG.md) e [VERIFICA.md](VERIFICA.md) man mano che le voci vengono realizzate.
+Revisione del **14 novembre 2026** sui sorgenti **0.10.0** (commit `b12aaa4`). Stato: **analisi e piano approvati; blocchi 1–4 implementati nei sorgenti il 14 e 15 novembre 2026** (vedi [Avanzamento](#avanzamento)). Le altre voci restano proposte. L'avanzamento va registrato in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), [CHANGELOG.md](../CHANGELOG.md) e [VERIFICA.md](VERIFICA.md) man mano che le voci vengono realizzate.
 
 Gli identificativi `RT-nn` sono propri di questa revisione.
 
@@ -166,6 +166,7 @@ Per RT-01 si adotta solo la proiezione in lettura; la rimozione dei campioni dai
 | 14 novembre 2026 | Blocco 2 (#6–#7: RT-15, RT-11) | Implementato nei sorgenti; RT-11 verificato nella GUI web | La nota sulla cifratura è nella finestra «Licenza, limiti e backup», che su Android è nella vista Info e su desktop nel piè di pagina (il desktop non ha una vista Info). Neutralizzazione anche negli export di maturazione e ripetibilità. |
 | 14 novembre 2026 | Blocco 3, voce 8 (RT-06) | Implementato nei sorgenti; script verificato in locale | `scripts/verify.py` e workflow `verify.yml` manuale su Windows (stesso lockfile dei test). Il linter è limitato agli errori (F, E9); i 70 rilievi iniziali sono stati corretti. «Workflow verde» non verificato: serve un push. Voce 9 sospesa: la formattazione toccherebbe gli stessi file con modifiche dei blocchi 1–3 non ancora committate, impedendo commit separati per area. |
 | 15 novembre 2026 | Blocco 3, voce 9 (RT-05) | Implementato nei sorgenti, equivalenza verificata | `ruff format` (120 colonne, apici conservati) e `prettier` 3.6.2. AST Python identico; bundle frontend equivalente (solo testi JSX divisi e uno spazio multiplo ridotto). Sette commit di sola formattazione per area, elencati in `.git-blame-ignore-revs`. |
+| 15 novembre 2026 | Blocco 4, voce 10 (RT-11) | Implementato nei sorgenti; ripristino reale via API e GUI web | Proposta di formato approvata dall'utente il 15 novembre ([BACKUP_CIFRATO.md](BACKUP_CIFRATO.md)). File `.fgbak`, password di almeno 12 caratteri, opzione disattivata di default e disponibile dove si scarica il v3 (Android non provato). La copia decifrata resta in `restore-staging` fino al ripristino o per 24 ore. |
 
 ## Architettura target
 
@@ -193,6 +194,5 @@ flowchart LR
 ## Punti aperti
 
 - Attivazione del workflow CI su push prima che la repository diventi pubblica.
-- Proposta di formato del backup cifrato, da approvare prima dell'implementazione.
 - Misura reale del tempo di `/state` su un archivio sintetico grande, prima di affrontare RT-01.
 - Revisione giuridica del trattamento dei dati di minori, già prevista e non coperta da questa revisione tecnica.

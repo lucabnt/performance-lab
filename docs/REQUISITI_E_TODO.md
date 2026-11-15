@@ -24,7 +24,12 @@ Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVIS
 
 - RT-05: formattazione automatica con `ruff format` e `prettier`, senza modifiche semantiche (AST Python identico, bundle frontend equivalente); controllo del formato in `scripts/verify.py`. Estrazione dei router API rinviata come previsto dal piano.
 
-Restano i blocchi 4–5 del piano.
+**Blocco 4, voce 10 — implementato nei sorgenti, 15 novembre 2026:**
+
+- RT-11: opzione «Proteggi con password» per il backup v3 (download e salvataggio su disco) e ripristino dei file `.fgbak` con richiesta della password. Formato approvato dall'utente: involucro AES-256-GCM a blocchi da 1 MiB, chiave scrypt (n = 2^17) con parametri nell'intestazione, contenuto v3 invariato. Specifica in [BACKUP_CIFRATO.md](BACKUP_CIFRATO.md).
+- Criteri: ripristino reale di un backup cifrato (API e GUI web), backup v3 in chiaro ancora producibili e leggibili, nessuna dipendenza nuova. Non provati l'emulatore o il telefono Android e l'EXE.
+
+Resta il blocco 5 del piano.
 
 ## PUB-ALPHA-01 — prima distribuzione pubblica
 

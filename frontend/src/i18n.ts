@@ -613,7 +613,11 @@ Object.assign(translations, {
   'Società aperta su questo dispositivo.': 'Club opened on this device.',
   'File invito JSON': 'Invitation JSON file',
   'Password dell’invito': 'Invitation password',
-  'Backup dati ZIP': 'Data backup ZIP',
+  'Backup dati (.zip, oppure .fgbak protetto da password)': 'Data backup (.zip, or password-protected .fgbak)',
+  'Backup protetto da password: inserisci la password usata per crearlo.':
+    'Password-protected backup: enter the password used to create it.',
+  'Password del backup': 'Backup password',
+  'Verifica backup': 'Check backup',
   'Come vuoi usare il ripristino?': 'How do you want to use the restored archive?',
   'Copia di consultazione — sola lettura': 'Read-only archive copy',
   'Nuova copia indipendente — nuovo fondatore': 'New independent copy — new founder',

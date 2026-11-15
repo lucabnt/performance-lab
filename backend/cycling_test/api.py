@@ -268,6 +268,7 @@ def create_app(root=None, token=None, frontend=None):
                 '/api/v1/workspaces/split/preview',
                 '/api/v1/workspaces/split',
                 '/api/v1/backup/scalable/save',
+                '/api/v1/backup/scalable/encrypted',
                 '/api/v1/sync/connection',
                 '/api/v1/sync/run',
                 '/api/v1/sync/oauth/start',
@@ -759,6 +760,32 @@ def create_app(root=None, token=None, frontend=None):
             file = write_backup(store, stage / 'fuorigiri-backup-v3.zip')
             return FileResponse(
                 file, media_type='application/zip', filename=file.name, background=BackgroundTask(shutil.rmtree, stage)
+            )
+        except Exception:
+            shutil.rmtree(stage)
+            raise
+
+    class EncryptedBackup(BaseModel):
+        # Password in the body, never in the URL or logs.
+        password: str = Field(min_length=12, max_length=1000)
+
+    @app.post('/api/v1/backup/scalable/encrypted')
+    def encrypted_scalable_backup(data: EncryptedBackup):
+        from .backup_stream import write_backup
+        from .backup_crypto import encrypt_file
+        from starlette.background import BackgroundTask
+        import tempfile, shutil
+
+        stage = Path(tempfile.mkdtemp(prefix='fuorigiri-download-'))
+        try:
+            plain = write_backup(store, stage / 'fuorigiri-backup-v3.zip')
+            file = encrypt_file(plain, stage / 'fuorigiri-backup-v3.fgbak', data.password)
+            plain.unlink()
+            return FileResponse(
+                file,
+                media_type='application/octet-stream',
+                filename=file.name,
+                background=BackgroundTask(shutil.rmtree, stage),
             )
         except Exception:
             shutil.rmtree(stage)

@@ -30,7 +30,7 @@ Un blocco è 1 MiB; un oggetto può arrivare al limite di sicurezza di 16 GB, me
 
 ## Backup v3 ZIP64
 
-In Archivio e scambio → Copia dell’archivio scegliere **Scarica backup scalabile · v3**. Il backup dati è non cifrato e non contiene chiavi o privilegi del fondatore; il recupero accessi cifrato rimane un file separato.
+In Archivio e scambio → Copia dell’archivio scegliere **Scarica backup scalabile · v3**. Il backup dati è non cifrato, salvo l'opzione facoltativa «Proteggi con password» ([formato `.fgbak`](BACKUP_CIFRATO.md)), e non contiene chiavi o privilegi del fondatore; il recupero accessi cifrato rimane un file separato.
 
 Il formato contiene uno snapshot SQLite consistente, gli oggetti, un inventario JSONL con hash/dimensioni e un piccolo manifest. Scrittura e controllo dei contenuti avvengono a blocchi; l’inventario di verifica è su SQLite temporaneo. Il database caricato viene letto con schema non attendibile disabilitato e viene ricostruito nelle tabelle note: non viene eseguito SQL fornito dal backup.
 

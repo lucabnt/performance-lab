@@ -40,8 +40,8 @@ export function Legal({api}: {api: any}) {
           </p>
           <p>
             {en
-              ? 'Athlete data, often of minors, are stored unencrypted in the local archive and in ZIP backups. Turn on device encryption (BitLocker or Device encryption on Windows; on Android set a screen lock), protect the account with a password and keep backups on encrypted or access-controlled storage.'
-              : 'I dati degli atleti, spesso minorenni, sono salvati senza cifratura nell’archivio locale e nei backup ZIP. Attiva la cifratura del dispositivo (BitLocker o Crittografia dispositivo su Windows; su Android imposta un blocco schermo), proteggi l’account con una password e conserva i backup su supporti cifrati o ad accesso controllato.'}
+              ? 'Athlete data, often of minors, are stored unencrypted in the local archive and in ZIP backups. Turn on device encryption (BitLocker or Device encryption on Windows; on Android set a screen lock), protect the account with a password and protect backups with a password or keep them on encrypted or access-controlled storage.'
+              : 'I dati degli atleti, spesso minorenni, sono salvati senza cifratura nell’archivio locale e nei backup ZIP. Attiva la cifratura del dispositivo (BitLocker o Crittografia dispositivo su Windows; su Android imposta un blocco schermo), proteggi l’account con una password e proteggi i backup con una password o conservali su supporti cifrati o ad accesso controllato.'}
           </p>
           <p>
             {en

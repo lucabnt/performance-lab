@@ -48,7 +48,17 @@ function SocietyManager(props: Props) {
     [preview, setPreview] = useState<Row | null>(null),
     [mode, setMode] = useState('snapshot'),
     [working, setWorking] = useState(false),
-    [message, setMessage] = useState('');
+    [message, setMessage] = useState(''),
+    [protectedBackup, setProtectedBackup] = useState<File | null>(null),
+    [backupPassword, setBackupPassword] = useState('');
+  const previewBackup = (selected: File, secret = '') =>
+    execute(async () => {
+      const f = new FormData();
+      f.append('file', selected);
+      if (secret) f.append('backup_password', secret);
+      setPreview(await api('workspaces/restore/preview', f));
+      setBackupPassword('');
+    });
   const execute = (task: () => Promise<void>) =>
     run(async () => {
       setWorking(true);
@@ -165,22 +175,41 @@ function SocietyManager(props: Props) {
               )}
             </p>
             <label>
-              {tr('Backup dati ZIP')}
+              {tr('Backup dati (.zip, oppure .fgbak protetto da password)')}
               <input
                 type="file"
-                accept=".zip"
+                accept=".zip,.fgbak"
                 onChange={e => {
                   const selected = e.target.files?.[0];
                   setPreview(null);
-                  if (selected)
-                    execute(async () => {
-                      const f = new FormData();
-                      f.append('file', selected);
-                      setPreview(await api('workspaces/restore/preview', f));
-                    });
+                  setBackupPassword('');
+                  setProtectedBackup(selected && selected.name.toLowerCase().endsWith('.fgbak') ? selected : null);
+                  if (selected && !selected.name.toLowerCase().endsWith('.fgbak')) previewBackup(selected);
                 }}
               />
             </label>
+            {protectedBackup && !preview && (
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
+                  previewBackup(protectedBackup, backupPassword);
+                }}
+              >
+                <p>{tr('Backup protetto da password: inserisci la password usata per crearlo.')}</p>
+                <label>
+                  {tr('Password del backup')}
+                  <input
+                    type="password"
+                    required
+                    minLength={12}
+                    autoComplete="off"
+                    value={backupPassword}
+                    onChange={e => setBackupPassword(e.target.value)}
+                  />
+                </label>
+                <button disabled={working}>{tr('Verifica backup')}</button>
+              </form>
+            )}
             {preview && (
               <form
                 onSubmit={submit(async () => {

@@ -116,9 +116,10 @@ def install_workspaces(app, manager, store, download):
         return data.model_dump()
 
     @app.post('/api/v1/workspaces/restore/preview')
-    def restore_preview(file: UploadFile):
+    def restore_preview(file: UploadFile, backup_password: str = Form('', max_length=1000)):
         from .recovery import summary
-        from .backup_stream import inspect_file, MAX_COMPRESSED, CHUNK
+        from .backup_stream import inspect_file, digest_file, MAX_COMPRESSED, CHUNK
+        from .backup_crypto import is_encrypted, decrypt_file
         import hashlib, os
         from uuid import uuid4
 
@@ -137,12 +138,23 @@ def install_workspaces(app, manager, store, download):
                         raise ValueError('Backup oltre 64 GB.')
                     digest.update(chunk)
                     out.write(chunk)
+            encrypted = is_encrypted(temp)
+            if encrypted:
+                # Staged as the decrypted v3 ZIP: restore and its checks stay unchanged.
+                plain = pending / (str(uuid4()) + '.plain.tmp')
+                try:
+                    decrypt_file(temp, plain, backup_password)
+                    os.chmod(plain, 0o600)
+                    temp.unlink()
+                    plain.rename(temp)
+                finally:
+                    plain.unlink(missing_ok=True)
             with inspect_file(temp) as data:
                 info = summary(data)
-            value = digest.hexdigest()
+            value = digest_file(temp) if encrypted else digest.hexdigest()
             path = pending / value
             temp.replace(path)
-            return {**info, 'backup_hash': value}
+            return {**info, 'backup_hash': value, 'encrypted': encrypted}
         finally:
             temp.unlink(missing_ok=True)
 
@@ -186,19 +198,31 @@ def install_workspaces(app, manager, store, download):
 
     class SaveBackup(BaseModel):
         path: str = Field(min_length=1, max_length=2000)
+        # Optional: empty keeps the unencrypted v3 ZIP.
+        password: str = Field('', max_length=1000)
 
     @app.post('/api/v1/backup/scalable/save')
     def save_scalable_backup(data: SaveBackup):
         from pathlib import Path
         from .backup_stream import write_backup
+        from .backup_crypto import write_encrypted_backup, SUFFIX
 
         target = Path(data.path).expanduser()
-        if not target.is_absolute() or target.suffix.lower() != '.zip':
-            raise ValueError('Indicare un percorso assoluto di file .zip.')
+        suffix = SUFFIX if data.password else '.zip'
+        if not target.is_absolute() or target.suffix.lower() != suffix:
+            raise ValueError(f'Indicare un percorso assoluto di file {suffix}.')
         root = store.root.resolve()
         resolved = target.resolve()
         if root == resolved or root in resolved.parents:
             raise ValueError('Salvare il backup fuori dalla cartella dati della società.')
+        if data.password:
+            write_encrypted_backup(store, target, data.password)
+            return {
+                'path': str(target),
+                'schema': 3,
+                'encrypted': True,
+                'note': 'Backup protetto da password scritto e completato. Senza la password non è recuperabile. Conservare separatamente il recupero degli accessi.',
+            }
         write_backup(store, target)
         return {
             'path': str(target),

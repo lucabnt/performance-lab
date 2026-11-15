@@ -56,9 +56,7 @@ Archivio locale, allegati e backup ZIP **non sono cifrati** dall'app; `identity.
 
 - **Windows:** attivare BitLocker o *Crittografia dispositivo* (Impostazioni → Privacy e sicurezza) sul disco che contiene la cartella dati; usare un account con password o PIN, senza accesso automatico, e non condividerlo.
 - **Android:** impostare un blocco schermo (PIN, password o sequenza); sui dispositivi recenti la cifratura dell'archivio è attiva e legata al blocco. Il backup automatico Android dell'app è disattivato.
-- **Backup:** conservarli su un supporto cifrato o in una posizione ad accesso controllato, separata dalla cartella di scambio. Chi ottiene una copia del backup ne legge il contenuto.
-
-Un backup cifrato con password, facoltativo, è pianificato e non ancora disponibile.
+- **Backup:** usare l'opzione «Proteggi con password» (file `.fgbak`, vedi [Backup protetto da password](BACKUP_CIFRATO.md)) oppure conservarli su un supporto cifrato o in una posizione ad accesso controllato, separata dalla cartella di scambio. Chi ottiene una copia di un backup ZIP non protetto ne legge il contenuto; senza la password un `.fgbak` non è recuperabile.
 
 ## Tre modalità di ripristino
 

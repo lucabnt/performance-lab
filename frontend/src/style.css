@@ -540,3 +540,15 @@ details > section {
     grid-template-columns: 1fr;
   }
 }
+/* Optional backup password (RT-11): stacked fields that fit the narrow archive column. */
+.backup-protection > label:not(.checkbox) {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+}
+.backup-protection input[type='password'] {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}

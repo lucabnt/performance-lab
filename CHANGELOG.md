@@ -1,5 +1,12 @@
 # Changelog
 
+## 15 novembre 2026 — revisione tecnica, blocco 4 (backup protetto da password)
+
+- Nuova opzione «Proteggi con password» in Archivio e scambio (RT-11). Il backup v3 viene scaricato o salvato come file `.fgbak` cifrato con AES-256-GCM a blocchi e chiave scrypt; la password richiede almeno 12 caratteri e va inserita due volte, con avviso che senza password il backup non è recuperabile.
+- Il ripristino accetta `.zip` e `.fgbak`: per i file protetti chiede la password, poi riusa anteprima, controlli e modalità del v3. Una password errata o un file alterato o troncato viene segnalato senza lasciare file parziali.
+- Il backup v3 in chiaro resta predefinito, producibile e leggibile. Nessuna nuova dipendenza. Specifica in `docs/BACKUP_CIFRATO.md`; nota sulla cifratura del dispositivo aggiornata.
+- Verifiche: `scripts/verify.py` completo riuscito (`pytest` 350 superati, 1 saltato).
+
 ## 15 novembre 2026 — revisione tecnica, blocco 3 voce 9 (formattazione)
 
 - Formattazione automatica dei sorgenti (RT-05): Python con `ruff format` (righe da 120, apici conservati), frontend con `prettier` 3.6.2 (dipendenza di sviluppo, configurazione in `frontend/.prettierrc.json`; esclusi `index.html`, `public/`, `vendor/`). Un'istruzione per riga al posto delle righe fino a 3221 caratteri.

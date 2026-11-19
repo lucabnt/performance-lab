@@ -17,10 +17,11 @@ def verify(root):
     if importlib.metadata.version('cycling-suite-core')!=meta['version']:raise ValueError('Reinstallare la wheel common registrata.')
     if '"cycling-suite-core=='+meta['version']+'"' not in (root/'pyproject.toml').read_text(encoding='utf-8'):raise ValueError('Versione common dichiarata nel progetto non coerente.')
     import cycling_suite
-    for module in ('__init__.py','credentials.py','transports.py','instance.py','desktop.py'):
-        actual=Path(cycling_suite.__file__).parent/module
-        with zipfile.ZipFile(wheel) as archive:
-            if actual.read_bytes()!=archive.read('cycling_suite/'+module):raise ValueError('Sorgenti installate diverse dalla wheel.')
+    with zipfile.ZipFile(wheel) as archive:
+        modules=[n for n in archive.namelist() if n.startswith('cycling_suite/') and n.endswith('.py')]
+        for module in modules:
+            actual=Path(cycling_suite.__file__).parent/module.split('/',1)[1]
+            if not actual.exists() or actual.read_bytes()!=archive.read(module):raise ValueError('Sorgenti installate diverse dalla wheel.')
     requirement='vendor/'+name
     if requirement not in (root/'requirements-common.txt').read_text(encoding='utf-8'):raise ValueError('Dipendenza common non coerente.')
     return meta

@@ -1,4 +1,10 @@
-# Runtime comune — 20 ottobre 2026
+# Runtime comune
+
+## Core 0.2.0 — 19 novembre 2026
+
+Oltre a portachiavi, trasporti, lock e finestra Qt, il core fornisce: `crypto` (firme, involucro inviti/recupero), `files` (scrittura atomica), `csv_safety`, `branding.ATTRIBUTION`, `jobs` (registro dei job di sync) ed `exchange` (versioni dei controlli firmati, lettura incrementale, pubblicazione immutabile). I moduli Fuorigiri omonimi restano adattatori: messaggi, parametri scrypt (`SEAL_KDF`, `LEGACY_KDF`), nome del file `sync-job.json`, revoche monotone, congelamento degli eventi accettati, pagine v2, `apply_candidates` e il backup `.fgbak` restano del prodotto. Confini e vettori byte per byte nella documentazione del common (`docs/CORE_PYTHON.md`).
+
+## Core 0.1.2 — 20 ottobre 2026
 
 Fuorigiri consuma `cycling-suite-core` 0.1.2, wheel locale sotto `vendor`, installata da `requirements-common.txt` incluso nei lockfile. I moduli `credentials.py`, `transports.py` e `instance.py` sono adattatori al codice comune; `desktop.py` conserva lifecycle, server e percorsi del prodotto e usa la finestra Qt condivisa.
 

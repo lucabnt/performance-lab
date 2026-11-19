@@ -31,7 +31,7 @@ Richiesta: implementare passo per passo il piano di [REVISIONE_TECNICA.md](REVIS
 
 **Blocco 2 — implementato nei sorgenti, 14 novembre 2026:**
 
-- RT-15: negli export CSV (archivio, estesi, maturazione, ripetibilità) i testi che iniziano con `=`, `+`, `-`, `@`, tabulazione o a capo ricevono un apice; numeri intatti. Tutti gli import CSV lo rimuovono in lettura; la trasformazione è reversibile anche per testi che iniziano già con un apice. Manifest dell’export aggiornato. Guida in IMPORT_CSV.md.
+- RT-15: negli export CSV (archivio, estesi, maturazione, ripetibilità) i testi che iniziano con `=`, `+`, `-`, `@`, tabulazione o a capo ricevono un apice; numeri intatti. Dal 19 novembre (core comune 0.2.0) anche i testi in cui spazi iniziali precedono `=`, `+`, `-`, `@`; regola condivisa con Ammiraglia. Tutti gli import CSV lo rimuovono in lettura; la trasformazione è reversibile anche per testi che iniziano già con un apice. Manifest dell’export aggiornato. Guida in IMPORT_CSV.md.
 - RT-11: nota sulla cifratura del dispositivo (IT/EN) nella finestra «Licenza, limiti e backup», mostrata nella vista Info su Android e nel piè di pagina desktop; sezione «Proteggere i dati sul dispositivo» in SOCIETA_BACKUP_E_ACCESSI.md. Verificata nella GUI web desktop; vista Info Android non ricatturata.
 
 **Blocco 3, voce 8 — implementata nei sorgenti, 14 novembre 2026:**

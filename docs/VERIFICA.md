@@ -1,5 +1,11 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 19 novembre 2026 — core comune 0.2.0
+
+- `scripts/verify.py` completo riuscito con la wheel 0.2.0 installata (versioni, UI/core incorporati, hash, ruff, formati, build tsc/Vite, pytest, modelli frontend, diff). Prima della consegna: **362 test Python passati** contro le sorgenti comuni.
+- Common: vettori crittografici generati dal codice Fuorigiri/Ammiraglia precedente e riprodotti byte per byte dal core (venv con `cryptography`); `sync-core.py --check` riuscito.
+- Limiti: nessuna build EXE/APK, nessuna prova su dispositivo o provider reale; la pubblicazione concorrente dello stesso evento è coperta solo dal test del core.
+
 ## 19 novembre 2026 — etichetta «sperimentale» dei provider cloud (PERIMETRO-01)
 
 - Prettier senza differenze su `cloud.tsx`, `synchronization.tsx`, `i18n.ts`; build frontend `tsc`/Vite riuscita; `npm run test:signals` **43 passati**. Nessuna modifica Python: `pytest` e `scripts/verify.py` completo non eseguiti.

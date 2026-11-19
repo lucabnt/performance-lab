@@ -1,1 +1,1 @@
-vendor/cycling_suite_core-0.1.2-py3-none-any.whl
+vendor/cycling_suite_core-0.2.0-py3-none-any.whl

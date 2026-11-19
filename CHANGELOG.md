@@ -1,5 +1,12 @@
 # Changelog
 
+## 19 novembre 2026 — core comune 0.2.0 (primitive, utilità, job e invarianti di scambio)
+
+- `cycling-suite-core` 0.2.0 sostituisce 0.1.2. Firme Ed25519, involucro degli inviti/recupero (scrypt + Fernet, lettura dei file storici n=2¹⁴), scrittura atomica dei JSON, neutralizzazione CSV, attribuzione fissa, job di sync e regole di scambio arrivano dal core; `workspaces.py`, `csv_safety.py`, `branding.py`, `sync_jobs.py`, `sync.py` e `sync_v2.py` restano adattatori con nomi, messaggi e formati di Fuorigiri.
+- Formati invariati byte per byte: vettori generati da questo codice prima dell'estrazione e verificati nel common.
+- Comportamenti cambiati: l'export CSV antepone l'apice anche ai testi con spazi o a capo prima di = + - @ (import reversibile); le scritture JSON locali passano per fsync; una pubblicazione concorrente dello stesso evento (due amministratori) non fa più fallire lo scambio v1.
+- Versione prodotto 0.10.0 invariata, nessun nuovo EXE/APK. [Dettagli](docs/CORE_CONDIVISO.md), [prove](docs/VERIFICA.md).
+
 ## 19 novembre 2026 — provider cloud etichettati come sperimentali (PERIMETRO-01)
 
 - Archivio e scambio → sincronizzazione: nel menu del trasporto Google Drive, Dropbox e OneDrive riportano «· sperimentale» (EN «experimental»); il loro pannello mostra l'etichetta SPERIMENTALE e un avviso che indica WebDAV per l'uso quotidiano. WebDAV, cartella e servizio dedicato invariati.

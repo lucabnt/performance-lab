@@ -13,6 +13,7 @@ import tempfile
 from pathlib import Path
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.exceptions import InvalidSignature
+from cycling_suite.exchange import publish_immutable
 from .store import encoded, KINDS
 
 CHUNK = 1_048_576
@@ -39,14 +40,10 @@ class Objects:
 
     def immutable(self, name, raw):
         if name not in self.names:
-            token = self.cipher.encrypt(raw)
-            try:
-                created = self.transport.put(name, token)
-            except ValueError:
-                # Two writers may encrypt identical content with different IVs.
-                if self.cipher.decrypt(self.transport.get(name)) != raw:
-                    raise
-                created = False
+            # Two writers may encrypt identical content with different IVs.
+            created = publish_immutable(
+                self.transport, name, self.cipher.encrypt(raw), lambda existing: self.cipher.decrypt(existing) == raw
+            )
             self.names.add(name)
             self.uploaded += int(created)
         elif self.verify_all:

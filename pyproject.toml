@@ -8,7 +8,7 @@ version = "0.10.0"
 description = "Archivio e analisi offline dei test incrementali nel ciclismo"
 requires-python = ">=3.12"
 license = "GPL-3.0-or-later"
-dependencies = ["cycling-suite-core==0.1.2", "fastapi", "uvicorn", "python-multipart>=0.0.32", "fitdecode", "numpy", "matplotlib", "reportlab", "cryptography"]
+dependencies = ["cycling-suite-core==0.2.0", "fastapi", "uvicorn", "python-multipart>=0.0.32", "fitdecode", "numpy", "matplotlib", "reportlab", "cryptography"]
 
 [project.optional-dependencies]
 desktop = ["PySide6", "keyring==25.7.0"]

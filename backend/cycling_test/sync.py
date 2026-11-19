@@ -4,7 +4,14 @@ import hashlib
 import json
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.exceptions import InvalidSignature
+from cycling_suite.exchange import add_version, incremental, publish_immutable
 from .store import encoded, KINDS
+
+
+def divergent_controls():
+    return ValueError(
+        'Versioni degli accessi divergenti: usare un solo dispositivo fondatore e recuperare lo stato corretto.'
+    )
 
 
 def exchange(store, folder, key, transport=None, verify_existing=True, protocol=1):
@@ -93,12 +100,7 @@ def exchange(store, folder, key, transport=None, verify_existing=True, protocol=
                         or not isinstance(value.get('accepted', {}), dict)
                     ):
                         raise ValueError('Schema delle revoche non valido.')
-                    previous = versions.get(value['version'])
-                    if previous and encoded(previous) != encoded(value):
-                        raise ValueError(
-                            'Versioni degli accessi divergenti: usare un solo dispositivo fondatore e recuperare lo stato corretto.'
-                        )
-                    versions[value['version']] = value
+                    add_version(versions, value['version'], value, fork=divergent_controls)
                 except (InvalidSignature, KeyError, TypeError) as exc:
                     raise ValueError('Firma del controllo accessi non valida.') from exc
             if stem == 'revocations':
@@ -142,17 +144,19 @@ def exchange(store, folder, key, transport=None, verify_existing=True, protocol=
 
             blobs = {h: base64.b64encode(store.read_object(h)).decode() for h in change["record"].get("objects", [])}
             body = cipher.encrypt(encoded({"change": change, "objects": blobs}).encode())
-            sent += int(transport.put(name, body))
+
+            def same_change(raw, change=change):
+                # A concurrent relay of the same event has a different ciphertext.
+                other = json.loads(cipher.decrypt(raw))
+                return encoded(other.get('change')) == encoded(change)
+
+            sent += int(publish_immutable(transport, name, body, same_change))
             names.add(name)
     errors = []
-    downloaded = skipped = 0
+    downloaded = 0
     candidates = []
-    for name in sorted(names):
-        if not name.endswith('.ctsync'):
-            continue
-        if not verify_existing and name[:-7] in known:
-            skipped += 1
-            continue
+    to_read, skipped = incremental(names, '.ctsync', known, verify_existing)
+    for _, name in to_read:
         try:
             downloaded += 1
             payload = json.loads(cipher.decrypt(transport.get(name)))

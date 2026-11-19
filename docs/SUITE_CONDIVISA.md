@@ -54,7 +54,7 @@ Ammiraglia e Fuorigiri dipendono dal medesimo pacchetto UI 0.2.2. Shell, finestr
 
 Per un cambiamento condiviso: modificare common, incrementare la versione, verificare catalogo/test, eseguire `npm run sync:ui -- --app ../club-lab --app ../performance-lab` dalla repository comune, quindi test/build di ogni app. `--check` richiede versione e impronta sorgenti correnti; il verificatore standalone dell'app continua a controllare soltanto il proprio pacchetto fissato. Non duplicare CSS o comportamenti comuni per una correzione locale.
 
-Contratti dati/client e servizi Python richiedono ancora un'estrazione separata con prove di compatibilità.
+Contratti dati/client e servizi Python richiedono ancora un'estrazione separata con prove di compatibilità. Dal 19 novembre 2026 il core 0.2.0 contiene primitive crittografiche, utilità, job di sync e invarianti di scambio comuni a Fuorigiri e Ammiraglia, con formati invariati ([runtime comune](CORE_CONDIVISO.md)); modelli di accesso e motori di sync restano nelle app.
 
 I motori fisiologici rimangono in Fuorigiri e la pianificazione in Ammiraglia. Nessuna condivisione automatica di SQLite, credenziali o autorizzazioni deriva dalla libreria UI. Lo scambio dei dati richiede un progetto separato e identificativi/provenienza/versioni verificabili.
 

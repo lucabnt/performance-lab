@@ -3,7 +3,8 @@
 from pathlib import Path
 import sys
 
-ATTRIBUTION = 'Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.'
+from cycling_suite.branding import ATTRIBUTION  # noqa: F401  (fixed suite attribution)
+
 MOBILE_ASSETS = None
 
 

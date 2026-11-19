@@ -4,7 +4,6 @@ Secrets stay in the local workspace, never in the synchronized folder. Invitatio
 are password encrypted. OS account protection is required for local secrets.
 """
 
-import base64
 import contextvars
 import json
 import os
@@ -14,17 +13,14 @@ import tempfile
 from pathlib import Path
 from uuid import uuid4
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
-from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cycling_suite import crypto, files
 from .store import Store, encoded
 
 
-def b64(value):
-    return base64.b64encode(value).decode()
-
-
-def un64(value):
-    return base64.b64decode(value, validate=True)
+# Primitives from cycling-suite-core (byte-identical, vectors in the common).
+b64 = crypto.b64
+un64 = crypto.un64
 
 
 def private():
@@ -32,11 +28,11 @@ def private():
 
 
 def sign(key, body):
-    return b64(Ed25519PrivateKey.from_private_bytes(un64(key)).sign(encoded(body).encode()))
+    return crypto.sign_value(key, body)
 
 
 def verify(key, body, signature):
-    Ed25519PublicKey.from_public_bytes(un64(key)).verify(un64(signature), encoded(body).encode())
+    crypto.verify_value(key, body, signature)
 
 
 # Invitations and founder recovery (RT-12). New envelopes state their scrypt
@@ -48,36 +44,16 @@ LEGACY_KDF = {'name': 'scrypt', 'n': 2**14, 'r': 8, 'p': 1}
 def seal(payload, password):
     if len(password) < 12:
         raise ValueError('Usare una password di almeno 12 caratteri.')
-    salt = os.urandom(16)
-    key = Scrypt(salt=salt, length=32, n=SEAL_KDF['n'], r=SEAL_KDF['r'], p=SEAL_KDF['p']).derive(password.encode())
-    return encoded(
-        {
-            'kdf': SEAL_KDF,
-            'salt': b64(salt),
-            'encrypted': Fernet(base64.urlsafe_b64encode(key)).encrypt(encoded(payload).encode()).decode(),
-        }
-    ).encode()
+    return crypto.seal_json(payload, password, crypto.ScryptParams(SEAL_KDF['n'], SEAL_KDF['r'], SEAL_KDF['p']))
 
 
 def unseal(raw, password):
-    envelope = json.loads(raw)
-    salt = un64(envelope['salt'])
-    if len(salt) != 16:
-        raise ValueError('Formato cifrato non valido.')
-    kdf = envelope.get('kdf', LEGACY_KDF)
-    # Bounded like the encrypted backup, so a crafted file cannot demand huge memory.
-    if (
-        not isinstance(kdf, dict)
-        or kdf.get('name') != 'scrypt'
-        or type(kdf.get('n')) is not int
-        or not 2**14 <= kdf['n'] <= 2**20
-        or kdf['n'] & (kdf['n'] - 1)
-        or kdf.get('r') != 8
-        or kdf.get('p') != 1
-    ):
-        raise ValueError('Parametri di cifratura non supportati: aggiornare Fuorigiri.')
-    key = Scrypt(salt=salt, length=32, n=kdf['n'], r=8, p=1).derive(password.encode())
-    return json.loads(Fernet(base64.urlsafe_b64encode(key)).decrypt(envelope['encrypted'].encode()))
+    return crypto.unseal_json(
+        raw,
+        password,
+        legacy=crypto.ScryptParams(LEGACY_KDF['n'], LEGACY_KDF['r'], LEGACY_KDF['p']),
+        unsupported='Parametri di cifratura non supportati: aggiornare Fuorigiri.',
+    )
 
 
 def validate_identity(identity):
@@ -131,13 +107,7 @@ def fresh_identity(id, operator):
 
 
 def write_json(path, value):
-    tmp = path.with_name(str(uuid4()) + '.tmp')
-    try:
-        tmp.write_text(encoded(value), encoding='utf-8')
-        os.chmod(tmp, 0o600)
-        tmp.replace(path)
-    finally:
-        tmp.unlink(missing_ok=True)
+    files.write_json(path, value)
 
 
 def revoke_member(store, id):

@@ -1,5 +1,9 @@
 # Schermate dell’interfaccia
 
+## Crescita e maturazione — 19 novembre 2026
+
+Rinnovata `crescita-maturazione.jpg` dopo MAT-PHV-01: frontend compilato 0.10.0/common UI 0.2.9, backend reale `growth-maturity/3`, nuovo corpus `.local/qa-galleria-20261119-01` generato con `demo_suite.py`, solo dati sintetici. Profilo Crescita DEMO peak Andrea, anteprima al 20/10/2026, con la nuova card «HV massima osservata» accanto a HV e PHV longitudinale. Cattura Qt WebEngine del viewport 1231 × 944 a scala 1,25 (1539 × 1180 px), senza ritocchi, token o barra degli indirizzi; il browser integrato produceva solo catture ridotte. Le altre immagini mantengono la propria provenienza.
+
 ## Esempio Intervals.icu anonimizzato — 10 novembre 2026
 
 Rinnovata `intervals-id.png`: frontend compilato 0.10.0/common UI 0.2.9 e backend reale, nuovo archivio `.local/qa-intervals-placeholder-20261110-01`, sola persona sintetica Ada Esempio DEMO. Editor con ID vuoto e segnaposto di formato `i…`; nessun identificativo reale. Cattura browser 1280 × 720 senza ritocchi, token o credenziali. Sostituisce la cattura dell’editor del 7 novembre. Le altre catture Intervals mantengono la propria provenienza; nessun APK collaudato.
@@ -112,7 +116,7 @@ Su Linux usare `.venv/bin/python`. Aprire l’URL completo con token stampato da
 | `test-incrementale.jpg` | Test e analisi → Dati disponibili → Con tracciato FIT/CSV → Riva Giulia, 15/03/2026, AER-RULLO-ALL → Analizza. Inquadrare testata e intero grafico; lasciare potenza, FC e cadenza abilitate. |
 | `test-wingate.jpg` | Stesso filtro → Moretti Elena, 10/06/2026, Wingate 30 s → Analizza. Inquadrare testata, tracciato e inizio del riepilogo. |
 | `storici-confronti.jpg` | Storici e confronti → MAP operativa, Vista Stagione, Mediana. Lasciare la serie principale proposta; scorrere fino a includere titolo del grafico, curva, chiave della serie e tabella con media/mediana/numerosità. |
-| `crescita-maturazione.jpg` | Atleti → Crescita DEMO peak Andrea → Crescita e maturazione. Inquadrare data di riferimento, selettore dell’analisi, HV/PHV, curva e inizio delle stime datate. La cattura corrente usa l’anteprima al 20/10/2026. |
+| `crescita-maturazione.jpg` | Atleti → Crescita DEMO peak Andrea → Crescita e maturazione. Inquadrare data di riferimento, selettore dell’analisi, card HV/PHV/HV massima osservata, curva e inizio delle stime datate. La cattura corrente usa l’anteprima al 20/10/2026. |
 | `report-esportazioni.jpg` | Archivio e scambio, inizio pagina: ambito del report società/gruppo/stagione/atleta, comandi PDF/Markdown e importazione CSV. |
 
 Usare una normale finestra desktop e zoom browser al 100%, inquadrature comparabili e testo leggibile. Conservare abbastanza contesto per riconoscere la pagina o il dettaglio. Acquisire il solo contenuto dell’app, senza barra degli indirizzi, token, finestre del sistema o tool di sviluppo. Non aprire nei fotogrammi identità, inviti, credenziali o percorsi personali. Nessun account cloud reale è necessario.

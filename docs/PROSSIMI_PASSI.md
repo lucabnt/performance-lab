@@ -14,7 +14,7 @@ L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:
 
 1. **Fedora:** ricostruire le sei wheel da radice neutra ([procedura](ANDROID_WHEEL_FEDORA.md)), con il kit `tmp/android-neutral-kit-20261113-01`. Poi riparazione ABI3, provenienza, `scan_build_paths.py --strict`, audit nativo e test strumentali.
 2. **Android:** chiave del titolare ([firma](FIRMA_ANDROID.md)), `build_android.py --release` da snapshot committato, firma, prove A-04…A-08 e A-11 sul telefono. Gli utenti dell’APK debug devono fare un backup e disinstallarlo.
-3. **Windows:** nuova build con avvisi Qt, installazione e riapertura con Defender attivo (WIN-AV-01), prove W-01…W-06 in Windows Sandbox.
+3. **Windows:** installare il candidato `core020-20261119-01` (19 novembre: avvisi Qt, bootloader locale WIN-AV-02, core 0.2.0) e riaprirlo con Defender attivo (WIN-AV-01/02), poi prove W-01…W-07 in Windows Sandbox. Firma Authenticode da decidere.
 4. **Licenze:** decidere se allegare alla release gli archivi sorgente Qt o affidarsi ai link ufficiali.
 5. **Pubblicazione:** nuovo snapshot sorgenti, allegati e `SHA256SUMS.txt` ricalcolati sullo stesso commit. Nelle note: solo WebDAV provato; Drive, Dropbox e OneDrive sperimentali; 16 KB come limite noto.
 
@@ -22,7 +22,11 @@ L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:
 
 Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZIONE.md). La storia privata resta separata. Prima dei binari completare il materiale di licenza Windows e la bonifica delle wheel Android, poi ricompilare e firmare l’APK.
 
-## Candidato corrente — ordine e maturazione, 9 novembre 2026
+## Candidato corrente — 19 novembre 2026
+
+Windows: `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/` (commit `73c562d`, solo Windows). Android: ultimo APK debug di test in `win-av02-20261115-02` (commit `3794786`, senza PERIMETRO-01 e core 0.2.0). I candidati del 15 novembre e precedenti restano conservati come storici. [Checklist](COLLAUDO_PILOT.md), [prove](VERIFICA.md).
+
+## Candidato precedente — ordine e maturazione, 9 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-ordine-maturazione-20261109-01/`: nuove build Windows/Android **0.10.0** con **UI-ORDINE-02** (cognome/nome, test e misure dal più recente in pagine indipendenti da 15) e **MAT-AVVISI-01** (stime datate decrescenti e indici antropometrici con avvisi, motore growth-maturity/2), oltre alle funzioni precedenti; UI comune **0.2.9** invariata. Installer/portabile completi, APK debug firmato per i test, release non firmato, supporto strumentale, sorgenti/wheel e **25 checksum finali verificati**. Avvio Windows, scansioni Defender attivo e controlli di contenuti/firme/allineamento riusciti. [Prove e digest](VERIFICA.md).
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 19 novembre 2026 — candidato core020-20261119-01 (solo Windows)
+
+- Nuove build locali Windows (installer e portabile, launcher con bootloader locale e risorsa di versione) dal commit `73c562d`, in `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`. Include PERIMETRO-01, core comune 0.2.0 e la correzione del backup protetto. Nessun APK; versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-01/02. [Prove](docs/VERIFICA.md).
+- Documentazione riallineata: candidato corrente in COLLAUDO_PILOT e PROSSIMI_PASSI, schermata `crescita-maturazione.jpg` con la card «HV massima osservata».
+
 ## 19 novembre 2026 — backup protetto: nessuna cancellazione di file preesistenti
 
 - `backup_crypto.encrypt_file` apriva l'origine prima della destinazione: con origine mancante la pulizia dell'errore cancellava un file di destinazione già esistente (segnalato dalla revisione della suite del 16 novembre). Ora la pulizia rimuove solo il file creato dalla chiamata stessa. Il salvataggio desktop usa una cartella temporanea nuova, quindi il caso riguardava la chiamata diretta alla funzione.

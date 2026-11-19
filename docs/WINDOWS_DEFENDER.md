@@ -14,6 +14,8 @@ Nessuno dei tre punti dimostra da solo l'assenza di rilevamenti. Il criterio res
 
 Primo candidato con queste modifiche: `win-av02-20261115-02` (launcher SHA-256 `22f4f69f…f190`). Da collaudare sul PC con Defender attivo; esito da registrare qui e in VERIFICA.md.
 
+*19 novembre 2026:* `win-av02-20261115-02` non è stato installato. Il successore `core020-20261119-01` (solo Windows, commit `73c562d`, launcher SHA-256 `d04c0bd0…b0b0`, stesso bootloader locale) è il candidato su cui eseguire la prova; scansioni di confezionamento senza rilevamenti con definizioni 1.463.367.0, che come per i candidati precedenti non dimostrano l’esito in esecuzione.
+
 ## 10 novembre 2026 — nuovo blocco sul PC destinatario
 
 Il 10 novembre, dalle 09:52:46 alle 09:53:37, Defender ha rilevato Bearfoos sull’eseguibile installato (1116) e ha registrato la quarantena riuscita (1117), con definizioni 1.463.222.0 e motore 1.1.26100.4. L’EXE è assente. Il file del disinstallatore è datato 9 novembre alle 21:03:21. Le impronte dei file dell’interfaccia rimasti coincidono per 19/19 con ordine-maturazione-20261109-01 e per 18/19 con import-avvisi. Il launcher atteso del 9 novembre ha SHA-256 `6e7257afe7a3aae7dfc1772809d592e552f64181c52e8b98979fa714450b97d0`; manca un digest della copia rimossa. WIN-AV-01 resta aperto sul candidato corrente.

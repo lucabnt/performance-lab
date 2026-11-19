@@ -1,5 +1,23 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 19 novembre 2026 — consegna core020-20261119-01 (solo Windows)
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`, prodotto **0.10.0**, commit `73c562d` con working tree pulito al confezionamento. Rispetto a `win-av02-20261115-02` aggiunge PERIMETRO-01 (etichetta «sperimentale»), core comune 0.2.0 e la correzione di `backup_crypto`. Nessuna build Android, pubblicazione, firma o sostituzione di candidati precedenti.
+
+- `scripts/verify.py` completo: tutti i passi riusciti, **363 Python passati** (nessuno saltato), **43 frontend passati**, build `tsc`/Vite.
+- Windows: PyInstaller in nuova `.local/candidate-windows-20261119-01` (358 s), avvisi invariati (pycparser lextab/yacctab, tzdata, plugin QML assetdownloader). Bootloader `runw.exe` del `.venv` compilato localmente (`9776c4f7…1c85`, come in `PROVENIENZA.json`); `VERSIONINFO` presente (prodotto, 0.10.0, autore, copyright con attribuzione fissa). Inno Setup in 139 s; `ISCC.exe` è installato in `%LOCALAPPDATA%\Programs\Inno Setup 6`, non nel percorso indicato in DISTRIBUZIONE.md.
+- Smoke dell’EXE su `.local/qa-windows-package-20261119-01` nuovo, PATH limitato alle directory Windows e variabili Python/Qt rimosse: import, logo e backend HTTP in 6,0 s.
+- Defender attivo, definizioni **1.463.367.0**: bundle, installer e intera consegna senza rilevamenti; nessun evento 1116/1117 nelle due ore della build.
+- Contenuti: 19 asset frontend del bundle identici a `frontend/dist`; portabile confrontato byte per byte con il bundle (3.812 file); bytecode congelato di `backup_crypto`, `sync_jobs`, `csv_safety` e dei moduli `cycling_suite.crypto`/`jobs` del core 0.2.0 equivalente ai sorgenti correnti (numeri di riga esclusi). Sorgenti ZIP: 413 file tracciati più `bundle-resources.json`. **15 checksum** ricontrollati. Confezionamento con uno script locale che riusa le funzioni di `scripts/package_candidate.py`, che richiede un APK.
+- Launcher: **17.436.932 byte**, SHA-256 `d04c0bd0246a3443d84ba294296d70eaeac8b7c9c4164ba1793d5c8b566fb0b0`.
+- Installer: **197.786.408 byte**, SHA-256 `aeea72b6041909b427528b8534ccdee477cb180b4004d4bfb83c646b49aef48f`.
+- Portabile: **281.877.970 byte**, SHA-256 `1d20c1b67258ba2a4a2094e2a43a6d35cfd844eb11d2bd5e9ac38359452e03d8`.
+- Non provati: installazione e riapertura con Defender attivo (WIN-AV-01/02), aggiornamento sopra l’installazione dell’utente, Windows pulito, provider reali. Le guide copiate nella consegna precedono questa annotazione.
+
+## 19 novembre 2026 — schermata crescita e maturazione
+
+- `docs/screenshots/crescita-maturazione.jpg` rinnovata con la card «HV massima osservata» (MAT-PHV-01). Frontend compilato corrente, backend reale, nuovo corpus `.local/qa-galleria-20261119-01` da `demo_suite.py`; profilo «Crescita DEMO peak Andrea», anteprima al 20/10/2026: HV 3,01, PHV 8,96 cm/anno con tratto valido 9 stature, HV massima osservata 8,84. Cattura con Qt WebEngine (viewport 1231 × 944, scala 1,25) perché il browser integrato produce solo catture ridotte; nessun ritocco o token. Solo italiano.
+
 ## 19 novembre 2026 — backup protetto, pulizia limitata al file creato
 
 - `tests/test_backup_crypto.py`: 17 passati, compresa la nuova regressione (origine mancante con destinazione preesistente intatta; file parziale rimosso dopo errore di cifratura). Ruff e formato senza differenze.

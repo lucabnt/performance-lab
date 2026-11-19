@@ -1,6 +1,14 @@
 # Collaudo del candidato pilot — Windows e Android
 
-## Candidato corrente — revisione tecnica, 15 novembre 2026
+## Candidato corrente — core020, solo Windows, 19 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`, **solo Windows**, dal commit `73c562d` con working tree pulito. Rispetto a `win-av02-20261115-02` aggiunge l’etichetta «sperimentale» di Drive/Dropbox/OneDrive (PERIMETRO-01), il core comune 0.2.0 e la correzione della pulizia del backup protetto; mantiene bootloader locale e risorsa di versione (WIN-AV-02) e MAT-PHV-01. Installer da eseguire sopra l’installazione esistente dopo un backup e con l’app chiusa (W-04), oppure portabile completo. **Prima prova da fare:** installazione, avvio, chiusura e riapertura dal collegamento con Defender attivo, controllando gli eventi 1116/1117 ([WINDOWS_DEFENDER.md](WINDOWS_DEFENDER.md)). Nessun APK: per Android resta `win-av02-20261115-02` (debug di test) o precedenti. Smoke, scansioni Defender e 15 checksum verificati; [prove e digest](VERIFICA.md). Restano WIN-AV-01/02, Windows pulito, firma Authenticode e i gate Android.
+
+## Candidato precedente — win-av02, 15 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-win-av02-20261115-02/` dal commit `3794786`: Windows con bootloader PyInstaller locale e risorsa di versione (WIN-AV-02), MAT-PHV-01; Android debug di test, release non firmato e supporto strumentale. Installazione con Defender attivo mai eseguita; superato da core020 per Windows. [Prove e digest](VERIFICA.md).
+
+## Candidato precedente — revisione tecnica, 15 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`: build Windows/Android **0.10.0** con la revisione tecnica del 14–15 novembre (backup protetto da password, prestazioni, inviti, CSP, permessi, CSV) e le funzioni di alpha.1. Windows: installer da eseguire sopra l’installazione esistente dopo un backup e con l’app chiusa (W-04), oppure portabile completo. Android: `debug-test.apk` con la firma di test abituale, da installare come aggiornamento senza disinstallare; release non firmato e non distribuibile (percorsi del builder nelle wheel). Smoke, scansioni Defender, firme e 26 checksum verificati; [prove e digest](VERIFICA.md). Restano Windows pulito/WIN-AV-01, runtime Android della build, 16 KB, firma release e provider reali. Gli inviti nuovi richiedono che tutti i dispositivi siano aggiornati.
 

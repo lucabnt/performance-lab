@@ -45,7 +45,7 @@ Aggiornamento del **7 novembre 2026**: [configurazione Intervals.icu](docs/scree
 | [![Wingate 30 secondi con tracciato e risultati della prova](docs/screenshots/test-wingate.jpg)](docs/screenshots/test-wingate.jpg) | [![Evoluzione stagionale della MAP con mediana, media e numerosità](docs/screenshots/storici-confronti.jpg)](docs/screenshots/storici-confronti.jpg) |
 | Esempio Wingate 30 s; metodi e durate rimangono distinti. | Serie selezionate esplicitamente, aggregati e dati mancanti. |
 | **Crescita e maturazione** | **Report ed esportazioni** |
-| [![Profilo atleta con velocità di crescita, PHV esplorativo e stime datate](docs/screenshots/crescita-maturazione.jpg)](docs/screenshots/crescita-maturazione.jpg) | [![Report filtrabili per società, gruppo, stagione o atleta e importazione CSV](docs/screenshots/ui-coherence-010/archivio.png)](docs/screenshots/ui-coherence-010/archivio.png) |
+| [![Profilo atleta con velocità di crescita, PHV esplorativo, HV massima osservata e stime datate](docs/screenshots/crescita-maturazione.jpg)](docs/screenshots/crescita-maturazione.jpg) | [![Report filtrabili per società, gruppo, stagione o atleta e importazione CSV](docs/screenshots/ui-coherence-010/archivio.png)](docs/screenshots/ui-coherence-010/archivio.png) |
 | HV, analisi conservate e stime con metodo e limiti espliciti. | PDF e Markdown della società o delle sue sottosezioni; scambio CSV. |
 
 ### Android: navigazione compatta

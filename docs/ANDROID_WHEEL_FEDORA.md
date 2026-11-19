@@ -10,6 +10,8 @@ Procedura consolidata il **20 ottobre 2026**, per Fuorigiri **0.10.0**. Questa �
 
 **Principio:** sorgenti, prefissi OpenSSL/libffi, output Pillow e registro cargo stanno sotto una radice nuova `/build/<id>` del contenitore Toolbox. SDK, NDK e rustup restano dove sono, con i loro percorsi rimappati. Le ricette dei paragrafi 5–10 non cambiano, salvo le variazioni indicate qui sotto.
 
+*19 novembre 2026, prima dell’esecuzione:* la mappatura originale verso `/home/builder` sarebbe stata segnalata da `scan_build_paths.py --strict`, che considera un riscontro qualsiasi `/home/<nome>`. `android_neutral_env.sh` e il builder Pillow mappano ora la home su `/build/tools`, sia come `$HOME` (`/home/<utente>`) sia come percorso reale (`/var/home/<utente>` su Kinoite, osservato nella Toolbox). Usare il kit `tmp/android-neutral-kit-20261119-02.zip` (stessi archivi sorgente del kit del 13 novembre, script corretti; digest nel file `.sha256` accanto), non quello del 13 novembre.
+
 0. Su Windows generare un kit Pillow nuovo con `prepare_android_pillow.py` e copiarlo nella Toolbox. Oltre al builder Pillow aggiornato contiene `android_neutral_env.sh` e `scan_build_paths.py`; sotto, `<kit-o-clone>` indica il kit o un clone della repository.
 1. Nella Toolbox caricare l’ambiente abituale (paragrafo 4), poi la radice neutra:
 
@@ -29,7 +31,7 @@ Procedura consolidata il **20 ottobre 2026**, per Fuorigiri **0.10.0**. Questa �
    ```
 
    Lo stesso flag dovrebbe correggere anche il LOAD a 16 KB di pydantic-core, uno dei sei moduli segnalati dall’audit. Verificarlo con `audit_android_native.py`: non va dato per acquisito.
-4. **OpenSSL (§7):** aggiungere `$FUORIGIRI_REMAP_C` agli argomenti di `Configure`. I prefissi `$root/openssl-android-<abi>` risultano già neutri perché `root` è la radice nuova.
+4. **OpenSSL (§7):** **non** aggiungere `$FUORIGIRI_REMAP_C` agli argomenti di `Configure`. OpenSSL incorpora i flag di compilazione nella stringa `compiler:` della libreria, quindi la mappatura inserirebbe proprio il percorso della home (riscontrato il 19 novembre in `_rust.abi3.so` di cryptography). Con sorgenti e prefissi `$root/openssl-android-<abi>` sotto la radice nuova, le librerie statiche risultano senza home: verificarlo con `strings -n 6 openssl-android-*/lib/*.a | grep -cE '/(var/)?home/'`, che deve dare 0.
 5. **cryptography (§10):** nelle due righe `CIBW_ENVIRONMENT` sostituire `RUSTFLAGS='-C link-arg=-Wl,-z,max-page-size=16384'` con `RUSTFLAGS='-C link-arg=-Wl,-z,max-page-size=16384 $FUORIGIRI_REMAP_RUST'`. Poi applicare di nuovo la riparazione ABI3 (§10 bis) alle nuove wheel originali, in destinazioni nuove, con nuovo report.
 6. **Pillow:** usare il builder del kit nuovo, che rifiuta gli output nella home e aggiunge la mappatura dei percorsi, con `--output "$FUORIGIRI_NEUTRAL/pillow-x86_64"` e `--output "$FUORIGIRI_NEUTRAL/pillow-arm64"` ([guida Pillow](ANDROID_PILLOW.md)).
 7. **Controllo sul builder, prima del trasferimento:**
@@ -41,6 +43,8 @@ Procedura consolidata il **20 ottobre 2026**, per Fuorigiri **0.10.0**. Questa �
 
    L’esito deve essere pulito. Su Fedora lo scanner cerca anche il nome dell’account corrente.
 8. **Su Windows:** conservare le wheel precedenti fuori da `android/wheels`. Copiare le nuove, aggiornare `SHA256.json`, `ABI3_REPAIR.json` e `PILLOW_BUILD.json` con la nuova provenienza, rieseguire `scan_build_paths.py --strict android/wheels`, `audit_android_native.py` e i test strumentali. Infine `build_android.py --release`.
+
+**Esecuzione del 19 novembre 2026:** radice `/build/fuorigiri-20261119-01`, Rust 1.99.1 (toolchain e target Android reinstallati da rustup), cibuildwheel 4.3.1, NDK 27.3.13750724; commit pydantic-core `396499c6…`, cryptography `4dda5c7f…`. Sei wheel nuove pulite allo scanner `--strict` sul builder e su Windows; Pillow con 30 segmenti LOAD a 16 KB. Esiti, digest e riparazione ABI3 in [VERIFICA.md](VERIFICA.md) e in [android/wheels](../android/wheels/README.md).
 
 I digest cambiano: aggiornare il manifest solo dopo le verifiche e mai per far passare un controllo. La neutralità dei percorsi non qualifica il runtime su telefono né la compatibilità 16 KB dell’intero APK.
 

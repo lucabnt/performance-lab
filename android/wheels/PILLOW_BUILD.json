@@ -3,8 +3,8 @@
   "version": "13.0.0",
   "status": "local-ELF-and-x86_64-emulator-runtime-verified-arm64-pending",
   "transfer": {
-    "file": "pillow-fedora-20261102-01.zip",
-    "sha256": "49479885c5ce6c313ddbc2c684605ff3e13d0f729ed0add10b4c70db3548dc5e"
+    "file": "wheel-neutre-20261119-01.zip",
+    "sha256": "a4ea541013469e023a2ce6024da05009275be8283d8c95e467a1fe0ec5808ed6"
   },
   "sources": {
     "pillow": {
@@ -38,11 +38,13 @@
     "cibuildwheel": "4.3.1",
     "ndk": "27.3.13750724",
     "api": 26,
-    "target_python": "3.13"
+    "target_python": "3.13",
+    "neutral_root": "/build/fuorigiri-20261119-01",
+    "path_remap": "home and /var/home -> /build/tools"
   },
   "wheels": {
-    "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl": "3588d293e34c299c6ad71f71613454d71a6a55947a73c645ec46eefa444c4969",
-    "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl": "620f3697ff2801d2092d4d84c3e842c9f223bd559aa30cd4f0e4b7e217220323"
+    "pillow-13.0.0-cp313-cp313-android_26_arm64_v8a.whl": "ed51882d69190d9df5e5f61de8b695a00b6c84fce7f14be94ce9a5b8829e461f",
+    "pillow-13.0.0-cp313-cp313-android_26_x86_64.whl": "e69744c8f41260df7ec56869fe396ff152e3e3c38f8824213faf102387c2d080"
   },
   "local_checks": [
     "transfer-sha256",
@@ -51,7 +53,8 @@
     "RECORD-sha256-and-size",
     "ELF64-machine",
     "DT_NEEDED",
-    "LOAD-alignment-and-congruence-16384"
+    "LOAD-alignment-and-congruence-16384",
+    "scan_build_paths-strict"
   ],
   "modules": [
     {
@@ -218,34 +221,10 @@
     }
   ],
   "limitations": [
-    "x86_64 build.json remained incomplete after CLI failure; pillow-retry-01.log records successful manual continuation",
     "Binary integrity and ELF checks do not qualify Android import or device operation",
     "Static libjpeg/FreeType do not replace other Chaquopy native dependencies",
     "Full native dependency audit still pending"
   ],
-  "runtime": {
-    "device": "Pixel_9 emulator",
-    "device_api": 35,
-    "page_size": 4096,
-    "tests_passed": 2,
-    "pillow": "13.0.0",
-    "libjpeg_turbo": "3.2.0",
-    "freetype": "2.14.3",
-    "checks": [
-      "PNG",
-      "JPEG",
-      "TrueType font",
-      "fixed logo",
-      "Matplotlib Agg",
-      "ReportLab PDF",
-      "Android PdfRenderer"
-    ],
-    "limits": [
-      "No physical ARM64",
-      "No UI export/external viewer test",
-      "No 16KB runtime qualification"
-    ]
-  },
   "whole_apk_16k_issues": [
     "assets/chaquopy/requirements-arm64-v8a.imy/chaquopy/lib/libfreetype.so",
     "assets/chaquopy/requirements-arm64-v8a.imy/pydantic_core/_pydantic_core.cpython-313-aarch64-linux-android.so",
@@ -253,5 +232,29 @@
     "assets/chaquopy/requirements-x86_64.imy/chaquopy/lib/libopenblas.so",
     "assets/chaquopy/requirements-x86_64.imy/chaquopy/lib/libpng16.so",
     "assets/chaquopy/requirements-x86_64.imy/pydantic_core/_pydantic_core.cpython-313-x86_64-linux-android.so"
-  ]
+  ],
+  "runtime": {
+    "date": "2026-11-19",
+    "device": "Pixel_9 emulator",
+    "device_api": 35,
+    "page_size": 4096,
+    "tests_passed": 2,
+    "pillow": "13.0.0",
+    "libjpeg_turbo": "3.2.0",
+    "freetype": "2.14.3",
+    "pdf_bytes": 101463,
+    "checks": [
+      "PNG",
+      "JPEG",
+      "TrueType font",
+      "fixed logo",
+      "Matplotlib Agg",
+      "ReportLab PDF"
+    ],
+    "limits": [
+      "No physical ARM64",
+      "No UI export/external viewer test",
+      "No 16KB runtime qualification"
+    ]
+  }
 }

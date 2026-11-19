@@ -1,5 +1,9 @@
 # Wheel native Android
 
+## Ricostruzione da radice neutra — 19 novembre 2026
+
+Sostituite sei wheel con la ricostruzione Fedora Toolbox in `/build/fuorigiri-20261119-01` (kit `android-neutral-kit-20261119-02`): pydantic-core 2.41.4, cryptography 50.0.2 e Pillow 13.0.0, entrambe le ABI. CFFI 2.0.0 invariata (stessi digest). Home del builder mappata su `/build/tools`; OpenSSL 3.5.9 statico compilato **senza** `-ffile-prefix-map`, perché OpenSSL incorpora i propri flag di compilazione nella stringa `compiler:`. pydantic-core e cryptography collegate con `max-page-size=16384`. Cryptography riparata con `repair_android_abi3.py` (report in [ABI3_REPAIR.json](ABI3_REPAIR.json), che sostituisce quelli del 20 ottobre conservati nella cronologia Git); Pillow in [PILLOW_BUILD.json](PILLOW_BUILD.json). `scan_build_paths.py --strict` pulito su builder e Windows; CRC, RECORD, macchina ELF e LOAD 16 KB verificati per 14 moduli. Runtime x86_64 verificato su emulatore API 35 (2 test strumentali, avvio app); ARM64 non eseguito. Le wheel precedenti sono conservate fuori dal repository.
+
 ## Pillow — 2 novembre 2026
 
 Ricevute e verificate localmente due wheel Pillow 13.0.0 cp313/API 26, ARM64 e x86_64, prodotte sulla Toolbox Fedora. Ora il gate richiede **otto wheel**, con Pillow fissata in `android/requirements.txt`. Provenienza di sorgenti/libjpeg-turbo 3.2.0/FreeType 2.14.3, digest del trasferimento e rapporto dei dieci moduli ELF in [PILLOW_BUILD.json](PILLOW_BUILD.json). Verificati checksum, CRC, RECORD, macchine, DT_NEEDED libpython3.13.so e allineamento/congruenza dei segmenti LOAD a 16 KB. Questa è una verifica strutturale, distinta da runtime e APK. Non applicare la riparazione ABI3 di cryptography a queste wheel cp313.

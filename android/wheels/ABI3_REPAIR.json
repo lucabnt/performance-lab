@@ -3,8 +3,8 @@
     "tool": "repair_android_abi3/1",
     "lief": "1.0.0-d05b3499b",
     "wheel": "cryptography-50.0.2-cp313-abi3-android_26_x86_64.whl",
-    "original_sha256": "28075522da8587bc16b68886bd66dd645cfa6932019aba8db703b1287bedce44",
-    "repaired_sha256": "c853153a3e49776a51967167c0cf9e728dcda2f47d14b2b19729abafcaf6ea69",
+    "original_sha256": "28236da3472e04f7c7502e7c6e58d10deb3fee7d9f8b91a0f05bb7a10ba1e3a9",
+    "repaired_sha256": "67c6209e95eedb55423c3345fc1a253e6e695665df494e4e3d6c7401e82862f6",
     "changes": [
       {
         "module": "cryptography/hazmat/bindings/_rust.abi3.so",
@@ -17,19 +17,21 @@
           "libdl.so",
           "libc.so"
         ],
-        "original_sha256": "99fbeca7c358583a308d819571fed6adb9e48f40237274c6e447f110f778e461",
-        "repaired_sha256": "09808caac05d9a8815a361243943ef2c8a90f460cb0b2d2fe81897ee46484548"
+        "original_sha256": "3e94dd759002cab46e7631b8036f9243fefa7c7155097a4f08de8e612149e678",
+        "repaired_sha256": "48f1cdfbffe82513f846d0d4ece4ea2f4047adc533e0a6ce14bd1e17e70635a3"
       }
     ],
     "runtime_verified": true,
-    "runtime_context": "2026-10-20: emulator API 35 x86_64, OfflineRuntimeTest via ADB: OK (1 test), imports, Fernet, Ed25519, Keystore, API state."
+    "build": "neutral-root-20261119-01 (Fedora Toolbox, /build/fuorigiri-20261119-01, OpenSSL 3.5.9 static without prefix-map flags)",
+    "repaired_on": "2026-11-19",
+    "runtime_context": "2026-11-19: emulator Pixel_9 API 35 x86_64 (4 KB pages), APK debug installed as update, OfflineRuntimeTest via ADB am instrument: OK (2 tests): imports, Fernet, Ed25519, Keystore, API state, Pillow."
   },
   {
     "tool": "repair_android_abi3/1",
     "lief": "1.0.0-d05b3499b",
     "wheel": "cryptography-50.0.2-cp313-abi3-android_26_arm64_v8a.whl",
-    "original_sha256": "894decf5a78b70c86a5ee48c7afb433165752d7de545d3bf4a8e467cde8cb2bc",
-    "repaired_sha256": "5c6a34bd459b7200120dc6c65ac73e8b2cd6f7201320024beac5b8ab4275e8a2",
+    "original_sha256": "01461cdba6e8405916783bd0486431f95c5d15fd4cce6fd3ecbddca1790a8215",
+    "repaired_sha256": "2af52d4707bd89711bf741707f306ad57781580a2aab5284408d920a560afb26",
     "changes": [
       {
         "module": "cryptography/hazmat/bindings/_rust.abi3.so",
@@ -42,10 +44,12 @@
           "libdl.so",
           "libc.so"
         ],
-        "original_sha256": "3f053089bbe9f2c26629e040456dfef997e65286b77729a4ee506ea3cc64e849",
-        "repaired_sha256": "94c475965f49a942a7c139063c4eb71878c0b699555ffaa0febfede9fbf7811c"
+        "original_sha256": "36cd90ce4ce4a336f69733bc4951dcccf8fbe46e59fc6a681c940d1fba526c98",
+        "repaired_sha256": "5ad954c90e3837cb373e8cbf9305022015050a42442c1c4067194a56445711f2"
       }
     ],
-    "runtime_verified": false
+    "runtime_verified": false,
+    "build": "neutral-root-20261119-01 (Fedora Toolbox, /build/fuorigiri-20261119-01, OpenSSL 3.5.9 static without prefix-map flags)",
+    "repaired_on": "2026-11-19"
   }
 ]

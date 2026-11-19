@@ -94,7 +94,10 @@ def build(kit, output, abi):
         f'-DCMAKE_INSTALL_PREFIX={prefix}',
         '-DCMAKE_INSTALL_LIBDIR=lib',
         '-DBUILD_SHARED_LIBS=OFF',
-        f'-DCMAKE_C_FLAGS=-ffile-prefix-map={home}=/home/builder',
+        # Not /home/...: scan_build_paths.py --strict flags any home directory.
+        # Both the real path (/var/home/<user> on Fedora Atomic) and $HOME may appear.
+        '-DCMAKE_C_FLAGS='
+        + ' '.join(f'-ffile-prefix-map={p}=/build/tools' for p in sorted({str(home), str(Path.home())})),
     ]
     for name, options in [
         ('jpeg', ['-DENABLE_SHARED=OFF', '-DENABLE_STATIC=ON', '-DWITH_TURBOJPEG=OFF', '-DWITH_SIMD=OFF']),

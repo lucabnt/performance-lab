@@ -1,5 +1,15 @@
 # Changelog
 
+## 19 novembre 2026 — wheel Android ricostruite da radice neutra
+
+- Sostituite in `android/wheels` sei wheel (pydantic-core 2.41.4, cryptography 50.0.2, Pillow 13.0.0, entrambe le ABI) ricostruite sulla Toolbox Fedora in `/build/fuorigiri-20261119-01`; CFFI invariate. Nuovi `SHA256.json`, `ABI3_REPAIR.json` e `PILLOW_BUILD.json`; wheel precedenti conservate fuori dal repository.
+- OpenSSL ora si compila senza `-ffile-prefix-map`: OpenSSL incorpora i flag nella stringa `compiler:`, che riportava la home in cryptography. Guida aggiornata.
+- APK debug e release non firmato compilati in `.local/candidate-android-20261119-01`: la scansione dei percorsi del release passa (prima falliva); audit 16 KB da 6 a 4 moduli non conformi (pydantic-core corretto). Su emulatore API 35 x86_64 i due test strumentali passano e l’app si avvia; ARM64/telefono, firma e confezionamento restano aperti. [Prove](docs/VERIFICA.md).
+
+## 19 novembre 2026 — ricetta wheel Android neutre: prefisso fuori da /home
+
+- `android_neutral_env.sh` e `build_android_pillow.py` mappavano la home del builder su `/home/builder`, che `scan_build_paths.py --strict` segnala come qualsiasi home: le wheel ricostruite non avrebbero superato il gate. Ora la mappatura è `/build/tools`, applicata sia a `$HOME` sia al percorso reale `/var/home/<utente>` di Kinoite. Nuovo kit `tmp/android-neutral-kit-20261119-02` con gli stessi sorgenti. Nessuna wheel ancora ricostruita.
+
 ## 19 novembre 2026 — candidato core020-20261119-01 (solo Windows)
 
 - Nuove build locali Windows (installer e portabile, launcher con bootloader locale e risorsa di versione) dal commit `73c562d`, in `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`. Include PERIMETRO-01, core comune 0.2.0 e la correzione del backup protetto. Nessun APK; versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-01/02. [Prove](docs/VERIFICA.md).

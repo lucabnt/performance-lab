@@ -31,8 +31,15 @@ export CARGO_HOME="$FUORIGIRI_NEUTRAL/cargo"
 export PATH="$FUORIGIRI_TOOL_CARGO_HOME/bin:$PATH"
 
 # Remap any remaining tool path under the account home (NDK, rustup sources).
-export FUORIGIRI_REMAP_RUST="--remap-path-prefix=$HOME=/home/builder --remap-path-prefix=$FUORIGIRI_NEUTRAL=/build/src"
-export FUORIGIRI_REMAP_C="-ffile-prefix-map=$HOME=/home/builder"
+# The target is outside /home: scan_build_paths.py --strict flags any home directory.
+# On Fedora Atomic $HOME (/home/<user>) and its real path (/var/home/<user>) both appear.
+FUORIGIRI_REAL_HOME="$(realpath "$HOME")"
+export FUORIGIRI_REMAP_RUST="--remap-path-prefix=$HOME=/build/tools --remap-path-prefix=$FUORIGIRI_NEUTRAL=/build/src"
+export FUORIGIRI_REMAP_C="-ffile-prefix-map=$HOME=/build/tools"
+if [ "$FUORIGIRI_REAL_HOME" != "$HOME" ]; then
+  FUORIGIRI_REMAP_RUST="$FUORIGIRI_REMAP_RUST --remap-path-prefix=$FUORIGIRI_REAL_HOME=/build/tools"
+  FUORIGIRI_REMAP_C="$FUORIGIRI_REMAP_C -ffile-prefix-map=$FUORIGIRI_REAL_HOME=/build/tools"
+fi
 
 echo "Radice neutra pronta: $FUORIGIRI_NEUTRAL"
 echo "CARGO_HOME=$CARGO_HOME"

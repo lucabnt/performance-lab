@@ -1,5 +1,19 @@
 # Changelog
 
+## 19 novembre 2026 — provider cloud etichettati come sperimentali (PERIMETRO-01)
+
+- Archivio e scambio → sincronizzazione: nel menu del trasporto Google Drive, Dropbox e OneDrive riportano «· sperimentale» (EN «experimental»); il loro pannello mostra l'etichetta SPERIMENTALE e un avviso che indica WebDAV per l'uso quotidiano. WebDAV, cartella e servizio dedicato invariati.
+- Solo interfaccia: nessuna modifica a connessioni salvate, OAuth, backend o formati. Versione prodotto 0.10.0 invariata, nessun nuovo EXE/APK. [Prove](docs/VERIFICA.md).
+
+## 18 novembre 2026 — analisi delle alternative e perimetro (PERIMETRO-01, solo documentazione)
+
+- Decisioni dell'utente registrate in requisiti, architettura, piano, guide e AGENTS.md: WebDAV e cartella trasporti supportati, Google Drive/Dropbox/OneDrive sperimentali e fuori dai gate alpha; app allenamenti sospesa (resta il pulsante Intervals.icu); server opzionale solo futuro; Android confermato come app completa.
+- Nessuna modifica al codice o all'interfaccia: i tre provider non hanno ancora un'etichetta «sperimentale» nella UI. Nessun nuovo EXE/APK.
+
+## 15 novembre 2026 — candidato win-av02-20261115-02
+
+- Nuove build locali Windows (installer e portabile, launcher con bootloader PyInstaller locale e risorsa di versione) e Android (debug di test, release non firmato, supporto strumentale) dal commit `3794786`, in `dist/candidates/Fuorigiri-0.10.0-win-av02-20261115-02/`. Include MAT-PHV-01. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-02. [Prove](docs/VERIFICA.md).
+
 ## 15 novembre 2026 — launcher Windows: bootloader locale e risorsa di versione (WIN-AV-02)
 
 - Defender ha bloccato anche `revisione-tecnica-20261115-01` (`Bearfoos.A!ml`, definizioni 1.463.310.0): quarto candidato di fila. [Diagnosi](docs/WINDOWS_DEFENDER.md).

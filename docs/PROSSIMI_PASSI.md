@@ -1,5 +1,13 @@
 # Prossimi passi
 
+## Perimetro dell'alpha — 18 novembre 2026
+
+Decisioni PERIMETRO-01 ([requisiti](REQUISITI_E_TODO.md), [analisi](analisi-alternative-2026-11-18.md)), che aggiornano l'ordine dei lavori sotto:
+
+- Provider: per l'alpha si qualifica soltanto **WebDAV**. Google Drive, Dropbox e OneDrive sono sperimentali: nessun nuovo sviluppo, registrazione OAuth o collaudo con account reali in programma.
+- Android resta nell'alpha come **app completa**; i gate rimangono quelli dei punti 1–2.
+- Fuori dal piano attivo: app allenamenti (sospesa; resta il pulsante Intervals.icu) e server opzionale (sviluppo futuro da considerare, non in sviluppo).
+
 ## Alpha con Windows e Android — 13 novembre 2026
 
 L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:

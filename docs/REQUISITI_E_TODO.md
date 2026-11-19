@@ -1,5 +1,15 @@
 # Requisiti e to-do
 
+## PERIMETRO-01 — decisioni dopo l'analisi delle alternative, 18 novembre 2026
+
+Richiesta dell'utente, dopo l'[analisi delle alternative](analisi-alternative-2026-11-18.md): «Ok su drive Dropbox onedrive sperimentali, documenta»; «app training lab è sospesa al momento, ci limitiamo al tasto che rimanda a intervals in ui. Anche il server rimane tra gli sviluppi futuri in considerazione ma non in sviluppo»; «Direi app completa su android, il livello è già buono». **Decisioni documentate; nessuna modifica al codice.**
+
+- **Trasporti cloud:** WebDAV e cartella di scambio sono i trasporti supportati; WebDAV è l'unico con prova su account reale (S-02). Google Drive, Dropbox e OneDrive diventano **sperimentali**: codice conservato, nessun nuovo sviluppo e nessun collaudo con account reali richiesto per l'alpha; non sono gate di PUB-ALPHA-01. Supera, per lo stato di accettazione, TD-67/CLOUD-03, che li indicava come requisiti Android del prodotto. Riaprirli richiede una nuova decisione.
+  - *19 novembre 2026, richiesta «Sì, aggiungila»:* etichetta nella UI **implementata nei sorgenti e verificata nella GUI web**. Menu del trasporto con «· sperimentale» (EN «experimental») sui tre provider; nel pannello di Drive, Dropbox e OneDrive etichetta SPERIMENTALE e avviso che rimanda a WebDAV e a una società di prova con backup verificato. Nessuna etichetta su WebDAV, cartella e servizio dedicato; nessun cambiamento a connessioni salvate, OAuth o formato. Nessun nuovo EXE/APK. [Prove](VERIFICA.md).
+- **App allenamenti:** l'app della suite per la pianificazione (A Ruota Training Lab) è **sospesa**. In Fuorigiri l'integrazione con l'allenamento resta il solo pulsante **Vedi su Intervals.icu** (INT-ICU-01): nessuna importazione di attività, esportazione di zone o API verso piattaforme di allenamento. SUITE-01 resta limitato ai componenti condivisi con Ammiraglia.
+- **Server opzionale** (ARCHITETTURA §10.4): resta fra gli sviluppi futuri da considerare, **non in sviluppo**. Lo scambio senza server resta il modello del prodotto.
+- **Android:** confermata l'**app completa** offline (consultazione, import, modifica secondo ruolo, report, scambio), non una versione di sola consultazione. L'utente giudica buono il livello raggiunto; restano aperti i gate già noti: telefono ARM64, firma release del titolare, sei moduli non conformi alle pagine da 16 KB.
+
 ## MAT-PHV-01 — PHV longitudinale raggiungibile, 15 novembre 2026
 
 Richiesta dell'utente sul messaggio «Servono almeno 7 stature con intervalli validi e senza discontinuità»: valutare l'interpolazione e affrontare il rischio che l'indicatore non venga mai calcolato. Interpolazione scartata (nessuna informazione nuova, supporto del fit gonfiato). Approvati i tre livelli proposti; **implementato nei sorgenti e verificato con test automatici e GUI**, nessun nuovo EXE/APK.
@@ -469,7 +479,7 @@ Stati: **presente** = funzionalità riscontrata nel codice; **parziale** = solo 
 | TD-27 | Confrontare prodotti open source e commerciali e ricavarne funzionalità candidate. | **Completato come prima ricognizione**: CONFRONTO_PRODOTTI.md; nessuna estensione automatica del perimetro. | §12 |
 | TD-28 | Configurare zone FC e potenza in percentuale di riferimenti selezionati e riportarle nei report. | **Presente**: preset confermato, schemi N zone per canale, riferimenti espliciti, tempi in zona e report/export dinamici; metodi dei riferimenti restano espliciti. | §8.1, §9 |
 | TD-29 | Correggere input manuali e fine sforzo dopo aver visto il grafico, ricalcolando in una nuova revisione. | **Presente**: revisione da UI, ricalcolo dopo fine sforzo, motivo e protezione da aggiornamenti persi; correzione dei risultati storici tramite flusso dedicato. | §8.1 |
-| SUITE-01 | Registrare decisioni UI e condividere componenti con una futura app di gestione allenamenti della stessa suite. | **Parziale**: moduli UI condivisibili, branding fisso e servizi separati; estrazione in pacchetti indipendenti e seconda app future. | §5.1, §15 |
+| SUITE-01 | Registrare decisioni UI e condividere componenti con una futura app di gestione allenamenti della stessa suite. | **Parziale**: moduli UI condivisibili, branding fisso e servizi separati; estrazione in pacchetti indipendenti e seconda app future. *18 novembre 2026:* app allenamenti sospesa, condivisione attiva con Ammiraglia (PERIMETRO-01). | §5.1, §15 |
 
 ## Ordine proposto di sviluppo (storico, prima della pianificazione TD-45–54)
 

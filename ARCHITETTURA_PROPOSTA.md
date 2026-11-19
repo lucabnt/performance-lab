@@ -1,5 +1,9 @@
 # Analisi dei test incrementali di ciclismo — proposta architetturale
 
+## 18 novembre 2026 — perimetro: trasporti, suite, server e Android (PERIMETRO-01)
+
+Decisioni dell'utente dopo l'[analisi delle alternative](docs/analisi-alternative-2026-11-18.md). Trasporti supportati: WebDAV e cartella di scambio; gli adapter Google Drive, Dropbox e OneDrive (§19) restano nel codice come **sperimentali**, senza nuovi sviluppi né collaudi richiesti per l'alpha. Dal 19 novembre la UI lo dichiara nel selettore del trasporto e con un avviso nel pannello del provider. L'app Allenamenti di §15 è **sospesa**: Fuorigiri si limita al collegamento a Intervals.icu e non prevede scambi con piattaforme di allenamento. Il server di §10.4 resta un'ipotesi futura, non in sviluppo. Android resta un'app completa e autonoma (§10.4, [ANDROID.md](docs/ANDROID.md)), non un visualizzatore.
+
 ## 9 novembre 2026 — elenchi del profilo e qualità maturativa
 
 UI-ORDINE-02: Atleti usa DataTable comune su cognome/nome, separato dalla resa con avatar. Il profilo applica alle tabelle test/misure una politica di data decrescente e paginazione da 15 con stato indipendente; serie scientifiche complete. MAT-AVVISI-01: growth-maturity/2 versiona la qualità non bloccante dei soli indici antropometrici, conservando avvisi nel risultato. Input obbligatori, dominio, esclusione e gate longitudinali invariati; nessuna migrazione o ricalcolo degli snapshot salvati.
@@ -512,6 +516,8 @@ Il costo operativo può limitarsi allo spazio cloud e all'eventuale client terzo
 
 ### 10.4 Quando introdurre un server
 
+*Stato al 18 novembre 2026 (PERIMETRO-01): sviluppo futuro da considerare, non in sviluppo.*
+
 Se diventano necessari ruoli fini, tanti operatori, accesso web continuativo o gestione centralizzata: servizio FastAPI con PostgreSQL, archivio oggetti e autenticazione tramite provider standard. Distribuzione container per VPS/NAS, servizio gestito possibile. Il client resta offline first e usa lo stesso contratto di modifiche.
 
 Per telefono/tablet Android è ora richiesto lo sviluppo di un’app autonoma offline, con consultazione, import e modifica secondo ruolo; supera la precedente ipotesi di sola consultazione web iniziale. React è riutilizzabile tramite adapter e layout responsive, ma archivio privato, motore Python incorporato e integrazione cloud richiedono sviluppo dedicato. Scelte, alternative e dipendenze in [ANDROID.md](docs/ANDROID.md), MOB-01/UI-18.
@@ -618,7 +624,7 @@ SUITE-01: predisporre il riuso senza trasformare subito l'analizzatore in un ges
 | Contratti comuni | Identificatori atleta/società, unità, provenienza, osservazioni, zone versionate, schema di scambio e versioni supportate. |
 | Servizi comuni Python | Infrastruttura workspace, autorizzazioni, sync, audit, backup e template; librerie riutilizzabili, non servizi di rete obbligatori. |
 | App Test | Protocolli incrementali, segmentazione, analisi, revisioni, confronti e referti. |
-| App Allenamenti | Futura pianificazione, calendario, libreria sedute, assegnazioni e confronto programmato/eseguito; perimetro da definire separatamente. |
+| App Allenamenti | Futura pianificazione, calendario, libreria sedute, assegnazioni e confronto programmato/eseguito; perimetro da definire separatamente. **Sospesa dal 18 novembre 2026** (PERIMETRO-01). |
 
 Ogni app possiede il proprio DB e le proprie migrazioni; **mai due applicazioni con versioni indipendenti che scrivono direttamente nello stesso SQLite**. Identità comuni tramite UUID e collegamenti espliciti degli ID esterni. Le anagrafiche condivise seguono un contratto comune di eventi e regole di conflitto, replicate nei DB delle app attraverso i servizi condivisi. La seconda app non deve copiare una persona creando automaticamente un nuovo ID.
 

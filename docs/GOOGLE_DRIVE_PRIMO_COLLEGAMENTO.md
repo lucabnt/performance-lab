@@ -2,9 +2,11 @@
 
 Procedura aggiornata il 25 ottobre 2026, riferita ai comandi presenti in Fuorigiri 0.10.0. Adapter, cifratura, firme e flussi OAuth esistono nei sorgenti; i test automatici usano risposte simulate. Questa guida non documenta un collegamento eseguito con account reali.
 
+**Stato al 18 novembre 2026: Google Drive diretto è sperimentale** (PERIMETRO-01). Non riceve nuovi sviluppi e non fa parte dei controlli dell'alpha. Il trasporto consigliato per condividere una società fra Windows e Android è WebDAV: vedere [Primo scambio WebDAV](WEBDAV_ANDROID_PRIMO_SCAMBIO.md) e lo [stato dei trasporti](CONFIGURARE_LA_SINCRONIZZAZIONE.md#stato-del-supporto--18-novembre-2026). La procedura sotto resta valida per prove su una società QA.
+
 ## Percorso consigliato
 
-Per usare la stessa società su Windows e Android, partire dal collegamento **Google Drive diretto in Fuorigiri**, con un progetto Google Cloud sotto il controllo del titolare e una cartella di scambio dedicata per società. I database rimangono locali; nella cartella transitano i pacchetti di scambio cifrati. Il backup dati resta separato dal canale di sincronizzazione.
+Per provare Google Drive con la stessa società su Windows e Android, partire dal collegamento **Google Drive diretto in Fuorigiri**, con un progetto Google Cloud sotto il controllo del titolare e una cartella di scambio dedicata per società. I database rimangono locali; nella cartella transitano i pacchetti di scambio cifrati. Il backup dati resta separato dal canale di sincronizzazione.
 
 Per il primo collaudo usare una società QA con dati sintetici e una cartella `Fuorigiri - QA`. La selezione attuale della cartella avviene tramite ID: il Google Picker non è implementato. Il permesso minimo `drive.file` non rende automaticamente accessibile una cartella esistente con tutti i file dei collaboratori. Nel codice attuale il pilot su quella cartella può usare la scelta esplicita **Drive completo**, che autorizza l'intero Drive dell'account, non soltanto la cartella. Per circoscrivere il contenuto esposto in questo pilot è preferibile un account dedicato con soli dati di prova, senza condividere password fra operatori. È una scelta operativa, non una restrizione OAuth alla cartella.
 

@@ -93,6 +93,14 @@ export function CloudConnection({
         (provider !== 'dropbox' || !!connection.root_path?.startsWith('/'));
   return (
     <>
+      {provider !== 'service' && (
+        <div className="hint">
+          <span className="tag amber">{en ? 'EXPERIMENTAL' : 'SPERIMENTALE'}</span>{' '}
+          {en
+            ? 'Not tested with real accounts and outside the alpha checks. For everyday use choose WebDAV; try this provider only on a test club with a verified backup.'
+            : 'Non collaudato con account reali e fuori dai controlli dell’alpha. Per l’uso quotidiano scegli WebDAV; prova questo provider solo su una società di prova con un backup verificato.'}
+        </div>
+      )}
       <p role="status" className="hint">
         {!ready
           ? en

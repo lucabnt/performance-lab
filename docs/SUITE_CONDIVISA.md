@@ -1,5 +1,9 @@
 # Librerie condivise con Ammiraglia
 
+## App allenamenti sospesa — 18 novembre 2026
+
+A Ruota Training Lab, l'app della suite per la pianificazione degli allenamenti, è **sospesa** (PERIMETRO-01). In Fuorigiri il collegamento con l'allenamento resta il solo pulsante **Vedi su Intervals.icu** nel profilo atleta. Non sono previsti scambi di zone o risultati verso altre app. La condivisione attiva di `cycling-suite-common` riguarda Fuorigiri e Ammiraglia; le note sulle consegne precedenti ad A Ruota restano come cronologia.
+
 ## Aggiornamento UI 0.2.9 — 8 novembre 2026
 
 Nuova consegna locale versionata dal common per il ripristino dello scorrimento dopo la chiusura di dialoghi annidati. Fuorigiri, Ammiraglia e A Ruota consumano lo stesso tarball 0.2.9 con sorgenti/licenza/provenienza e lock aggiornati tramite sync:ui; nessuna dipendenza dal clone fratello nella build. Nessuna pubblicazione o ricompilazione dei candidati nativi. Il comportamento e le prove Fuorigiri sono registrati in [VERIFICA.md](VERIFICA.md).

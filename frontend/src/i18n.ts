@@ -394,6 +394,7 @@ const translations: Record<string, string> = {
     'Consistent database and original files. The downloaded backup is not encrypted.',
   'Scarica backup': 'Download backup',
   SPERIMENTALE: 'EXPERIMENTAL',
+  sperimentale: 'experimental',
   'Scambio tramite cartella': 'Folder exchange',
   'Seleziona un percorso già sincronizzato dal tuo client cloud, disponibile offline e separato dai dati locali dell’app.':
     'Select a folder already synchronized by your cloud client, available offline and separate from local application data.',

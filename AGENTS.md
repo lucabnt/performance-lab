@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **15 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **19 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -19,6 +19,7 @@ Ultima revisione: **15 novembre 2026**. Ambito: tutta questa repository, salvo i
 - Android TD-102–104: solo hamburger a sinistra; Back di sistema esce prima da Esplora/Zoom, poi chiude l’ultimo dialogo, infine segue la cronologia. Scorri pagina predefinito, comandi sotto il grafico e alternativa tabellare paginata. Plotly differito al viewport: non reintrodurlo nell’import iniziale. Superfici/stili e cancel annidati dal common UI 0.2.6; non duplicarli nei prodotti. Distinguere alleggerimento JavaScript da tempo d’avvio Python misurato.
 - UI Android TD-98: menu hamburger composto con Dialog comune per società, sezioni e lingua; versione, logo/attribuzione e testi legali nella vista Info anche senza società. Non ripristinare il footer ripetuto sulle altre pagine Android. Desktop conserva navigazione e footer propri; screenshot Android in docs/screenshots/.
 - Gate native Android: `scripts/build_android.py` richiede pydantic-core, cryptography, CFFI e Pillow per entrambe le ABI, con digest in `android/wheels/SHA256.json`. Gli hash comunicati dal builder non provano il trasferimento o il caricamento nell’app; conservare queste verifiche separate.
+- PERIMETRO-01 (18 novembre): trasporti supportati WebDAV e cartella; Google Drive, Dropbox e OneDrive sperimentali (codice conservato, fuori dai gate alpha, nessuna estensione senza nuova decisione; etichetta «sperimentale» nel selettore di `synchronization.tsx` e avviso in `cloud.tsx` da mantenere). App allenamenti A Ruota sospesa: in Fuorigiri solo il pulsante Intervals.icu, nessuno scambio con piattaforme di allenamento. Server opzionale solo come sviluppo futuro. Android resta app completa offline, non ridurla a consultazione. [Analisi](docs/analisi-alternative-2026-11-18.md).
 - Le app della suite, inclusa Ammiraglia, mantengono repository, build e dati separati. Componenti comuni nella repository autonoma `cycling-suite-common`; integrazione tramite pacchetti versionati, senza dipendere da una cartella sorella durante la build. Consultare [SUITE_CONDIVISA.md](docs/SUITE_CONDIVISA.md).
 - Branding fisso: logo della società originale e testo **«Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.»**. Non renderli personalizzabili per società. L'icona applicativa Fuorigiri è distinta dal logo societario.
 

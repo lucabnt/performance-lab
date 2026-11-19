@@ -1,10 +1,12 @@
 # Documentazione di Fuorigiri Performance Lab
 
-Indice aggiornato al **10 novembre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
+Indice aggiornato al **18 novembre 2026**, sorgenti **0.10.0**. Le guide descrivono i sorgenti attuali; i pacchetti già compilati possono essere precedenti. Per le prove effettive consultare il registro verifiche.
 
 ## Prima alpha
 
 Per installazione, scelta degli allegati, licenze e limiti operativi consultare la [guida alla pre-release](DISTRIBUZIONE.md) e il [registro verifiche](VERIFICA.md).
+
+Perimetro e posizionamento: [analisi delle alternative del 18 novembre 2026](analisi-alternative-2026-11-18.md) e decisioni PERIMETRO-01 in [requisiti](REQUISITI_E_TODO.md).
 
 ## Uso, avvio e distribuzione
 
@@ -15,7 +17,7 @@ Per installazione, scelta degli allegati, licenze e limiti operativi consultare 
 - [Installare Android per un test sul Pixel 9](INSTALLARE_ANDROID_PER_TEST.md): APK debug installabile, primo avvio e limiti Drive senza GCP.
 
 - [Importazione CSV e modelli vuoti](IMPORT_CSV.md): cinque profili, comprese le appartenenze storiche e future.
-- [Primo collegamento Google Drive](GOOGLE_DRIVE_PRIMO_COLLEGAMENTO.md): progetto OAuth, cartella, collegamento dei dispositivi e collaudo prima dei dati operativi.
+- [Primo collegamento Google Drive](GOOGLE_DRIVE_PRIMO_COLLEGAMENTO.md): provider sperimentale; progetto OAuth, cartella, collegamento dei dispositivi e prove su una società QA.
 
 - [Collaudo candidato pilot](COLLAUDO_PILOT.md): operazioni, risultati attesi, check di completamento e verbale Windows/Android.
 - [Firma Android](FIRMA_ANDROID.md): creazione/custodia chiave a cura del titolare e firma/verifica della copia release.
@@ -26,7 +28,7 @@ Per installazione, scelta degli allegati, licenze e limiti operativi consultare 
 - [Società, backup e accessi](SOCIETA_BACKUP_E_ACCESSI.md): creazione, inviti, ruoli e ripristino.
 - [Sync v2, backup v3 e separazione società](SYNC_V2_E_BACKUP.md): attivazione, compatibilità, flussi GUI/CLI e limiti.
 - [Backup protetto da password](BACKUP_CIFRATO.md): formato `.fgbak`, uso, garanzie e limiti.
-- [Configurare la sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md): cartelle, WebDAV, Drive, Dropbox, OneDrive e prerequisiti OAuth.
+- [Configurare la sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md): WebDAV e cartelle supportati; Drive, Dropbox e OneDrive sperimentali, con prerequisiti OAuth.
 - [Distribuzione](DISTRIBUZIONE.md): bundle Windows, dipendenze incluse, installer e prerequisiti Fedora/Android.
 
 ## Protocolli e metodi

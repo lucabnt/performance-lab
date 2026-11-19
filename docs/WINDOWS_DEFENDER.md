@@ -12,6 +12,8 @@ Alle 18:42:09 e 18:42:33 Defender (definizioni 1.463.310.0, motore 1.1.26100.4, 
 
 Nessuno dei tre punti dimostra da solo l'assenza di rilevamenti. Il criterio resta quello sotto: installazione, avvio, chiusura e riapertura di un nuovo candidato con protezione attiva, senza nuovi eventi 1116. Non usare esclusioni né «Consenti».
 
+Primo candidato con queste modifiche: `win-av02-20261115-02` (launcher SHA-256 `22f4f69f…f190`). Da collaudare sul PC con Defender attivo; esito da registrare qui e in VERIFICA.md.
+
 ## 10 novembre 2026 — nuovo blocco sul PC destinatario
 
 Il 10 novembre, dalle 09:52:46 alle 09:53:37, Defender ha rilevato Bearfoos sull’eseguibile installato (1116) e ha registrato la quarantena riuscita (1117), con definizioni 1.463.222.0 e motore 1.1.26100.4. L’EXE è assente. Il file del disinstallatore è datato 9 novembre alle 21:03:21. Le impronte dei file dell’interfaccia rimasti coincidono per 19/19 con ordine-maturazione-20261109-01 e per 18/19 con import-avvisi. Il launcher atteso del 9 novembre ha SHA-256 `6e7257afe7a3aae7dfc1772809d592e552f64181c52e8b98979fa714450b97d0`; manca un digest della copia rimossa. WIN-AV-01 resta aperto sul candidato corrente.

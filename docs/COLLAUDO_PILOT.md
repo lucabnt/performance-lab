@@ -182,7 +182,7 @@ Le precedenti prove emulatore x86_64 sono in VERIFICA.md. Questi check sul telef
 - [ ] **S-07** Scadenza/rinnovo/revoca del token o credenziale del provider: errore comprensibile e ricollegamento senza perdita dell’archivio.
 - [ ] **S-08** Se si usa sync in background Android, verificare su telefono con app chiusa e risparmio energetico; non dedurre l’esecuzione da WorkManager presente nei sorgenti.
 - [ ] **S-09** Ripristino dopo perdita del dispositivo e recupero accessi realmente provati su archivio QA. Documentare cosa recupera backup dati e cosa richiede il materiale identità.
-- [ ] **S-10** Annotare provider/server/account e condizioni effettivamente provati. Per ogni provider aggiuntivo ripetere S-02–S-08; nessuna qualifica implicita degli altri. *13 novembre:* provato soltanto WebDAV; Drive, Dropbox e OneDrive restano non qualificati.
+- [ ] **S-10** Annotare provider/server/account e condizioni effettivamente provati. Per ogni provider aggiuntivo ripetere S-02–S-08; nessuna qualifica implicita degli altri. *13 novembre:* provato soltanto WebDAV; Drive, Dropbox e OneDrive restano non qualificati. *18 novembre:* i tre provider sono sperimentali e fuori dai gate dell'alpha (PERIMETRO-01).
 
 ## 6. Pilot e promozione
 

@@ -1,5 +1,25 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 19 novembre 2026 — etichetta «sperimentale» dei provider cloud (PERIMETRO-01)
+
+- Prettier senza differenze su `cloud.tsx`, `synchronization.tsx`, `i18n.ts`; build frontend `tsc`/Vite riuscita; `npm run test:signals` **43 passati**. Nessuna modifica Python: `pytest` e `scripts/verify.py` completo non eseguiti.
+- GUI web (build compilata, `scripts/serve.py`) su archivio nuovo `.local/qa-provider-sperimentale-20261119` con una società sintetica creata dalla UI. Menu «Come vuoi sincronizzare?»: «Google Drive · API · sperimentale», «Dropbox · API · sperimentale», «OneDrive · API · sperimentale»; WebDAV, cartella e servizio dedicato senza etichetta. Selezionando Google Drive e OneDrive compare in testa al pannello l'etichetta SPERIMENTALE (stile `tag amber` del common) con l'avviso italiano; con servizio dedicato e WebDAV l'avviso è assente. Nessuna connessione salvata o account collegato.
+- Limiti: controllo eseguito leggendo DOM e stili calcolati, perché il pannello del browser integrato era nascosto e non produceva catture; pannello Dropbox non aperto (stesso ramo di codice); testo inglese non verificato a schermo; nessuna nuova build Windows/Android, quindi i candidati esistenti non contengono l'etichetta. Nessuna schermata della galleria mostra questo pannello.
+
+## 15 novembre 2026 — consegna win-av02-20261115-02
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-win-av02-20261115-02/`, prodotto **0.10.0**, commit `3794786` con working tree pulito. Rispetto a revisione-tecnica-20261115-01 aggiunge WIN-AV-02 (bootloader locale, risorsa di versione) e MAT-PHV-01. Nessuna pubblicazione, firma o sostituzione di candidati precedenti.
+
+- `scripts/verify.py` completo: tutti i passi riusciti, **362 Python passati** (nessuno saltato), **43 frontend passati**, build `tsc`/Vite.
+- Windows: PyInstaller in nuova `.local/candidate-windows-20261115-02` (578 s), Inno Setup in 148 s. Il registro PyInstaller usa `runw.exe` del `.venv` compilato localmente (`9776c4f7…1c85`); `VERSIONINFO` presente. Smoke su `.local/qa-windows-package-20261115-02` nuovo con PATH limitato alle directory Windows: import, logo e backend HTTP in 15,1 s. Defender attivo, definizioni 1.463.310.0: bundle, installer e intera consegna senza rilevamenti.
+- Launcher: **17.426.002 byte**, SHA-256 `22f4f69f8ddcee17e41ec1b01e2e7e6f278e8d0e4327de5c3b302489f1e1f190`.
+- Android: JDK 21/Gradle 8.13 offline, nuova `.local/candidate-android-20261115-02`, debug/release/androidTest in 567 s; 39 dipendenze per variante. Debug con certificato di test invariato `89d904a5…09e160b3`; release senza firma. Zipalign `-P 16` superato; audit **222 ELF / 6 problemi LOAD 16 KB** invariati; scansione percorsi del release con le sole wheel native note: non distribuibile.
+- Contenuti: 19 asset frontend identici in Windows/debug/release, 56 moduli backend nell'APK, `growth-maturity/3` e `hv-max-observed/1` nel PYZ Windows e `growth-maturity/3` nell'APK. Sorgenti ZIP (411 file tracciati) e portabile confrontati, CRC ZIP e **26 checksum** ricontrollati dopo la scansione della consegna.
+- Installer: **197.772.955 byte**, SHA-256 `3975ff3fdff993b305803502ec740b7a565746cbcbf84b4f298ac1ae4a04f482`.
+- Debug test: **105.080.595 byte**, SHA-256 `efbcbc83fbb4d9d455ed643addd8ace94f775885c59daeba5191ed5f35ab4c8f`.
+- Release non firmato: **104.019.052 byte**, SHA-256 `a95dfb136bd77a5e062075f6e0484cc94782b9c78d2deddf17d80acfcad0e2c5`.
+- Non provati: installazione e riapertura con Defender attivo (scopo del candidato, WIN-AV-01/02), Windows pulito, runtime Android su emulatore o telefono, provider reali.
+
 ## 15 novembre 2026 — WIN-AV-02 (bootloader locale e risorsa di versione)
 
 - Episodio: due eventi 1116 `Bearfoos.A!ml` alle 18:42 sul launcher installato di `revisione-tecnica-20261115-01`, definizioni 1.463.310.0, senza 1117 al momento della diagnosi; file illeggibile, digest non confrontato. [Diagnosi](WINDOWS_DEFENDER.md).

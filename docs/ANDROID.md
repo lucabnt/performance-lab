@@ -1,5 +1,9 @@
 # Android — requisito e architettura proposta
 
+## Perimetro confermato — 18 novembre 2026
+
+L'utente conferma l'**app Android completa** (PERIMETRO-01): archivio locale, consultazione, import, modifica secondo ruolo, report e scambio, senza dipendere dal PC. Non ridurla a una versione di sola consultazione. Il livello attuale è giudicato buono; restano aperti telefono ARM64, firma release del titolare e i sei moduli non conformi alle pagine da 16 KB. Per lo scambio il trasporto di riferimento è WebDAV; Google Drive, Dropbox e OneDrive restano nel codice come sperimentali e non sono gate dell'alpha Android.
+
 ## Aggiornamento Pillow — 2 novembre 2026
 
 Wheel Pillow 13.0.0 Fedora ARM64/x86_64 trasferite e verificate localmente: otto wheel nel gate corrente, inclusa CFFI; pin, manifest e provenienza aggiornati. La procedura delle sei wheel sotto descrive il primo builder del 20 ottobre: per Pillow usare [la guida dedicata](ANDROID_PILLOW.md). Stato delle nuove build e dei test nel [registro](VERIFICA.md). Controllo strumentale immagini/font/PDF distinto da telefono, export/apertura tramite UI e qualifica 16 KB dell'intero APK.

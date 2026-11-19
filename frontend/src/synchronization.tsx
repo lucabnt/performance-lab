@@ -173,9 +173,9 @@ export function Synchronization({
             {tr('Come vuoi sincronizzare?')}
             <select value={connection.transport} onChange={e => change('transport', e.target.value)}>
               {!mobile && <option value="folder">{tr('Cartella locale del client cloud')}</option>}
-              <option value="drive">Google Drive · API</option>
-              <option value="dropbox">Dropbox · API</option>
-              <option value="onedrive">OneDrive · API</option>
+              <option value="drive">{`Google Drive · API · ${tr('sperimentale')}`}</option>
+              <option value="dropbox">{`Dropbox · API · ${tr('sperimentale')}`}</option>
+              <option value="onedrive">{`OneDrive · API · ${tr('sperimentale')}`}</option>
               <option value="service">Servizio dedicato · avanzato</option>
               <option value="webdav">WebDAV · Nextcloud / server compatibile</option>
             </select>

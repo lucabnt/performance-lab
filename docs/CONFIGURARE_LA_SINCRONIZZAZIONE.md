@@ -6,6 +6,16 @@ Implementati adapter WebDAV, Google Drive API v3, Dropbox API v2, Microsoft Grap
 
 **Stato verificato:** test automatici con risposte API simulate e server WebDAV locale, UI desktop compilata. Nessun accesso ad account reali o registrazione OAuth creato in questa attività; disponibilità dei permessi e collaborazione con due account vanno collaudate sul provider. Android ha gli adapter condivisi e i flussi nativi nei sorgenti; APK compilati e altre funzioni provate su emulatore non dimostrano il consenso Google o lo scambio cloud su un dispositivo reale. Le prove provider restano separate dalle build.
 
+## Stato del supporto — 18 novembre 2026
+
+| Trasporto | Stato | Uso consigliato |
+|---|---|---|
+| WebDAV (HTTPS, es. Nextcloud o Koofr) | **Supportato**; unico provato con account reale | Scelta predefinita per condividere una società fra Windows e Android |
+| Cartella di scambio gestita da un client esterno | **Supportato** | Desktop, con cartella disponibile offline |
+| Google Drive, Dropbox, OneDrive diretti | **Sperimentali** | Solo prove consapevoli, su una società QA e con backup verificato |
+
+«Sperimentale» significa: il codice resta nell'app ma non riceve nuovi sviluppi, non è collaudato con account reali e non fa parte dei controlli dell'alpha. Richiede una registrazione OAuth del distributore e può avere comportamenti non verificati su permessi, cartelle condivise e rinnovo dei token. Per un uso operativo scegliere WebDAV. La decisione è registrata come PERIMETRO-01 in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md). Dal 19 novembre 2026 l'interfaccia lo indica nel menu **Come vuoi sincronizzare?** («Google Drive · API · sperimentale» e analoghi) e con l'etichetta **SPERIMENTALE** e un avviso in testa al pannello del provider; i pacchetti già compilati non la contengono.
+
 Per attivare il formato v2, aggiornare prima tutti i dispositivi: [procedura e compatibilità](SYNC_V2_E_BACKUP.md). Tutti i trasporti usano lo stesso formato e archivio per società.
 
 ## Quando parte lo scambio — aggiornamento 7 novembre 2026
@@ -32,7 +42,7 @@ La distribuzione open source non contiene registrazioni OAuth di altri né segre
 
 Cartella server già condivisa, URL finale HTTPS, utente e password applicazione. Portachiavi di sistema, nessun fallback in chiaro; niente redirect con credenziali. Supporto condiviso desktop/mobile già presente dalla 0.6.
 
-### Google Drive
+### Google Drive (sperimentale)
 
 Per la procedura completa del pilot, con due dispositivi e limiti dello scope, seguire [Primo collegamento Google Drive](GOOGLE_DRIVE_PRIMO_COLLEGAMENTO.md).
 
@@ -46,7 +56,7 @@ API: inventario paginato, parent ID, supporto shared drives, download media, cre
 
 Fonti: [OAuth app native](https://developers.google.com/identity/protocols/oauth2/native-app), [scope Drive](https://developers.google.com/workspace/drive/api/guides/api-specific-auth), [upload e ID pregenerati](https://developers.google.com/workspace/drive/api/guides/manage-uploads), [autorizzazione Android](https://developer.android.com/identity/authorization).
 
-### Dropbox
+### Dropbox (sperimentale)
 
 Registrare un’app **Scoped access / Full Dropbox** per usare una cartella condivisa fra persone. App Folder limita l’app alla propria cartella e non è la scelta prevista per lo scambio condiviso. Consentire almeno files.metadata.read, files.content.read e files.content.write. Inserire app key e percorso della cartella, es. /Fuorigiri, già esistente e accessibile all’account. Per spazi team, il percorso deve risultare risolvibile nel namespace dell’account: il selettore di namespace amministrativi non è incluso.
 
@@ -54,7 +64,7 @@ Redirect desktop `http://127.0.0.1:53682/oauth/callback`; Android `fuorigiri://o
 
 [Guida OAuth Dropbox](https://www.dropbox.com/developers/reference/oauth-guide).
 
-### Microsoft OneDrive
+### Microsoft OneDrive (sperimentale)
 
 Registrare un’app pubblica Microsoft Entra con account personali/organizzativi necessari alla distribuzione. Registrare redirect desktop `http://127.0.0.1:53682/oauth/callback` e custom URI mobile `fuorigiri://oauth/callback` nella piattaforma appropriata. Scope delegated Files.ReadWrite.All e offline_access: sono permessi ampi, non accesso limitato magicamente a una cartella. Le policy del tenant possono richiedere amministratore o impedire il consenso.
 

@@ -100,6 +100,29 @@ def test_existing_destinations_are_never_replaced(tmp_path, sealed):
     assert keep.read_bytes() == b'precious'
 
 
+def test_failed_encryption_removes_only_the_file_it_created(tmp_path, monkeypatch):
+    keep = tmp_path / 'keep.fgbak'
+    keep.write_bytes(b'precious')
+    with pytest.raises(FileNotFoundError):
+        encrypt_file(tmp_path / 'missing.zip', keep, PASSWORD, n=FAST)
+    assert keep.read_bytes() == b'precious', 'missing source must not delete an existing destination'
+    source = tmp_path / 'plain.bin'
+    source.write_bytes(b'x' * (CHUNK + 1))
+    created = tmp_path / 'created.fgbak'
+
+    class Broken:
+        def __init__(self, key):
+            pass
+
+        def encrypt(self, *args):
+            raise OSError('disk full')
+
+    monkeypatch.setattr(backup_crypto, 'AESGCM', Broken)
+    with pytest.raises(OSError):
+        encrypt_file(source, created, PASSWORD, n=FAST)
+    assert not created.exists(), 'a partial file created by the call is removed'
+
+
 def test_short_password_is_refused(tmp_path):
     (tmp_path / 'p').write_bytes(b'data')
     with pytest.raises(ValueError, match='12 caratteri'):

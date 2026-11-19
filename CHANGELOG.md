@@ -1,5 +1,10 @@
 # Changelog
 
+## 19 novembre 2026 — backup protetto: nessuna cancellazione di file preesistenti
+
+- `backup_crypto.encrypt_file` apriva l'origine prima della destinazione: con origine mancante la pulizia dell'errore cancellava un file di destinazione già esistente (segnalato dalla revisione della suite del 16 novembre). Ora la pulizia rimuove solo il file creato dalla chiamata stessa. Il salvataggio desktop usa una cartella temporanea nuova, quindi il caso riguardava la chiamata diretta alla funzione.
+- Nuova regressione per origine mancante con destinazione preesistente ed errore dopo la creazione. Formato `.fgbak` invariato, nessun nuovo EXE/APK.
+
 ## 19 novembre 2026 — core comune 0.2.0 (primitive, utilità, job e invarianti di scambio)
 
 - `cycling-suite-core` 0.2.0 sostituisce 0.1.2. Firme Ed25519, involucro degli inviti/recupero (scrypt + Fernet, lettura dei file storici n=2¹⁴), scrittura atomica dei JSON, neutralizzazione CSV, attribuzione fissa, job di sync e regole di scambio arrivano dal core; `workspaces.py`, `csv_safety.py`, `branding.py`, `sync_jobs.py`, `sync.py` e `sync_v2.py` restano adattatori con nomi, messaggi e formati di Fuorigiri.

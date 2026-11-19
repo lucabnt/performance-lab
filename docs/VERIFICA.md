@@ -1,5 +1,10 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 19 novembre 2026 — backup protetto, pulizia limitata al file creato
+
+- `tests/test_backup_crypto.py`: 17 passati, compresa la nuova regressione (origine mancante con destinazione preesistente intatta; file parziale rimosso dopo errore di cifratura). Ruff e formato senza differenze.
+- A Ruota (sospesa, non archiviata) aveva la stessa struttura: corretta lo stesso giorno con regressione propria, documentata nella sua `docs/VALIDAZIONE.md`.
+
 ## 19 novembre 2026 — core comune 0.2.0
 
 - `scripts/verify.py` completo riuscito con la wheel 0.2.0 installata (versioni, UI/core incorporati, hash, ruff, formati, build tsc/Vite, pytest, modelli frontend, diff). Prima della consegna: **362 test Python passati** contro le sorgenti comuni.

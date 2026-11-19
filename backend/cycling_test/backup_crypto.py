@@ -86,23 +86,27 @@ def encrypt_file(source, destination, password, *, n=SCRYPT_N):
     ).encode('utf-8')
     aes = AESGCM(_key(password, kdf))
     digest = hashlib.sha256(header).digest()
-    try:
-        with source.open('rb') as reader, destination.open('xb') as out:
-            out.write(MAGIC + struct.pack('>I', len(header)) + header)
-            index = 0
-            while True:
-                plain = reader.read(CHUNK)
-                final = not reader.peek(1)  # an empty source still produces one final chunk
-                sealed = aes.encrypt(_nonce(index), plain, _aad(digest, index, final))
-                out.write(struct.pack('>I', len(sealed)) + sealed)
-                index += 1
-                if final:
-                    break
-    except FileExistsError:
-        raise ValueError('Il file di destinazione esiste già: nessun backup sovrascritto.') from None
-    except BaseException:
-        destination.unlink(missing_ok=True)
-        raise
+    with source.open('rb') as reader:
+        # Cleanup only ever removes the file this call created (never a pre-existing one).
+        try:
+            out = destination.open('xb')
+        except FileExistsError:
+            raise ValueError('Il file di destinazione esiste già: nessun backup sovrascritto.') from None
+        try:
+            with out:
+                out.write(MAGIC + struct.pack('>I', len(header)) + header)
+                index = 0
+                while True:
+                    plain = reader.read(CHUNK)
+                    final = not reader.peek(1)  # an empty source still produces one final chunk
+                    sealed = aes.encrypt(_nonce(index), plain, _aad(digest, index, final))
+                    out.write(struct.pack('>I', len(sealed)) + sealed)
+                    index += 1
+                    if final:
+                        break
+        except BaseException:
+            destination.unlink(missing_ok=True)
+            raise
     return destination
 
 

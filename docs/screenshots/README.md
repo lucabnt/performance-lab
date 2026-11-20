@@ -93,7 +93,7 @@ Build finale Fuorigiri 0.10.0/UI 0.2.8, nuovo corpus locale esclusivamente sinte
 
 Provati file → anteprima anagrafica valida e scarto protetto senza commit; tutti i percorsi contestuali e i cinque tracciati del punto completo. Console senza errori o avvisi. Le istruzioni sotto descrivono la precedente galleria del 20 ottobre; le immagini aggiornate qui prevalgono per le viste coinvolte.
 
-Galleria incorporata nel [README principale](../../README.md). Acquisizione: **20 ottobre 2026**, Fuorigiri **0.10.0**, sorgenti al commit `50d242b`, UI comune `@cycling-suite/ui` **0.2.2**. Immagini JPEG reali del browser locale (circa 1230 × 950 pixel), senza ritocchi ai contenuti. L’interfaccia è la stessa inclusa nella finestra desktop; queste immagini non documentano una build Linux o Android.
+Galleria incorporata nel [README principale](../../README.md). Acquisizione: **20 ottobre 2026**, Fuorigiri **0.10.0**, sorgenti al commit `e08f376`, UI comune `@cycling-suite/ui` **0.2.2**. Immagini JPEG reali del browser locale (circa 1230 × 950 pixel), senza ritocchi ai contenuti. L’interfaccia è la stessa inclusa nella finestra desktop; queste immagini non documentano una build Linux o Android.
 
 Sono stati usati soltanto archivi sintetici già disponibili: corpus completo per le funzioni prestative e corpus ridotto con casi crescita per la maturazione. I conteggi fotografano quelle demo e non sono requisiti del prodotto. Non sono stati rigenerati archivi, corretti risultati o eseguite sincronizzazioni per realizzare le immagini.
 
@@ -134,7 +134,7 @@ Non includere backup o archivi di generazione nella repository. Terminato il lav
 
 ## Android: navigazione, elenchi e moduli — 21 ottobre 2026
 
-`android-menu.png`, `android-info.png`, `android-atleti.png`, `android-modulo.png` e `android-grafico.png` e `android-grafico.png` documentano l’APK debug reale su emulatore API 35 x86_64: Fuorigiri 0.10.0, UI comune 0.2.6, HEAD `d67afad` più modifiche locali TD-98–104. Catture PNG integrali 1080 × 2424, senza ritocchi. Società sintetica Velodromo Aurora - SIMULAZIONE ripristinata come copia QA indipendente; nessun account cloud o dato personale. Le immagini desktop sopra conservano provenienza distinta. Non rappresentano il collaudo su telefono.
+`android-menu.png`, `android-info.png`, `android-atleti.png`, `android-modulo.png` e `android-grafico.png` e `android-grafico.png` documentano l’APK debug reale su emulatore API 35 x86_64: Fuorigiri 0.10.0, UI comune 0.2.6, HEAD `242e154` più modifiche locali TD-98–104. Catture PNG integrali 1080 × 2424, senza ritocchi. Società sintetica Velodromo Aurora - SIMULAZIONE ripristinata come copia QA indipendente; nessun account cloud o dato personale. Le immagini desktop sopra conservano provenienza distinta. Non rappresentano il collaudo su telefono.
 
 - `android-menu.png`: Apri menu; società, sezioni, Info e lingua.
 - `android-info.png`: sezione Info con versione, stato locale/offline, logo e attribuzione fissi, licenza.

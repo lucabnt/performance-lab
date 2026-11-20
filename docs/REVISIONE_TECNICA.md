@@ -1,6 +1,6 @@
 # Revisione tecnica e piano di intervento
 
-Revisione del **14 novembre 2026** sui sorgenti **0.10.0** (commit `b12aaa4`). Stato: **analisi e piano approvati; blocchi 1–5 implementati nei sorgenti il 14 e 15 novembre 2026** (vedi [Avanzamento](#avanzamento)). Le altre voci restano proposte. L'avanzamento va registrato in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), [CHANGELOG.md](../CHANGELOG.md) e [VERIFICA.md](VERIFICA.md) man mano che le voci vengono realizzate.
+Revisione del **14 novembre 2026** sui sorgenti **0.10.0** (commit `9c93172`). Stato: **analisi e piano approvati; blocchi 1–5 implementati nei sorgenti il 14 e 15 novembre 2026** (vedi [Avanzamento](#avanzamento)). Le altre voci restano proposte. L'avanzamento va registrato in [REQUISITI_E_TODO.md](REQUISITI_E_TODO.md), [CHANGELOG.md](../CHANGELOG.md) e [VERIFICA.md](VERIFICA.md) man mano che le voci vengono realizzate.
 
 Gli identificativi `RT-nn` sono propri di questa revisione.
 

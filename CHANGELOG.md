@@ -2,12 +2,12 @@
 
 ## 20 novembre 2026 — APK release firmato e cartella di release v0.10.0-alpha.1 (non pubblicata)
 
-- Chiave release Android del titolare creata; APK release firmato in Android Studio dal commit `ef56468` (certificato SHA-256 `a04c6d2d…406d`), verificato ed equivalente al release del candidato `rc-20261120-01`; prima installazione e creazione di una società su emulatore riuscite.
+- Chiave release Android del titolare creata; APK release firmato in Android Studio dal commit `2722aea` (certificato SHA-256 `a04c6d2d…406d`), verificato ed equivalente al release del candidato `rc-20261120-01`; prima installazione e creazione di una società su emulatore riuscite.
 - Preparata in locale la cartella `dist/release/Fuorigiri-0.10.0-alpha.1/` con i cinque allegati previsti da DISTRIBUZIONE.md, `SHA256SUMS.txt` e bozza delle note di rilascio. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
 
 ## 20 novembre 2026 — candidato rc-20261120-01 (Windows + Android)
 
-- Build locali dal commit `ef56468` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/`: installer e portabile Windows, APK debug di test, release non firmato e APK strumentale, wheel native e sorgenti. Include I18N-01 e tutti gli interventi del 15–20 novembre. Versione prodotto 0.10.0 invariata, nessuna firma o pubblicazione. [Prove](docs/VERIFICA.md).
+- Build locali dal commit `2722aea` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/`: installer e portabile Windows, APK debug di test, release non firmato e APK strumentale, wheel native e sorgenti. Include I18N-01 e tutti gli interventi del 15–20 novembre. Versione prodotto 0.10.0 invariata, nessuna firma o pubblicazione. [Prove](docs/VERIFICA.md).
 
 ## 20 novembre 2026 — traduzioni inglesi mancanti nell'interfaccia (I18N-01)
 
@@ -38,7 +38,7 @@
 
 ## 19 novembre 2026 — candidato core020-20261119-01 (solo Windows)
 
-- Nuove build locali Windows (installer e portabile, launcher con bootloader locale e risorsa di versione) dal commit `73c562d`, in `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`. Include PERIMETRO-01, core comune 0.2.0 e la correzione del backup protetto. Nessun APK; versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-01/02. [Prove](docs/VERIFICA.md).
+- Nuove build locali Windows (installer e portabile, launcher con bootloader locale e risorsa di versione) dal commit `9f42773`, in `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`. Include PERIMETRO-01, core comune 0.2.0 e la correzione del backup protetto. Nessun APK; versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-01/02. [Prove](docs/VERIFICA.md).
 - Documentazione riallineata: candidato corrente in COLLAUDO_PILOT e PROSSIMI_PASSI, schermata `crescita-maturazione.jpg` con la card «HV massima osservata».
 
 ## 19 novembre 2026 — backup protetto: nessuna cancellazione di file preesistenti
@@ -65,7 +65,7 @@
 
 ## 15 novembre 2026 — candidato win-av02-20261115-02
 
-- Nuove build locali Windows (installer e portabile, launcher con bootloader PyInstaller locale e risorsa di versione) e Android (debug di test, release non firmato, supporto strumentale) dal commit `3794786`, in `dist/candidates/Fuorigiri-0.10.0-win-av02-20261115-02/`. Include MAT-PHV-01. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-02. [Prove](docs/VERIFICA.md).
+- Nuove build locali Windows (installer e portabile, launcher con bootloader PyInstaller locale e risorsa di versione) e Android (debug di test, release non firmato, supporto strumentale) dal commit `65bb645`, in `dist/candidates/Fuorigiri-0.10.0-win-av02-20261115-02/`. Include MAT-PHV-01. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-02. [Prove](docs/VERIFICA.md).
 
 ## 15 novembre 2026 — launcher Windows: bootloader locale e risorsa di versione (WIN-AV-02)
 
@@ -83,7 +83,7 @@
 
 ## 15 novembre 2026 — candidato revisione-tecnica-20261115-01
 
-- Nuove build locali Windows (installer e portabile) e Android (debug di test, release non firmato, supporto strumentale) dal commit `c9806ae`, in `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Prove in [VERIFICA.md](docs/VERIFICA.md).
+- Nuove build locali Windows (installer e portabile) e Android (debug di test, release non firmato, supporto strumentale) dal commit `da47723`, in `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Prove in [VERIFICA.md](docs/VERIFICA.md).
 
 ## 15 novembre 2026 — correzioni del primo run CI
 

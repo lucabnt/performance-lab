@@ -12,7 +12,7 @@ Decisioni PERIMETRO-01 ([requisiti](REQUISITI_E_TODO.md), [analisi](analisi-alte
 
 L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:
 
-1. **Fedora:** ~~ricostruire le sei wheel da radice neutra~~ **fatto il 19 novembre** ([procedura](ANDROID_WHEEL_FEDORA.md), kit `android-neutral-kit-20261119-02`): riparazione ABI3, provenienza, scanner `--strict` e APK release con scansione dei percorsi pulita; restano 4 moduli LOAD non a 16 KB (FreeType, OpenBLAS/libpng x86_64) e il runtime ARM64 sul telefono (x86_64 verificato su emulatore).
+1. **Fedora:** ~~ricostruire le sei wheel da radice neutra~~ **fatto il 19 novembre** ([procedura](ANDROID_WHEEL_FEDORA.md), kit `android-neutral-kit-20261119-02`): riparazione ABI3, provenienza, scanner `--strict` e APK release con scansione dei percorsi pulita; restano 4 moduli LOAD non a 16 KB (FreeType, OpenBLAS/libpng x86_64) e il runtime ARM64 su dispositivo reale (x86_64 verificato su emulatore; la traduzione ARM dell’emulatore non avvia Chaquopy, né con le wheel nuove né con le precedenti, 20 novembre).
 2. **Android:** chiave del titolare ([firma](FIRMA_ANDROID.md)), `build_android.py --release` da snapshot committato, firma, prove A-04…A-08 e A-11 sul telefono. Gli utenti dell’APK debug devono fare un backup e disinstallarlo.
 3. **Windows:** installare il candidato `core020-20261119-01` (19 novembre: avvisi Qt, bootloader locale WIN-AV-02, core 0.2.0) e riaprirlo con Defender attivo (WIN-AV-01/02), poi prove W-01…W-07 in Windows Sandbox. Firma Authenticode da decidere.
 4. **Licenze:** decidere se allegare alla release gli archivi sorgente Qt o affidarsi ai link ufficiali.

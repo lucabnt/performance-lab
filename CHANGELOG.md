@@ -1,5 +1,9 @@
 # Changelog
 
+## 20 novembre 2026 — prova ARM64 con traduzione dell’emulatore (solo verifica)
+
+- Tentativo di eseguire le librerie ARM64 sull’emulatore x86_64 con traduzione ARM: l’app termina al caricamento del runtime Chaquopy, anche con l’APK precedente. Runtime ARM64 ancora da provare su dispositivo reale. Nessuna modifica a codice o binari. [Prove](docs/VERIFICA.md).
+
 ## 20 novembre 2026 — candidato Android android-neutre-20261120-01 e confezionamento per piattaforma
 
 - Candidato locale solo Android in `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/`: APK debug di test, release non firmato con scansione dei percorsi pulita e APK strumentale compilati con le wheel neutre, verificati su emulatore x86_64. abi3audit strict senza violazioni sulle cryptography. Nessuna firma o pubblicazione.

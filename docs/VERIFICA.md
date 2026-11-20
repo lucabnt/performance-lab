@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 novembre 2026 — tentativo ARM64 su emulatore con traduzione
+
+- L’utente non dispone di un telefono ARM64. Emulatore Pixel_9 API 35 x86_64 con traduzione ARM (`ro.dalvik.vm.native.bridge=libndk_translation.so`, Berberis aarch64 0.2.3, `abilist` x86_64,arm64-v8a). APK debug di `android-neutre-20261120-01` installato con `adb install -r --abi arm64-v8a`: `primaryCpuAbi=arm64-v8a`.
+- Esito: **non qualificabile in questo ambiente.** Sia `am instrument` sia l’avvio dal launcher terminano dopo il caricamento di `libchaquopy_java.so` (ARM64 tradotta), prima di qualsiasi import delle wheel: «Process crashed», SIGABRT nel thread di sistema `hwuiTask`, uscita con codice 1, nessun tombstone nuovo né messaggio Python.
+- Controllo di confronto: l’APK debug di `win-av02-20261115-02`, con le wheel precedenti, installato nello stesso modo, termina allo stesso punto. Il crash non è quindi attribuibile alle wheel neutre ma alla combinazione traduzione ARM dell’emulatore / runtime Chaquopy.
+- Ripristinato l’APK nuovo con `--abi x86_64` (`primaryCpuAbi=x86_64`), avvio riuscito; emulatore spento.
+- Limite: il runtime ARM64 resta da provare su un dispositivo ARM reale (telefono di un collaboratore o servizio di dispositivi remoti) o su un emulatore ARM nativo in un host ARM; la verifica strutturale delle wheel ARM64 (ELF, LOAD 16 KB, abi3audit, scanner) non sostituisce il runtime.
+
 ## 20 novembre 2026 — candidato android-neutre-20261120-01, abi3audit e confezionamento per piattaforma
 
 - **abi3audit 0.0.26** `--strict --assume-minimum-abi3 3.13` sulle due cryptography riparate in `android/wheels`: 1 estensione per ABI, **0 incompatibilità di versione e 0 violazioni ABI** (x86_64 e arm64). Lo strumento è installato solo in `tmp/abi3audit-tools`.

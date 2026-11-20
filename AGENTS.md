@@ -1,6 +1,6 @@
 # Istruzioni operative — Fuorigiri Performance Lab
 
-Ultima revisione: **19 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
+Ultima revisione: **20 novembre 2026**. Ambito: tutta questa repository, salvo istruzioni più specifiche nelle sottocartelle. Le istruzioni esplicite dell'utente prevalgono sulle convenzioni di progetto.
 
 ## Scopo e decisioni stabili
 
@@ -87,6 +87,7 @@ Le sezioni datate più recenti prevalgono sulle descrizioni storiche dello stess
 - Non sincronizzare il database SQLite aperto tramite client cloud. Usare i trasporti di scambio del progetto; con collaboratori diversi occorrono anche permessi/cartelle cloud distinti.
 - Credenziali nei meccanismi protetti del sistema; non aggiungere fallback in chiaro, segreti universali, token nei log o fixture con credenziali reali. `identity.json` contiene segreti: non pubblicarlo né mostrarne il contenuto.
 - La sync ordinaria gestita salta pacchetti già acquisiti; la verifica completa li rilegge. Non presentare il primo comportamento come audit integrale del contenuto remoto. Preservare compatibilità, firme, revoche e conflitti.
+- SYNC-SPAZIO-01: la sync v2 riceve prima di pubblicare e pubblica solo pagine delta con eventi autenticati non coperti (indice `sync-v2/coverage-<canale>.json`: cursore, non autorità). Non reintrodurre la ripubblicazione dell'intero storico o della coda; cataloghi geometrici; blocchi mancanti ripristinati dal proprio editore. Formato invariato: resta v2 (v3 solo per cambi incompatibili). Diagnosi in `sync_space.py`, job separato in sola lettura. Nessuna cancellazione remota prima della fase 2 approvata ([piano](docs/SYNC_SPAZIO_REMOTO.md)).
 - Sync v2 e backup ZIP64 v3 implementati: [contratto](docs/SYNC_V2_E_BACKUP.md). Attivazione esplicita del fondatore dopo aggiornamento di tutti i dispositivi, avviso firmato, lettura v1/v2; vecchi client non leggono nuove pagine. Blocchi HMAC/cifrati e checkpoint non sostituiscono firme originali e controlli di revoca. Nessuna riscrittura delle revisioni locali canoniche, cancellazione automatica o inventario remoto paginato. V3 elabora payload su disco, ma metadati ZIP e singoli record occupano memoria; grandi download frontend possono ancora accumularsi nel browser: preferire salvataggio diretto desktop o CLI. Conservare lettura backup legacy.
 - Backup protetto da password (RT-11): `.fgbak` = v3 invariato avvolto con AES-256-GCM a blocchi e scrypt con parametri nell'intestazione ([formato](docs/BACKUP_CIFRATO.md)). Non cambiare formato o parametri senza una nuova versione dell'intestazione e la lettura dei file precedenti; mai password in URL o log; il v3 in chiaro resta predefinito.
 - Non aggirare i limiti di backup/import semplicemente aumentando numeri o memoria. Progettare streaming/parti, integrità, recupero e compatibilità.

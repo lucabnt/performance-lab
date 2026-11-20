@@ -1,5 +1,15 @@
 # Requisiti e to-do
 
+## SYNC-SPAZIO-01 — spazio occupato dallo scambio remoto, 20 novembre 2026
+
+Segnalazione dell'utente: «Il mio archivio su webdav è circa 50 mb, abbastanza rilevante come dimensione considerando nessun fit per i test, solo valori storici, come mai?»; poi «Sì, progettala»; dopo l'attivazione della v2, «Procedi con 0 e 1, potrebbe valere la pena definirla sync v3 o tenere la v2?». Analisi, misure e fasi in [SYNC_SPAZIO_REMOTO.md](SYNC_SPAZIO_REMOTO.md).
+
+- Cause: in v1 un pacchetto per revisione con certificato, base64 e allegati codificati due volte; in v2 la coda delle pagine veniva ripubblicata a ogni scambio, si accumulavano cataloghi completi e ogni admin ripubblicava l'intero storico con la propria firma.
+- **Fase 0, implementata nei sorgenti e verificata localmente:** «Spazio occupato dallo scambio» in Condivisione e collaboratori, job di dispositivo in sola lettura anche per i visualizzatori. Mostra categorie, ripartizione v1, copie v2, editori, spazio ridondante, file alterati e blocchi mancanti.
+- **Fase 1, implementata nei sorgenti e verificata localmente:** ricezione prima della pubblicazione, indice di copertura per canale, pagine delta (nessuna pagina riscritta né storico ripubblicato da un secondo admin), cataloghi geometrici, ricevute ripulite, ripristino dei blocchi mancanti. Formato invariato: **resta v2**, compatibile con i client v2 distribuiti. Nessuna cancellazione: lo spazio già accumulato resta fino alla fase 2.
+- Fase 2 (consolidamento esplicito del fondatore in due tempi, con `delete` nel core comune) e fase 3 (compressione, nuovo formato) restano proposte. Decisioni aperte: se procedere, attesa del consolidamento e pacchetti v1, politica dei report esportati.
+- Limiti: nessun EXE/APK ricompilato; nessuna prova su WebDAV reale né sull'archivio segnalato; gli admin con client precedenti continuano a ripubblicare il proprio storico finché non vengono aggiornati.
+
 ## PERIMETRO-01 — decisioni dopo l'analisi delle alternative, 18 novembre 2026
 
 Richiesta dell'utente, dopo l'[analisi delle alternative](analisi-alternative-2026-11-18.md): «Ok su drive Dropbox onedrive sperimentali, documenta»; «app training lab è sospesa al momento, ci limitiamo al tasto che rimanda a intervals in ui. Anche il server rimane tra gli sviluppi futuri in considerazione ma non in sviluppo»; «Direi app completa su android, il livello è già buono». **Decisioni documentate; nessuna modifica al codice.**

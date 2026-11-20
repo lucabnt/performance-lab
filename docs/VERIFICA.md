@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 novembre 2026 — spazio dello scambio: diagnosi e pagine delta (SYNC-SPAZIO-01)
+
+- Sorgenti, non pacchetti: nessun EXE/APK ricompilato. `scripts/verify.py` completo riuscito (versioni, UI comune, core, hash lockfile, ruff, formato Python e frontend, build con tsc, 372 test Python, test dei modelli frontend, `git diff --check`).
+- Nuovi test: `tests/test_sync_v2.py` (una sync per modifica pubblica ogni evento una volta senza riscrivere pagine; un secondo admin non ripubblica lo storico ricevuto; dopo l'aggiornamento le pagine già pubblicate non vengono ricaricate; nuova destinazione con tutto lo storico; blocco rimosso ripristinato dall'editore, verificato che senza ripristino il test fallisce) e `tests/test_sync_space.py` (lunghezza esatta dei token Fernet; conteggi v1/v2 coerenti con il journal e con i byte su disco, cartella invariata per hash; duplicati, blocchi orfani e pagina alterata; job e rotte API). I test v2 preesistenti restano verdi.
+- Misure con dati sintetici (script nella cartella temporanea della sessione, non nella repository): 320 eventi non gestiti con una sync per evento 5.091 KB → 393 KB (scambio unico 294 KB); archivio gestito, 40 modifiche singole dopo l'attivazione +1.146 KB → +99 KB; primo scambio di un secondo admin +575 KB → +0 KB; due admin e 20 modifiche alternate: 764 → 221 copie per 221 eventi.
+- GUI web: archivio QA nuovo `.local/qa-spazio-20261120-02` con scambio su cartella `.local/qa-spazio-20261120-02-scambio` (8 atleti e 69 misure sintetiche, v1 poi v2 e 5 modifiche singole). Pannello «Spazio occupato dallo scambio» provato in italiano a 800 px e in inglese a 375 px senza scorrimento orizzontale: 83 file, 201,5 KB, 73 pacchetti v1 tutti presenti in v2, 78 revisioni distinte in 78 copie, nessun errore in console. Un primo archivio QA (`.local/qa-spazio-20261120`) con record `test` incompleti generati a mano faceva fallire la pagina dei test (`custom_fields` indefinito): difetto dei dati sintetici, non usato per la prova.
+- Limiti: nessuna prova su WebDAV reale, Android, client precedenti in parallelo o sull'archivio segnalato dall'utente; il consolidamento (fase 2) non esiste, quindi lo spazio già accumulato resta.
+
 ## 20 novembre 2026 — riscrittura della storia: rimozione dell’ID Intervals.icu
 
 - Richiesta dell’utente prima di rendere pubblica la repository. Backup completo prima della riscrittura: `.local/backup-prima-riscrittura-20261120/performance-lab-completo.bundle` (verificato con `git bundle verify`), HEAD precedente registrato accanto.

@@ -1,5 +1,11 @@
 # Changelog
 
+## 20 novembre 2026 — spazio dello scambio: diagnosi e pagine delta (SYNC-SPAZIO-01)
+
+- Nuovo [SYNC_SPAZIO_REMOTO.md](docs/SYNC_SPAZIO_REMOTO.md): cause della crescita dello spazio remoto in v1 e v2, misure su archivi sintetici e piano in quattro fasi.
+- Fase 0: pannello «Spazio occupato dallo scambio» in Archivio e scambio → Condivisione e collaboratori, con job in sola lettura (`sync_space.py`, rotte `sync/space/start` e `sync/space/job`) che analizza la destinazione senza modificarla.
+- Fase 1: la sync v2 riceve prima di pubblicare e pubblica solo gli eventi che nessuna pagina valida contiene già (indice `sync-v2/coverage-<canale>.json`). Le pagine pubblicate non vengono più riscritte, un secondo admin non ripubblica lo storico, i cataloghi crescono in modo geometrico, i blocchi mancanti sotto le proprie pagine vengono ripristinati. Formato invariato (v2), nessuna cancellazione. Nelle simulazioni, una sync dopo ogni modifica passa da 5,1 MB a 0,39 MB per 320 eventi. Nessun EXE/APK ricompilato. [Prove](docs/VERIFICA.md).
+
 ## 20 novembre 2026 — APK release firmato e cartella di release v0.10.0-alpha.1 (non pubblicata)
 
 - Chiave release Android del titolare creata; APK release firmato in Android Studio dal commit `2722aea` (certificato SHA-256 `a04c6d2d…406d`), verificato ed equivalente al release del candidato `rc-20261120-01`; prima installazione e creazione di una società su emulatore riuscite.

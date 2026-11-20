@@ -27,6 +27,7 @@ Perimetro e posizionamento: [analisi delle alternative del 18 novembre 2026](ana
 - [Galleria dell’interfaccia](screenshots/README.md): viste del README e procedura per mantenerle aggiornate con dati sintetici.
 - [Società, backup e accessi](SOCIETA_BACKUP_E_ACCESSI.md): creazione, inviti, ruoli e ripristino.
 - [Sync v2, backup v3 e separazione società](SYNC_V2_E_BACKUP.md): attivazione, compatibilità, flussi GUI/CLI e limiti.
+- [Spazio dello scambio remoto](SYNC_SPAZIO_REMOTO.md): cause della crescita, diagnosi in sola lettura e pagine delta della v2 (SYNC-SPAZIO-01, fasi 0–1 nei sorgenti; consolidamento e compressione proposti).
 - [Backup protetto da password](BACKUP_CIFRATO.md): formato `.fgbak`, uso, garanzie e limiti.
 - [Configurare la sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md): WebDAV e cartelle supportati; Drive, Dropbox e OneDrive sperimentali, con prerequisiti OAuth.
 - [Distribuzione](DISTRIBUZIONE.md): bundle Windows, dipendenze incluse, installer e prerequisiti Fedora/Android.

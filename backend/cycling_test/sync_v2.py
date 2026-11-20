@@ -2,8 +2,10 @@
 
 Original signed changes are reconstructed before authentication. Chunk addresses
 are HMACs scoped to the channel key, never public plaintext content hashes.
-No history or v1 files are deleted. A checkpoint inventories complete pages;
-it is a bootstrap aid, not authority to skip event signature verification.
+No history or v1 files are deleted. Each device publishes only events that no
+valid remote page carries yet (delta pages, SYNC-SPAZIO-01): published pages are
+never rewritten. A checkpoint lists pages known to the publisher; it is a
+bootstrap aid, not authority to skip event signature verification.
 """
 
 import hashlib
@@ -153,6 +155,64 @@ class Objects:
         return dest
 
 
+class Coverage:
+    """Device-local index: remote v2 page -> event ids it carries (SYNC-SPAZIO-01).
+
+    Only pages this device published or fully authenticated while receiving are
+    recorded. Pages absent from the current inventory are ignored and dropped,
+    so a new destination receives the whole history again. It is a publication
+    cursor, never an authority: receivers still verify every event.
+    """
+
+    def __init__(self, path, names):
+        self.path = path
+        self.names = names
+        try:
+            data = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            data = {}
+        if not isinstance(data, dict) or data.get('schema') != 1 or not isinstance(data.get('pages'), dict):
+            data = {'pages': {}}
+        self.pages = {
+            n: ids for n, ids in data['pages'].items() if isinstance(ids, list) and all(isinstance(i, str) for i in ids)
+        }
+        self.checkpoint = data.get('checkpoint') if isinstance(data.get('checkpoint'), str) else None
+        chunks = data.get('chunks') if isinstance(data.get('chunks'), dict) else {}
+        # Chunks referenced by pages this device published, to restore missing ones.
+        self.chunks = {n: c for n, c in chunks.items() if isinstance(c, list) and all(isinstance(i, str) for i in c)}
+        listed = data.get('checkpoint_pages')
+        self.checkpoint_pages = listed if type(listed) is int and listed >= 0 else 0
+
+    def add(self, name, ids):
+        self.pages[name] = list(ids)
+
+    def present(self):
+        return [n for n in self.pages if n in self.names]
+
+    def covered(self):
+        return {i for n in self.present() for i in self.pages[n]}
+
+    def checkpoint_due(self):
+        # Geometric growth: every catalogue lists all pages, so a new one only when
+        # the pages grew by half (at least 32) keeps catalogues linear in total.
+        grown = len(self.present()) - self.checkpoint_pages
+        return self.checkpoint not in self.names or grown >= max(PAGE, self.checkpoint_pages // 2)
+
+    def save(self):
+        from .workspaces import write_json
+
+        write_json(
+            self.path,
+            {
+                'schema': 1,
+                'checkpoint': self.checkpoint,
+                'checkpoint_pages': self.checkpoint_pages,
+                'pages': {n: self.pages[n] for n in self.present()},
+                'chunks': {n: self.chunks[n] for n in self.present() if n in self.chunks},
+            },
+        )
+
+
 def pack(change, objects):
     detached = []
 
@@ -244,66 +304,55 @@ def exchange_v2(store, folder, key, transport, verify_all, result):
     published = 0
     # Controls were settled by the v1 step: read identity and revocations once (RT-09).
     check = store.verifier() if managed else None
-    if can_write:
-        # Stable rowid pages include complete signed history, not just live heads.
-        with store.connect() as db:
-            cursor = db.execute('SELECT body FROM changes ORDER BY rowid')
-            while rows := cursor.fetchmany(PAGE):
-                events = []
-                for row in rows:
-                    change = json.loads(row[0])
-                    if managed:
-                        try:
-                            check(change)
-                        except (ValueError, KeyError, InvalidSignature):
-                            continue
-                    events.append(change)
-                if not events:
+    cache = store.root / 'sync-v2'
+    cache.mkdir(exist_ok=True)
+    coverage = Coverage(cache / f'coverage-{channel}.json', names)
+
+    def build(events):
+        """Signed page bytes for ``events``, reusing the local descriptor cache."""
+        # Cache the descriptor locally, preserving exact signed events.
+        source = hmac.new(objects.key, digestmod=hashlib.sha256)
+        for fragment in json.JSONEncoder(
+            ensure_ascii=False, sort_keys=True, allow_nan=False, separators=(',', ':')
+        ).iterencode(events):
+            source.update(fragment.encode())
+        cached = cache / (source.hexdigest() + '.json')
+        payload = json.loads(cached.read_text(encoding='utf-8')) if cached.exists() else None
+        if payload is not None:
+            # Ensure absent remote chunks are republished after switching destination.
+            required = {
+                n
+                for e in payload['events']
+                for d in [*e['objects'].values(), *(f['blob'] for f in e['detached'])]
+                for n in d['chunks']
+            }
+            if not required.issubset(names) or verify_all:
+                payload = None
+        if payload is None:
+            payload = {'schema': 2, 'events': [pack(e, objects) for e in events]}
+            write_json(cached, payload)
+        if managed:
+            payload = {
+                **payload,
+                'workspace': identity['workspace'],
+                'publisher': identity['certificate'],
+                'publisher_certificate_signature': identity['certificate_signature'],
+            }
+            payload = {**payload, 'signature': sign(identity['private_key'], payload)}
+        return encoded(payload).encode()
+
+    def authentic(rows):
+        events = []
+        for row in rows:
+            change = json.loads(row)
+            if managed:
+                try:
+                    check(change)
+                except (ValueError, KeyError, InvalidSignature):
                     continue
-                # Cache the descriptor locally, preserving exact signed events.
-                cache = store.root / 'sync-v2'
-                cache.mkdir(exist_ok=True)
-                source = hmac.new(objects.key, digestmod=hashlib.sha256)
-                for fragment in json.JSONEncoder(
-                    ensure_ascii=False, sort_keys=True, allow_nan=False, separators=(',', ':')
-                ).iterencode(events):
-                    source.update(fragment.encode())
-                cache_id = source.hexdigest()
-                cached = cache / (cache_id + '.json')
-                if cached.exists():
-                    payload = json.loads(cached.read_text(encoding='utf-8'))
-                    # Ensure absent remote chunks are republished after switching destination.
-                    required = {
-                        n
-                        for e in payload['events']
-                        for d in [*e['objects'].values(), *(f['blob'] for f in e['detached'])]
-                        for n in d['chunks']
-                    }
-                    if not required.issubset(names) or verify_all:
-                        payload = None
-                else:
-                    payload = None
-                if payload is None:
-                    payload = {'schema': 2, 'events': [pack(e, objects) for e in events]}
-                    write_json(cached, payload)
-                if managed:
-                    payload = {
-                        **payload,
-                        'workspace': identity['workspace'],
-                        'publisher': identity['certificate'],
-                        'publisher_certificate_signature': identity['certificate_signature'],
-                    }
-                    payload = {**payload, 'signature': sign(identity['private_key'], payload)}
-                raw = encoded(payload).encode()
-                name = 'page2-' + objects.address(raw) + '.ctsync2'
-                before = objects.uploaded
-                objects.immutable(name, raw)
-                published += objects.uploaded - before
-                pages.append(name)
-        # Complete bootstrap catalogue. No authority is inferred from a catalogue:
-        # receivers authenticate every original event in every selected page.
-        checkpoint = encoded({'schema': 2, 'pages': pages, 'complete_history': True}).encode()
-        objects.immutable('checkpoint2-' + objects.address(checkpoint) + '.ctindex', checkpoint)
+            events.append(change)
+        return events
+
     receipts_path = store.root / 'sync-v2-receipts.json'
     receipts = json.loads(receipts_path.read_text(encoding='utf-8')) if receipts_path.exists() else {}
     known = set(receipts.get(channel, []))
@@ -388,6 +437,8 @@ def exchange_v2(store, folder, key, transport, verify_all, result):
                     if not org:
                         org = r['id'] if r['kind'] == 'organization' else r.get('organization_id')
                 count, waiting, _ = apply_candidates(store, candidates)
+                # Every event of this page is authenticated: it is present remotely.
+                coverage.add(name, sorted(page_ids))
                 received += count
                 progress |= bool(count)
                 if waiting:
@@ -409,8 +460,74 @@ def exchange_v2(store, folder, key, transport, verify_all, result):
         if not deferred or not progress:
             break
         pending = deferred
-    receipts[channel] = sorted(known)
+    # Publication follows reception (SYNC-SPAZIO-01): events received from other
+    # devices' pages are covered and are not republished under this signature.
+    if can_write:
+        with store.connect() as db:
+            covered = coverage.covered()
+
+            def publish_page(batch):
+                nonlocal published
+                raw = build(batch)
+                name = 'page2-' + objects.address(raw) + '.ctsync2'
+                before = objects.uploaded
+                objects.immutable(name, raw)
+                published += objects.uploaded - before
+                coverage.add(name, [e['id'] for e in batch])
+                required = sorted(
+                    n
+                    for e in json.loads(raw)['events']
+                    for d in [*e['objects'].values(), *(f['blob'] for f in e['detached'])]
+                    for n in d['chunks']
+                )
+                if required:
+                    coverage.chunks[name] = required
+                pages.append(name)
+
+            # Restore chunks that disappeared remotely under pages this device
+            # published: rebuilding the page repacks and uploads only absent chunks.
+            for name in coverage.present():
+                if not set(coverage.chunks.get(name, ())).issubset(names):
+                    ids = coverage.pages[name]
+                    bodies = dict(
+                        db.execute(
+                            f'SELECT id, body FROM changes WHERE id IN ({",".join("?" * len(ids))})', ids
+                        ).fetchall()
+                    )
+                    if len(bodies) == len(ids):
+                        build([json.loads(bodies[i]) for i in ids])
+
+            # Delta pages: only authenticated events no valid remote page carries yet.
+            # Already published pages are never rewritten and other admins' events
+            # are not republished under this device's signature. The grouping is
+            # deterministic and Ed25519 signatures are too: a retry after an interruption,
+            # or the first exchange after updating from whole-history publication,
+            # recomputes the same page names and uploads nothing already present.
+            batch = []
+            cursor = db.execute('SELECT id, body FROM changes ORDER BY rowid')
+            while rows := cursor.fetchmany(PAGE):
+                batch.extend(authentic(r[1] for r in rows if r[0] not in covered))
+                while len(batch) >= PAGE:
+                    publish_page(batch[:PAGE])
+                    batch = batch[PAGE:]
+            if batch:
+                publish_page(batch)
+        if pages and coverage.checkpoint_due():
+            # Bootstrap catalogue of the valid pages known to this device. No authority
+            # is inferred from a catalogue: receivers authenticate every original event.
+            listed = coverage.present()
+            checkpoint = encoded({'schema': 2, 'pages': listed, 'complete_history': True}).encode()
+            name = 'checkpoint2-' + objects.address(checkpoint) + '.ctindex'
+            objects.immutable(name, checkpoint)
+            coverage.checkpoint = name
+            coverage.checkpoint_pages = len(listed)
+        coverage.save()
+    # Pages this device has just published carry events already in its journal.
+    known.update(pages)
+    # Receipts of pages no longer listed (e.g. another destination) are not kept.
+    receipts[channel] = sorted(n for n in known if n in names)
     write_json(receipts_path, receipts)
+    coverage.save()
     with store.connect() as db:
         conflicts = db.execute('SELECT count(*) FROM conflicts').fetchone()[0]
     result.update(
@@ -426,6 +543,7 @@ def exchange_v2(store, folder, key, transport, verify_all, result):
         uploaded_objects=objects.uploaded - published,
         downloaded_chunks=objects.downloaded,
         bootstrap_pages=len(pages),
+        delta_pages=len(pages),
         status='Scambio v2: blocchi cifrati riutilizzabili e revisioni originali verificate. Nessun dato v1 eliminato.',
     )
     return result

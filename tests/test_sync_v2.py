@@ -256,3 +256,96 @@ def test_unreadable_v2_index_falls_back_to_full_inventory(tmp_path):
     result = exchange(viewer, folder, key, protocol=2, verify_existing=False)
     assert not result['pending'] and viewer.get(test['id'])['id'] == test['id']
     assert len(result['errors']) == 1 and 'indice v2 ignorato' in result['errors'][0]
+
+
+def remote_events(folder, key):
+    """Event ids carried by every remote v2 page, one list per page (SYNC-SPAZIO-01)."""
+    cipher = Fernet(key.encode())
+    return [
+        [item['change']['id'] for item in json.loads(cipher.decrypt(path.read_bytes()))['events']]
+        for path in folder.rglob('*.ctsync2')
+    ]
+
+
+def simple_test(store, n):
+    org = store.list('organization')[0]['id']
+    return store.save('test', {'organization_id': org, 'notes': f'storico {n}', 'map_w': 300 + n})
+
+
+def test_delta_pages_never_rewrite_published_pages_or_duplicate_events(tmp_path):
+    owner, _, folder = devices(tmp_path)
+    key = owner.identity['sync_key']
+    for n in range(40):
+        simple_test(owner, n)
+        exchange(owner, folder, key, protocol=2)
+    pages = remote_events(folder, key)
+    ids = [i for page in pages for i in page]
+    with owner.connect() as db:
+        local = {r[0] for r in db.execute('SELECT id FROM changes')}
+    # Every local event is published exactly once, in growing delta pages.
+    assert sorted(ids) == sorted(local) and len(ids) == len(set(ids))
+    assert len(list(folder.rglob('*.ctindex'))) < 5
+    unchanged = exchange(owner, folder, key, protocol=2)
+    assert unchanged['published'] == 0 and remote_events(folder, key) == pages
+
+
+def test_second_admin_does_not_republish_received_history(tmp_path):
+    owner, other, folder = devices(tmp_path)
+    key = owner.identity['sync_key']
+    for n in range(70):
+        simple_test(owner, n)
+    exchange(owner, folder, key, protocol=2)
+    before = remote_events(folder, key)
+    received = exchange(other, folder, key, protocol=2)
+    assert received['received'] and received['published'] == 0
+    simple_test(other, 1000)
+    exchange(other, folder, key, protocol=2)
+    pages = remote_events(folder, key)
+    ids = [i for page in pages for i in page]
+    assert len(pages) == len(before) + 1 and len(ids) == len(set(ids))
+    assert exchange(owner, folder, key, protocol=2)['received'] == 1
+
+
+def test_pages_published_before_delta_pages_are_not_uploaded_again(tmp_path):
+    owner, _, folder = devices(tmp_path)
+    key = owner.identity['sync_key']
+    for n in range(50):
+        simple_test(owner, n)
+    exchange(owner, folder, key, protocol=2)
+    baseline = exchange(owner, folder, key, protocol=2)['downloaded_packets']
+    # Model a device updated from whole-history publication: no coverage index yet,
+    # only the descriptor cache and the receipts of the previous version.
+    for path in (owner.root / 'sync-v2').glob('coverage-*.json'):
+        path.unlink()
+    pages = remote_events(folder, key)
+    result = exchange(owner, folder, key, protocol=2)
+    assert result['published'] == 0 and result['downloaded_packets'] == baseline
+    assert remote_events(folder, key) == pages
+
+
+def test_new_destination_receives_the_whole_history(tmp_path):
+    owner, _, folder = devices(tmp_path)
+    key = owner.identity['sync_key']
+    for n in range(35):
+        simple_test(owner, n)
+    exchange(owner, folder, key, protocol=2)
+    other_folder = tmp_path / 'new-exchange'
+    other_folder.mkdir()
+    result = exchange(owner, other_folder, key, protocol=2)
+    with owner.connect() as db:
+        local = {r[0] for r in db.execute('SELECT id FROM changes')}
+    assert result['published'] and {i for page in remote_events(other_folder, key) for i in page} == local
+
+
+def test_publisher_restores_chunks_missing_under_its_delta_pages(tmp_path):
+    owner, viewer, folder = devices(tmp_path, 'viewer')
+    trace_test(owner)
+    key = owner.identity['sync_key']
+    exchange(owner, folder, key, protocol=2)
+    simple_test(owner, 1)
+    exchange(owner, folder, key, protocol=2)
+    removed = sorted(folder.rglob('*.ctobj'))[0]
+    removed.unlink()
+    result = exchange(owner, folder, key, protocol=2)
+    assert removed.exists() and result['published'] == 0
+    assert not exchange(viewer, folder, key, protocol=2)['errors']

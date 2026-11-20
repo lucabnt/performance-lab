@@ -4,6 +4,8 @@ Applicazione open source per analizzare, confrontare e archiviare test di ciclis
 
 **Sviluppato da Luca Bontempi per Progetto Ciclismo - Rodengo Saiano A.S.D.** Logo e attribuzione della società sono parte fissa del prodotto. Il progetto è generalizzabile a società e gruppi diversi.
 
+> **In English.** Fuorigiri Performance Lab is an open-source (GPL-3.0-or-later), offline-first application for cycling clubs to record, analyse, compare and archive athlete tests: incremental tests from FIT/CSV or manual entry, lactate, VO₂, sprint and Wingate, training zones, growth and maturation indicators, history and comparisons, and PDF/Markdown reports. Each club has its own local archive; data can optionally be shared between collaborators through signed, encrypted exchange via WebDAV or a shared folder. It runs on Windows and Android, with an Italian and English interface. The current release is the **0.10.0-alpha.1** pre-release: see the [Releases](https://github.com/lucabnt/performance-lab/releases) page for downloads, release notes and known limitations. The rest of the documentation is in Italian.
+
 ## Prima alpha · 0.10.0
 
 Fuorigiri serve a tecnici e operatori che vogliono conservare misure e confrontare test nel tempo. Per la prima prova crea una società di esempio, aggiungi un atleta e registra un test manuale o importa un file sintetico. Puoi poi aprire il profilo, esportare un report e provare il ripristino su una copia.
@@ -14,7 +16,7 @@ Fuorigiri serve a tecnici e operatori che vogliono conservare misure e confronta
 | Android 8 o successivo, ARM64 o x86_64 | Per l’installazione serve l’APK release firmato dal titolare. Le prove sul telefono e il supporto per pagine da 16 KB sono ancora incompleti. [Firma e aggiornamento](docs/FIRMA_ANDROID.md) |
 | Sorgenti e dati di prova | Segui la [guida di avvio](docs/TESTARE_IL_PROGETTO.md) e usa il [corpus sintetico](docs/DATI_SINTETICI.md). Il pacchetto Linux è rinviato. |
 
-**Stato della pre-release.** La bozza riguarda il candidato `alpha.1-20261110`. La [guida alla distribuzione](docs/DISTRIBUZIONE.md) elenca allegati e condizioni per la pubblicazione. Restano aperti il collaudo su Windows pulito con Defender attivo, la condivisione WebDAV con due account reali (Google Drive, Dropbox e OneDrive diretti sono sperimentali) e la validazione esterna dei metodi scientifici. Prima di aggiornare un archivio esistente, crea un backup e verifica di poterlo ripristinare. [Registro delle prove](docs/VERIFICA.md)
+**Stato della pre-release.** La pre-release `v0.10.0-alpha.1` corrisponde al candidato `rc-20261120-01`; download e note nella pagina [Releases](https://github.com/lucabnt/performance-lab/releases). La [guida alla distribuzione](docs/DISTRIBUZIONE.md) elenca allegati e condizioni per la pubblicazione. Restano aperti il collaudo su Windows pulito con Defender attivo, la condivisione WebDAV con due account reali (Google Drive, Dropbox e OneDrive diretti sono sperimentali) e la validazione esterna dei metodi scientifici. Prima di aggiornare un archivio esistente, crea un backup e verifica di poterlo ripristinare. [Registro delle prove](docs/VERIFICA.md)
 
 ## Funzionalità
 

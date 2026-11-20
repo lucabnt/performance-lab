@@ -394,6 +394,9 @@ def create_app(root=None, token=None, frontend=None):
     from .sync_jobs import install as install_sync_jobs
 
     install_sync_jobs(app, store)
+    from .sync_space import install as install_sync_space
+
+    install_sync_space(app, store)
     from .maturation import install_api as install_maturation
 
     install_maturation(app, store, require, download)

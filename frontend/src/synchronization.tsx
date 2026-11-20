@@ -3,6 +3,7 @@ import {useEffect, useRef, useState} from 'react';
 import {tr, language} from './i18n';
 import {syncTime} from './devicePreferences';
 import {SyncJobStatus} from './SyncJobStatus';
+import {SyncSpace} from './SyncSpace';
 type Row = Record<string, any>;
 
 export function Synchronization({
@@ -140,6 +141,7 @@ export function Synchronization({
           </>
         )}
       </details>
+      <SyncSpace api={api} disabled={working || dirty} />
       <label className="choice">
         <input
           type="checkbox"

@@ -1238,6 +1238,12 @@ export function trBackend(text: string) {
   return text;
 }
 Object.assign(translations, {
+  'Analisi dello spazio non completata. Controllare connessione e autorizzazioni; nessun dato è stato modificato.':
+    'Space analysis not completed. Check connection and permissions; no data has been changed.',
+  'Analisi interrotta dalla chiusura del processo. Riprovare: nessun dato è stato modificato.':
+    'Analysis interrupted when the process closed. Try again: no data has been changed.'
+});
+Object.assign(translations, {
   'Timestamp duplicati, non validi o non ordinati: correggere il tracciato.':
     'Duplicate, invalid or unordered timestamps: correct the trace.',
   'Marker step duplicati o non validi.': 'Duplicate or invalid stage markers.',

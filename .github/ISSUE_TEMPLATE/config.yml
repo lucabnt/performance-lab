@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Vulnerabilità di sicurezza / Security vulnerability
+    url: https://github.com/lucabnt/performance-lab/security/advisories/new
+    about: Segnalazione privata, non pubblica. / Private report, not a public issue.
+  - name: Documentazione / Documentation
+    url: https://github.com/lucabnt/performance-lab/blob/main/docs/README.md
+    about: Guide d'uso, metodi e limiti noti. / User guides, methods and known limitations.

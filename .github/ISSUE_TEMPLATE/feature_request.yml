@@ -1,0 +1,43 @@
+name: Proponi una funzione / Feature request
+description: Un'idea o un miglioramento per Fuorigiri. / An idea or improvement.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Prima di scrivere controlla [requisiti e stato](https://github.com/lucabnt/performance-lab/blob/main/docs/REQUISITI_E_TODO.md) e le issue aperte.
+        Nuovi metodi scientifici richiedono fonti primarie: indicale qui sotto.
+
+        Please check the requirements list and open issues first. New scientific methods need primary sources.
+  - type: textarea
+    id: need
+    attributes:
+      label: Esigenza / Need
+      description: Chi ne ha bisogno (tecnico, operatore, società) e in quale situazione. / Who needs it and when.
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: Come si fa oggi / Current workaround
+      description: Come gestisci oggi la situazione, dentro o fuori Fuorigiri. / How you handle it today.
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta / Proposal
+      description: Cosa dovrebbe fare l'app. Schermate o schizzi con dati inventati sono utili. / What the app should do.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Fonti scientifiche / Scientific sources
+      description: "Solo per test, calcoli o indicatori nuovi: articoli, protocolli, dominio di validità. / Only for new tests or calculations."
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Piattaforma / Platform
+      options:
+        - Windows
+        - Android
+        - Entrambe / Both

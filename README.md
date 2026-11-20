@@ -95,7 +95,7 @@ L’[indice completo](docs/README.md) distingue guide attuali, specifiche e docu
 | Conoscere metodi e limiti | [Incrementale](docs/METODI_INCREMENTALE.md) · [Sprint/Wingate](docs/TEST_ANAEROBICI.md) · [Maturazione](docs/MATURAZIONE.md) |
 | Preparare distribuzione e mobile | [Distribuzione](docs/DISTRIBUZIONE.md) · [Android](docs/ANDROID.md) |
 | Capire struttura e integrazione della suite | [Architettura](ARCHITETTURA_PROPOSTA.md) · [Componenti condivisi](docs/SUITE_CONDIVISA.md) |
-| Contribuire e scegliere il prossimo lavoro | [Requisiti](docs/REQUISITI_E_TODO.md) · [Prossimi passi](docs/PROSSIMI_PASSI.md) · [Istruzioni repository](AGENTS.md) |
+| Contribuire e scegliere il prossimo lavoro | [Come contribuire](CONTRIBUTING.md) · [Sicurezza](SECURITY.md) · [Requisiti](docs/REQUISITI_E_TODO.md) · [Prossimi passi](docs/PROSSIMI_PASSI.md) · [Istruzioni repository](AGENTS.md) |
 | Verificare ciò che è stato provato | [Registro verifiche](docs/VERIFICA.md) · [Changelog](CHANGELOG.md) |
 
 ## Licenza e dati

@@ -1,5 +1,10 @@
 # Changelog
 
+## 20 novembre 2026 — file per la repository pubblica
+
+- Nuovi [SECURITY.md](SECURITY.md) (segnalazione privata delle vulnerabilità tramite GitHub, versioni coperte, ambito, dati da non inviare) e [CONTRIBUTING.md](CONTRIBUTING.md) (ambiente, verifiche, regole principali, licenza dei contributi).
+- Moduli per le issue (problema, proposta di funzione; issue libere disattivate, collegamenti a sicurezza e documentazione) e modello per le pull request in `.github/`, con promemoria sui dati personali. Solo documentazione e configurazione GitHub; nessuna modifica all'app.
+
 ## 20 novembre 2026 — report esportati: solo metadati nello scambio (REPORT-LOCALE-01)
 
 - La diagnosi dell'archivio reale ha mostrato che quasi tutto lo spazio remoto (circa 64 MB su 66,9) era occupato da 10 report PDF, salvati sia in v1 sia in v2.

@@ -1,0 +1,87 @@
+name: Segnala un problema / Bug report
+description: Qualcosa non funziona come previsto. / Something does not work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Non allegare dati reali di atleti, file FIT personali, archivi, backup, inviti, `identity.json`, token o password: usa dati sintetici.
+        Per problemi di sicurezza **non** usare questo modulo: segui [SECURITY.md](https://github.com/lucabnt/performance-lab/blob/main/SECURITY.md).
+
+        Do not attach real athlete data, backups, invites, tokens or passwords. Report security issues privately (see SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: Versione / Version
+      description: Indicata in Info nell'app. / Shown in the app's Info view.
+      placeholder: 0.10.0-alpha.1
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Piattaforma / Platform
+      options:
+        - Windows – installer
+        - Windows – ZIP portabile / portable
+        - Android
+        - Sorgenti / from source
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Sistema e dispositivo / OS and device
+      placeholder: Windows 11 24H2 · Android 14, modello del telefono
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Atleti, gruppi e antropometria
+        - Test, protocolli e analisi
+        - Crescita e maturazione
+        - Import CSV/FIT
+        - Report ed export
+        - Sincronizzazione e collaboratori
+        - Backup e ripristino
+        - Installazione e avvio
+        - Altro / Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passi per riprodurre / Steps to reproduce
+      placeholder: |
+        1. Apro …
+        2. Clicco …
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Cosa ti aspettavi / Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Cosa succede invece / Actual behaviour
+      description: Messaggi di errore, schermate con dati sintetici. / Error messages, screenshots with synthetic data.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Estratto del log / Log excerpt
+      description: Facoltativo. Rileggi `server.log` e togli nomi, percorsi personali e indirizzi prima di incollarlo. / Optional; review and redact before pasting.
+      render: text
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Dati personali / Personal data
+      options:
+        - label: Ho controllato che la segnalazione non contenga dati reali di atleti, credenziali o token. / I checked that this report contains no real athlete data, credentials or tokens.
+          required: true

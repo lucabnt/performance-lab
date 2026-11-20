@@ -18,7 +18,7 @@ Primo candidato con queste modifiche: `win-av02-20261115-02` (launcher SHA-256 `
 
 *20 novembre 2026:* la prova va fatta su `rc-20261120-01` (commit `2722aea`, launcher SHA-256 `0e0b6bb8…4c78`, stesso bootloader locale), che succede a `core020-20261119-01` e aggiunge le traduzioni inglesi. Scansioni di confezionamento senza rilevamenti con definizioni 1.463.382.0.
 
-*20 novembre 2026, pomeriggio:* la prova va fatta su `rc-20261120-02` (commit `ac00e4a`, launcher SHA-256 `f7ed4824…ce4a`, stesso bootloader locale), che aggiunge SYNC-SPAZIO-01 ed è la base di `v0.10.0-alpha.2`. Scansioni di confezionamento senza rilevamenti con definizioni 1.463.384.0.
+*20 novembre 2026, pomeriggio:* la prova va fatta su `rc-20261120-02` (commit `ac00e4a`, launcher SHA-256 `f7ed4824…ce4a`, stesso bootloader locale), che aggiunge SYNC-SPAZIO-01 ed è la base di `v0.10.0-alpha.1`. Scansioni di confezionamento senza rilevamenti con definizioni 1.463.384.0.
 
 ## 10 novembre 2026 — nuovo blocco sul PC destinatario
 

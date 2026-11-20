@@ -1,9 +1,9 @@
 # Changelog
 
-## 20 novembre 2026 — candidato rc-20261120-02 e release v0.10.0-alpha.2 in preparazione
+## 20 novembre 2026 — candidato rc-20261120-02 e release v0.10.0-alpha.1 in preparazione
 
 - Build Windows e Android dal commit `ac00e4a` (SYNC-SPAZIO-01 fasi 0–1 sopra `rc-20261120-01`) confezionate in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/`; smoke, Defender, firme di test, allineamento, scansione percorsi, test strumentale su emulatore e 25 checksum verificati.
-- La release `v0.10.0-alpha.1` non verrà pubblicata: la prima pre-release pubblica sarà `v0.10.0-alpha.2`. Cartella locale `dist/release/Fuorigiri-0.10.0-alpha.2/` completa: APK firmato dal titolare (stesso certificato di alpha.1, contenuto identico al release del candidato, aggiornamento dalla alpha.1 firmata verificato su emulatore), note di rilascio e `SHA256SUMS.txt`. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
+- La preparazione di release da `rc-20261120-01` non viene pubblicata: la prima pre-release pubblica è `v0.10.0-alpha.1`, da questo candidato. Cartella locale `dist/release/Fuorigiri-0.10.0-alpha.1/` completa: APK firmato dal titolare (stesso certificato della preparazione precedente, contenuto identico al release del candidato, aggiornamento dall’APK firmato della preparazione precedente verificato su emulatore), note di rilascio e `SHA256SUMS.txt`. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
 
 ## 20 novembre 2026 — spazio dello scambio: diagnosi e pagine delta (SYNC-SPAZIO-01)
 
@@ -11,10 +11,10 @@
 - Fase 0: pannello «Spazio occupato dallo scambio» in Archivio e scambio → Condivisione e collaboratori, con job in sola lettura (`sync_space.py`, rotte `sync/space/start` e `sync/space/job`) che analizza la destinazione senza modificarla.
 - Fase 1: la sync v2 riceve prima di pubblicare e pubblica solo gli eventi che nessuna pagina valida contiene già (indice `sync-v2/coverage-<canale>.json`). Le pagine pubblicate non vengono più riscritte, un secondo admin non ripubblica lo storico, i cataloghi crescono in modo geometrico, i blocchi mancanti sotto le proprie pagine vengono ripristinati. Formato invariato (v2), nessuna cancellazione. Nelle simulazioni, una sync dopo ogni modifica passa da 5,1 MB a 0,39 MB per 320 eventi. Nessun EXE/APK ricompilato. [Prove](docs/VERIFICA.md).
 
-## 20 novembre 2026 — APK release firmato e cartella di release v0.10.0-alpha.1 (non pubblicata)
+## 20 novembre 2026 — APK release firmato e preparazione di release da rc-20261120-01 (non pubblicata)
 
 - Chiave release Android del titolare creata; APK release firmato in Android Studio dal commit `2722aea` (certificato SHA-256 `a04c6d2d…406d`), verificato ed equivalente al release del candidato `rc-20261120-01`; prima installazione e creazione di una società su emulatore riuscite.
-- Preparata in locale la cartella `dist/release/Fuorigiri-0.10.0-alpha.1/` con i cinque allegati previsti da DISTRIBUZIONE.md, `SHA256SUMS.txt` e bozza delle note di rilascio. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
+- Preparata in locale la cartella `dist/release/Fuorigiri-0.10.0-rc-20261120-01-non-pubblicata/` (inizialmente chiamata alpha.1, poi superata da `rc-20261120-02`) con i cinque allegati previsti da DISTRIBUZIONE.md, `SHA256SUMS.txt` e bozza delle note di rilascio. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
 
 ## 20 novembre 2026 — candidato rc-20261120-01 (Windows + Android)
 

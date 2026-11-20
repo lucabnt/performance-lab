@@ -24,7 +24,7 @@ Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZ
 
 ## Candidato corrente — 20 novembre 2026
 
-Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/` (commit `ac00e4a`, SYNC-SPAZIO-01 fasi 0–1 sopra `rc-20261120-01`). Base della release `v0.10.0-alpha.2`, che sostituisce alpha.1 mai pubblicata: allegati, APK firmato e checksum pronti in `dist/release/Fuorigiri-0.10.0-alpha.2/`, da pubblicare con il tag sul commit `ac00e4a`. Candidato precedente `rc-20261120-01` (commit `2722aea`). Precedenti dello stesso periodo: Windows `core020-20261119-01`, Android `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/` (20 novembre, wheel neutre, debug di test e release non firmato da firmare). I candidati del 15 novembre e precedenti restano conservati come storici. [Checklist](COLLAUDO_PILOT.md), [prove](VERIFICA.md).
+Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/` (commit `ac00e4a`, SYNC-SPAZIO-01 fasi 0–1 sopra `rc-20261120-01`). Base della release `v0.10.0-alpha.1` (la preparazione da `rc-20261120-01` non è stata pubblicata): allegati, APK firmato e checksum pronti in `dist/release/Fuorigiri-0.10.0-alpha.1/`, da pubblicare con il tag sul commit `ac00e4a`. Candidato precedente `rc-20261120-01` (commit `2722aea`). Precedenti dello stesso periodo: Windows `core020-20261119-01`, Android `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/` (20 novembre, wheel neutre, debug di test e release non firmato da firmare). I candidati del 15 novembre e precedenti restano conservati come storici. [Checklist](COLLAUDO_PILOT.md), [prove](VERIFICA.md).
 
 ## Candidato precedente — ordine e maturazione, 9 novembre 2026
 

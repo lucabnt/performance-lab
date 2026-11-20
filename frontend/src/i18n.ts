@@ -685,9 +685,608 @@ Object.assign(translations, {
   test: 'tests',
   allegati: 'attachments'
 });
+Object.assign(translations, {
+  Salva: 'Save',
+  Annulla: 'Cancel',
+  Esporta: 'Export',
+  TEST: 'TESTS',
+  Media: 'Mean',
+  Qualità: 'Quality',
+  Eliminato: 'Deleted',
+  Interrotto: 'Interrupted',
+  Facoltativo: 'Optional',
+  record: 'records',
+  valori: 'values',
+  'valori validi': 'valid values',
+  motore: 'engine',
+  durata: 'duration',
+  fonte: 'source',
+  'Fonte:': 'Source:',
+  Picco: 'Peak',
+  Livello: 'Level',
+  Prelievo: 'Sample',
+  'Fonte peso': 'Weight source',
+  'Origine risultati': 'Results origin',
+  Manuale: 'Manual',
+  'Da file FIT / CSV': 'From FIT / CSV file',
+  'Calcolato dal tracciato': 'Calculated from the trace',
+  'Dichiarato manualmente': 'Entered manually',
+  'Storico CSV dichiarato': 'Declared CSV history',
+  'Storico CSV': 'CSV history',
+  'Metodo storico': 'Historical method',
+  'Storico dichiarato.': 'Declared history.',
+  'Sprint breve': 'Short sprint',
+  'Registra prova anaerobica': 'Record anaerobic test',
+  'Copertura potenza:': 'Power coverage:',
+  '· Origine:': '· Origin:',
+  'Metodo e condizioni di confronto': 'Method and comparison conditions',
+  'Tipo di prova': 'Test type',
+  'Coppia frenante · N·m/kg': 'Braking torque · N·m/kg',
+  Dispositivo: 'Device',
+  Partenza: 'Start',
+  Posizione: 'Position',
+  'Finestra picco · s': 'Peak window · s',
+  'Finestra finale · s': 'End window · s',
+  'Descrizione del carico': 'Load description',
+  'Intervallo massimo fra campioni · s': 'Maximum gap between samples · s',
+  'Copertura minima': 'Minimum coverage',
+  'Non documentata': 'Not documented',
+  'Da fermo': 'Standing start',
+  Lanciata: 'Flying start',
+  Seduto: 'Seated',
+  'In piedi': 'Standing',
+  Mista: 'Mixed',
+  's · coppia': 's · torque',
+  'non documentata': 'not documented',
+  'N·m/kg · picco': 'N·m/kg · peak',
+  'finestra non documentata': 'window not documented',
+  'dispositivo non documentato': 'device not documented',
+  'I risultati rimangono separati dalle altre versioni e dai riepiloghi storici.':
+    'Results remain separate from other versions and historical summaries.',
+  'Indica l’inizio dello sforzo: la durata deriva dal protocollo. Puoi fare clic sul grafico o inserire i secondi.':
+    'Mark the start of the effort: the duration comes from the protocol. Click the chart or enter the seconds.',
+  'Inizio dello sforzo dal file': 'Effort start in file',
+  'Ingrandisci lo sforzo selezionato': 'Zoom to the selected effort',
+  'Tempo dal file · min': 'Time in file · min',
+  'Esclusioni motivate': 'Justified exclusions',
+  'Inizio dal file · s': 'Start in file · s',
+  'Fine dal file · s': 'End in file · s',
+  'Rimuovi esclusione': 'Remove exclusion',
+  'Escludi intervallo': 'Exclude interval',
+  'Condizioni / calibrazione': 'Conditions / calibration',
+  'Motivo correzione': 'Correction reason',
+  'Verifica e calcola anteprima': 'Check and calculate preview',
+  'Tracciato FIT / CSV': 'FIT / CSV trace',
+  'Sessione FIT': 'FIT session',
+  'Timestamp duplicati': 'Duplicate timestamps',
+  'Rifiuta e segnala': 'Reject and report',
+  'Conserva l’ultimo record (correzione esplicita)': 'Keep the last record (explicit correction)',
+  'Motivo della correzione': 'Correction reason',
+  'Importa sessione selezionata': 'Import selected session',
+  'Metodo e qualità': 'Method and quality',
+  'Preset di analisi': 'Analysis preset',
+  'Completezza e aderenza sono distinte. Il preset è salvato nel risultato; modificarlo crea una nuova versione, senza ricalcolare i test storici.':
+    'Completeness and adherence are distinct. The preset is saved with the result; changing it creates a new version without recalculating historical tests.',
+  'Crea una versione del preset': 'Create a preset version',
+  'Massimo intervallo fra campioni · s': 'Maximum gap between samples · s',
+  'Copertura potenza minima (0–1)': 'Minimum power coverage (0–1)',
+  'Copertura FC minima (0–1)': 'Minimum HR coverage (0–1)',
+  'Finestra FC fine step · s': 'End-of-stage HR window · s',
+  'Finestra FC riferimento recupero · s': 'Recovery reference HR window · s',
+  'Recupero: secondi prima del marker': 'Recovery: seconds before the marker',
+  'Recupero: secondi dopo il marker': 'Recovery: seconds after the marker',
+  'Media VO₂peak · s': 'VO₂peak averaging · s',
+  'Copertura gas minima (0–1)': 'Minimum gas coverage (0–1)',
+  'Banda aderenza ±W (facoltativa)': 'Adherence band ±W (optional)',
+  'Fase per medie / zone': 'Phase for averages / zones',
+  'Intero sforzo, incluso riscaldamento': 'Whole effort, including warm-up',
+  'Dall’inizio degli incrementi': 'From the start of the increments',
+  'Pubblica preset immutabile': 'Publish immutable preset',
+  'Allineamento per fase ed esclusioni con motivo': 'Phase alignment and justified exclusions',
+  'Un marker sposta lo step indicato e i successivi fino al marker seguente. Le esclusioni riducono la copertura, senza comprimere il tempo.':
+    'A marker shifts the indicated stage and the following ones up to the next marker. Exclusions reduce coverage without compressing time.',
+  'Inizio effettivo nel file · s': 'Actual start in file · s',
+  'Rimuovi marker': 'Remove marker',
+  'Aggiungi marker di fase': 'Add phase marker',
+  'Da s': 'From s',
+  'A s': 'To s',
+  'Dispositivi, condizioni e provenienza': 'Devices, conditions and provenance',
+  'Rullo / ergometro': 'Trainer / ergometer',
+  'Misuratore di potenza': 'Power meter',
+  'Calibrazione e data': 'Calibration and date',
+  'Temperatura ambiente °C': 'Ambient temperature °C',
+  'Cadenza prescritta': 'Prescribed cadence',
+  'Condizioni pre-test': 'Pre-test conditions',
+  'Motivo di arresto': 'Reason for stopping',
+  'Recupero attivo/passivo': 'Active/passive recovery',
+  'Postura recupero': 'Recovery posture',
+  'Sessione di ripetibilità (se applicabile)': 'Repeatability session (if applicable)',
+  'Scala RPE': 'RPE scale',
+  'CR10 dichiarata': 'Declared CR10',
+  'Origine calibrazione del coefficiente soglia': 'Source of threshold coefficient calibration',
+  'Livelli di lattato da stimare · mmol/L': 'Lactate levels to estimate · mmol/L',
+  'Interpolazione tra prelievi: W, W/kg e FC. La finestra FC di fine step è definita nel preset (default 30 s). Le nuove impostazioni richiedono una nuova analisi/revisione.':
+    'Interpolation between samples: W, W/kg and HR. The end-of-stage HR window is defined in the preset (default 30 s). New settings require a new analysis/revision.',
+  'Livello lattato': 'Lactate level',
+  'Rimuovi livello': 'Remove level',
+  'Aggiungi livello': 'Add level',
+  'Lattato: associazione dei prelievi e carico esplicito': 'Lactate: sample association and explicit load',
+  'Il prelievo può essere associato allo step o a un carico dichiarato. Il ritardo viene sottratto all’istante del prelievo. Senza associazione certa il risultato resta indisponibile.':
+    'A sample can be associated with a stage or a declared load. The delay is subtracted from the sampling time. Without a certain association the result remains unavailable.',
+  'Step (facoltativo)': 'Stage (optional)',
+  'Carico esplicito W (facoltativo)': 'Explicit load W (optional)',
+  'Ritardo di prelievo s': 'Sampling delay s',
+  'VO₂: importazione gas e valutazione ventilatoria': 'VO₂: gas import and ventilatory assessment',
+  'CSV: t, vo2_l_min; opzionali vco2_l_min, ve_l_min, peto2_mmhg, petco2_mmhg. Nessuna stima di VO₂ dai soli watt/FC.':
+    'CSV: t, vo2_l_min; optional vco2_l_min, ve_l_min, peto2_mmhg, petco2_mmhg. VO₂ is never estimated from watts/HR alone.',
+  'Importa gas CSV': 'Import gas CSV',
+  'Gas archiviati ·': 'Stored gas data ·',
+  'Rimuovi associazione': 'Remove association',
+  'Offset gas rispetto al file FIT · s': 'Gas offset relative to the FIT file · s',
+  'confermata dal valutatore': 'confirmed by the assessor',
+  'Istante nel FIT · s': 'Time in FIT · s',
+  'Evidenze / criterio': 'Evidence / criterion',
+  'VO₂max verificato dal laboratorio': 'VO₂max verified by the laboratory',
+  'Evidenze della verifica del massimo': 'Evidence for maximum verification',
+  'Metodo, qualità e risultati specialistici': 'Method, quality and specialist results',
+  'Metodo storico senza preset: provenienza legacy': 'Historical method without preset: legacy provenance',
+  'Identità preset:': 'Preset identity:',
+  Step: 'Stage',
+  'Copertura W': 'W coverage',
+  'Errore medio W': 'Mean error W',
+  'Errore %': 'Error %',
+  'In banda': 'In band',
+  'Non valutata': 'Not assessed',
+  'Rampa/discontinuo: target finale': 'Ramp/discontinuous: final target',
+  'W; media finale misurata': 'W; measured final mean',
+  'W. Nessuna conversione in MAP per step.': 'W. No per-stage MAP conversion.',
+  'Massimo non verificato: disponibile solo VO₂peak': 'Maximum not verified: only VO₂peak available',
+  'Copertura della finestra insufficiente': 'Insufficient window coverage',
+  'Concentrazione non attraversata': 'Concentration not crossed',
+  'Curva o attraversamento ambiguo': 'Ambiguous curve or crossing',
+  'Servono cinque carichi distinti e una curva non decrescente':
+    'Five distinct loads and a non-decreasing curve are required',
+  'Nessun massimo interno valido': 'No valid internal maximum',
+  'Ancora Dmax modificato non disponibile': 'Modified Dmax anchor unavailable',
+  'Servono dieci intervalli validi da 30 s': 'Ten valid 30 s intervals are required',
+  'Nessun cambio di pendenza valido': 'No valid slope change',
+  'Da confermare con equivalenti e gas end-tidal': 'To be confirmed with equivalents and end-tidal gases',
+  'Dmax cubico': 'Cubic Dmax',
+  'Dmax modificato cubico': 'Modified cubic Dmax',
+  'Potenza a 2 mmol/L': 'Power at 2 mmol/L',
+  'Potenza a 4 mmol/L': 'Power at 4 mmol/L',
+  'Scambi gassosi': 'Gas exchange',
+  'mL/kg/min · media': 'mL/kg/min · mean over',
+  'VO₂max verificato:': 'Verified VO₂max:',
+  'Tempo FIT · min': 'FIT time · min',
+  'Gas end-tidal · mmHg': 'End-tidal gases · mmHg',
+  'Equivalenti ventilatori': 'Ventilatory equivalents',
+  '· suggerimento esplorativo:': '· exploratory suggestion:',
+  's · marker confermato:': 's · confirmed marker:',
+  'Ripetibilità: prove ripetute in condizioni stabili': 'Repeatability: repeated tests under stable conditions',
+  'Seleziona coppie dello stesso atleta, protocollo, metodo e condizioni. Le variazioni fra stagioni non sono automaticamente misure dell’errore del test.':
+    'Select pairs with the same athlete, protocol, method and conditions. Changes between seasons are not automatically measures of test error.',
+  'Prima prova': 'First test',
+  Ripetizione: 'Repeat',
+  'Aggiungi coppia': 'Add pair',
+  'Motivo e condizioni di ripetizione': 'Reason and conditions for repetition',
+  'Confermo prove ripetute in condizioni stabili': 'I confirm the tests were repeated under stable conditions',
+  'Calcola errore tipico e MDC95': 'Calculate typical error and MDC95',
+  'coppie · bias': 'pairs · bias',
+  'W · errore tipico': 'W · typical error',
+  'IC95 descrittivo TE:': 'Descriptive TE 95% CI:',
+  'Lattato: potenza e FC ai livelli richiesti': 'Lactate: power and HR at the requested levels',
+  'Relazione fra carico (asse orizzontale, W) e lattato (asse verticale, mmol/L). Seleziona un punto o un livello per leggere potenza e FC nella tabella; il tracciato temporale mostra invece quando è avvenuto il prelievo.':
+    'Relationship between load (horizontal axis, W) and lactate (vertical axis, mmol/L). Select a point or level to read power and HR in the table; the time trace instead shows when the sample was taken.',
+  'Livello evidenziato': 'Highlighted level',
+  'Tutti i livelli': 'All levels',
+  'Prelievi associati al carico': 'Samples associated with load',
+  'Interpolazione lineare': 'Linear interpolation',
+  'Valori stimati ai livelli richiesti': 'Estimated values at requested levels',
+  'Fit cubico per Dmax': 'Cubic fit for Dmax',
+  'Carico associato · W': 'Associated load · W',
+  'Lattato · mmol/L': 'Lactate · mmol/L',
+  'Livello · mmol/L': 'Level · mmol/L',
+  'Potenza stimata · W': 'Estimated power · W',
+  'W/kg stimati': 'Estimated W/kg',
+  'FC stimata · bpm': 'Estimated HR · bpm',
+  Disponibilità: 'Availability',
+  'Livello non attraversato: nessuna estrapolazione': 'Level not crossed: no extrapolation',
+  'FC di fine step non disponibile o non sufficientemente coperta':
+    'End-of-stage HR unavailable or insufficiently covered',
+  'Peso assente o solo stimato': 'Weight missing or only estimated',
+  'Stime da interpolazione': 'Interpolated estimates',
+  'Revisione precedente: FC e W/kg non calcolati': 'Earlier revision: HR and W/kg not calculated',
+  'FC: media degli ultimi': 'HR: mean of the last',
+  's degli step completi a carico costante, copertura minima': 's of complete constant-load stages, minimum coverage',
+  '%. Il battito al momento del prelievo non viene usato come FC dello step. Potenza associata al target del protocollo o a un carico dichiarato.':
+    '%. The heart rate at the moment of sampling is not used as stage HR. Power is associated with the protocol target or a declared load.',
+  'Stime tra prelievi che racchiudono il livello, senza estrapolazione. Le concentrazioni fisse non identificano automaticamente LT1, LT2, FTP o MLSS.':
+    'Estimates between samples that bracket the level, without extrapolation. Fixed concentrations do not automatically identify LT1, LT2, FTP or MLSS.',
+  'MAP storiche': 'Historical MAP',
+  'Nessun valore disponibile per questa metrica. I risultati mancanti non valgono zero; W/kg con peso solo stimato sono esclusi.':
+    'No values available for this metric. Missing results are not zero; W/kg with only estimated weight are excluded.',
+  'Serie della progressione (': 'Progression series (',
+  'Protocolli, metodi e origini della soglia restano distinti. Scegli fino a quattro serie da affiancare.':
+    'Protocols, methods and threshold origins remain distinct. Choose up to four series to show side by side.',
+  '· origine soglia:': '· threshold origin:',
+  'Data della prova': 'Test date',
+  'Seleziona almeno una serie.': 'Select at least one series.',
+  'Anno di età': 'Age year',
+  'Età / stagione': 'Age / season',
+  'Tutti · scegli le serie sotto': 'All · choose the series below',
+  'Statistica nel grafico': 'Statistic in chart',
+  'Filtra atleti, categorie e stagioni': 'Filter athletes, categories and seasons',
+  'filtri attivi': 'filters active',
+  'Caricamento degli storici…': 'Loading history…',
+  'Nessun valore per questa metrica': 'No values for this metric',
+  'Prova un’altra metrica o modifica i filtri. I protocolli senza valori utilizzabili non generano serie vuote.':
+    'Try another metric or change the filters. Protocols without usable values do not produce empty series.',
+  'serie visualizzate. All’apertura viene scelta la serie con più valori validi.':
+    'series shown. On opening, the series with the most valid values is selected.',
+  'Scegli le serie da confrontare (': 'Choose series to compare (',
+  'Ogni serie mantiene separati protocollo, versione, metodo, condizioni e origine della soglia. Seleziona fino a quattro serie per un confronto descrittivo; i risultati non vengono uniti.':
+    'Each series keeps protocol, version, method, conditions and threshold origin separate. Select up to four series for a descriptive comparison; results are not merged.',
+  'Serie del confronto': 'Comparison series',
+  'Mostra solo la serie principale': 'Show only the main series',
+  'Stai affiancando protocolli diversi: la stessa unità di misura non garantisce condizioni equivalenti. Medie e mediane restano separate per serie; verifica protocollo e metodo prima di interpretare le differenze.':
+    'You are comparing different protocols: the same unit does not guarantee equivalent conditions. Means and medians stay separate per series; check protocol and method before interpreting differences.',
+  'Dati delle serie visualizzate': 'Data for the displayed series',
+  'Seleziona almeno una serie per visualizzare il confronto.': 'Select at least one series to show the comparison.',
+  'Copertura dati ed esportazione dell’archivio filtrato': 'Data coverage and filtered archive export',
+  'I report includono tutti i protocolli dei filtri sopra, anche quelli non selezionati nel grafico. La selezione delle quattro serie riguarda il confronto interattivo.':
+    'Reports include all protocols matching the filters above, including those not selected in the chart. The four-series selection only applies to the interactive comparison.',
+  'Esporta archivio filtrato ·': 'Export filtered archive ·',
+  'Protocollo non disponibile': 'Protocol unavailable',
+  'Accesso diretto alle API: non serve il client del cloud. La cartella deve esistere ed essere condivisa con ciascun collaboratore. Token e segreti rimangono nel portachiavi del dispositivo.':
+    'Direct API access: the cloud client is not needed. The folder must exist and be shared with each collaborator. Tokens and secrets stay in the device keychain.',
+  'URL servizio HTTPS': 'HTTPS service URL',
+  'Client ID / App key OAuth': 'OAuth client ID / app key',
+  'ID cartella condivisa': 'Shared folder ID',
+  'ID drive (facoltativo, per raccolta condivisa)': 'Drive ID (optional, for a shared drive)',
+  'Percorso cartella Dropbox': 'Dropbox folder path',
+  'Autorizzazione Google Drive': 'Google Drive authorization',
+  'File autorizzati all’app (drive.file)': 'Files authorized for the app (drive.file)',
+  'Drive completo (richiede consenso esteso)': 'Full Drive (requires extended consent)',
+  'Token del servizio': 'Service token',
+  'Client secret della registrazione desktop Google': 'Client secret of the Google desktop registration',
+  'drive.file non dà accesso automatico a una cartella condivisa già esistente. Per quella cartella può servire il consenso Drive completo. Google Android richiede la registrazione nativa dedicata.':
+    'drive.file does not automatically grant access to an existing shared folder. That folder may require full Drive consent. Google on Android requires the dedicated native registration.',
+  'Per collaborare usare una registrazione Full Dropbox e una cartella condivisa accessibile all’account, non App Folder.':
+    'To collaborate, use a Full Dropbox registration and a shared folder accessible to the account, not App Folder.',
+  'Collega account': 'Connect account',
+  'Scollega account': 'Disconnect account',
+  'Account scollegato': 'Account disconnected',
+  'Browser non aperto? Apri la pagina di autorizzazione': 'Browser did not open? Open the authorization page',
+  'In attesa del consenso nel browser…': 'Waiting for consent in the browser…',
+  'Account collegato': 'Account connected',
+  'Account da collegare': 'Account not connected',
+  'Portachiavi non disponibile': 'Keychain unavailable',
+  'Collegamento fallito': 'Connection failed',
+  'Sessione scaduta': 'Session expired',
+  'Sessione non disponibile': 'Session unavailable',
+  'Predisposizione: richiede un server che implementi il contratto Fuorigiri v1. Non viene fornito un servizio ospitato.':
+    'Preparatory feature: requires a server implementing the Fuorigiri v1 contract. No hosted service is provided.',
+  'Campi aggiuntivi facoltativi': 'Optional additional fields',
+  'Dichiara significato, tipo e unità. I campi vuoti rimangono non rilevati; non vengono introdotte formule automatiche.':
+    'Declare meaning, type and unit. Empty fields remain unrecorded; no automatic formulas are introduced.',
+  Identificatore: 'Identifier',
+  'Nome leggibile': 'Display name',
+  Numero: 'Number',
+  Testo: 'Text',
+  'Sì / no': 'Yes / no',
+  'Scelta da elenco': 'Choice from list',
+  Compilazione: 'Filled in',
+  'In ogni prova': 'In each test',
+  'Nella definizione del protocollo': 'In the protocol definition',
+  'Unità (facoltativa)': 'Unit (optional)',
+  'Scelte (separate da ;)': 'Choices (separated by ;)',
+  'Rimuovi campo': 'Remove field',
+  'Aggiungi campo facoltativo': 'Add optional field',
+  'Nome del campo': 'Field name',
+  'Non rilevato': 'Not recorded',
+  'Campi facoltativi e osservazioni aggiuntive': 'Optional fields and additional observations',
+  'Campi personalizzati': 'Custom fields',
+  'Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.':
+    'Opening local data is taking too long. Try again; your data is preserved.',
+  'L’archivio ricordato non è più disponibile. Seleziona una società: nessun dato è stato eliminato.':
+    'The remembered archive is no longer available. Select a club: no data has been deleted.',
+  'Caricamento società…': 'Loading clubs…',
+  'Definisci un protocollo manualmente, anche senza step o ERG, oppure importa il programma di carico. Ogni versione conserva metodo e campi facoltativi.':
+    'Define a protocol manually, even without stages or ERG, or import the load programme. Each version keeps its method and optional fields.',
+  'Cerca protocollo': 'Search protocols',
+  'Nome, codice o versione': 'Name, code or version',
+  Famiglia: 'Family',
+  'Incrementale aerobico': 'Aerobic incremental',
+  Incrementale: 'Incremental',
+  Personalizzato: 'Custom',
+  'Stato protocollo': 'Protocol status',
+  'Protocollo personalizzato: campi dichiarati, nessuna formula automatica.':
+    'Custom protocol: declared fields, no automatic formulas.',
+  'Prova all-out di': 'All-out test of',
+  'Carico e finestre nella definizione.': 'Load and windows in the definition.',
+  's · durata dello sforzo': 's · effort duration',
+  'Durata libera · osservazioni personalizzate': 'Free duration · custom observations',
+  'Solo scheda · durata non definita': 'Record sheet only · duration not defined',
+  'CSV di anagrafiche, antropometria, incrementali e anaerobici, dati estesi e manifest delle versioni.':
+    'CSV files of athlete records, anthropometry, incremental and anaerobic tests, extended data and version manifest.',
+  'Lo scambio comprende tutto questo archivio: è bloccato se contiene più società. Scambio precedente senza identità firmate. Preferire una società separata con inviti personali; conservare la chiave separatamente.':
+    'The exchange covers this whole archive and is blocked if it contains more than one club. Legacy exchange without signed identities. Prefer a separate club with personal invitations; keep the key separately.',
+  'Chiave creata. Copiala dal campo con un gestore di password e conservala prima di chiudere.':
+    'Key created. Copy it from the field with a password manager and store it before closing.',
+  'Selezione sul grafico': 'Chart selection',
+  'Solo navigazione': 'Navigation only',
+  'Imposta inizio protocollo': 'Set protocol start',
+  'Imposta fine sforzo': 'Set effort end',
+  'Inizio protocollo dal file': 'Protocol start in file',
+  'Fine sforzo dal file': 'Effort end in file',
+  'Rilevazione proposta del': 'Proposed measurement from',
+  'Verifica prima di confermare.': 'Check before confirming.',
+  'Valori stimati proposti:': 'Proposed estimated values:',
+  'Non sono misure dell’atleta.': 'They are not measurements of the athlete.',
+  'Recupero dalla fine sforzo': 'Recovery from effort end',
+  Ergometro: 'Ergometer',
+  Calibrazione: 'Calibration',
+  'Temperatura °C': 'Temperature °C',
+  'Condizioni prima del test': 'Pre-test conditions',
+  'Modalità di recupero': 'Recovery mode',
+  Postura: 'Posture',
+  'Sessione di ripetibilità': 'Repeatability session',
+  Osservazioni: 'Observations',
+  'Dati disponibili': 'Available data',
+  'Con tracciato FIT/CSV': 'With FIT/CSV trace',
+  'Solo riepiloghi manuali': 'Manual summaries only',
+  'Osservazioni personalizzate': 'Custom observations',
+  'Con tracciato': 'With trace',
+  'Solo riepilogo': 'Summary only',
+  'cm/anno': 'cm/year',
+  'HV · cm/anno': 'HV · cm/year',
+  'Moore: statura/età,': 'Moore: height/age,',
+  'M 10–16 / F 9–14. Mirwald: statura, massa e statura seduta, M 12–16 / F 9–14.':
+    'M 10–16 / F 9–14. Mirwald: height, body mass and sitting height, M 12–16 / F 9–14.',
+  'Lettura del file non riuscita.': 'Could not read the file.',
+  'Il limite per un file su Android è 80 MB.': 'The file limit on Android is 80 MB.',
+  'Export oltre il limite mobile di 80 MB.': 'Export exceeds the 80 MB mobile limit.',
+  'Interfaccia non caricata. I dati locali sono conservati. Codice AVVIO-02.':
+    'Interface not loaded. Local data is preserved. Code AVVIO-02.',
+  'Nuova versione di protocollo': 'New protocol version',
+  'Famiglia di test': 'Test family',
+  'Personalizzato · senza calcoli fisiologici automatici': 'Custom · no automatic physiological calculations',
+  'Nome del protocollo': 'Protocol name',
+  'Motivo / descrizione modifica': 'Reason / description of change',
+  'Metodo e istruzioni': 'Method and instructions',
+  'Coppia frenante · N·m/kg (facoltativa)': 'Braking torque · N·m/kg (optional)',
+  'Intervallo massimo campioni · s': 'Maximum sample gap · s',
+  'Modalità di applicazione del carico': 'Load application mode',
+  'Le finestre e le condizioni fanno parte della versione. Cambiarle crea un metodo distinto nei confronti.':
+    'Windows and conditions are part of the version. Changing them creates a distinct method for comparisons.',
+  'Pubblica versione immutabile': 'Publish immutable version',
+  'Registra una prova': 'Record a test',
+  'Scegli un protocollo già definito. Per creare o modificare un protocollo usa la pagina Protocolli.':
+    'Choose an existing protocol. To create or edit a protocol use the Protocols page.',
+  'Nessun protocollo attivo: definiscine uno, anche manualmente e senza ERG.':
+    'No active protocol: define one, even manually and without ERG.',
+  'osservazioni e campi definiti dall’operatore, senza formule automatiche.':
+    'observations and fields defined by the operator, without automatic formulas.',
+  'solo scheda, inserimento manuale.': 'record sheet only, manual entry.',
+  'Inserisci risultati manuali': 'Enter results manually',
+  'Importa FIT / CSV': 'Import FIT / CSV',
+  'Vai ai protocolli': 'Go to protocols',
+  'Protocollo personalizzato. Nessun risultato fisiologico viene dedotto automaticamente dal tracciato.':
+    'Custom protocol. No physiological result is derived automatically from the trace.',
+  'Seleziona l’inizio o la fine nel grafico, poi verifica i secondi prima di confermare.':
+    'Select the start or end in the chart, then check the seconds before confirming.',
+  'Imposta inizio': 'Set start',
+  'Imposta fine': 'Set end',
+  'Inizio dal file': 'Start in file',
+  'Fine dal file': 'End in file',
+  'Aggiungi osservazioni facoltative a questa prova': 'Add optional observations to this test',
+  'Verifica anteprima': 'Check preview',
+  'Sincronizzazione fra dispositivi': 'Synchronization between devices',
+  'I dati vengono salvati prima su questo dispositivo. Per condividere la stessa società servono un invito personale e l’accesso alla destinazione condivisa.':
+    'Data is saved on this device first. Sharing the same club requires a personal invitation and access to the shared destination.',
+  'Questa connessione sincronizza soltanto la società dell’archivio aperto. Per società con collaboratori diversi usa inviti e cartelle cloud condivise separati.':
+    'This connection only synchronizes the club in the open archive. For clubs with different collaborators use separate invitations and shared cloud folders.',
+  'Come vuoi sincronizzare?': 'How do you want to synchronize?',
+  'Cartella locale del client cloud': 'Local cloud client folder',
+  'Servizio dedicato · avanzato': 'Dedicated service · advanced',
+  'WebDAV · Nextcloud / server compatibile': 'WebDAV · Nextcloud / compatible server',
+  'Crea una cartella sul server e condividila con i collaboratori. Usa il suo URL WebDAV finale e preferibilmente una password applicazione. La password è conservata nel portachiavi di questo dispositivo.':
+    'Create a folder on the server and share it with collaborators. Use its full WebDAV URL and preferably an app password. The password is stored in this device’s keychain.',
+  'URL WebDAV HTTPS': 'HTTPS WebDAV URL',
+  'https://cloud.example/remote.php/dav/files/utente/Fuorigiri/':
+    'https://cloud.example/remote.php/dav/files/user/Fuorigiri/',
+  'Nome utente cloud': 'Cloud username',
+  'Password applicazione (vuota per conservare quella salvata)': 'App password (leave empty to keep the saved one)',
+  'Salva connessione e sincronizza': 'Save connection and synchronize',
+  'Sincronizza ora': 'Synchronize now',
+  'Verifica completa del canale': 'Full channel verification',
+  'Salva la connessione prima di usare Sincronizza ora.': 'Save the connection before using Synchronize now.',
+  'Europe/Rome · Italia': 'Europe/Rome · Italy',
+  'Ultimo tentativo': 'Last attempt',
+  'Da riprovare': 'To retry',
+  'Nessuna sincronizzazione ancora eseguita.': 'No synchronization run yet.',
+  'pacchetti letti ·': 'packets read ·',
+  'già presenti, non riscaricati.': 'already present, not downloaded again.',
+  'Verifica completa richiesta.': 'Full verification requested.',
+  'I pacchetti immutabili già acquisiti restano nel database locale; usa Verifica completa per rileggere anche quelli.':
+    'Immutable packets already received stay in the local database; use Full verification to read them again too.',
+  'Le API remote verificano i file pubblicati; non garantiscono che gli altri dispositivi li abbiano già ricevuti.':
+    'Remote APIs verify the published files; they do not guarantee that other devices have already received them.',
+  'Lo scambio in cartella non può verificare l’upload del client Google Drive/Dropbox.':
+    'Folder exchange cannot verify the upload by the Google Drive/Dropbox client.',
+  'Tenta la sincronizzazione anche in background quando rete e batteria lo consentono. Android decide quando eseguire il lavoro; Sincronizza ora resta disponibile.':
+    'Also try to synchronize in the background when network and battery allow. Android decides when to run the work; Synchronize now remains available.',
+  'Registro degli scambi': 'Exchange log',
+  'Carica ultime operazioni': 'Load recent operations',
+  'Ruota la chiave del canale': 'Rotate the channel key',
+  'Prima aggiorna tutti i dispositivi e sincronizza tutte le modifiche. La procedura chiude il vecchio canale, genera una nuova chiave e richiede nuovi inviti ai dispositivi autorizzati. Le copie già scaricate restano leggibili. Dopo la rotazione scarica un nuovo recupero accessi.':
+    'First update all devices and synchronize all changes. The procedure closes the old channel, generates a new key and requires new invitations for authorized devices. Copies already downloaded remain readable. After rotation download a new credential recovery file.',
+  'Chiudere il vecchio canale e richiedere nuovi inviti a tutti i collaboratori? Le modifiche non ancora inviate dagli altri dispositivi dovranno essere recuperate.':
+    'Close the old channel and require new invitations for all collaborators? Changes not yet sent by other devices will need to be recovered.',
+  'Ruota chiave e chiudi vecchio canale': 'Rotate key and close old channel',
+  'campioni. Linee sovrapposte con scale indipendenti e unità indicate sugli assi; le altezze di canali diversi non rappresentano valori equivalenti. Le bande evidenziano lo sforzo e le esclusioni motivate.':
+    'samples. Overlaid lines with independent scales and units shown on the axes; heights of different channels do not represent equivalent values. Bands highlight the effort and justified exclusions.',
+  'Il file è associato al test ma i campioni non sono disponibili: verificare l’importazione e l’archivio.':
+    'The file is linked to the test but the samples are unavailable: check the import and the archive.',
+  'Questo test contiene solo risultati riepilogativi manuali: non ci sono campioni temporali FIT/CSV da rappresentare. Potenza, FC e cadenza medie o massime non permettono di ricostruire una curva.':
+    'This test contains only manual summary results: there are no FIT/CSV time samples to plot. Mean or maximum power, HR and cadence cannot reconstruct a curve.',
+  'Seleziona un canale disponibile per visualizzare il tracciato.': 'Select an available channel to show the trace.',
+  'Lattato: punti misurati all’istante del prelievo, senza interpolazione temporale. L’associazione al carico e i metodi di soglia sono riportati separatamente.':
+    'Lactate: points measured at the sampling time, without time interpolation. Load association and threshold methods are reported separately.',
+  Velocità: 'Speed',
+  Temperatura: 'Temperature',
+  Quota: 'Altitude',
+  'Target del protocollo · W': 'Protocol target · W',
+  'dal file': 'in file',
+  'Società disponibile nel selettore laterale.': 'Club available in the sidebar selector.',
+  'Chiedi al fondatore un invito JSON personale e la relativa password. Il backup ZIP non è un invito. Dopo il collegamento configura WebDAV o la cartella condivisa per acquisire i dati.':
+    'Ask the founder for a personal JSON invitation and its password. The ZIP backup is not an invitation. After connecting, configure WebDAV or the shared folder to receive the data.',
+  'Il backup dati contiene test e allegati, ma non le credenziali del fondatore. Nessun archivio esistente verrà sovrascritto.':
+    'The data backup contains tests and attachments, but not the founder’s credentials. No existing archive will be overwritten.',
+  'Backup precedente: database e allegati verificati; manifest senza checksum del database.':
+    'Older backup: database and attachments verified; manifest without database checksum.',
+  'Potrai consultare ed esportare i dati. Nessun accesso alla sincronizzazione o ai privilegi della società originale.':
+    'You will be able to view and export the data. No access to synchronization or to the original club’s privileges.',
+  'Crea un archivio modificabile con nuove credenziali e un nuovo canale. Non si collegherà alla società originale e non erediterà i suoi collaboratori. Lo storico dei dati è conservato con provenienza del ripristino.':
+    'Creates an editable archive with new credentials and a new channel. It will not connect to the original club or inherit its collaborators. The data history is preserved with restore provenance.',
+  'Serve il file cifrato Recupero accessi esportato dal fondatore e la sua password. È un recupero del dispositivo del fondatore, non un invito per collaboratori. Se il vecchio PC è ancora attivo, evita di usare contemporaneamente la stessa identità.':
+    'Requires the encrypted credential recovery file exported by the founder and its password. It recovers the founder’s device and is not an invitation for collaborators. If the old PC is still active, avoid using the same identity on both at the same time.',
+  'Lascia vuoto per usare la cartella dell’app. Una cartella scelta deve essere vuota; non usare quella sincronizzata dal cloud.':
+    'Leave empty to use the app folder. A chosen folder must be empty; do not use one synchronized by the cloud.',
+  'Copia di consultazione: per modificare i dati crea una copia indipendente dal backup, oppure recupera la società originale con il file di recupero accessi.':
+    'View-only copy: to edit the data create an independent copy from the backup, or recover the original club with the credential recovery file.',
+  'Per condividere un archivio precedente crea una copia indipendente da backup in Gestisci società. La copia avrà un fondatore e un canale propri.':
+    'To share a legacy archive create an independent copy from backup in Manage clubs. The copy will have its own founder and channel.',
+  'Questo accesso è associato all’operatore su questo dispositivo; non è un login online.':
+    'This access is tied to the operator on this device; it is not an online login.',
+  'Accesso revocato: puoi consultare i dati già ricevuti. Per modificare richiedi e applica un nuovo invito.':
+    'Access revoked: you can view data already received. To edit, request and apply a new invitation.',
+  'Fondatore: modifica dati, crea inviti, rinnova e revoca accessi, esporta il recupero delle credenziali.':
+    'Founder: edits data, creates invitations, renews and revokes access, exports credential recovery.',
+  'Admin dati: consulta, esporta e modifica i dati; non gestisce gli accessi.':
+    'Data admin: views, exports and edits data; does not manage access.',
+  'Visualizzatore: consulta ed esporta; non modifica i dati.': 'Viewer: views and exports; does not edit data.',
+  'Gli inviti emessi non confermano che il destinatario li abbia già utilizzati. Genera un invito distinto per ciascun dispositivo.':
+    'Issued invitations do not confirm that the recipient has used them. Generate a separate invitation for each device.',
+  'Revoca registrata. Esegui uno scambio per propagarla agli altri PC.':
+    'Revocation recorded. Run an exchange to propagate it to the other PCs.',
+  'Invito scaricato. Pubblica le modifiche degli accessi con uno scambio.':
+    'Invitation downloaded. Publish the access changes with an exchange.',
+  'Scaricando il nuovo invito revochi il vecchio accesso. Sul dispositivo destinatario usa Applica nuovo invito, senza creare un altro archivio.':
+    'Downloading the new invitation revokes the old access. On the recipient device use Apply new invitation, without creating another archive.',
+  'La password protegge soltanto il file d’invito. Comunica file e password su canali distinti.':
+    'The password only protects the invitation file. Share the file and password through separate channels.',
+  'Usa questa funzione per rinnovare l’accesso o cambiare ruolo nella stessa società, conservando i dati locali. Per un’altra società usa Gestisci società.':
+    'Use this to renew access or change role in the same club, keeping local data. For another club use Manage clubs.',
+  'Identità aggiornata. Esegui uno scambio per ricevere lo stato degli accessi.':
+    'Identity updated. Run an exchange to receive the access status.',
+  'La revoca si propaga al prossimo scambio. I dati già ricevuti restano consultabili; le scritture sconosciute al fondatore al momento della revoca vengono respinte. La chiave di lettura non viene ruotata automaticamente.':
+    'Revocation propagates at the next exchange. Data already received remains viewable; writes unknown to the founder at the time of revocation are rejected. The read key is not rotated automatically.',
+  'Scarica separatamente dal backup dati un file cifrato con identità, chiavi e gestione degli accessi. Conservalo in un luogo protetto e custodisci la password separatamente. Chi possiede file e password può recuperare i privilegi del fondatore. Aggiornalo dopo modifiche agli accessi.':
+    'Download, separately from the data backup, an encrypted file with identity, keys and access management. Store it somewhere safe and keep the password separately. Anyone with the file and password can recover the founder’s privileges. Update it after access changes.',
+  'Recupero accessi cifrato scaricato. Conserva anche un backup dati aggiornato.':
+    'Encrypted credential recovery downloaded. Also keep an up-to-date data backup.',
+  'Picco dichiarato / finestra protocollo (W)': 'Declared peak / protocol window (W)',
+  'Picco / peso (W/kg)': 'Peak / weight (W/kg)',
+  'Migliori 1 s (W)': 'Best 1 s (W)',
+  'Migliori 5 s (W)': 'Best 5 s (W)',
+  'Tempo al picco (s)': 'Time to peak (s)',
+  'Potenza media (W)': 'Mean power (W)',
+  'Potenza media / peso (W/kg)': 'Mean power / weight (W/kg)',
+  'Lavoro meccanico osservato (kJ)': 'Observed mechanical work (kJ)',
+  'Potenza finale (W)': 'End power (W)',
+  'Calo picco-finale (%)': 'Peak-to-end decline (%)',
+  'Pendenza picco-finale (W/s)': 'Peak-to-end slope (W/s)',
+  'Indice di fatica storico, formula non verificata (W/s)': 'Historical fatigue index, unverified formula (W/s)',
+  'Cadenza massima (rpm)': 'Maximum cadence (rpm)',
+  'Cadenza media (rpm)': 'Mean cadence (rpm)',
+  Stato: 'Status',
+  Locale: 'Local',
+  'RPE (scala indicata)': 'RPE (stated scale)',
+  'Copertura / MAE / RMSE': 'Coverage / MAE / RMSE',
+  'Protocollo / revisione': 'Protocol / revision',
+  'Picco / indice di fatica': 'Peak / fatigue index',
+  'Categoria / stagione / coorte': 'Category / season / cohort',
+  'Media / mediana / IQR / mancanti': 'Mean / median / IQR / missing',
+  'Sprint breve, Wingate 15 s o 30 s: indicare tipo_test (sprint, wingate15, wingate30) e durata_s. Il solo codice storico ANA-15-070 conserva la compatibilità a 15 s e 0,70 N·m/kg.':
+    'Short sprint, Wingate 15 s or 30 s: enter tipo_test (sprint, wingate15, wingate30) and durata_s. Only the historical code ANA-15-070 keeps the implicit 15 s and 0.70 N·m/kg compatibility.',
+  'Nome e cognome obbligatori; gli altri campi sono facoltativi.':
+    'First and last name are required; other fields are optional.',
+  'Almeno peso_kg, statura_cm oppure altezza_perineale_cm; peso_fonte facoltativo (dichiarato).':
+    'At least peso_kg, statura_cm or altezza_perineale_cm; peso_fonte is optional (declared).',
+  'Risultati facoltativi: i valori assenti restano vuoti, mai zero.':
+    'Results are optional: missing values stay blank, never zero.',
+  'Pubblicazioni Servizio remoto rilette e verificate.': 'Remote service publications read back and verified.',
+  'Scambio locale eseguito. Upload cloud non verificabile dall’app.':
+    'Local exchange completed. Cloud upload cannot be verified by the app.',
+  "Scambio locale eseguito. Upload cloud non verificabile dall'app.":
+    'Local exchange completed. Cloud upload cannot be verified by the app.'
+});
 export function tr(text: string) {
   return language === 'en' ? translations[text] || text : text;
 }
+/** Texts produced by the backend engines (warnings, methods, errors): exact keys plus a few composed forms. */
+export function trBackend(text: string) {
+  if (language !== 'en' || !text) return text;
+  if (translations[text]) return translations[text];
+  const step = /^Step (\d+): copertura potenza insufficiente\.$/.exec(text);
+  if (step) return `Stage ${step[1]}: insufficient power coverage.`;
+  const suffix = '; completezza per durata/copertura, aderenza separata.';
+  if (text.endsWith(suffix))
+    return text.slice(0, -suffix.length) + '; completeness by duration/coverage, adherence assessed separately.';
+  return text;
+}
+Object.assign(translations, {
+  'Timestamp duplicati, non validi o non ordinati: correggere il tracciato.':
+    'Duplicate, invalid or unordered timestamps: correct the trace.',
+  'Marker step duplicati o non validi.': 'Duplicate or invalid stage markers.',
+  'Protocollo a rampa/discontinuo o carichi non crescenti: metodo ultimo step costante non applicabile.':
+    'Ramp/discontinuous protocol or non-increasing loads: the last constant stage method does not apply.',
+  'Nessuno step incrementale completo e valido: MAP non disponibile.':
+    'No complete and valid incremental stage: MAP unavailable.',
+  'Canale FC assente durante lo sforzo.': 'Heart-rate channel missing during the effort.',
+  'Pause timer presenti: tempo trascorso; verificare allineamento e qualità.':
+    'Timer pauses present: elapsed time used; check alignment and quality.',
+  'Intervalli esclusi con motivo: copertura calcolata sull’intera durata richiesta.':
+    'Justified excluded intervals: coverage is calculated over the whole required duration.',
+  'MAP operativa = target dell’ultimo step completo; verificare separatamente la potenza realmente erogata e l’aderenza.':
+    'Operational MAP = target of the last complete stage; check actual delivered power and adherence separately.',
+  'Esclusione fuori dal tracciato o priva di motivo.': 'Exclusion outside the trace or without a reason.',
+  'Finestre temporali a potenza costante sul campione sinistro; nessuna estrapolazione. Calo picco-finale distinto dall’indice storico.':
+    'Time windows with power held constant from the left sample; no extrapolation. Peak-to-end decline is distinct from the historical index.',
+  'Servono campioni con tempi strettamente crescenti.': 'Samples with strictly increasing times are required.',
+  'Copertura incompleta: media sull’intera prova non calcolata; lavoro limitato agli intervalli osservati. Picco e calo possono sottostimare il valore reale.':
+    'Incomplete coverage: whole-test mean not calculated; work limited to observed intervals. Peak and decline may underestimate the true value.',
+  'Campionamento più lento della finestra del picco: risultato dipendente dal mantenimento del campione, non misura ad alta risoluzione.':
+    'Sampling slower than the peak window: the result depends on holding the sample value and is not a high-resolution measurement.',
+  'Valori dichiarati: finestre e formule originali non ricostruibili dal solo riepilogo.':
+    'Declared values: original windows and formulas cannot be reconstructed from the summary alone.',
+  'Comparabilità non verificata: dispositivo o tipo di partenza non documentati.':
+    'Comparability not verified: device or start type not documented.',
+  'Potenza media superiore al picco: verificare dati e finestre.': 'Mean power above peak: check data and windows.',
+  'Lavoro e media non coincidono con la durata nominale: valori originali conservati.':
+    'Work and mean do not match the nominal duration: original values retained.',
+  'Metodi distinti; nessuna equivalenza automatica con FTP, MLSS o VT.':
+    'Distinct methods; no automatic equivalence with FTP, MLSS or VT.',
+  'Coppie esplicitamente ripetute in condizioni stabili; stima incerta con pochi soggetti, nessuna diagnosi.':
+    'Pairs explicitly repeated under stable conditions; uncertain estimate with few subjects, no diagnosis.',
+  'Breakpoint automatici esplorativi: confermare con equivalenti ventilatori, gas end-tidal e valutazione esperta; non equivalgono a VT validate.':
+    'Exploratory automatic breakpoints: confirm with ventilatory equivalents, end-tidal gases and expert assessment; they are not validated VTs.',
+  'Prelievi senza carico associato: selezionare step o carico esplicito.':
+    'Samples without an associated load: select a stage or explicit load.',
+  'Servono carichi distinti; ripetizioni allo stesso carico richiedono revisione.':
+    'Distinct loads are required; repeated samples at the same load need review.',
+  'Protocollo custom: risultati dichiarati, nessuna formula fisiologica automatica. Il tracciato è conservato come osservazione.':
+    'Custom protocol: declared results, no automatic physiological formula. The trace is kept as an observation.',
+  'Protocollo custom: la validità e l’interpretazione dei campi sono responsabilità del metodo dichiarato.':
+    'Custom protocol: validity and interpretation of the fields depend on the declared method.',
+  'Risultati dichiarati manualmente, senza verifica del tracciato.':
+    'Results declared manually, without trace verification.',
+  'Campioni assenti: MAP, FC e durata sono dichiarati; nessuna verifica automatica degli step.':
+    'No samples: MAP, HR and duration are declared; no automatic stage verification.',
+  'Massimo non verificato: riportato solo VO2peak': 'Maximum not verified: only VO2peak reported'
+});
 export async function setLanguage(value: string, save: (language: string) => Promise<unknown>) {
   if (value !== 'it' && value !== 'en') return;
   await save(value);

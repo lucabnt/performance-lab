@@ -1,3 +1,4 @@
+import {tr} from './i18n';
 /** Native transport installed only by the Android shell. Desktop uses fetch. */
 type NativeWindow = Window & {
   FuorigiriNative?: {postMessage: (value: string) => void};
@@ -12,7 +13,7 @@ async function base64(blob: Blob) {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
-    reader.onerror = () => reject(new Error('Lettura del file non riuscita.'));
+    reader.onerror = () => reject(new Error(tr('Lettura del file non riuscita.')));
     reader.readAsDataURL(blob);
   });
 }
@@ -40,7 +41,7 @@ if (native.FuorigiriNative) {
     const url = new URL(request.url);
     if (url.origin !== location.origin || !url.pathname.startsWith('/api/v1/')) return original(input, init);
     const body = await request.blob();
-    if (body.size > 80_000_000) throw new Error('Il limite per un file su Android è 80 MB.');
+    if (body.size > 80_000_000) throw new Error(tr('Il limite per un file su Android è 80 MB.'));
     const payload = {
       path: url.pathname + url.search,
       method: request.method,
@@ -59,7 +60,7 @@ if (native.FuorigiriNative) {
     original(anchor.href)
       .then(r => r.blob())
       .then(async blob => {
-        if (blob.size > 80_000_000) throw new Error('Export oltre il limite mobile di 80 MB.');
+        if (blob.size > 80_000_000) throw new Error(tr('Export oltre il limite mobile di 80 MB.'));
         native.FuorigiriNative!.postMessage(
           JSON.stringify({
             type: 'export',

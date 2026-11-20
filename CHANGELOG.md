@@ -1,5 +1,12 @@
 # Changelog
 
+## 20 novembre 2026 — traduzioni inglesi mancanti nell'interfaccia (I18N-01)
+
+- Con la lingua inglese diverse voci restavano in italiano: etichette scritte direttamente nei componenti (editor anaerobico, analisi e preset, lattato/VO₂, campi personalizzati, protocolli, storici e progressione, cloud e sincronizzazione), chiamate `tr()` senza voce nel dizionario (anche «Salva» e «Annulla»), metriche anaerobiche con etichetta inglese uguale a quella italiana, opzioni con valore interno mostrato (fonte del peso, tipo anaerobico) e nomi delle serie/assi nei grafici.
+- Ora i testi passano da `tr()` con circa 460 nuove traduzioni; i valori salvati (fonte del peso, codici) restano invariati. `buildSignalChart` accetta un traduttore facoltativo, le etichette delle metriche predefinite nello storico usano quelle localizzate del frontend, i motivi di qualità della crescita passano da `maturityText`.
+- Nuovo `trBackend()` per i testi noti prodotti dal backend (avvisi e metodo delle analisi, regole CSV, esito dello scambio, errori API già presenti nel dizionario); i testi del backend non presenti restano in italiano.
+- Non modificati: dati e nomi inseriti dagli utenti, footer della UI comune («Strumenti aperti a supporto del ciclismo giovanile», nella repository `cycling-suite-common`), report PDF già localizzati dal backend. [Prove](docs/VERIFICA.md).
+
 ## 20 novembre 2026 — prova ARM64 con traduzione dell’emulatore (solo verifica)
 
 - Tentativo di eseguire le librerie ARM64 sull’emulatore x86_64 con traduzione ARM: l’app termina al caricamento del runtime Chaquopy, anche con l’APK precedente. Runtime ARM64 ancora da provare su dispositivo reale. Nessuna modifica a codice o binari. [Prove](docs/VERIFICA.md).

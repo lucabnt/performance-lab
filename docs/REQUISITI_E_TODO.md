@@ -577,3 +577,7 @@ Verifiche e consegna binaria aggiornate separatamente in VERIFICA.md; una scherm
 ## UI-SUITE-001 — coerenza organizzativa, 1 novembre 2026
 
 Richiesta: verificare e allineare la collocazione delle funzionalità omologhe fra Ammiraglia, Fuorigiri e A Ruota. Implementati accessi contestuali CSV da Atleti/Gruppi/Test/Antropometria, con tracciati limitati al contesto; punto completo in Archivio espandibile e istruzioni dopo i comandi. Appartenenze collettive in Gruppi, individuali nel profilo; responsabilità e permessi preservati. [Uso](IMPORT_CSV.md), [verifiche](VERIFICA.md). Nessun nuovo installer/APK né qualifica provider.
+
+## I18N-01 — traduzioni inglesi complete dell'interfaccia, 20 novembre 2026
+
+Segnalazione dell'utente: cambiando lingua alcune voci non vengono tradotte in inglese. **Implementato e verificato localmente sul web.** Criteri: ogni testo dell'interfaccia passa da `tr()` (o da una coppia IT/EN esplicita) e ha una voce inglese nel dizionario; i valori salvati restano in italiano e solo la visualizzazione cambia; i testi noti generati dal backend (avvisi e metodo delle analisi, regole CSV, esito dello scambio) sono tradotti in visualizzazione con `trBackend()`. Restano aperti: footer della UI comune (da correggere in `cycling-suite-common`), messaggi d'errore del backend non ancora nel dizionario, verifica su Android. [Verifiche](VERIFICA.md).

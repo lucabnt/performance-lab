@@ -1,5 +1,12 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 novembre 2026 — traduzioni inglesi dell'interfaccia (I18N-01)
+
+- Analisi statica (TypeScript AST) dei sorgenti `frontend/src`: dopo la correzione restano senza voce nel dizionario solo stringhe identiche nelle due lingue (unità, sigle, segnaposto di percorso, riferimenti bibliografici).
+- `tsc -b`, `npm --prefix frontend run test:signals` (43/43), `format:check`, `npm --prefix frontend run build`, `scripts/verify_suite_ui.py` e `git diff --check` superati.
+- GUI in inglese su archivio sintetico nuovo `.local/qa-i18n-20261120` (`demo_suite.py --small`, server su porta dedicata): sezioni Atleti, Test e analisi, Protocolli, Società e gruppi, Storici, Archivio e scambio; dettaglio di test incrementale con tracciato, rampa, Wingate 15 s, sprint e custom; editor nuovo test (incrementale, anaerobico, custom), protocollo (tutte le famiglie), atleta, gruppo/stagione, appartenenze, misura, import CSV di tutti i profili; profilo atleta con maturazione. Un rilevatore di parole italiane nel DOM non trova più testi di interfaccia non tradotti; restano dati sintetici dell'archivio (nomi di protocolli, campi personalizzati, note) e il footer della UI comune.
+- Limiti: non verificati i flussi Android e i dialoghi non raggiungibili con i dati demo (OAuth reale, errori di rete); gli errori del backend non presenti nel dizionario restano in italiano. Nessun EXE/APK ricompilato.
+
 ## 20 novembre 2026 — tentativo ARM64 su emulatore con traduzione
 
 - L’utente non dispone di un telefono ARM64. Emulatore Pixel_9 API 35 x86_64 con traduzione ARM (`ro.dalvik.vm.native.bridge=libndk_translation.so`, Berberis aarch64 0.2.3, `abilist` x86_64,arm64-v8a). APK debug di `android-neutre-20261120-01` installato con `adb install -r --abi arm64-v8a`: `primaryCpuAbi=arm64-v8a`.

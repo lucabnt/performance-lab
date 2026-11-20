@@ -1,7 +1,7 @@
 import {FormActions} from '@cycling-suite/ui';
 import {maturityText} from './maturityText';
 import {useEffect, useState} from 'react';
-import {language} from './i18n';
+import {language, tr} from './i18n';
 import {numberText} from './metrics';
 type Row = Record<string, any>;
 const optional: Record<string, string> = {
@@ -330,7 +330,9 @@ export function MaturationPanel({
           <div className="stats">
             <div className="stat">
               <small>HV</small>
-              <strong>{numberText(hv?.value)} cm/anno</strong>
+              <strong>
+                {numberText(hv?.value)} {tr('cm/anno')}
+              </strong>
               <span>
                 {hv
                   ? `${hv.from} → ${hv.to} · ${hv.days} ${en ? 'days' : 'giorni'}`
@@ -357,7 +359,9 @@ export function MaturationPanel({
             )}
             <div className="stat">
               <small>{en ? 'Longitudinal exploratory PHV' : 'PHV longitudinale esplorativo'}</small>
-              <strong>{numberText(a.phv.value)} cm/anno</strong>
+              <strong>
+                {numberText(a.phv.value)} {tr('cm/anno')}
+              </strong>
               <span>{a.phv.date || (a.phv.status ? phvStatusText(a.phv, en) : maturityText(a.phv.reason))}</span>
               {a.phv.aphv_years != null && (
                 <p>
@@ -369,7 +373,9 @@ export function MaturationPanel({
             {a.hv_max_observed && (
               <div className="stat">
                 <small>{en ? 'Highest observed HV' : 'HV massima osservata'}</small>
-                <strong>{numberText(a.hv_max_observed.value)} cm/anno</strong>
+                <strong>
+                  {numberText(a.hv_max_observed.value)} {tr('cm/anno')}
+                </strong>
                 <span>
                   {a.hv_max_observed.value != null
                     ? `${a.hv_max_observed.from} → ${a.hv_max_observed.to}`
@@ -418,7 +424,7 @@ export function MaturationPanel({
               {
                 x: a.hv.map((r: Row) => r.mid_date),
                 y: a.hv.map((r: Row) => r.value),
-                name: 'HV · cm/anno',
+                name: tr('HV · cm/anno'),
                 type: 'scatter',
                 mode: 'lines+markers',
                 connectgaps: false
@@ -426,7 +432,7 @@ export function MaturationPanel({
             ]}
             layout={{
               xaxis: {title: {text: en ? 'Interval midpoint' : 'Centro dell’intervallo'}},
-              yaxis: {title: {text: 'cm/anno'}}
+              yaxis: {title: {text: tr('cm/anno')}}
             }}
           />
           <h3>{en ? 'All dated estimates' : 'Tutte le stime datate'}</h3>
@@ -522,14 +528,14 @@ export function MaturationPanel({
           <details>
             <summary>{en ? 'Methods, quality and limitations' : 'Metodi, qualità e limiti'}</summary>
             <p>
-              Moore: statura/età, {en ? 'age domain' : 'dominio di età'} M 10–16 / F 9–14. Mirwald: statura, massa e
-              statura seduta, M 12–16 / F 9–14.{' '}
+              {tr('Moore: statura/età,')} {en ? 'age domain' : 'dominio di età'}{' '}
+              {tr('M 10–16 / F 9–14. Mirwald: statura, massa e statura seduta, M 12–16 / F 9–14.')}{' '}
               {en
                 ? 'Product gates, not diagnostic ranges.'
                 : 'Limiti prudenziali del prodotto, non intervalli diagnostici.'}
             </p>
             <p>
-              HV: 90–400 {en ? 'days between valid measured heights' : 'giorni tra stature misurate e valide'}.{' '}
+              {tr('HV: 90–400')} {en ? 'days between valid measured heights' : 'giorni tra stature misurate e valide'}.{' '}
               {a.phv.method_id === 'phv-local-quadratic/2'
                 ? en
                   ? 'PHV: at least 6 consecutive valid measured heights in the stretch containing the maximum, two intervals on each side; heights closer than 90 days or not measured are skipped, gaps over 400 days split the series, a decrease or anomalous velocity touching the window blocks it. Local quadratic fit to five interval velocities with at least 180 days support on each side. No interpolation.'
@@ -544,7 +550,7 @@ export function MaturationPanel({
             <p>
               {en ? 'Reference' : 'Riferimento'}:{' '}
               <a href="https://doi.org/10.1007/s40279-017-0750-y" target="_blank" rel="noreferrer">
-                Kozieł &amp; Malina — validation of maturity equations
+                {tr('Kozieł & Malina — validation of maturity equations')}
               </a>
               . {a.engine}
             </p>

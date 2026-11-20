@@ -1,3 +1,4 @@
+import {tr, trBackend} from './i18n';
 import {FormActions} from '@cycling-suite/ui';
 import {useState} from 'react';
 import {ProtocolEditor} from './features';
@@ -6,7 +7,7 @@ import {FieldSchemaEditor, FieldValues, CustomValuesDisplay} from './customField
 import {TraceImporter} from './analysis';
 type Row = Record<string, any>;
 export const protocolType = (p: Row) =>
-  p.test_type === 'custom' ? 'Personalizzato' : anaerobicTypes[p.test_type] || 'Incrementale';
+  tr(p.test_type === 'custom' ? 'Personalizzato' : anaerobicTypes[p.test_type] || 'Incrementale');
 export function ProtocolDesigner({
   org,
   original,
@@ -23,17 +24,17 @@ export function ProtocolDesigner({
   const [kind, setKind] = useState(original?.test_type || 'incremental');
   return (
     <>
-      <h2>{original ? 'Nuova versione di protocollo' : 'Crea protocollo'}</h2>
+      <h2>{tr(original ? 'Nuova versione di protocollo' : 'Crea protocollo')}</h2>
       <label>
-        Famiglia di test
+        {tr('Famiglia di test')}
         <select disabled={!!original} value={kind} onChange={e => setKind(e.target.value)}>
-          <option value="incremental">Incrementale aerobico</option>
+          <option value="incremental">{tr('Incrementale aerobico')}</option>
           {Object.entries(anaerobicTypes).map(([k, v]) => (
             <option key={k} value={k}>
-              {String(v)}
+              {tr(String(v))}
             </option>
           ))}
-          <option value="custom">Personalizzato · senza calcoli fisiologici automatici</option>
+          <option value="custom">{tr('Personalizzato · senza calcoli fisiologici automatici')}</option>
         </select>
       </label>
       {kind === 'incremental' ? (
@@ -134,14 +135,14 @@ function SpecialProtocol({
           ['reason', 'Motivo / descrizione modifica']
         ].map(([k, label]) => (
           <label key={k}>
-            {label}
+            {tr(label)}
             <input required={k !== 'reason' || !!original} value={draft[k]} onChange={e => edit(k, e.target.value)} />
           </label>
         ))}
       </div>
       {custom ? (
         <label>
-          Metodo e istruzioni
+          {tr('Metodo e istruzioni')}
           <textarea value={draft.description} onChange={e => edit('description', e.target.value)} />
         </label>
       ) : (
@@ -155,7 +156,7 @@ function SpecialProtocol({
               ['max_gap_s', 'Intervallo massimo campioni · s']
             ].map(([k, label]) => (
               <label key={k}>
-                {label}
+                {tr(label)}
                 <input
                   type="number"
                   step="any"
@@ -166,20 +167,20 @@ function SpecialProtocol({
               </label>
             ))}
             <label>
-              Partenza
+              {tr('Partenza')}
               <select value={draft.start} onChange={e => edit('start', e.target.value)}>
-                <option value="unknown">Non documentata</option>
-                <option value="stationary">Da fermo</option>
-                <option value="flying">Lanciata</option>
+                <option value="unknown">{tr('Non documentata')}</option>
+                <option value="stationary">{tr('Da fermo')}</option>
+                <option value="flying">{tr('Lanciata')}</option>
               </select>
             </label>
             <label>
-              Posizione
+              {tr('Posizione')}
               <select value={draft.position} onChange={e => edit('position', e.target.value)}>
-                <option value="unknown">Non documentata</option>
-                <option value="seated">Seduto</option>
-                <option value="standing">In piedi</option>
-                <option value="mixed">Mista</option>
+                <option value="unknown">{tr('Non documentata')}</option>
+                <option value="seated">{tr('Seduto')}</option>
+                <option value="standing">{tr('In piedi')}</option>
+                <option value="mixed">{tr('Mista')}</option>
               </select>
             </label>
             {[
@@ -188,13 +189,15 @@ function SpecialProtocol({
               ['load_description', 'Modalità di applicazione del carico']
             ].map(([k, label]) => (
               <label key={k}>
-                {label}
+                {tr(label)}
                 <input value={draft[k]} onChange={e => edit(k, e.target.value)} />
               </label>
             ))}
           </div>
           <p className="hint">
-            Le finestre e le condizioni fanno parte della versione. Cambiarle crea un metodo distinto nei confronti.
+            {tr(
+              'Le finestre e le condizioni fanno parte della versione. Cambiarle crea un metodo distinto nei confronti.'
+            )}
           </p>
         </>
       )}
@@ -217,7 +220,7 @@ function SpecialProtocol({
         scope="protocol"
       />
       <FormActions>
-        <button className="primary">Pubblica versione immutabile</button>
+        <button className="primary">{tr('Pubblica versione immutabile')}</button>
       </FormActions>
     </form>
   );
@@ -243,14 +246,14 @@ export function NewTestChoice({
   const p = protocols.find((p: Row) => p.id === id);
   return (
     <>
-      <h2>Registra una prova</h2>
-      <p>Scegli un protocollo già definito. Per creare o modificare un protocollo usa la pagina Protocolli.</p>
+      <h2>{tr('Registra una prova')}</h2>
+      <p>{tr('Scegli un protocollo già definito. Per creare o modificare un protocollo usa la pagina Protocolli.')}</p>
       {!protocols.length ? (
-        <p className="hint">Nessun protocollo attivo: definiscine uno, anche manualmente e senza ERG.</p>
+        <p className="hint">{tr('Nessun protocollo attivo: definiscine uno, anche manualmente e senza ERG.')}</p>
       ) : (
         <>
           <label>
-            Protocollo e versione
+            {tr('Protocollo e versione')}
             <select value={id} onChange={e => setId(e.target.value)}>
               {protocols.map((p: Row) => (
                 <option key={p.id} value={p.id}>
@@ -263,28 +266,28 @@ export function NewTestChoice({
             <p>
               {protocolType(p)}
               {p.test_type === 'custom'
-                ? ' · osservazioni e campi definiti dall’operatore, senza formule automatiche.'
+                ? ' · ' + tr('osservazioni e campi definiti dall’operatore, senza formule automatiche.')
                 : p.anaerobic_spec
-                  ? ' · durata ' + p.anaerobic_spec.duration_s + ' s.'
+                  ? ' · ' + tr('durata') + ' ' + p.anaerobic_spec.duration_s + ' s.'
                   : !p.definition.segments.length
-                    ? ' · solo scheda, inserimento manuale.'
+                    ? ' · ' + tr('solo scheda, inserimento manuale.')
                     : ''}
             </p>
           )}
           <div className="actions">
             <button className="primary" disabled={!p} onClick={() => onChoose(p, 'manual', selected)}>
-              Inserisci risultati manuali
+              {tr('Inserisci risultati manuali')}
             </button>
             <button
               disabled={!p || (!p.test_type && !p.definition.segments.length)}
               onClick={() => onChoose(p, 'trace', selected)}
             >
-              Importa FIT / CSV
+              {tr('Importa FIT / CSV')}
             </button>
           </div>
         </>
       )}
-      <button onClick={onProtocols}>Vai ai protocolli</button>
+      <button onClick={onProtocols}>{tr('Vai ai protocolli')}</button>
     </>
   );
 }
@@ -356,11 +359,11 @@ export function CustomTestEditor({
       </h2>
       <p className="hint">
         {protocol.description ||
-          'Protocollo personalizzato. Nessun risultato fisiologico viene dedotto automaticamente dal tracciato.'}
+          tr('Protocollo personalizzato. Nessun risultato fisiologico viene dedotto automaticamente dal tracciato.')}
       </p>
       <div className="form-grid">
         <label>
-          Atleta
+          {tr('Atleta')}
           <select disabled={!!original} value={draft.athlete_id} onChange={e => edit('athlete_id', e.target.value)}>
             {state.athlete
               .filter((a: Row) => a.organization_id === org && a.status !== 'deleted')
@@ -372,11 +375,11 @@ export function CustomTestEditor({
           </select>
         </label>
         <label>
-          Data
+          {tr('Data')}
           <input type="date" required value={draft.date} onChange={e => edit('date', e.target.value)} />
         </label>
         <label>
-          Origine
+          {tr('Origine')}
           <select
             value={source}
             onChange={e => {
@@ -384,8 +387,8 @@ export function CustomTestEditor({
               setPreview(null);
             }}
           >
-            <option value="manual">Manuale</option>
-            <option value="trace">Tracciato FIT / CSV</option>
+            <option value="manual">{tr('Manuale')}</option>
+            <option value="trace">{tr('Tracciato FIT / CSV')}</option>
           </select>
         </label>
       </div>
@@ -401,13 +404,13 @@ export function CustomTestEditor({
           />
           {trace && (
             <>
-              <p>Seleziona l’inizio o la fine nel grafico, poi verifica i secondi prima di confermare.</p>
+              <p>{tr('Seleziona l’inizio o la fine nel grafico, poi verifica i secondi prima di confermare.')}</p>
               <label>
-                Selezione sul grafico
+                {tr('Selezione sul grafico')}
                 <select value={pick} onChange={e => setPick(e.target.value)}>
-                  <option value="">Solo navigazione</option>
-                  <option value="offset_s">Imposta inizio</option>
-                  <option value="end_s">Imposta fine</option>
+                  <option value="">{tr('Solo navigazione')}</option>
+                  <option value="offset_s">{tr('Imposta inizio')}</option>
+                  <option value="end_s">{tr('Imposta fine')}</option>
                 </select>
               </label>
               <TestSignals
@@ -420,18 +423,22 @@ export function CustomTestEditor({
             </>
           )}
           <div className="form-grid">
-            <TimeInput label="Inizio dal file" value={draft.settings.offset_s} onChange={v => setting('offset_s', v)} />
-            <TimeInput label="Fine dal file" value={draft.settings.end_s} onChange={v => setting('end_s', v)} />
+            <TimeInput
+              label={tr('Inizio dal file')}
+              value={draft.settings.offset_s}
+              onChange={v => setting('offset_s', v)}
+            />
+            <TimeInput label={tr('Fine dal file')} value={draft.settings.end_s} onChange={v => setting('end_s', v)} />
           </div>
         </>
       )}
       <label>
-        Note
+        {tr('Note')}
         <textarea value={draft.notes} onChange={e => edit('notes', e.target.value)} />
       </label>
       {original && (
         <label>
-          Motivo correzione
+          {tr('Motivo correzione')}
           <input required value={draft.reason} onChange={e => edit('reason', e.target.value)} />
         </label>
       )}{' '}
@@ -441,7 +448,7 @@ export function CustomTestEditor({
         onChange={v => setting('custom_values', v)}
       />
       <details>
-        <summary>Aggiungi osservazioni facoltative a questa prova</summary>
+        <summary>{tr('Aggiungi osservazioni facoltative a questa prova')}</summary>
         <FieldSchemaEditor
           testOnly
           fields={draft.settings.extra_fields}
@@ -464,12 +471,14 @@ export function CustomTestEditor({
         />
       </details>
       <FormActions>
-        {!preview && <button disabled={!draft.athlete_id || (source === 'trace' && !trace)}>Verifica anteprima</button>}
+        {!preview && (
+          <button disabled={!draft.athlete_id || (source === 'trace' && !trace)}>{tr('Verifica anteprima')}</button>
+        )}
       </FormActions>
       {preview && (
         <>
           <CustomValuesDisplay analysis={preview} />
-          <p>{preview.method}</p>
+          <p>{trBackend(preview.method)}</p>
           <FormActions>
             <button
               type="button"
@@ -487,7 +496,7 @@ export function CustomTestEditor({
                 );
               }}
             >
-              Conferma e archivia
+              {tr('Conferma e archivia')}
             </button>
           </FormActions>
         </>

@@ -32,7 +32,7 @@ import {TestExtensions, CustomValuesDisplay} from './customFields';
 import {AnaerobicEditor, AnaerobicResults, anaerobicTypes, anaerobicMetrics} from './anaerobic';
 import './mobile';
 import {metricLabel} from './metrics';
-import {tr, language, setLanguage} from './i18n';
+import {tr, language, setLanguage, trBackend} from './i18n';
 import {Branding} from './branding';
 import React, {useState, useEffect, useRef, type FormEvent} from 'react';
 import {createRoot} from 'react-dom/client';
@@ -117,7 +117,7 @@ async function api(path: string, data?: unknown, method = 'POST', workspaceOverr
   });
   if (!response.ok) {
     const e = await response.json();
-    throw new Error(typeof e.detail === 'string' ? e.detail : JSON.stringify(e.detail));
+    throw new Error(typeof e.detail === 'string' ? trBackend(e.detail) : JSON.stringify(e.detail));
   }
   const result = await response.json();
   if (data !== undefined && isArchiveWrite(path, method))
@@ -246,7 +246,7 @@ function App() {
         const saved = await withDeadline(
           api('workspaces/last-selection', undefined, 'GET', ''),
           30000,
-          'Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.'
+          tr('Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.')
         );
         if (sequence !== refreshSequence.current) return;
         writeSelection(saved);
@@ -257,7 +257,7 @@ function App() {
           withDeadline(
             (api as any)(...args),
             30000,
-            'Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.'
+            tr('Apertura dei dati locali troppo lenta. Riprova; i dati sono conservati.')
           ),
         readSelection,
         writeSelection,
@@ -279,7 +279,7 @@ function App() {
         setWorkspaces(result.workspaces);
         if (result.missing)
           setNotice(
-            'L’archivio ricordato non è più disponibile. Seleziona una società: nessun dato è stato eliminato.'
+            tr('L’archivio ricordato non è più disponibile. Seleziona una società: nessun dato è stato eliminato.')
           );
       }
     } finally {
@@ -679,7 +679,7 @@ function App() {
   const deletedTestList = (athleteId?: string) => (
     <DeletedRecords
       records={deletedTests.filter(t => !athleteId || t.athlete_id === athleteId)}
-      title="Test eliminati"
+      title={tr('Test eliminati')}
       describe={t =>
         [
           state.athlete.find(a => a.id === t.athlete_id)?.surname,
@@ -863,7 +863,7 @@ function App() {
         )}
         {!android && page !== 'info' && state.operator && (
           <div className={'operator-badge ' + (!canEdit ? 'readonly' : '')} role="status">
-            {state.operator.name} ·{' '}
+            {state.operator.name === 'Locale' ? tr('Locale') : state.operator.name} ·{' '}
             {state.operator.snapshot
               ? tr('Copia di consultazione')
               : state.operator.revoked
@@ -965,7 +965,7 @@ function App() {
                   }}
                 >
                   <Plus size={17} />
-                  Crea protocollo
+                  {tr('Crea protocollo')}
                 </button>
               )}
               {page === 'groups' && (
@@ -1255,7 +1255,7 @@ function App() {
                     value={n(athlete.birth_year)}
                     text={athlete.birth_confirmed ? tr('Confermato') : tr('Da confermare')}
                   />
-                  <Stat label="TEST" value={athleteTests.length} text={tr('Nello storico individuale')} />
+                  <Stat label={tr('TEST')} value={athleteTests.length} text={tr('Nello storico individuale')} />
                   <Stat
                     label={tr('ULTIMA MAP')}
                     value={n(
@@ -1374,7 +1374,7 @@ function App() {
                 </section>
                 <DeletedRecords
                   records={(state.deleted_measurement || []).filter(m => m.athlete_id === selected)}
-                  title="Rilevazioni eliminate"
+                  title={tr('Rilevazioni eliminate')}
                   describe={m => [n(m.weight_kg, ' kg'), n(m.height_cm, ' cm'), tr(m.source)].join(' · ')}
                   busy={busy}
                   canEdit={canEdit}
@@ -1484,43 +1484,44 @@ function App() {
             {page === 'protocols' && (
               <>
                 <p>
-                  Definisci un protocollo manualmente, anche senza step o ERG, oppure importa il programma di carico.
-                  Ogni versione conserva metodo e campi facoltativi.
+                  {tr(
+                    'Definisci un protocollo manualmente, anche senza step o ERG, oppure importa il programma di carico. Ogni versione conserva metodo e campi facoltativi.'
+                  )}
                 </p>
                 <div className="form-grid">
                   <label>
-                    Cerca protocollo
+                    {tr('Cerca protocollo')}
                     <input
                       value={protocolSearch}
                       onChange={e => setProtocolSearch(e.target.value)}
-                      placeholder="Nome, codice o versione"
+                      placeholder={tr('Nome, codice o versione')}
                     />
                   </label>
                   <label>
-                    Famiglia
+                    {tr('Famiglia')}
                     <select value={protocolKind} onChange={e => setProtocolKind(e.target.value)}>
-                      <option value="">Tutte</option>
-                      <option value="incremental">Incrementale aerobico</option>
+                      <option value="">{tr('Tutte')}</option>
+                      <option value="incremental">{tr('Incrementale aerobico')}</option>
                       {Object.entries(anaerobicTypes).map(([k, v]) => (
                         <option key={k} value={k}>
-                          {String(v)}
+                          {tr(String(v))}
                         </option>
                       ))}
-                      <option value="custom">Personalizzato</option>
+                      <option value="custom">{tr('Personalizzato')}</option>
                     </select>
                   </label>
                   <label>
-                    Stato protocollo
+                    {tr('Stato protocollo')}
                     <select value={protocolStatus} onChange={e => setProtocolStatus(e.target.value)}>
-                      <option value="active">Attivi</option>
-                      <option value="archived">Archiviati</option>
-                      <option value="deleted">Eliminati</option>
-                      <option value="all">Tutti</option>
+                      <option value="active">{tr('Attivi')}</option>
+                      <option value="archived">{tr('Archiviati')}</option>
+                      <option value="deleted">{tr('Eliminati')}</option>
+                      <option value="all">{tr('Tutti')}</option>
                     </select>
                   </label>
                 </div>
                 <button disabled={!canEdit} onClick={() => open('protocol')}>
-                  <Upload size={16} /> Importa ERG
+                  <Upload size={16} /> {tr('Importa ERG')}
                 </button>
               </>
             )}
@@ -1539,11 +1540,13 @@ function App() {
                     {!p.definition.points.length ? (
                       <p className="hint">
                         {p.test_type === 'custom'
-                          ? 'Protocollo personalizzato: campi dichiarati, nessuna formula automatica.'
+                          ? tr('Protocollo personalizzato: campi dichiarati, nessuna formula automatica.')
                           : anaerobicTypes[p.test_type]
-                            ? 'Prova all-out di ' +
+                            ? tr('Prova all-out di') +
+                              ' ' +
                               p.anaerobic_spec.duration_s +
-                              ' s. Carico e finestre nella definizione.'
+                              ' s. ' +
+                              tr('Carico e finestre nella definizione.')
                             : tr('Protocollo d’archivio senza step. Utilizzabile con risultati manuali.')}
                       </p>
                     ) : (
@@ -1564,7 +1567,9 @@ function App() {
                     )}
                     <div className="protocol-meta">
                       {p.anaerobic_spec ? (
-                        <span>{n(p.anaerobic_spec.duration_s)} s · durata dello sforzo</span>
+                        <span>
+                          {n(p.anaerobic_spec.duration_s)} {tr('s · durata dello sforzo')}
+                        </span>
                       ) : p.definition.segments.length ? (
                         <>
                           <span>
@@ -1576,9 +1581,11 @@ function App() {
                         </>
                       ) : (
                         <span>
-                          {p.test_type === 'custom'
-                            ? 'Durata libera · osservazioni personalizzate'
-                            : 'Solo scheda · durata non definita'}
+                          {tr(
+                            p.test_type === 'custom'
+                              ? 'Durata libera · osservazioni personalizzate'
+                              : 'Solo scheda · durata non definita'
+                          )}
                         </span>
                       )}
                     </div>
@@ -1735,15 +1742,15 @@ function App() {
                           )}
                         </p>
                         <div className="hint">
-                          Lo scambio comprende tutto questo archivio: è bloccato se contiene più società. Scambio
-                          precedente senza identità firmate. Preferire una società separata con inviti personali;
-                          conservare la chiave separatamente.
+                          {tr(
+                            'Lo scambio comprende tutto questo archivio: è bloccato se contiene più società. Scambio precedente senza identità firmate. Preferire una società separata con inviti personali; conservare la chiave separatamente.'
+                          )}
                         </div>
                         <Field label={tr('Percorso della cartella sincronizzata')}>
                           <input
                             value={syncFolder}
                             onChange={e => setSyncFolder(e.target.value)}
-                            placeholder="C:\Users\…\Drive\Fuorigiri"
+                            placeholder={tr('C:\\Users\\…\\Drive\\Fuorigiri')}
                           />
                         </Field>
                         <Field label={tr('Chiave di scambio')}>
@@ -1761,7 +1768,9 @@ function App() {
                                 const r = await api('sync/key', {});
                                 setSyncKey(r.key);
                                 setNotice(
-                                  'Chiave creata. Copiala dal campo con un gestore di password e conservala prima di chiudere.'
+                                  tr(
+                                    'Chiave creata. Copiala dal campo con un gestore di password e conservala prima di chiudere.'
+                                  )
                                 );
                               })
                             }
@@ -2182,11 +2191,11 @@ function App() {
                 }}
               />
               <label>
-                Selezione sul grafico
+                {tr('Selezione sul grafico')}
                 <select value={pickTarget} onChange={e => setPickTarget(e.target.value)}>
-                  <option value="">Solo navigazione</option>
-                  <option value="offset_s">Imposta inizio protocollo</option>
-                  <option value="end_s">Imposta fine sforzo</option>
+                  <option value="">{tr('Solo navigazione')}</option>
+                  <option value="offset_s">{tr('Imposta inizio protocollo')}</option>
+                  <option value="end_s">{tr('Imposta fine sforzo')}</option>
                 </select>
               </label>
               {trace && (
@@ -2213,11 +2222,11 @@ function App() {
               )}
               <div className="form-grid">
                 <TimeInput
-                  label="Inizio protocollo dal file"
+                  label={tr('Inizio protocollo dal file')}
                   value={draft.offset_s}
                   onChange={v => change('offset_s', v)}
                 />
-                <TimeInput label="Fine sforzo dal file" value={draft.end_s} onChange={v => change('end_s', v)} />
+                <TimeInput label={tr('Fine sforzo dal file')} value={draft.end_s} onChange={v => change('end_s', v)} />
               </div>
               <div className="form-grid">
                 {[
@@ -2226,7 +2235,7 @@ function App() {
                   ['height_cm', tr('Statura · cm'), 'number'],
                   ['rest_hr', tr('FC a riposo · bpm'), 'number'],
                   ['rest_after_s', tr('Dopo quanto riposo · s'), 'number'],
-                  ['rpe', 'RPE (scala indicata)', 'number'],
+                  ['rpe', tr('RPE (scala indicata)'), 'number'],
                   ['threshold_w', tr('Watt Soglia dichiarati'), 'number'],
                   ['threshold_coefficient', tr('Coefficiente MAP → soglia (se non dichiarata)'), 'number'],
                   ['fthr_bpm', 'FTHR · bpm', 'number'],
@@ -2261,7 +2270,9 @@ function App() {
                         measurement_id: m.id
                       }));
                       setPreview(null);
-                      setNotice(`Rilevazione proposta del ${m.date}, fonte ${m.source}. Verifica prima di confermare.`);
+                      setNotice(
+                        `${tr('Rilevazione proposta del')} ${m.date}, ${tr('fonte')} ${tr(m.source)}. ${tr('Verifica prima di confermare.')}`
+                      );
                     } else if (r.suggestion) {
                       const m = r.suggestion;
                       setDraft(d => ({
@@ -2272,7 +2283,7 @@ function App() {
                       }));
                       setPreview(null);
                       setNotice(
-                        `Valori stimati proposti: ${m.population}. Fonte: ${m.source}. Non sono misure dell’atleta.`
+                        `${tr('Valori stimati proposti:')} ${m.population}. ${tr('Fonte:')} ${m.source}. ${tr('Non sono misure dell’atleta.')}`
                       );
                     } else
                       setNotice(tr('Nessuna misura precedente: lascia vuoto o inserisci un dato con provenienza.'));
@@ -2287,7 +2298,9 @@ function App() {
                   onChange={e => change('weight_source', e.target.value)}
                 >
                   {['misurato', 'arrotondato', 'dichiarato', 'stimato'].map(v => (
-                    <option key={v}>{v}</option>
+                    <option key={v} value={v}>
+                      {tr(v)}
+                    </option>
                   ))}
                 </select>
               </Field>
@@ -2402,10 +2415,10 @@ function App() {
                   <AnalysisResults analysis={preview} Plot={Plot} />
                   {preview.warnings.map((w: string) => (
                     <div className="hint" key={w}>
-                      {w}
+                      {trBackend(w)}
                     </div>
                   ))}
-                  <p className="muted">{preview.method}</p>
+                  <p className="muted">{trBackend(preview.method)}</p>
                 </>
               )}
               <TestExtensions
@@ -2532,7 +2545,7 @@ function App() {
             />
           )}
           {activeTest.test_type === 'custom' ? (
-            <p>{activeTest.analysis.method}</p>
+            <p>{trBackend(activeTest.analysis.method)}</p>
           ) : anaerobicTypes[activeTest.test_type] ? (
             <AnaerobicResults analysis={activeTest.analysis} Plot={Plot} />
           ) : (
@@ -2541,7 +2554,7 @@ function App() {
               <TestZones test={activeTest} api={api} run={run} />
               {!!activeTest.analysis.recovery?.length && (
                 <>
-                  <h3>Recupero dalla fine sforzo</h3>
+                  <h3>{tr('Recupero dalla fine sforzo')}</h3>
                   <div className="stats">
                     {activeTest.analysis.recovery.map((r: Row) => (
                       <Stat
@@ -2557,10 +2570,10 @@ function App() {
               <AnalysisResults analysis={activeTest.analysis} Plot={Plot} />
               {(activeTest.analysis.warnings || []).map((w: string) => (
                 <p className="hint" key={w}>
-                  {w}
+                  {trBackend(w)}
                 </p>
               ))}
-              <p className="muted">{activeTest.analysis.method}</p>
+              <p className="muted">{trBackend(activeTest.analysis.method)}</p>
             </>
           )}
           {!testHasChart && (
@@ -2576,7 +2589,7 @@ function App() {
                 .filter(([, v]) => v)
                 .map(
                   ([k, v]) =>
-                    `${({device: 'Ergometro', power_meter: 'Misuratore di potenza', firmware: 'Firmware', calibration: 'Calibrazione', temperature_c: 'Temperatura °C', cadence_instruction: 'Cadenza prescritta', pre_test: 'Condizioni prima del test', stop_reason: 'Motivo di arresto', recovery_mode: 'Modalità di recupero', posture: 'Postura', repeatability_session: 'Sessione di ripetibilità', observations: 'Osservazioni'} as Row)[k] || metricLabel(k)}: ${v}`
+                    `${tr(({device: 'Ergometro', power_meter: 'Misuratore di potenza', firmware: 'Firmware', calibration: 'Calibrazione', temperature_c: 'Temperatura °C', cadence_instruction: 'Cadenza prescritta', pre_test: 'Condizioni prima del test', stop_reason: 'Motivo di arresto', recovery_mode: 'Modalità di recupero', posture: 'Postura', repeatability_session: 'Sessione di ripetibilità', observations: 'Osservazioni'} as Row)[k] || metricLabel(k))}: ${v}`
                 )
                 .join(' · ')}
             </p>
@@ -2739,7 +2752,7 @@ function TestList({
                       t.test_type === 'custom'
                         ? tr('Osservazioni personalizzate')
                         : anaerobicTypes[t.test_type]
-                          ? 'Picco ' + n(t.analysis.peak_w, ' W')
+                          ? tr('Picco') + ' ' + n(t.analysis.peak_w, ' W')
                           : 'MAP ' + n(t.analysis.map_w, ' W')
                   }
                 ]
@@ -2757,8 +2770,8 @@ function TestList({
               <th>{tr('DATA')}</th>
               <th>{tr('ATLETA')}</th>
               <th>{tr('PROTOCOLLO')}</th>
-              <th>Dati disponibili</th>
-              <th>Risultato principale</th>
+              <th>{tr('Dati disponibili')}</th>
+              <th>{tr('Risultato principale')}</th>
               <th />
             </tr>
           </thead>
@@ -2782,14 +2795,14 @@ function TestList({
                     </td>
                     <td>
                       <span className={'tag ' + (hasRecordedTrace(t) ? '' : 'amber')}>
-                        {hasRecordedTrace(t) ? 'Con tracciato' : 'Solo riepilogo'}
+                        {tr(hasRecordedTrace(t) ? 'Con tracciato' : 'Solo riepilogo')}
                       </span>
                     </td>
                     <td>
                       {t.test_type === 'custom'
-                        ? 'Osservazioni personalizzate'
+                        ? tr('Osservazioni personalizzate')
                         : anaerobicTypes[t.test_type]
-                          ? 'Picco ' + n(t.analysis.peak_w, ' W')
+                          ? tr('Picco') + ' ' + n(t.analysis.peak_w, ' W')
                           : 'MAP ' + n(t.analysis.map_w, ' W')}
                     </td>
                     <td>

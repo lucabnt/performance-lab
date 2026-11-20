@@ -1,5 +1,5 @@
 import './mobile';
-import {initializeLanguage} from './i18n';
+import {initializeLanguage, tr} from './i18n';
 import {withDeadline} from './startupDeadline';
 const params = new URLSearchParams(location.hash.slice(1));
 if (params.has('token')) {
@@ -27,9 +27,9 @@ initializeLanguage(() =>
     if (!root) return;
     const message = document.createElement('p');
     message.setAttribute('role', 'alert');
-    message.textContent = 'Interfaccia non caricata. I dati locali sono conservati. Codice AVVIO-02.';
+    message.textContent = tr('Interfaccia non caricata. I dati locali sono conservati. Codice AVVIO-02.');
     const retry = document.createElement('button');
-    retry.textContent = 'Riprova';
+    retry.textContent = tr('Riprova');
     retry.onclick = () => location.reload();
     root.replaceChildren(message, retry);
   });

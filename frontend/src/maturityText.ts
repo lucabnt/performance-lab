@@ -44,6 +44,35 @@ const messages: Record<string, string> = {
     'Anthropometric estimates may be inaccurate for an individual athlete; they are not observed PHV.',
   'La %PAH dipende da una previsione adulta esterna dichiarata. Nessun coefficiente Khamis–Roche non verificato è incorporato.':
     '%PAH depends on a declared external adult-height prediction. No unverified Khamis–Roche coefficients are included.',
-  'Età non disponibile': 'Age unavailable'
+  'Età non disponibile': 'Age unavailable',
+  'Calo di statura o velocità anomala a ridosso della finestra del picco: verificare le misure.':
+    'Height decrease or anomalous velocity close to the peak window: verify the measurements.',
+  'HV: velocità media di crescita nell’intervallo; PHV/APHV: picco ed età al picco. Le equazioni di Moore/Mirwald stimano offset/APHV, non misurano il picco. %PAH: percentuale della statura adulta prevista.':
+    'HV: mean growth velocity over the interval; PHV/APHV: peak and age at peak. Moore/Mirwald equations estimate offset/APHV and do not measure the peak. %PAH: percentage of predicted adult height.',
+  'Il massimo osservato confina con un calo di statura o una velocità anomala: verificare le misure.':
+    'The observed maximum borders a height decrease or anomalous velocity: verify the measurements.',
+  'Lo snapshot conserva i dati disponibili al momento del calcolo; non viene ricalcolato nel report. Misure successive o corrette richiedono una nuova analisi.':
+    'The snapshot keeps the data available at calculation time and is not recalculated in reports. Later or corrected measurements require a new analysis.',
+  'Massimo delle velocità medie osservate finora; non è il PHV e non conferma il picco.':
+    'Highest mean velocity observed so far; it is not PHV and does not confirm the peak.',
+  'Meno di 90 giorni dalla statura precedente usata: saltata, non bloccante.':
+    'Less than 90 days after the previous used height: skipped, not blocking.',
+  'Misure o profilo modificati: ricalcolare l’anteprima prima di salvare.':
+    'Measurements or profile changed: recalculate the preview before saving.',
+  'Nessun intervallo individuale validato; sensibilità a frequenza e precisione delle misure.':
+    'No validated individual interval; sensitive to measurement frequency and precision.',
+  'Ricostruzione longitudinale esplorativa, non misura istantanea del PHV.':
+    'Exploratory longitudinal reconstruction, not an instantaneous PHV measurement.',
+  'SEE della popolazione di sviluppo; non intervallo di confidenza individuale.':
+    'SEE of the development population; not an individual confidence interval.',
+  'Serve almeno un intervallo di 90–400 giorni tra due stature misurate e valide.':
+    'At least one 90–400 day interval between two valid measured heights is required.',
+  'Statura non misurata o qualità non confermata: non usata.': 'Height not measured or quality unconfirmed: not used.',
+  'Valutabile da 18 anni con almeno tre stature misurate valide su un anno; non prova la fine della crescita.':
+    'Assessable from age 18 with at least three valid measured heights over one year; it does not prove growth has ended.',
+  'Variazione contenuta (≤0,5 cm nel periodo osservato), senza garanzia di crescita conclusa.':
+    'Small change (≤0.5 cm over the observed period), with no guarantee that growth has ended.',
+  'Variazione superiore a 0,5 cm nel periodo: documentare l’andamento.':
+    'Change above 0.5 cm in the period: document the trend.'
 };
 export const maturityText = (text?: string) => (text ? (language === 'en' ? messages[text] || text : text) : '');

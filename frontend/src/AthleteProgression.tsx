@@ -1,3 +1,4 @@
+import {tr} from './i18n';
 import {useEffect, useState} from 'react';
 import {progressionSeries} from './athleteProgressionModel';
 import {metricLabel as baseLabel} from './metrics';
@@ -27,9 +28,9 @@ export function AthleteProgression({
   return (
     <section className="panel protocol">
       <div className="panel-head">
-        <h2>{metric === 'map_w' ? 'MAP storiche' : 'Progressione'}</h2>
+        <h2>{tr(metric === 'map_w' ? 'MAP storiche' : 'Progressione')}</h2>
         <label>
-          Metrica storico
+          {tr('Metrica storico')}
           <select value={metric} onChange={e => setMetric(e.target.value)}>
             {[...new Set(metrics)].map(m => (
               <option key={m} value={m}>
@@ -41,15 +42,21 @@ export function AthleteProgression({
       </div>
       {!series.length ? (
         <p className="hint">
-          Nessun valore disponibile per questa metrica. I risultati mancanti non valgono zero; W/kg con peso solo
-          stimato sono esclusi.
+          {tr(
+            'Nessun valore disponibile per questa metrica. I risultati mancanti non valgono zero; W/kg con peso solo stimato sono esclusi.'
+          )}
         </p>
       ) : (
         <>
           <details>
-            <summary>Serie della progressione ({shown.length}/4)</summary>
+            <summary>
+              {tr('Serie della progressione (')}
+              {shown.length}/4)
+            </summary>
             <p>
-              Protocolli, metodi e origini della soglia restano distinti. Scegli fino a quattro serie da affiancare.
+              {tr(
+                'Protocolli, metodi e origini della soglia restano distinti. Scegli fino a quattro serie da affiancare.'
+              )}
             </p>
             <div className="history-series">
               {series.map(s => (
@@ -67,7 +74,7 @@ export function AthleteProgression({
                       {s.code} · {s.title}
                     </strong>
                     <small>
-                      {s.method} · origine soglia: {baseLabel(s.source)} · {s.valid} valori validi
+                      {tr(s.method)} {tr('· origine soglia:')} {baseLabel(s.source)} · {s.valid} {tr('valori validi')}
                     </small>
                   </span>
                 </label>
@@ -88,13 +95,13 @@ export function AthleteProgression({
               layout={{
                 height: 360,
                 yaxis: {title: {text: label(metric)}},
-                xaxis: {title: {text: 'Data della prova'}, type: 'date'},
+                xaxis: {title: {text: tr('Data della prova')}, type: 'date'},
                 legend: {orientation: 'h', y: -0.25},
                 margin: {l: 65, r: 20, t: 25, b: 100}
               }}
             />
           ) : (
-            <p>Seleziona almeno una serie.</p>
+            <p>{tr('Seleziona almeno una serie.')}</p>
           )}
           <div className="history-series-key">
             {shown.map(s => (
@@ -103,7 +110,7 @@ export function AthleteProgression({
                   {s.code} · {s.title}
                 </strong>
                 <small>
-                  {s.method} · origine soglia: {baseLabel(s.source)}
+                  {tr(s.method)} {tr('· origine soglia:')} {baseLabel(s.source)}
                 </small>
               </p>
             ))}

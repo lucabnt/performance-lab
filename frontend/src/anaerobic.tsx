@@ -1,4 +1,4 @@
-import {language} from './i18n';
+import {language, tr, trBackend} from './i18n';
 import {FormActions} from '@cycling-suite/ui';
 import {TraceImporter} from './analysis';
 import {TimeInput, validTimes} from './time';
@@ -53,58 +53,64 @@ export function AnaerobicResults({analysis}: {analysis: Row; Plot: any; samples?
         </table>
       </details>
       <p>
-        Copertura potenza: {a.power_coverage == null ? 'non disponibile' : numberText(a.power_coverage * 100) + '%'} ·
-        Origine:{' '}
-        {(
-          {
-            computed: 'Calcolato dal tracciato',
-            manual: 'Dichiarato manualmente',
-            'legacy-csv': 'Storico CSV dichiarato'
-          } as Row
-        )[a.source] || a.source}
+        {tr('Copertura potenza:')}{' '}
+        {a.power_coverage == null ? tr('non disponibile') : numberText(a.power_coverage * 100) + '%'} {tr('· Origine:')}{' '}
+        {tr(
+          (
+            {
+              computed: 'Calcolato dal tracciato',
+              manual: 'Dichiarato manualmente',
+              'legacy-csv': 'Storico CSV dichiarato'
+            } as Row
+          )[a.source] || a.source
+        )}
       </p>
       {a.warnings?.map((w: string) => (
         <p className="hint" key={w}>
-          {w}
+          {trBackend(w)}
         </p>
       ))}
       <details>
-        <summary>Metodo e condizioni di confronto</summary>
-        <p>{a.method}</p>
+        <summary>{tr('Metodo e condizioni di confronto')}</summary>
+        <p>{trBackend(a.method)}</p>
         <dl>
           {Object.entries(a.protocol_snapshot || {})
             .filter(([, v]) => v !== '' && v != null && typeof v !== 'object')
             .map(([k, v]) => (
               <div key={k}>
                 <dt>
-                  {(
-                    {
-                      family: 'Tipo di prova',
-                      duration_s: 'Durata · s',
-                      torque_nm_kg: 'Coppia frenante · N·m/kg',
-                      device: 'Dispositivo',
-                      start: 'Partenza',
-                      position: 'Posizione',
-                      peak_window_s: 'Finestra picco · s',
-                      end_window_s: 'Finestra finale · s',
-                      load_description: 'Descrizione del carico',
-                      warmup: 'Riscaldamento',
-                      max_gap_s: 'Intervallo massimo fra campioni · s',
-                      coverage_min: 'Copertura minima'
-                    } as Row
-                  )[k] || k.replaceAll('_', ' ')}
+                  {tr(
+                    (
+                      {
+                        family: 'Tipo di prova',
+                        duration_s: 'Durata · s',
+                        torque_nm_kg: 'Coppia frenante · N·m/kg',
+                        device: 'Dispositivo',
+                        start: 'Partenza',
+                        position: 'Posizione',
+                        peak_window_s: 'Finestra picco · s',
+                        end_window_s: 'Finestra finale · s',
+                        load_description: 'Descrizione del carico',
+                        warmup: 'Riscaldamento',
+                        max_gap_s: 'Intervallo massimo fra campioni · s',
+                        coverage_min: 'Copertura minima'
+                      } as Row
+                    )[k] || k.replaceAll('_', ' ')
+                  )}
                 </dt>
                 <dd>
-                  {(
-                    {
-                      unknown: 'Non documentato',
-                      stationary: 'Da fermo',
-                      flying: 'Lanciata',
-                      seated: 'Seduto',
-                      standing: 'In piedi',
-                      mixed: 'Mista'
-                    } as Row
-                  )[String(v)] || String(v)}
+                  {tr(
+                    (
+                      {
+                        unknown: 'Non documentato',
+                        stationary: 'Da fermo',
+                        flying: 'Lanciata',
+                        seated: 'Seduto',
+                        standing: 'In piedi',
+                        mixed: 'Mista'
+                      } as Row
+                    )[String(v)] || String(v)
+                  )}
                 </dd>
               </div>
             ))}
@@ -227,10 +233,10 @@ export function AnaerobicEditor({
         );
       }}
     >
-      <h2>{original ? 'Correggi test' : 'Registra prova anaerobica'}</h2>
+      <h2>{tr(original ? 'Correggi test' : 'Registra prova anaerobica')}</h2>
       <div className="form-grid">
         <label>
-          Atleta
+          {tr('Atleta')}
           <select disabled={!!original} value={draft.athlete_id} onChange={e => edit('athlete_id', e.target.value)}>
             {athletes.map((a: Row) => (
               <option key={a.id} value={a.id}>
@@ -240,7 +246,7 @@ export function AnaerobicEditor({
           </select>
         </label>
         <label>
-          Protocollo e versione
+          {tr('Protocollo e versione')}
           <select
             disabled={!!original}
             value={draft.protocol_id}
@@ -258,11 +264,11 @@ export function AnaerobicEditor({
           </select>
         </label>
         <label>
-          Data
+          {tr('Data')}
           <input required type="date" value={draft.date} onChange={e => edit('date', e.target.value)} />
         </label>
         <label>
-          Peso · kg
+          {tr('Peso · kg')}
           <input
             type="number"
             min="1"
@@ -272,15 +278,17 @@ export function AnaerobicEditor({
           />
         </label>
         <label>
-          Fonte peso
+          {tr('Fonte peso')}
           <select value={draft.weight_source} onChange={e => edit('weight_source', e.target.value)}>
             {['misurato', 'dichiarato', 'arrotondato', 'derivato', 'stimato'].map(v => (
-              <option key={v}>{v}</option>
+              <option key={v} value={v}>
+                {tr(v)}
+              </option>
             ))}
           </select>
         </label>
         <label>
-          Origine risultati
+          {tr('Origine risultati')}
           <select
             disabled={original?.entry_source === 'csv'}
             value={mode}
@@ -289,19 +297,21 @@ export function AnaerobicEditor({
               setPreview(null);
             }}
           >
-            <option value="manual">Manuale</option>
-            <option value="trace">Da file FIT / CSV</option>
+            <option value="manual">{tr('Manuale')}</option>
+            <option value="trace">{tr('Da file FIT / CSV')}</option>
           </select>
         </label>
       </div>
       {spec && (
         <p className="hint">
-          {anaerobicTypes[protocol?.test_type]} · {spec.duration_s} s · coppia {spec.torque_nm_kg ?? 'non documentata'}{' '}
-          N·m/kg · picco {spec.peak_window_s ?? 'finestra non documentata'} s ·{' '}
-          {spec.device || 'dispositivo non documentato'}.{' '}
-          {original?.entry_source === 'csv'
-            ? 'Storico dichiarato.'
-            : 'I risultati rimangono separati dalle altre versioni e dai riepiloghi storici.'}
+          {tr(anaerobicTypes[protocol?.test_type])} · {spec.duration_s} {tr('s · coppia')}{' '}
+          {spec.torque_nm_kg ?? tr('non documentata')} {tr('N·m/kg · picco')}{' '}
+          {spec.peak_window_s ?? tr('finestra non documentata')} s · {spec.device || tr('dispositivo non documentato')}.{' '}
+          {tr(
+            original?.entry_source === 'csv'
+              ? 'Storico dichiarato.'
+              : 'I risultati rimangono separati dalle altre versioni e dai riepiloghi storici.'
+          )}
         </p>
       )}
       {mode === 'manual' ? (
@@ -345,17 +355,18 @@ export function AnaerobicEditor({
           {trace && (
             <>
               <p>
-                Indica l’inizio dello sforzo: la durata deriva dal protocollo. Puoi fare clic sul grafico o inserire i
-                secondi.
+                {tr(
+                  'Indica l’inizio dello sforzo: la durata deriva dal protocollo. Puoi fare clic sul grafico o inserire i secondi.'
+                )}
               </p>
               <TimeInput
-                label="Inizio dello sforzo dal file"
+                label={tr('Inizio dello sforzo dal file')}
                 value={draft.offset_s}
                 onChange={v => edit('offset_s', v ?? 0)}
               />
               <label>
                 <input type="checkbox" checked={zoom} onChange={e => setZoom(e.target.checked)} />
-                Ingrandisci lo sforzo selezionato
+                {tr('Ingrandisci lo sforzo selezionato')}
               </label>
               <Plot
                 onPick={(t: number) => edit('offset_s', Math.max(0, Number(t.toFixed(3))))}
@@ -367,15 +378,16 @@ export function AnaerobicEditor({
                       r.t,
                       `${Math.floor(r.t / 60)}:${(r.t % 60).toFixed(2).padStart(5, '0')}`
                     ]),
-                    hovertemplate: '%{customdata[1]} · %{customdata[0]:.3f} s<br>%{y} W<extra>Potenza</extra>',
+                    hovertemplate:
+                      '%{customdata[1]} · %{customdata[0]:.3f} s<br>%{y} W<extra>' + tr('Potenza') + '</extra>',
                     type: 'scatter',
                     mode: 'lines',
-                    name: 'Potenza · W'
+                    name: tr('Potenza · W')
                   }
                 ]}
                 layout={{
                   xaxis: {
-                    title: {text: 'Tempo dal file · min'},
+                    title: {text: tr('Tempo dal file · min')},
                     ...(zoom
                       ? {
                           range: [
@@ -385,7 +397,7 @@ export function AnaerobicEditor({
                         }
                       : {})
                   },
-                  yaxis: {title: {text: 'Potenza · W'}},
+                  yaxis: {title: {text: tr('Potenza · W')}},
                   shapes: [
                     {
                       type: 'rect',
@@ -403,12 +415,12 @@ export function AnaerobicEditor({
                 }}
               />
               <details>
-                <summary>Esclusioni motivate</summary>
+                <summary>{tr('Esclusioni motivate')}</summary>
                 {draft.excluded_intervals.map((r: Row, i: number) => (
                   <div className="form-grid" key={i}>
                     {['start_s', 'end_s', 'reason'].map(k => (
                       <label key={k}>
-                        {k === 'reason' ? 'Motivo' : k === 'start_s' ? 'Inizio dal file · s' : 'Fine dal file · s'}
+                        {tr(k === 'reason' ? 'Motivo' : k === 'start_s' ? 'Inizio dal file · s' : 'Fine dal file · s')}
                         <input
                           type={k === 'reason' ? 'text' : 'number'}
                           step="any"
@@ -433,7 +445,7 @@ export function AnaerobicEditor({
                         )
                       }
                     >
-                      Rimuovi esclusione
+                      {tr('Rimuovi esclusione')}
                     </button>
                   </div>
                 ))}
@@ -443,7 +455,7 @@ export function AnaerobicEditor({
                     edit('excluded_intervals', [...draft.excluded_intervals, {start_s: 0, end_s: 1, reason: ''}])
                   }
                 >
-                  Escludi intervallo
+                  {tr('Escludi intervallo')}
                 </button>
               </details>
             </>
@@ -451,19 +463,19 @@ export function AnaerobicEditor({
         </>
       )}
       <label>
-        Condizioni / calibrazione
+        {tr('Condizioni / calibrazione')}
         <input
           value={draft.conditions.observations || ''}
           onChange={e => edit('conditions', {...draft.conditions, observations: e.target.value})}
         />
       </label>
       <label>
-        Note
+        {tr('Note')}
         <textarea value={draft.notes} onChange={e => edit('notes', e.target.value)} />
       </label>
       {original && (
         <label>
-          Motivo correzione
+          {tr('Motivo correzione')}
           <input required value={draft.reason} onChange={e => edit('reason', e.target.value)} />
         </label>
       )}{' '}
@@ -476,7 +488,9 @@ export function AnaerobicEditor({
       />
       <FormActions>
         {!preview && (
-          <button disabled={readOnly || !protocol || (mode === 'trace' && !trace)}>Verifica e calcola anteprima</button>
+          <button disabled={readOnly || !protocol || (mode === 'trace' && !trace)}>
+            {tr('Verifica e calcola anteprima')}
+          </button>
         )}
       </FormActions>
       {preview && (
@@ -499,7 +513,7 @@ export function AnaerobicEditor({
                 });
               }}
             >
-              Conferma e archivia
+              {tr('Conferma e archivia')}
             </button>
           </FormActions>
         </>

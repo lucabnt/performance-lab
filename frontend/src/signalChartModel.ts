@@ -26,7 +26,12 @@ function vo2Samples(test: SignalRow): SignalRow[] {
   return (test.samples || []).filter((r: SignalRow) => finite(r.t));
 }
 
-export function buildSignalChart(test: SignalRow, protocol?: SignalRow, selectedChannels?: string[]) {
+export function buildSignalChart(
+  test: SignalRow,
+  protocol?: SignalRow,
+  selectedChannels?: string[],
+  t: (text: string) => string = text => text
+) {
   const samples: SignalRow[] = (test.samples || []).filter((r: SignalRow) => finite(r.t));
   const gasSamples = vo2Samples(test);
   const availableChannels = signalChannels.filter(c =>
@@ -40,7 +45,7 @@ export function buildSignalChart(test: SignalRow, protocol?: SignalRow, selected
       hovermode: 'x unified',
       margin: {l: 65, r: 65, t: 65, b: 55},
       legend: {orientation: 'h', y: 1.16},
-      xaxis: {title: {text: 'Tempo dal file · min'}},
+      xaxis: {title: {text: t('Tempo dal file · min')}},
       shapes: []
     };
   const axisFor = (key: string) => {
@@ -50,7 +55,7 @@ export function buildSignalChart(test: SignalRow, protocol?: SignalRow, selected
   channels.forEach((c, i) => {
     const axis = i === 0 ? 'y' : 'y' + (i + 1);
     layout[i === 0 ? 'yaxis' : 'yaxis' + (i + 1)] = {
-      title: {text: c.label + ' · ' + c.unit, font: {color: c.color}},
+      title: {text: t(c.label) + ' · ' + c.unit, font: {color: c.color}},
       tickfont: {color: c.color},
       zeroline: false,
       ...(i === 0
@@ -71,7 +76,8 @@ export function buildSignalChart(test: SignalRow, protocol?: SignalRow, selected
         r.t,
         `${Math.floor(r.t / 60)}:${(r.t % 60).toFixed(1).padStart(4, '0')}`
       ]),
-      hovertemplate: '%{customdata[1]} · %{customdata[0]:.3f} s<br>%{y} ' + c.unit + '<extra>' + c.label + '</extra>',
+      hovertemplate:
+        '%{customdata[1]} · %{customdata[0]:.3f} s<br>%{y} ' + c.unit + '<extra>' + t(c.label) + '</extra>',
       yaxis: axis,
       type: 'scatter',
       mode:
@@ -80,7 +86,7 @@ export function buildSignalChart(test: SignalRow, protocol?: SignalRow, selected
           : points.length < 50
             ? 'lines+markers'
             : 'lines',
-      name: c.label + ' · ' + c.unit,
+      name: t(c.label) + ' · ' + c.unit,
       line: {color: c.color, width: 1.5},
       connectgaps: false
     });
@@ -158,7 +164,7 @@ export function buildSignalChart(test: SignalRow, protocol?: SignalRow, selected
       y,
       type: 'scatter',
       mode: 'lines',
-      name: 'Target del protocollo · W',
+      name: t('Target del protocollo · W'),
       yaxis: axisFor('power'),
       line: {color: '#8a96a5', dash: 'dot', width: 1.5},
       connectgaps: false
@@ -167,13 +173,13 @@ export function buildSignalChart(test: SignalRow, protocol?: SignalRow, selected
   // Explicit prelievo time: never shift a measured marker to the fitted load.
   const lactate: {t: number; value: number; source: string}[] = (settings.lactate || [])
     .filter((r: SignalRow) => finite(r.at_s) && finite(r.mmol_l))
-    .map((r: SignalRow) => ({t: r.at_s, value: r.mmol_l, source: 'Prelievo'}));
+    .map((r: SignalRow) => ({t: r.at_s, value: r.mmol_l, source: t('Prelievo')}));
   for (const r of samples) if (finite(r.lactate_mmol_l)) lactate.push({t: r.t, value: r.lactate_mmol_l, source: 'CSV'});
   if (lactate.length) {
     const i = channels.length,
       axis = i === 0 ? 'y' : 'y' + (i + 1);
     layout[i === 0 ? 'yaxis' : 'yaxis' + (i + 1)] = {
-      title: {text: 'Lattato · mmol/L', font: {color: '#b44d78'}},
+      title: {text: t('Lattato · mmol/L'), font: {color: '#b44d78'}},
       tickfont: {color: '#b44d78'},
       zeroline: false,
       ...(i === 0 ? {anchor: 'x'} : {overlaying: 'y', side: 'right', anchor: 'free', autoshift: true, showgrid: false})
@@ -183,11 +189,11 @@ export function buildSignalChart(test: SignalRow, protocol?: SignalRow, selected
       y: lactate.map(r => r.value),
       text: lactate.map(r => r.source),
       customdata: lactate.map(r => r.t),
-      hovertemplate: '%{customdata:.3f} s dal file<br>%{y} mmol/L<extra>Prelievo</extra>',
+      hovertemplate: '%{customdata:.3f} s ' + t('dal file') + '<br>%{y} mmol/L<extra>' + t('Prelievo') + '</extra>',
       yaxis: axis,
       type: 'scatter',
       mode: 'markers',
-      name: 'Lattato · mmol/L',
+      name: t('Lattato · mmol/L'),
       marker: {size: 9, color: '#b44d78'},
       connectgaps: false
     });

@@ -1,3 +1,4 @@
+import {tr} from './i18n';
 type Row = Record<string, any>;
 export function FieldSchemaEditor({
   fields,
@@ -11,17 +12,20 @@ export function FieldSchemaEditor({
   const edit = (i: number, k: string, v: any) => onChange(fields.map((f, j) => (j === i ? {...f, [k]: v} : f)));
   return (
     <section>
-      <h3>Campi aggiuntivi facoltativi</h3>
+      <h3>{tr('Campi aggiuntivi facoltativi')}</h3>
       <p className="hint">
-        Dichiara significato, tipo e unità. I campi vuoti rimangono non rilevati; non vengono introdotte formule
-        automatiche.
+        {tr(
+          'Dichiara significato, tipo e unità. I campi vuoti rimangono non rilevati; non vengono introdotte formule automatiche.'
+        )}
       </p>
       {fields.map((f, i) => (
         <fieldset key={i}>
-          <legend>Campo {i + 1}</legend>
+          <legend>
+            {tr('Campo')} {i + 1}
+          </legend>
           <div className="form-grid">
             <label>
-              Identificatore
+              {tr('Identificatore')}
               <input
                 required
                 pattern="[a-z][a-z0-9_]{0,49}"
@@ -30,11 +34,11 @@ export function FieldSchemaEditor({
               />
             </label>
             <label>
-              Nome leggibile
+              {tr('Nome leggibile')}
               <input required value={f.label} onChange={e => edit(i, 'label', e.target.value)} />
             </label>
             <label>
-              Tipo
+              {tr('Tipo')}
               <select
                 value={f.type}
                 onChange={e =>
@@ -53,28 +57,28 @@ export function FieldSchemaEditor({
                   choice: 'Scelta da elenco'
                 }).map(([k, v]) => (
                   <option key={k} value={k}>
-                    {v}
+                    {tr(v)}
                   </option>
                 ))}
               </select>
             </label>
             {!testOnly && (
               <label>
-                Compilazione
+                {tr('Compilazione')}
                 <select value={f.scope} onChange={e => edit(i, 'scope', e.target.value)}>
-                  <option value="test">In ogni prova</option>
-                  <option value="protocol">Nella definizione del protocollo</option>
+                  <option value="test">{tr('In ogni prova')}</option>
+                  <option value="protocol">{tr('Nella definizione del protocollo')}</option>
                 </select>
               </label>
             )}
             <label>
-              Unità (facoltativa)
+              {tr('Unità (facoltativa)')}
               <input value={f.unit || ''} onChange={e => edit(i, 'unit', e.target.value)} />
             </label>
             {f.type === 'number' &&
               ['minimum', 'maximum'].map(k => (
                 <label key={k}>
-                  {k === 'minimum' ? 'Minimo' : 'Massimo'}
+                  {tr(k === 'minimum' ? 'Minimo' : 'Massimo')}
                   <input
                     type="number"
                     step="any"
@@ -85,7 +89,7 @@ export function FieldSchemaEditor({
               ))}
             {f.type === 'choice' && (
               <label>
-                Scelte (separate da ;)
+                {tr('Scelte (separate da ;)')}
                 <input
                   value={(f.choices || []).join(';')}
                   onChange={e => edit(i, 'choices', e.target.value.split(';'))}
@@ -94,7 +98,7 @@ export function FieldSchemaEditor({
             )}
           </div>
           <button type="button" onClick={() => onChange(fields.filter((_, j) => j !== i))}>
-            Rimuovi campo
+            {tr('Rimuovi campo')}
           </button>
         </fieldset>
       ))}
@@ -108,7 +112,7 @@ export function FieldSchemaEditor({
           ])
         }
       >
-        Aggiungi campo facoltativo
+        {tr('Aggiungi campo facoltativo')}
       </button>
     </section>
   );
@@ -136,9 +140,9 @@ export function FieldValues({
         .filter(f => f.scope === scope)
         .map(f => (
           <label key={f.key}>
-            {f.label || 'Nome del campo'}
+            {f.label || tr('Nome del campo')}
             {f.unit ? ' · ' + f.unit : ''}
-            <small>Facoltativo</small>
+            <small>{tr('Facoltativo')}</small>
             {['boolean', 'choice'].includes(f.type) ? (
               <select
                 value={values[f.key] == null ? '' : String(values[f.key])}
@@ -149,10 +153,10 @@ export function FieldValues({
                   )
                 }
               >
-                <option value="">Non rilevato</option>
+                <option value="">{tr('Non rilevato')}</option>
                 {f.type === 'boolean' ? (
                   <>
-                    <option value="true">Sì</option>
+                    <option value="true">{tr('Sì')}</option>
                     <option value="false">No</option>
                   </>
                 ) : (
@@ -198,7 +202,7 @@ export function TestExtensions({
 }) {
   return (
     <details>
-      <summary>Campi facoltativi e osservazioni aggiuntive</summary>
+      <summary>{tr('Campi facoltativi e osservazioni aggiuntive')}</summary>
       <FieldValues fields={[...(protocol?.custom_fields || []), ...extraFields]} values={values} onChange={onChange} />
       <FieldSchemaEditor
         testOnly
@@ -216,7 +220,7 @@ export function CustomValuesDisplay({analysis}: {analysis: Row}) {
   const fields = analysis.custom_fields || [];
   return fields.length ? (
     <section>
-      <h3>Campi personalizzati</h3>
+      <h3>{tr('Campi personalizzati')}</h3>
       <table>
         <tbody>
           {fields.map((f: Row) => {
@@ -224,11 +228,11 @@ export function CustomValuesDisplay({analysis}: {analysis: Row}) {
             return (
               <tr key={f.key}>
                 <th>
-                  {f.scope === 'protocol' ? 'Protocollo · ' : ''}
+                  {f.scope === 'protocol' ? tr('Protocollo') + ' · ' : ''}
                   {f.label}
                   {f.unit ? ' · ' + f.unit : ''}
                 </th>
-                <td>{v == null ? 'Non rilevato' : v === true ? 'Sì' : v === false ? 'No' : String(v)}</td>
+                <td>{v == null ? tr('Non rilevato') : v === true ? tr('Sì') : v === false ? tr('No') : String(v)}</td>
               </tr>
             );
           })}

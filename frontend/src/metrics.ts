@@ -1,22 +1,22 @@
 import {language} from './i18n';
 const labels: Record<string, [string, string]> = {
-  peak_w: ['Picco dichiarato / finestra protocollo (W)', 'Picco dichiarato / finestra protocollo (W)'],
-  peak_wkg: ['Picco / peso (W/kg)', 'Picco / peso (W/kg)'],
-  best_1s_w: ['Migliori 1 s (W)', 'Migliori 1 s (W)'],
-  best_5s_w: ['Migliori 5 s (W)', 'Migliori 5 s (W)'],
-  time_to_peak_s: ['Tempo al picco (s)', 'Tempo al picco (s)'],
-  mean_w: ['Potenza media (W)', 'Potenza media (W)'],
-  mean_wkg: ['Potenza media / peso (W/kg)', 'Potenza media / peso (W/kg)'],
-  work_kj: ['Lavoro meccanico osservato (kJ)', 'Lavoro meccanico osservato (kJ)'],
-  end_power_w: ['Potenza finale (W)', 'Potenza finale (W)'],
-  fatigue_pct: ['Calo picco-finale (%)', 'Calo picco-finale (%)'],
-  decline_ws: ['Pendenza picco-finale (W/s)', 'Pendenza picco-finale (W/s)'],
+  peak_w: ['Picco dichiarato / finestra protocollo (W)', 'Declared peak / protocol window (W)'],
+  peak_wkg: ['Picco / peso (W/kg)', 'Peak / weight (W/kg)'],
+  best_1s_w: ['Migliori 1 s (W)', 'Best 1 s (W)'],
+  best_5s_w: ['Migliori 5 s (W)', 'Best 5 s (W)'],
+  time_to_peak_s: ['Tempo al picco (s)', 'Time to peak (s)'],
+  mean_w: ['Potenza media (W)', 'Mean power (W)'],
+  mean_wkg: ['Potenza media / peso (W/kg)', 'Mean power / weight (W/kg)'],
+  work_kj: ['Lavoro meccanico osservato (kJ)', 'Observed mechanical work (kJ)'],
+  end_power_w: ['Potenza finale (W)', 'End power (W)'],
+  fatigue_pct: ['Calo picco-finale (%)', 'Peak-to-end decline (%)'],
+  decline_ws: ['Pendenza picco-finale (W/s)', 'Peak-to-end slope (W/s)'],
   declared_fatigue_ws: [
     'Indice di fatica storico, formula non verificata (W/s)',
-    'Indice di fatica storico, formula non verificata (W/s)'
+    'Historical fatigue index, unverified formula (W/s)'
   ],
-  cadence_max_rpm: ['Cadenza massima (rpm)', 'Cadenza massima (rpm)'],
-  cadence_mean_rpm: ['Cadenza media (rpm)', 'Cadenza media (rpm)'],
+  cadence_max_rpm: ['Cadenza massima (rpm)', 'Maximum cadence (rpm)'],
+  cadence_mean_rpm: ['Cadenza media (rpm)', 'Mean cadence (rpm)'],
 
   lactate_2_w: ['Potenza a 2 mmol/L · W', 'Power at 2 mmol/L · W'],
   lactate_4_w: ['Potenza a 4 mmol/L · W', 'Power at 4 mmol/L · W'],

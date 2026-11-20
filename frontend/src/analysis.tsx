@@ -1,3 +1,4 @@
+import {tr, trBackend} from './i18n';
 import {VO2Input} from './VO2Input';
 import {LactateResults} from './LactateResults';
 import React, {useState, useEffect} from 'react';
@@ -32,7 +33,7 @@ export function TraceImporter({api, run, done, disabled}: {api: any; run: any; d
   return (
     <section>
       <label>
-        Tracciato FIT / CSV
+        {tr('Tracciato FIT / CSV')}
         <input
           disabled={disabled}
           type="file"
@@ -57,7 +58,7 @@ export function TraceImporter({api, run, done, disabled}: {api: any; run: any; d
           <div className="form-grid">
             {!!sessions.length && (
               <label>
-                Sessione FIT
+                {tr('Sessione FIT')}
                 <select value={session} onChange={e => setSession(e.target.value)}>
                   {sessions.map(s => (
                     <option value={s.index} key={s.index}>
@@ -68,15 +69,15 @@ export function TraceImporter({api, run, done, disabled}: {api: any; run: any; d
               </label>
             )}
             <label>
-              Timestamp duplicati
+              {tr('Timestamp duplicati')}
               <select value={policy} onChange={e => setPolicy(e.target.value)}>
-                <option value="reject">Rifiuta e segnala</option>
-                <option value="keep_last">Conserva l’ultimo record (correzione esplicita)</option>
+                <option value="reject">{tr('Rifiuta e segnala')}</option>
+                <option value="keep_last">{tr('Conserva l’ultimo record (correzione esplicita)')}</option>
               </select>
             </label>
             {policy === 'keep_last' && (
               <label>
-                Motivo della correzione
+                {tr('Motivo della correzione')}
                 <input value={reason} onChange={e => setReason(e.target.value)} />
               </label>
             )}
@@ -95,7 +96,7 @@ export function TraceImporter({api, run, done, disabled}: {api: any; run: any; d
               })
             }
           >
-            Importa sessione selezionata
+            {tr('Importa sessione selezionata')}
           </button>
         </>
       )}
@@ -146,9 +147,9 @@ export function AnalysisInput({
   };
   return (
     <section className="panel protocol">
-      <h3>Metodo e qualità</h3>
+      <h3>{tr('Metodo e qualità')}</h3>
       <label>
-        Preset di analisi
+        {tr('Preset di analisi')}
         <select
           value={draft.preset_id || 'incremental-constant-v1'}
           onChange={e => change('preset_id', e.target.value)}
@@ -161,8 +162,9 @@ export function AnalysisInput({
         </select>
       </label>
       <p className="hint">
-        Completezza e aderenza sono distinte. Il preset è salvato nel risultato; modificarlo crea una nuova versione,
-        senza ricalcolare i test storici.
+        {tr(
+          'Completezza e aderenza sono distinte. Il preset è salvato nel risultato; modificarlo crea una nuova versione, senza ricalcolare i test storici.'
+        )}
       </p>
       <button
         onClick={() => {
@@ -171,21 +173,21 @@ export function AnalysisInput({
           setEditing(!editing);
         }}
       >
-        Crea una versione del preset
+        {tr('Crea una versione del preset')}
       </button>
       {editing && definition && (
         <>
           <div className="form-grid">
             <label>
-              Nome
+              {tr('Nome')}
               <input value={name} onChange={e => setName(e.target.value)} />
             </label>
             <label>
-              Versione
+              {tr('Versione')}
               <input value={version} onChange={e => setVersion(e.target.value)} />
             </label>
             <label>
-              Motivo
+              {tr('Motivo')}
               <input value={reason} onChange={e => setReason(e.target.value)} />
             </label>
             {Object.entries({
@@ -201,7 +203,7 @@ export function AnalysisInput({
               adherence_tolerance_w: 'Banda aderenza ±W (facoltativa)'
             }).map(([k, label]) => (
               <label key={k}>
-                {label}
+                {tr(label)}
                 <input
                   type="number"
                   step="any"
@@ -211,10 +213,10 @@ export function AnalysisInput({
               </label>
             ))}
             <label>
-              Fase per medie / zone
+              {tr('Fase per medie / zone')}
               <select value={params.summary_phase} onChange={e => editParam('summary_phase', e.target.value)}>
-                <option value="whole_effort">Intero sforzo, incluso riscaldamento</option>
-                <option value="incremental_only">Dall’inizio degli incrementi</option>
+                <option value="whole_effort">{tr('Intero sforzo, incluso riscaldamento')}</option>
+                <option value="incremental_only">{tr('Dall’inizio degli incrementi')}</option>
               </select>
             </label>
           </div>
@@ -236,15 +238,16 @@ export function AnalysisInput({
               })
             }
           >
-            Pubblica preset immutabile
+            {tr('Pubblica preset immutabile')}
           </button>
         </>
       )}
       <details>
-        <summary>Allineamento per fase ed esclusioni con motivo</summary>
+        <summary>{tr('Allineamento per fase ed esclusioni con motivo')}</summary>
         <p>
-          Un marker sposta lo step indicato e i successivi fino al marker seguente. Le esclusioni riducono la copertura,
-          senza comprimere il tempo.
+          {tr(
+            'Un marker sposta lo step indicato e i successivi fino al marker seguente. Le esclusioni riducono la copertura, senza comprimere il tempo.'
+          )}
         </p>
         {(draft.alignment_markers || []).map((m: Row, i: number) => (
           <div className="form-grid" key={i}>
@@ -269,7 +272,7 @@ export function AnalysisInput({
               </select>
             </label>
             <label>
-              Inizio effettivo nel file · s
+              {tr('Inizio effettivo nel file · s')}
               <input
                 type="number"
                 value={m.at_s}
@@ -291,7 +294,7 @@ export function AnalysisInput({
                 )
               }
             >
-              Rimuovi marker
+              {tr('Rimuovi marker')}
             </button>
           </div>
         ))}
@@ -303,7 +306,7 @@ export function AnalysisInput({
             ])
           }
         >
-          Aggiungi marker di fase
+          {tr('Aggiungi marker di fase')}
         </button>
         {(draft.excluded_intervals || []).map((m: Row, i: number) => (
           <div className="form-grid" key={i}>
@@ -313,7 +316,7 @@ export function AnalysisInput({
               ['reason', 'Motivo']
             ].map(([k, label]) => (
               <label key={k}>
-                {label}
+                {tr(label)}
                 <input
                   type={k === 'reason' ? 'text' : 'number'}
                   value={m[k]}
@@ -336,7 +339,7 @@ export function AnalysisInput({
                 )
               }
             >
-              Rimuovi esclusione
+              {tr('Rimuovi esclusione')}
             </button>
           </div>
         ))}
@@ -345,15 +348,15 @@ export function AnalysisInput({
             change('excluded_intervals', [...(draft.excluded_intervals || []), {start_s: 0, end_s: 1, reason: ''}])
           }
         >
-          Escludi intervallo
+          {tr('Escludi intervallo')}
         </button>
       </details>
       <details>
-        <summary>Dispositivi, condizioni e provenienza</summary>
+        <summary>{tr('Dispositivi, condizioni e provenienza')}</summary>
         <div className="form-grid">
           {Object.entries(conditionsFields).map(([k, label]) => (
             <label key={k}>
-              {String(label)}
+              {tr(String(label))}
               <input
                 value={conditions[k] || ''}
                 onChange={e => change('conditions', {...conditions, [k]: e.target.value})}
@@ -361,15 +364,15 @@ export function AnalysisInput({
             </label>
           ))}
           <label>
-            Scala RPE
+            {tr('Scala RPE')}
             <select value={draft.rpe_scale || 'CR10 dichiarata'} onChange={e => change('rpe_scale', e.target.value)}>
-              <option>CR10 dichiarata</option>
+              <option>{tr('CR10 dichiarata')}</option>
               <option>Borg 6-20</option>
             </select>
           </label>
         </div>
         <label>
-          Origine calibrazione del coefficiente soglia
+          {tr('Origine calibrazione del coefficiente soglia')}
           <input
             value={draft.threshold_calibration?.evidence || ''}
             onChange={e => change('threshold_calibration', {...draft.threshold_calibration, evidence: e.target.value})}
@@ -377,18 +380,19 @@ export function AnalysisInput({
         </label>
       </details>
       <fieldset>
-        <legend>Livelli di lattato da stimare · mmol/L</legend>
+        <legend>{tr('Livelli di lattato da stimare · mmol/L')}</legend>
         <p>
-          Interpolazione tra prelievi: W, W/kg e FC. La finestra FC di fine step è definita nel preset (default 30 s).
-          Le nuove impostazioni richiedono una nuova analisi/revisione.
+          {tr(
+            'Interpolazione tra prelievi: W, W/kg e FC. La finestra FC di fine step è definita nel preset (default 30 s). Le nuove impostazioni richiedono una nuova analisi/revisione.'
+          )}
         </p>
         <div className="form-grid">
           {(draft.lactate_levels || [2, 3, 4]).map((level: number, i: number) => (
             <label key={i}>
-              Livello {i + 1}
+              {tr('Livello')} {i + 1}
               <input
                 type="number"
-                aria-label={`Livello lattato ${i + 1} · mmol/L`}
+                aria-label={`${tr('Livello lattato')} ${i + 1} · mmol/L`}
                 min="0.001"
                 max="40"
                 step="0.001"
@@ -412,7 +416,7 @@ export function AnalysisInput({
                   )
                 }
               >
-                Rimuovi livello
+                {tr('Rimuovi livello')}
               </button>
             </label>
           ))}
@@ -427,25 +431,28 @@ export function AnalysisInput({
             change('lactate_levels', [...current, next]);
           }}
         >
-          Aggiungi livello
+          {tr('Aggiungi livello')}
         </button>
       </fieldset>
       <details>
-        <summary>Lattato: associazione dei prelievi e carico esplicito</summary>
+        <summary>{tr('Lattato: associazione dei prelievi e carico esplicito')}</summary>
         <p>
-          Il prelievo può essere associato allo step o a un carico dichiarato. Il ritardo viene sottratto all’istante
-          del prelievo. Senza associazione certa il risultato resta indisponibile.
+          {tr(
+            'Il prelievo può essere associato allo step o a un carico dichiarato. Il ritardo viene sottratto all’istante del prelievo. Senza associazione certa il risultato resta indisponibile.'
+          )}
         </p>
         {(draft.lactate || []).map((r: Row, i: number) => (
           <div className="form-grid" key={i}>
-            <strong>Prelievo {i + 1}</strong>
+            <strong>
+              {tr('Prelievo')} {i + 1}
+            </strong>
             {[
               ['step_number', 'Step (facoltativo)'],
               ['power_w', 'Carico esplicito W (facoltativo)'],
               ['delay_s', 'Ritardo di prelievo s']
             ].map(([k, label]) => (
               <label key={k}>
-                {label}
+                {tr(label)}
                 <input
                   type="number"
                   value={r[k] ?? ''}
@@ -467,13 +474,14 @@ export function AnalysisInput({
       </details>
       <VO2Input draft={draft} change={change} />
       <details>
-        <summary>VO₂: importazione gas e valutazione ventilatoria</summary>
+        <summary>{tr('VO₂: importazione gas e valutazione ventilatoria')}</summary>
         <p>
-          CSV: t, vo2_l_min; opzionali vco2_l_min, ve_l_min, peto2_mmhg, petco2_mmhg. Nessuna stima di VO₂ dai soli
-          watt/FC.
+          {tr(
+            'CSV: t, vo2_l_min; opzionali vco2_l_min, ve_l_min, peto2_mmhg, petco2_mmhg. Nessuna stima di VO₂ dai soli watt/FC.'
+          )}
         </p>
         <label>
-          Importa gas CSV
+          {tr('Importa gas CSV')}
           <input
             type="file"
             accept=".csv"
@@ -491,12 +499,12 @@ export function AnalysisInput({
         </label>
         {draft.gas_hash && (
           <p>
-            Gas archiviati · {draft.gas_hash.slice(0, 12)}{' '}
-            <button onClick={() => change('gas_hash', null)}>Rimuovi associazione</button>
+            {tr('Gas archiviati ·')} {draft.gas_hash.slice(0, 12)}{' '}
+            <button onClick={() => change('gas_hash', null)}>{tr('Rimuovi associazione')}</button>
           </p>
         )}
         <label>
-          Offset gas rispetto al file FIT · s
+          {tr('Offset gas rispetto al file FIT · s')}
           <input
             type="number"
             step="any"
@@ -507,9 +515,11 @@ export function AnalysisInput({
         <div className="form-grid">
           {['vt1', 'vt2'].map(k => (
             <section key={k}>
-              <strong>{k.toUpperCase()} confermata dal valutatore</strong>
+              <strong>
+                {k.toUpperCase()} {tr('confermata dal valutatore')}
+              </strong>
               <label>
-                Istante nel FIT · s
+                {tr('Istante nel FIT · s')}
                 <input
                   type="number"
                   value={draft.ventilatory_markers?.[k]?.at_s ?? ''}
@@ -524,7 +534,7 @@ export function AnalysisInput({
               </label>
               {draft.ventilatory_markers?.[k] && (
                 <label>
-                  Evidenze / criterio
+                  {tr('Evidenze / criterio')}
                   <input
                     value={draft.ventilatory_markers[k].evidence}
                     onChange={e =>
@@ -551,11 +561,11 @@ export function AnalysisInput({
               })
             }
           />
-          VO₂max verificato dal laboratorio
+          {tr('VO₂max verificato dal laboratorio')}
         </label>
         {draft.vo2max_verification?.confirmed && (
           <label>
-            Evidenze della verifica del massimo
+            {tr('Evidenze della verifica del massimo')}
             <textarea
               value={draft.vo2max_verification.evidence || ''}
               onChange={e => change('vo2max_verification', {...draft.vo2max_verification, evidence: e.target.value})}
@@ -572,13 +582,17 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
     g = a.gas;
   return (
     <section>
-      <h3>Metodo, qualità e risultati specialistici</h3>
+      <h3>{tr('Metodo, qualità e risultati specialistici')}</h3>
       <p>
         {a.preset
-          ? `${a.preset.name} · v${a.preset.version} · motore ${a.engine}`
-          : 'Metodo storico senza preset: provenienza legacy'}
+          ? `${a.preset.name} · v${a.preset.version} · ${tr('motore')} ${a.engine}`
+          : tr('Metodo storico senza preset: provenienza legacy')}
       </p>
-      {a.preset && <small>Identità preset: {a.preset.hash.slice(0, 16)}</small>}
+      {a.preset && (
+        <small>
+          {tr('Identità preset:')} {a.preset.hash.slice(0, 16)}
+        </small>
+      )}
       {a.steps?.length > 0 && (
         <div className="table-scroll">
           <table>
@@ -586,7 +600,7 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
               <tr>
                 {['Step', 'Completo', 'Copertura W', 'Errore medio W', 'Errore %', 'MAE W', 'RMSE W', 'In banda'].map(
                   c => (
-                    <th key={c}>{c}</th>
+                    <th key={c}>{tr(c)}</th>
                   )
                 )}
               </tr>
@@ -595,14 +609,14 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
               {a.steps.map((s: Row) => (
                 <tr key={s.number}>
                   <td>{s.number}</td>
-                  <td>{s.complete ? 'Sì' : 'No'}</td>
+                  <td>{tr(s.complete ? 'Sì' : 'No')}</td>
                   <td>{value(100 * s.power.coverage)}%</td>
                   {['mean_error_w', 'mean_error_pct', 'mae_w', 'rmse_w'].map(k => (
                     <td key={k}>{value(s.adherence?.[k])}</td>
                   ))}
                   <td>
                     {s.adherence?.within_band_fraction == null
-                      ? 'Non valutata'
+                      ? tr('Non valutata')
                       : value(s.adherence.within_band_fraction * 100) + '%'}
                   </td>
                 </tr>
@@ -613,8 +627,8 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
       )}
       {a.terminal_target_w != null && (
         <p>
-          Rampa/discontinuo: target finale {value(a.terminal_target_w)} W; media finale misurata{' '}
-          {value(a.terminal_mean_w)} W. Nessuna conversione in MAP per step.
+          {tr('Rampa/discontinuo: target finale')} {value(a.terminal_target_w)} {tr('W; media finale misurata')}{' '}
+          {value(a.terminal_mean_w)} {tr('W. Nessuna conversione in MAP per step.')}
         </p>
       )}
       {l?.points.length > 0 && (
@@ -625,7 +639,8 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
               .filter(([k]) => !k.startsWith('fixed_'))
               .map(([k, r]: any) => (
                 <li key={k}>
-                  {methodNames[k] || k}: {value(r.value)} W{r.reason ? ' · ' + (reasons[r.reason] || r.reason) : ''}
+                  {tr(methodNames[k] || k)}: {value(r.value)} W
+                  {r.reason ? ' · ' + tr(reasons[r.reason] || r.reason) : ''}
                 </li>
               ))}
           </ul>
@@ -633,18 +648,19 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
       )}
       {l?.warnings.map((w: string) => (
         <p className="hint" key={w}>
-          {w}
+          {trBackend(w)}
         </p>
       ))}
       {g && (
         <>
-          <h3>Scambi gassosi</h3>
+          <h3>{tr('Scambi gassosi')}</h3>
           <p>
-            VO₂peak: {value(g.vo2peak.value)} L/min · {value(g.vo2peak.ml_kg_min)} mL/kg/min · media{' '}
-            {g.vo2peak.window_s} s
+            {tr('VO₂peak:')} {value(g.vo2peak.value)} {tr('L/min ·')} {value(g.vo2peak.ml_kg_min)}{' '}
+            {tr('mL/kg/min · media')} {g.vo2peak.window_s} s
           </p>
           <p>
-            VO₂max verificato: {value(g.vo2max.value)} L/min · {reasons[g.vo2max.reason] || g.vo2max.evidence}
+            {tr('VO₂max verificato:')} {value(g.vo2max.value)} {tr('L/min ·')}{' '}
+            {g.vo2max.reason ? tr(reasons[g.vo2max.reason] || g.vo2max.reason) : g.vo2max.evidence}
           </p>
           <Plot
             data={['vo2', 'vco2'].map(k => ({
@@ -654,7 +670,7 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
               mode: 'lines',
               name: k.toUpperCase()
             }))}
-            layout={{xaxis: {title: {text: 'Tempo FIT · min'}}, yaxis: {title: {text: 'L/min'}}}}
+            layout={{xaxis: {title: {text: tr('Tempo FIT · min')}}, yaxis: {title: {text: 'L/min'}}}}
           />
           <Plot
             data={[
@@ -676,7 +692,7 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
               mode: 'lines',
               name: k.toUpperCase()
             }))}
-            layout={{xaxis: {title: {text: 'Tempo FIT · min'}}, yaxis: {title: {text: 'Gas end-tidal · mmHg'}}}}
+            layout={{xaxis: {title: {text: tr('Tempo FIT · min')}}, yaxis: {title: {text: tr('Gas end-tidal · mmHg')}}}}
           />
           <Plot
             data={['ve_vo2', 've_vco2'].map(k => ({
@@ -686,17 +702,20 @@ export function AnalysisResults({analysis: a, Plot}: {analysis: Row; Plot: any})
               mode: 'lines',
               name: k.replace('_', '/').toUpperCase()
             }))}
-            layout={{xaxis: {title: {text: 'Tempo FIT · min'}}, yaxis: {title: {text: 'Equivalenti ventilatori'}}}}
+            layout={{
+              xaxis: {title: {text: tr('Tempo FIT · min')}},
+              yaxis: {title: {text: tr('Equivalenti ventilatori')}}
+            }}
           />
           {['vt1', 'vt2'].map(k => (
             <p key={k}>
-              {k.toUpperCase()} · suggerimento esplorativo: {value(g.suggestions[k].value)} s · marker confermato:{' '}
-              {value(g.markers[k]?.at_s)} s
+              {k.toUpperCase()} {tr('· suggerimento esplorativo:')} {value(g.suggestions[k].value)}{' '}
+              {tr('s · marker confermato:')} {value(g.markers[k]?.at_s)} s
             </p>
           ))}
           {g.warnings.map((w: string) => (
             <p className="hint" key={w}>
-              {w}
+              {trBackend(w)}
             </p>
           ))}
         </>
@@ -729,16 +748,17 @@ export function RepeatabilityPanel({
     `${state.athlete.find((a: Row) => a.id === t.athlete_id)?.surname || ''} ${state.athlete.find((a: Row) => a.id === t.athlete_id)?.name || ''} · ${t.date} · ${value(t.analysis.map_w)} W`;
   return (
     <details className="panel protocol">
-      <summary>Ripetibilità: prove ripetute in condizioni stabili</summary>
+      <summary>{tr('Ripetibilità: prove ripetute in condizioni stabili')}</summary>
       <p>
-        Seleziona coppie dello stesso atleta, protocollo, metodo e condizioni. Le variazioni fra stagioni non sono
-        automaticamente misure dell’errore del test.
+        {tr(
+          'Seleziona coppie dello stesso atleta, protocollo, metodo e condizioni. Le variazioni fra stagioni non sono automaticamente misure dell’errore del test.'
+        )}
       </p>
       {pairs.map((p, i) => (
         <div className="form-grid" key={i}>
           {['first', 'second'].map(k => (
             <label key={k}>
-              {k === 'first' ? 'Prima prova' : 'Ripetizione'}
+              {tr(k === 'first' ? 'Prima prova' : 'Ripetizione')}
               <select
                 value={p[k]}
                 onChange={e => setPairs(rows => rows.map((r, j) => (i === j ? {...r, [k]: e.target.value} : r)))}
@@ -754,15 +774,15 @@ export function RepeatabilityPanel({
         </div>
       ))}
       <button onClick={() => setPairs(rows => [...rows, {first: tests[0]?.id || '', second: tests[1]?.id || ''}])}>
-        Aggiungi coppia
+        {tr('Aggiungi coppia')}
       </button>
       <label>
-        Motivo e condizioni di ripetizione
+        {tr('Motivo e condizioni di ripetizione')}
         <input value={reason} onChange={e => setReason(e.target.value)} />
       </label>
       <label>
         <input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} />
-        Confermo prove ripetute in condizioni stabili
+        {tr('Confermo prove ripetute in condizioni stabili')}
       </label>
       <button
         disabled={!pairs.length || !confirmed || !reason.trim()}
@@ -774,13 +794,18 @@ export function RepeatabilityPanel({
           )
         }
       >
-        Calcola errore tipico e MDC95
+        {tr('Calcola errore tipico e MDC95')}
       </button>
       {result?.groups.map((g: Row, i: number) => (
         <p key={i}>
-          {g.n_pairs} coppie · bias {value(g.bias)} W · errore tipico {value(g.typical_error)} W · MDC95{' '}
-          {value(g.mdc95)} W. {g.warning}
-          {g.ci95 && ' IC95 descrittivo TE: ' + g.ci95.typical_error.map((v: number) => value(v)).join(' – ') + ' W.'}
+          {g.n_pairs} {tr('coppie · bias')} {value(g.bias)} {tr('W · errore tipico')} {value(g.typical_error)}{' '}
+          {tr('W · MDC95')} {value(g.mdc95)} W. {trBackend(g.warning)}
+          {g.ci95 &&
+            ' ' +
+              tr('IC95 descrittivo TE:') +
+              ' ' +
+              g.ci95.typical_error.map((v: number) => value(v)).join(' – ') +
+              ' W.'}
         </p>
       ))}
       {result && (
@@ -799,7 +824,7 @@ export function RepeatabilityPanel({
                 )
               }
             >
-              Esporta {f.toUpperCase()}
+              {tr('Esporta')} {f.toUpperCase()}
             </button>
           ))}
         </div>

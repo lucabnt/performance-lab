@@ -1,4 +1,4 @@
-import {language} from './i18n';
+import {language, tr} from './i18n';
 import {useEffect, useState} from 'react';
 type Row = Record<string, any>;
 export function CloudConnection({
@@ -124,38 +124,39 @@ export function CloudConnection({
       </p>
       {connectionError && <p role="alert">{connectionError}</p>}
       <p className="hint">
-        Accesso diretto alle API: non serve il client del cloud. La cartella deve esistere ed essere condivisa con
-        ciascun collaboratore. Token e segreti rimangono nel portachiavi del dispositivo.
+        {tr(
+          'Accesso diretto alle API: non serve il client del cloud. La cartella deve esistere ed essere condivisa con ciascun collaboratore. Token e segreti rimangono nel portachiavi del dispositivo.'
+        )}
       </p>
       <div className="form-grid">
         {provider === 'service' ? (
           <label>
-            URL servizio HTTPS
+            {tr('URL servizio HTTPS')}
             <input required type="url" value={connection.url || ''} onChange={e => change('url', e.target.value)} />
           </label>
         ) : (
           <label>
-            Client ID / App key OAuth
+            {tr('Client ID / App key OAuth')}
             <input required value={connection.client_id || ''} onChange={e => change('client_id', e.target.value)} />
           </label>
         )}
         {['drive', 'onedrive'].includes(provider) && (
           <label>
-            ID cartella condivisa
+            {tr('ID cartella condivisa')}
             <input required value={connection.root_id || ''} onChange={e => change('root_id', e.target.value)} />
           </label>
         )}
         {provider === 'onedrive' && (
           <label>
-            ID drive (facoltativo, per raccolta condivisa)
+            {tr('ID drive (facoltativo, per raccolta condivisa)')}
             <input value={connection.drive_id || ''} onChange={e => change('drive_id', e.target.value)} />
           </label>
         )}
         {provider === 'dropbox' && (
           <label>
-            Percorso cartella Dropbox
+            {tr('Percorso cartella Dropbox')}
             <input
-              placeholder="/Fuorigiri"
+              placeholder={tr('/Fuorigiri')}
               value={connection.root_path || ''}
               onChange={e => change('root_path', e.target.value)}
             />
@@ -163,16 +164,16 @@ export function CloudConnection({
         )}
         {provider === 'drive' && (
           <label>
-            Autorizzazione Google Drive
+            {tr('Autorizzazione Google Drive')}
             <select value={connection.drive_scope || 'file'} onChange={e => change('drive_scope', e.target.value)}>
-              <option value="file">File autorizzati all’app (drive.file)</option>
-              <option value="full">Drive completo (richiede consenso esteso)</option>
+              <option value="file">{tr('File autorizzati all’app (drive.file)')}</option>
+              <option value="full">{tr('Drive completo (richiede consenso esteso)')}</option>
             </select>
           </label>
         )}
         {['drive', 'service'].includes(provider) && (
           <label>
-            {provider === 'service' ? 'Token del servizio' : 'Client secret della registrazione desktop Google'}
+            {tr(provider === 'service' ? 'Token del servizio' : 'Client secret della registrazione desktop Google')}
             <input
               type="password"
               autoComplete="new-password"
@@ -184,14 +185,16 @@ export function CloudConnection({
       </div>
       {provider === 'drive' && (
         <p className="hint">
-          drive.file non dà accesso automatico a una cartella condivisa già esistente. Per quella cartella può servire
-          il consenso Drive completo. Google Android richiede la registrazione nativa dedicata.
+          {tr(
+            'drive.file non dà accesso automatico a una cartella condivisa già esistente. Per quella cartella può servire il consenso Drive completo. Google Android richiede la registrazione nativa dedicata.'
+          )}
         </p>
       )}
       {provider === 'dropbox' && (
         <p className="hint">
-          Per collaborare usare una registrazione Full Dropbox e una cartella condivisa accessibile all’account, non App
-          Folder.
+          {tr(
+            'Per collaborare usare una registrazione Full Dropbox e una cartella condivisa accessibile all’account, non App Folder.'
+          )}
         </p>
       )}
       {provider !== 'service' && (
@@ -220,7 +223,7 @@ export function CloudConnection({
               })
             }
           >
-            Collega account{' '}
+            {tr('Collega account')}{' '}
             {({drive: 'Google Drive', dropbox: 'Dropbox', onedrive: 'OneDrive'} as Row)[provider] || provider}
           </button>
           <button
@@ -233,33 +236,36 @@ export function CloudConnection({
               })
             }
           >
-            Scollega account
+            {tr('Scollega account')}
           </button>
         </div>
       )}
       {authorization && session && (
         <a href={authorization} target="_blank" rel="noopener noreferrer">
-          Browser non aperto? Apri la pagina di autorizzazione
+          {tr('Browser non aperto? Apri la pagina di autorizzazione')}
         </a>
       )}
       {status && (
         <p role="status">
-          {(
-            {
-              pending: 'In attesa del consenso nel browser…',
-              connected: 'Account collegato',
-              disconnected: 'Account da collegare',
-              vault_unavailable: 'Portachiavi non disponibile',
-              failed: 'Collegamento fallito',
-              expired: 'Sessione scaduta'
-            } as Row
-          )[status] || status}
+          {tr(
+            (
+              {
+                pending: 'In attesa del consenso nel browser…',
+                connected: 'Account collegato',
+                disconnected: 'Account da collegare',
+                vault_unavailable: 'Portachiavi non disponibile',
+                failed: 'Collegamento fallito',
+                expired: 'Sessione scaduta'
+              } as Row
+            )[status] || status
+          )}
         </p>
       )}
       {provider === 'service' && (
         <p className="hint">
-          Predisposizione: richiede un server che implementi il contratto Fuorigiri v1. Non viene fornito un servizio
-          ospitato.
+          {tr(
+            'Predisposizione: richiede un server che implementi il contratto Fuorigiri v1. Non viene fornito un servizio ospitato.'
+          )}
         </p>
       )}
     </>

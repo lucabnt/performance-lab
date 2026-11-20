@@ -1,4 +1,4 @@
-import {language} from './i18n';
+import {language, tr} from './i18n';
 const terms: Record<string, [string, string, string]> = {
   VO2: [
     'VO₂peak / VO₂max / VT',
@@ -121,7 +121,7 @@ export function Glossary({keys}: {keys: string[]}) {
       <dl>
         {rows.map(k => (
           <div key={k}>
-            <dt>{terms[k][0]}</dt>
+            <dt>{tr(terms[k][0])}</dt>
             <dd>{terms[k][language === 'en' ? 2 : 1]}</dd>
           </div>
         ))}

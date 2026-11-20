@@ -1,3 +1,4 @@
+import {tr} from './i18n';
 import {useState} from 'react';
 import {numberText} from './metrics';
 type Row = Record<string, any>;
@@ -19,18 +20,19 @@ export function LactateResults({analysis: l, Plot}: {analysis: Row; Plot: any}) 
     points.every((p: Row, i: number) => !i || (p.power_w > points[i - 1].power_w && p.mmol_l >= points[i - 1].mmol_l));
   return (
     <>
-      <h3>Lattato: potenza e FC ai livelli richiesti</h3>
+      <h3>{tr('Lattato: potenza e FC ai livelli richiesti')}</h3>
       <p className="hint">
-        Relazione fra carico (asse orizzontale, W) e lattato (asse verticale, mmol/L). Seleziona un punto o un livello
-        per leggere potenza e FC nella tabella; il tracciato temporale mostra invece quando è avvenuto il prelievo.
+        {tr(
+          'Relazione fra carico (asse orizzontale, W) e lattato (asse verticale, mmol/L). Seleziona un punto o un livello per leggere potenza e FC nella tabella; il tracciato temporale mostra invece quando è avvenuto il prelievo.'
+        )}
       </p>
       <label>
-        Livello evidenziato
+        {tr('Livello evidenziato')}
         <select
           value={selected ?? ''}
           onChange={e => setSelected(e.target.value === '' ? null : Number(e.target.value))}
         >
-          <option value="">Tutti i livelli</option>
+          <option value="">{tr('Tutti i livelli')}</option>
           {levels.map(r => (
             <option key={r.concentration_mmol_l} value={r.concentration_mmol_l}>
               {numberText(r.concentration_mmol_l)} mmol/L
@@ -51,7 +53,7 @@ export function LactateResults({analysis: l, Plot}: {analysis: Row; Plot: any}) 
             y: points.map((r: Row) => r.mmol_l),
             type: 'scatter',
             mode: 'markers',
-            name: 'Prelievi associati al carico',
+            name: tr('Prelievi associati al carico'),
             marker: {size: 9}
           },
           ...(interpolable
@@ -61,7 +63,7 @@ export function LactateResults({analysis: l, Plot}: {analysis: Row; Plot: any}) 
                   y: points.map((r: Row) => r.mmol_l),
                   type: 'scatter',
                   mode: 'lines',
-                  name: 'Interpolazione lineare',
+                  name: tr('Interpolazione lineare'),
                   line: {dash: 'dash', color: '#1a62b7'}
                 }
               ]
@@ -72,7 +74,7 @@ export function LactateResults({analysis: l, Plot}: {analysis: Row; Plot: any}) 
             text: estimated.map(r => numberText(r.hr_bpm) + ' bpm · ' + numberText(r.wkg) + ' W/kg'),
             type: 'scatter',
             mode: 'markers',
-            name: 'Valori stimati ai livelli richiesti',
+            name: tr('Valori stimati ai livelli richiesti'),
             marker: {symbol: 'diamond', size: 10, color: '#b44d78'}
           },
           ...(l.curve?.length
@@ -83,15 +85,15 @@ export function LactateResults({analysis: l, Plot}: {analysis: Row; Plot: any}) 
                   type: 'scatter',
                   mode: 'lines',
                   visible: 'legendonly',
-                  name: 'Fit cubico per Dmax',
+                  name: tr('Fit cubico per Dmax'),
                   line: {dash: 'dot'}
                 }
               ]
             : [])
         ]}
         layout={{
-          xaxis: {title: {text: 'Carico associato · W'}},
-          yaxis: {title: {text: 'Lattato · mmol/L'}},
+          xaxis: {title: {text: tr('Carico associato · W')}},
+          yaxis: {title: {text: tr('Lattato · mmol/L')}},
           shapes: estimated
             .filter(r => selected == null || selected === r.concentration_mmol_l)
             .flatMap(r => [
@@ -121,11 +123,11 @@ export function LactateResults({analysis: l, Plot}: {analysis: Row; Plot: any}) 
         <table>
           <thead>
             <tr>
-              <th>Livello · mmol/L</th>
-              <th>Potenza stimata · W</th>
-              <th>W/kg stimati</th>
-              <th>FC stimata · bpm</th>
-              <th>Disponibilità</th>
+              <th>{tr('Livello · mmol/L')}</th>
+              <th>{tr('Potenza stimata · W')}</th>
+              <th>{tr('W/kg stimati')}</th>
+              <th>{tr('FC stimata · bpm')}</th>
+              <th>{tr('Disponibilità')}</th>
             </tr>
           </thead>
           <tbody>
@@ -141,11 +143,13 @@ export function LactateResults({analysis: l, Plot}: {analysis: Row; Plot: any}) 
                 <td>{numberText(r.hr_bpm)}</td>
                 <td>
                   {r.reason
-                    ? reasons[r.reason] || r.reason
-                    : [r.hr_reason && reasons[r.hr_reason], r.weight_reason && reasons[r.weight_reason]]
+                    ? tr(reasons[r.reason] || r.reason)
+                    : [r.hr_reason && tr(reasons[r.hr_reason]), r.weight_reason && tr(reasons[r.weight_reason])]
                         .filter(Boolean)
                         .join(' · ') ||
-                      (l.method_snapshot ? 'Stime da interpolazione' : 'Revisione precedente: FC e W/kg non calcolati')}
+                      tr(
+                        l.method_snapshot ? 'Stime da interpolazione' : 'Revisione precedente: FC e W/kg non calcolati'
+                      )}
                 </td>
               </tr>
             ))}
@@ -154,14 +158,18 @@ export function LactateResults({analysis: l, Plot}: {analysis: Row; Plot: any}) 
       </div>
       {l.method_snapshot && (
         <p className="muted">
-          FC: media degli ultimi {l.method_snapshot.hr_window_s} s degli step completi a carico costante, copertura
-          minima {numberText(l.method_snapshot.hr_coverage * 100)}%. Il battito al momento del prelievo non viene usato
-          come FC dello step. Potenza associata al target del protocollo o a un carico dichiarato.
+          {tr('FC: media degli ultimi')} {l.method_snapshot.hr_window_s}{' '}
+          {tr('s degli step completi a carico costante, copertura minima')}{' '}
+          {numberText(l.method_snapshot.hr_coverage * 100)}
+          {tr(
+            '%. Il battito al momento del prelievo non viene usato come FC dello step. Potenza associata al target del protocollo o a un carico dichiarato.'
+          )}
         </p>
       )}
       <p className="hint">
-        Stime tra prelievi che racchiudono il livello, senza estrapolazione. Le concentrazioni fisse non identificano
-        automaticamente LT1, LT2, FTP o MLSS.
+        {tr(
+          'Stime tra prelievi che racchiudono il livello, senza estrapolazione. Le concentrazioni fisse non identificano automaticamente LT1, LT2, FTP o MLSS.'
+        )}
       </p>
     </>
   );

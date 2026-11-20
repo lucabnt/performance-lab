@@ -7,6 +7,7 @@ import {FieldSchemaEditor, FieldValues, TestExtensions} from './customFields';
 import {metricLabel, numberText} from './metrics';
 import {thresholdCoefficient} from './thresholdReference';
 import {tr} from './i18n';
+import {maturityText} from './maturityText';
 import React, {useState, useEffect} from 'react';
 type Row = Record<string, any>;
 export function ManualTestEditor({
@@ -147,7 +148,9 @@ export function ManualTestEditor({
         {tr('Fonte del peso')}
         <select value={draft.weight_source} onChange={e => change('weight_source', e.target.value)}>
           {['dichiarato', 'misurato', 'arrotondato', 'stimato'].map(v => (
-            <option key={v}>{v}</option>
+            <option key={v} value={v}>
+              {tr(v)}
+            </option>
           ))}
         </select>
       </label>
@@ -156,7 +159,7 @@ export function ManualTestEditor({
         <div className="form-grid">
           {[60, 90, 120].map(t => (
             <label key={t}>
-              {tr('Dopo s')} {t} · bpm
+              {tr('Dopo s')} {t} {tr('· bpm')}
               <input
                 type="number"
                 min="1"
@@ -523,7 +526,7 @@ export function GrowthPanel({org, api, run, Plot}: {org: string; api: any; run: 
             {key: 'days', label: tr('Giorni')},
             {key: 'delta', label: 'Delta'},
             {key: 'annualized', label: tr('Per anno')},
-            {key: 'quality_reason', label: tr('Qualità')}
+            {key: 'quality_reason', label: tr('Qualità'), render: r => maturityText(r.quality_reason)}
           ]}
         />
       </section>

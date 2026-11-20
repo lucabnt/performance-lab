@@ -104,8 +104,9 @@ export function Synchronization({
         )}
       </p>
       <p className="hint">
-        Questa connessione sincronizza soltanto la società dell’archivio aperto. Per società con collaboratori diversi
-        usa inviti e cartelle cloud condivise separati.
+        {tr(
+          'Questa connessione sincronizza soltanto la società dell’archivio aperto. Per società con collaboratori diversi usa inviti e cartelle cloud condivise separati.'
+        )}
       </p>
       <details>
         <summary>
@@ -176,8 +177,8 @@ export function Synchronization({
               <option value="drive">{`Google Drive · API · ${tr('sperimentale')}`}</option>
               <option value="dropbox">{`Dropbox · API · ${tr('sperimentale')}`}</option>
               <option value="onedrive">{`OneDrive · API · ${tr('sperimentale')}`}</option>
-              <option value="service">Servizio dedicato · avanzato</option>
-              <option value="webdav">WebDAV · Nextcloud / server compatibile</option>
+              <option value="service">{tr('Servizio dedicato · avanzato')}</option>
+              <option value="webdav">{tr('WebDAV · Nextcloud / server compatibile')}</option>
             </select>
           </label>
           {['drive', 'dropbox', 'onedrive', 'service'].includes(connection.transport) ? (
@@ -191,11 +192,11 @@ export function Synchronization({
               </p>
               <div className="form-grid">
                 <label>
-                  URL WebDAV HTTPS
+                  {tr('URL WebDAV HTTPS')}
                   <input
                     required
                     type="url"
-                    placeholder="https://cloud.example/remote.php/dav/files/utente/Fuorigiri/"
+                    placeholder={tr('https://cloud.example/remote.php/dav/files/utente/Fuorigiri/')}
                     value={connection.url || ''}
                     onChange={e => change('url', e.target.value)}
                   />
@@ -249,7 +250,7 @@ export function Synchronization({
               })
             }
           >
-            Verifica completa del canale
+            {tr('Verifica completa del canale')}
           </button>
           {dirty && <p className="hint">{tr('Salva la connessione prima di usare Sincronizza ora.')}</p>}
         </fieldset>
@@ -283,7 +284,7 @@ export function Synchronization({
             {language === 'en' ? 'Device time zone' : 'Fuso del dispositivo'} ·{' '}
             {Intl.DateTimeFormat().resolvedOptions().timeZone}
           </option>
-          <option value="Europe/Rome">Europe/Rome · Italia</option>
+          <option value="Europe/Rome">{tr('Europe/Rome · Italia')}</option>
           <option value="UTC">UTC</option>
         </select>
       </label>
@@ -304,13 +305,15 @@ export function Synchronization({
             {result.received} {tr('ricevuti')} · {result.published} {tr('pubblicati')} · {result.pending}{' '}
             {tr('in attesa')} · {result.conflicts} {tr('conflitti')}
           </p>
-          <p>{result.status}</p>
+          <p>{tr(result.status)}</p>
           <p className="muted">
-            {result.downloaded_packets ?? '—'} pacchetti letti · {result.known_packets_skipped ?? 0} già presenti, non
-            riscaricati.{' '}
-            {result.full_verification
-              ? 'Verifica completa richiesta.'
-              : 'I pacchetti immutabili già acquisiti restano nel database locale; usa Verifica completa per rileggere anche quelli.'}
+            {result.downloaded_packets ?? '—'} {tr('pacchetti letti ·')} {result.known_packets_skipped ?? 0}{' '}
+            {tr('già presenti, non riscaricati.')}{' '}
+            {tr(
+              result.full_verification
+                ? 'Verifica completa richiesta.'
+                : 'I pacchetti immutabili già acquisiti restano nel database locale; usa Verifica completa per rileggere anche quelli.'
+            )}
           </p>
           {result.errors.map((message: string) => (
             <p className="hint" key={message}>

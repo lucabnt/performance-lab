@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {language} from './i18n';
+import {language, tr} from './i18n';
 type Row = Record<string, any>;
 
 export function ArchiveMaintenance({
@@ -205,7 +205,7 @@ export function ArchiveMaintenance({
                 <select required value={org} onChange={e => setOrg(e.target.value)}>
                   {plan.organizations.map((o: Row) => (
                     <option key={o.id} value={o.id}>
-                      {o.name} · {o.records} record
+                      {o.name} · {o.records} {tr('record')}
                     </option>
                   ))}
                 </select>

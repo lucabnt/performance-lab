@@ -1238,6 +1238,10 @@ export function trBackend(text: string) {
   return text;
 }
 Object.assign(translations, {
+  'Il file di questo report è conservato solo sul dispositivo che lo ha creato. Rigenera il report da questo dispositivo.':
+    'This report file is kept only on the device that created it. Generate the report again from this device.'
+});
+Object.assign(translations, {
   'Analisi dello spazio non completata. Controllare connessione e autorizzazioni; nessun dato è stato modificato.':
     'Space analysis not completed. Check connection and permissions; no data has been changed.',
   'Analisi interrotta dalla chiusura del processo. Riprovare: nessun dato è stato modificato.':

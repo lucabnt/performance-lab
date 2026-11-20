@@ -71,7 +71,27 @@ def save_report(store, payload, body):
     )
     if existing:
         return existing
-    return store.save('report', {**payload, 'objects': [store.object(body)]})
+    # REPORT-LOCALE-01: only metadata and the file fingerprint are signed and exchanged.
+    # The file stays in this device's objects folder (included in its local backups)
+    # because exchanges carry only the digests listed in ``objects``.
+    return store.save('report', {**payload, 'file_sha256': store.object(body), 'file_bytes': len(body)})
+
+
+def report_file_available(store, record):
+    """True when this device holds the file of a saved report.
+
+    Reports saved before REPORT-LOCALE-01 list their file in ``objects`` and travel
+    with the exchange; newer ones record ``file_sha256`` only.
+    """
+    digest = (record.get('objects') or [None])[0] or record.get('file_sha256')
+    return isinstance(digest, str) and len(digest) == 64 and (store.root / 'objects' / digest).is_file()
+
+
+def report_file(store, record):
+    """Saved report bytes on this device, or None when only the creating device has them."""
+    if not report_file_available(store, record):
+        return None
+    return store.read_object((record.get('objects') or [None])[0] or record['file_sha256'])
 
 
 class Store:

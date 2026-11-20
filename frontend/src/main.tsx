@@ -138,7 +138,7 @@ async function download(path: string, name: string, data?: unknown) {
   });
   if (!r.ok) {
     const e = await r.json();
-    throw new Error(e.detail || tr('Esportazione non riuscita'));
+    throw new Error(typeof e.detail === 'string' ? trBackend(e.detail) : tr('Esportazione non riuscita'));
   }
   const blob = await r.blob();
   if (/report/.test(path))

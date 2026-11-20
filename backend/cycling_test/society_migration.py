@@ -162,6 +162,17 @@ def extract(manager, source, organization, source_hash, operator, path=''):
                         },
                         db=db,
                     )
+                    local_report = event['record'].get('file_sha256')
+                    if (
+                        isinstance(local_report, str)
+                        and HASH.fullmatch(local_report)
+                        and (source.root / 'objects' / local_report).is_file()
+                        and not (stage / 'objects' / local_report).exists()
+                    ):
+                        # REPORT-LOCALE-01: a report file kept on this device follows the society.
+                        origin = source.root / 'objects' / local_report
+                        if not origin.is_symlink() and digest_file(origin) == local_report:
+                            shutil.copyfile(origin, stage / 'objects' / local_report)
                     for digest in event['record'].get('objects', []):
                         if not isinstance(digest, str) or not HASH.fullmatch(digest):
                             raise ValueError('Allegato non valido.')

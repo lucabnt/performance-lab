@@ -1,5 +1,10 @@
 # Changelog
 
+## 20 novembre 2026 — report esportati: solo metadati nello scambio (REPORT-LOCALE-01)
+
+- La diagnosi dell'archivio reale ha mostrato che quasi tutto lo spazio remoto (circa 64 MB su 66,9) era occupato da 10 report PDF, salvati sia in v1 sia in v2.
+- I report salvati da ora registrano solo metadati e impronta del file (`file_sha256`, `file_bytes`): il file resta sul dispositivo che l'ha creato e nei suoi backup, senza cambi di protocollo. «Report conservati» indica dove si trova il file; il download altrove dà un messaggio chiaro (anche in inglese), il report di un test si rigenera, la separazione delle società copia i file locali. Report precedenti invariati. Non incluso nei binari di `v0.10.0-alpha.1`. [Prove](docs/VERIFICA.md).
+
 ## 20 novembre 2026 — candidato rc-20261120-02 e release v0.10.0-alpha.1 in preparazione
 
 - Build Windows e Android dal commit `ac00e4a` (SYNC-SPAZIO-01 fasi 0–1 sopra `rc-20261120-01`) confezionate in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/`; smoke, Defender, firme di test, allineamento, scansione percorsi, test strumentale su emulatore e 25 checksum verificati.

@@ -44,7 +44,20 @@ export function SavedReports({api, run, download, workspace}: {api: any; run: an
             label: en ? 'Created' : 'Creato il',
             value: date && !isNaN(date.getTime()) ? date.toLocaleString(en ? 'en-GB' : 'it-IT') : '—'
           },
-          {label: en ? 'Report reference' : 'Riferimento report', value: r.id.slice(0, 8)}
+          {label: en ? 'Report reference' : 'Riferimento report', value: r.id.slice(0, 8)},
+          {
+            // REPORT-LOCALE-01: newer report files stay on the device that created them.
+            label: 'File',
+            value: r.file_available
+              ? en
+                ? 'On this device'
+                : 'Su questo dispositivo'
+              : r.saved_by
+                ? (en ? 'Only on the device of ' : 'Solo sul dispositivo di ') + r.saved_by
+                : en
+                  ? 'Only on the device that created it'
+                  : 'Solo sul dispositivo che lo ha creato'
+          }
         ],
         format: r.format
       };

@@ -89,6 +89,12 @@ def test_revision_manual_report_and_lifecycle(tmp_path):
     assert t['analysis']['threshold_w'] == 64
     assert t['analysis']['recovery'][1]['source'] == 'manuale'
     first = c.get(f"/api/v1/tests/{t['id']}/report/md").content
+    # REPORT-LOCALE-01: a saved report whose file is on another device is regenerated, not lost.
+    saved = c.get('/api/v1/reports').json()
+    assert len(saved) == 1 and saved[0]['file_available'] and 'objects' not in saved[0]
+    (tmp_path / 'objects' / saved[0]['file_sha256']).unlink()
+    assert c.get(f"/api/v1/tests/{t['id']}/report/md").content == first
+    assert len(c.get('/api/v1/reports').json()) == 1
     body['settings']['rpe'] = 9
     r = c.put(f"/api/v1/tests/{t['id']}", json={'base': t['revision'], 'reason': 'RPE corretto', 'test': body})
     assert r.status_code == 200, r.text

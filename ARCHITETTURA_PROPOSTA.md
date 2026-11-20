@@ -699,6 +699,10 @@ Implementati blocchi cifrati HMAC per canale, pagine leggere con eventi original
 
 Decisione: il formato resta **v2**. Cambia la pubblicazione: ricezione prima, poi solo gli eventi autenticati che nessuna pagina valida contiene già, in pagine delta mai riscritte. Un indice locale per canale (pagina → eventi, blocchi delle proprie pagine) è un cursore, non un'autorità: i riceventi continuano a verificare ogni evento. Cataloghi rinnovati in modo geometrico. Lo spazio già accumulato non viene toccato: un consolidamento con cancellazione richiede un comando esplicito del fondatore, `delete` nel core comune, avviso firmato e attesa per i dispositivi offline (proposta in [SYNC_SPAZIO_REMOTO.md](docs/SYNC_SPAZIO_REMOTO.md)). La diagnosi dello spazio è un job di dispositivo in sola lettura, separato dalla sync. Il nome v3 è riservato a un cambio di formato incompatibile, come la compressione.
 
+### Report esportati locali al dispositivo — 20 novembre 2026 (REPORT-LOCALE-01)
+
+Il record `report` firmato resta lo strumento di tracciabilità di cosa è stato esportato, ma da ora contiene solo metadati e impronta del file (`file_sha256`, `file_bytes`), non la lista `objects`: lo scambio non trasporta più i PDF. Il file resta negli oggetti del dispositivo che lo ha creato e nei suoi backup. I record precedenti con `objects` restano validi e continuano a viaggiare. Non è un cambio di formato di sync: compatibile con le pagine v2 e con i pacchetti v1.
+
 ### Backup protetto da password — 15 novembre 2026
 
 Opzione facoltativa (RT-11): il backup v3 ZIP64 viene avvolto senza modifiche in un file `.fgbak` cifrato con AES-256-GCM a blocchi da 1 MiB e chiave scrypt (parametri nell'intestazione, sale casuale). Ogni blocco è autenticato con indice e segno di fine file; l'anteprima di ripristino decifra su disco e riusa i controlli del v3. Il v3 in chiaro resta il formato predefinito. Esclusi il database cifrato e le chiavi di `identity.json` nel portachiavi. [Specifica](docs/BACKUP_CIFRATO.md).

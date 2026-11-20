@@ -1,5 +1,11 @@
 # Requisiti e to-do
 
+## REPORT-LOCALE-01 — report esportati: solo metadati nello scambio, 20 novembre 2026
+
+Dopo la diagnosi dell'archivio reale (66,9 MB, di cui circa 64 MB dovuti a 10 report PDF salvati sia in v1 sia in v2), richiesta dell'utente: «sincronizzare solo i metadati del report, senza il file: il PDF resta sul dispositivo che l'ha creato. Mi sembra questa la strada». **Implementato nei sorgenti e verificato localmente** (test e GUI web su due archivi QA); non incluso nei binari di `v0.10.0-alpha.1`.
+
+- Criteri: un report salvato da ora ha nel record firmato metadati, `file_sha256` e `file_bytes`, senza `objects`; né la sync v1 né la v2 trasferiscono il file; il file resta nei backup del dispositivo che l'ha creato; l'elenco indica dove si trova il file; il download altrove spiega che il file è sull'altro dispositivo; il report di un test viene rigenerato; i report precedenti restano invariati. Dettagli e limiti in [SYNC_SPAZIO_REMOTO.md](SYNC_SPAZIO_REMOTO.md).
+
 ## SYNC-SPAZIO-01 — spazio occupato dallo scambio remoto, 20 novembre 2026
 
 Segnalazione dell'utente: «Il mio archivio su webdav è circa 50 mb, abbastanza rilevante come dimensione considerando nessun fit per i test, solo valori storici, come mai?»; poi «Sì, progettala»; dopo l'attivazione della v2, «Procedi con 0 e 1, potrebbe valere la pena definirla sync v3 o tenere la v2?». Analisi, misure e fasi in [SYNC_SPAZIO_REMOTO.md](SYNC_SPAZIO_REMOTO.md).

@@ -90,3 +90,42 @@ def test_missing_attachment_is_a_clear_client_error(tmp_path):
     client.headers['X-Fuorigiri-Token'] = 'qa'
     response = client.get('/api/v1/reports/' + saved['id'] + '/download')
     assert response.status_code == 422 and 'Allegato non presente' in response.text
+
+
+def test_new_reports_keep_the_file_on_the_creating_device_only(tmp_path):
+    """REPORT-LOCALE-01: metadata and fingerprint are exchanged, the file is not."""
+    from cycling_test.store import save_report
+    from cycling_test.sync import exchange
+    from cycling_test.workspaces import Workspaces, invitation, join
+
+    owner_ws = Workspaces(tmp_path / 'owner', Store(tmp_path / 'owner'))
+    entry = owner_ws.create('Club', 'Owner')
+    owner = owner_ws.get(entry['id'])
+    other_ws = Workspaces(tmp_path / 'coach', Store(tmp_path / 'coach'))
+    join(other_ws, invitation(owner, 'Coach', 'admin', 'long-password-123'), 'long-password-123')
+    coach = other_ws.get(entry['id'])
+    body = b'%PDF-1.4 report fixture'
+    saved = save_report(owner, {'organization_id': entry['organization_id'], 'format': 'pdf', 'query': {}}, body)
+    assert 'objects' not in saved and saved['file_bytes'] == len(body)
+    for protocol in (1, 2):
+        folder = tmp_path / f'cloud-v{protocol}'
+        folder.mkdir()
+        key = owner.identity['sync_key']
+        exchange(owner, folder, key, protocol=protocol)
+        exchange(coach, folder, key, protocol=protocol)
+        assert all(body not in p.read_bytes() for p in folder.rglob('*') if p.is_file())
+        assert sum(p.stat().st_size for p in folder.rglob('*') if p.is_file()) < 200_000
+    assert coach.get(saved['id']) == saved
+    assert not (coach.root / 'objects' / saved['file_sha256']).exists()
+
+    def client(root):
+        c = TestClient(create_app(root, token='qa'))
+        c.headers.update({'X-Fuorigiri-Token': 'qa', 'X-Fuorigiri-Workspace': entry['id']})
+        return c
+
+    mine = next(r for r in client(tmp_path / 'owner').get('/api/v1/reports').json() if r['id'] == saved['id'])
+    theirs = next(r for r in client(tmp_path / 'coach').get('/api/v1/reports').json() if r['id'] == saved['id'])
+    assert mine['file_available'] and not theirs['file_available'] and theirs['saved_by'] == 'Owner'
+    assert client(tmp_path / 'owner').get(f"/api/v1/reports/{saved['id']}/download").content == body
+    response = client(tmp_path / 'coach').get(f"/api/v1/reports/{saved['id']}/download")
+    assert response.status_code == 422 and 'solo sul dispositivo' in response.text

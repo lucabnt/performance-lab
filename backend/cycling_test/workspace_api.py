@@ -386,13 +386,18 @@ def install_workspaces(app, manager, store, download):
                 )
                 if (r := json.loads(row[0]))
             }
-            dates = {
-                row[0]: json.loads(row[1]).get('created_at', '')
+            changes = {
+                row[0]: json.loads(row[1])
                 for row in db.execute(
                     "SELECT r.revision,c.body FROM records r LEFT JOIN changes c ON c.id=r.revision WHERE r.kind='report'"
                 )
                 if row[1]
             }
+        from .store import report_file_available
+
+        dates = {k: v.get('created_at', '') for k, v in changes.items()}
+        # Device that signed the saved report (managed archives), shown to locate the file.
+        savers = {k: (v.get('certificate') or {}).get('name', '') for k, v in changes.items()}
         result = []
         for r in records.values():
             if r['kind'] != 'report' or r.get('analysis_type') == 'maturation':
@@ -406,6 +411,9 @@ def install_workspaces(app, manager, store, download):
                 {
                     **r,
                     'saved_at': dates.get(r['revision'], ''),
+                    'saved_by': savers.get(r['revision'], ''),
+                    # REPORT-LOCALE-01: newer reports keep their file only on the creating device.
+                    'file_available': report_file_available(store, r),
                     'context': {
                         'organization': organization.get('name', ''),
                         'group': group.get('name', ''),
@@ -419,11 +427,20 @@ def install_workspaces(app, manager, store, download):
 
     @app.get('/api/v1/reports/{id}/download')
     def report(id: str):
+        from .store import report_file
+
         r = store.get(id)
         if r['kind'] != 'report':
             raise ValueError('Artefatto non valido.')
+        # Older reports carry their file in the exchange: a missing one keeps the attachment error.
+        body = store.read_object(r['objects'][0]) if r.get('objects') else report_file(store, r)
+        if body is None:
+            raise ValueError(
+                'Il file di questo report è conservato solo sul dispositivo che lo ha creato. '
+                'Rigenera il report da questo dispositivo.'
+            )
         return download(
-            store.read_object(r['objects'][0]),
+            body,
             'application/json'
             if r['format'] == 'json'
             else 'application/pdf'

@@ -49,6 +49,28 @@ Attivazione su un archivio gestito con 300 eventi in v1 (499 KB remoti): la v1 r
 
 Nel caso con due admin 221 eventi distinti sono presenti sul server in 764 copie; ciascun admin ha pubblicato 382 eventi. Comprimendo con zlib il contenuto in chiaro delle pagine si ottiene un rapporto di 6,7, gonfiato dalla ripetizione del certificato in ogni evento.
 
+## Diagnosi dell'archivio segnalato — 20 novembre 2026
+
+Analisi eseguita dall'utente con il pannello della fase 0 sull'archivio reale (formato v2 attivo): **66,9 MB in 443 file**.
+
+| Contenuto | Dimensione |
+|---|---|
+| Pacchetti v1 (365) | 45,6 MB, di cui **10 report: 44,7 MB** (PDF in base64 dentro Fernet) |
+| Blocchi v2 (48) | 19,5 MB: gli stessi PDF ripubblicati dopo l'attivazione |
+| Pagine v2 (24) | 1,7 MB: 365 revisioni in 730 copie, una per ciascuno dei due dispositivi |
+| Tutti gli altri record v1 | circa 0,9 MB (89 test, 147 misure, 36 atleti, appartenenze, protocolli, gruppi) |
+
+La causa principale non è la sync ma i **report esportati**: ogni export con input diversi salva un nuovo record con il file allegato, che viaggia con lo scambio (circa 2,5 MB per PDF, soprattutto grafici PNG a 150 dpi). La duplicazione fra dispositivi (C3) qui vale circa 0,9 MB. Decisione dell'utente: sincronizzare solo i metadati dei report (REPORT-LOCALE-01, sotto).
+
+## Report: solo metadati nello scambio (REPORT-LOCALE-01, implementato)
+
+Richiesta dell'utente: «sincronizzare solo i metadati del report, senza il file: il PDF resta sul dispositivo che l'ha creato. Mi sembra questa la strada».
+
+- I report salvati da ora in poi (`save_report`) registrano nel record firmato solo i metadati, `file_sha256` e `file_bytes`, senza la lista `objects`. Gli scambi v1 e v2 trasferiscono solo gli oggetti di quella lista, quindi il file non viaggia; resta nella cartella `objects/` del dispositivo che l'ha creato, inclusa nei suoi backup v3. Nessun cambio di protocollo né di formato.
+- Elenco «Report conservati»: per ogni report indica se il file è su questo dispositivo o solo su quello di chi l'ha salvato (nome dal certificato che ha firmato la revisione). Il download di un file assente restituisce un messaggio chiaro; i report di un singolo test vengono semplicemente rigenerati.
+- I report salvati prima restano invariati e continuano a viaggiare con lo scambio; per loro un allegato mancante resta un errore. La separazione delle società copia anche i file dei report presenti sul dispositivo.
+- Limiti: i client precedenti mostrano i report nuovi ma non ne scaricano il file, e il report di un test con un record nuovo senza file locale li fa fallire finché non vengono aggiornati. Lo spazio già occupato dai report vecchi si recupera solo con la fase 2. La modifica **non è nei binari di `v0.10.0-alpha.1`** (commit `ac00e4a`).
+
 ## Vincoli
 
 - Nessuna perdita di eventi, firme originali, revoche, conflitti o allegati. Sync non è backup: prima di qualsiasi cancellazione remota va proposto un backup v3.
@@ -124,4 +146,4 @@ Pagine `schema: 3` e campi JSON separati compressi (zlib) prima di Fernet; certi
 
 1. Fasi 0 e 1 approvate e implementate il 20 novembre («Procedi con 0 e 1»). Resta da decidere se procedere con la fase 2 e/o la 3, dopo la diagnosi sull'archivio reale.
 2. Attesa del consolidamento (proposta 30 giorni) e se includere i pacchetti v1 coperti.
-3. Report esportati: lasciarli sincronizzati come oggi (RT-03/04) oppure valutare una politica diversa dopo la diagnosi della fase 0.
+3. Report esportati: deciso il 20 novembre dopo la diagnosi, solo metadati nello scambio (REPORT-LOCALE-01, sopra).

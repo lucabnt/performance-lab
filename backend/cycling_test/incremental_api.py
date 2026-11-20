@@ -205,9 +205,10 @@ def install(app, store, require, download):
             ),
             None,
         )
-        if cached:
-            body = store.read_object(cached['objects'][0])
-        else:
+        from .store import report_file
+
+        body = report_file(store, cached) if cached else None
+        if body is None:
             body = report(
                 t,
                 t.get('athlete_snapshot') or require(t["athlete_id"], "athlete"),

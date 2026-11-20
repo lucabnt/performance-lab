@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 novembre 2026 — report solo metadati nello scambio (REPORT-LOCALE-01)
+
+- Diagnosi reale fornita dall'utente con il pannello della fase 0: 66,9 MB, 443 file; 10 report pari a 44,7 MB nei pacchetti v1 e i loro blocchi v2 per 19,5 MB; 365 revisioni in 730 copie fra due dispositivi. Dettaglio in SYNC_SPAZIO_REMOTO.md.
+- `scripts/verify.py` completo riuscito: **373 test Python**, build `tsc`/Vite, test dei modelli frontend, formati e `git diff --check`.
+- Nuovi test: `test_saved_reports.py` (report salvato da un admin, scambio v1 e v2 senza il file nella cartella remota, record identico sull'altro dispositivo senza file, elenco con `file_available`/`saved_by`, download riuscito sul dispositivo d'origine e 422 con messaggio esplicito sull'altro); `test_features.py` (report di un test con file locale rimosso rigenerato con lo stesso contenuto, senza un secondo record). Il test preesistente sull'allegato mancante dei report vecchi resta verde.
+- GUI web: archivi QA nuovi `.local/qa-report-locale-20261120/fondatore` e `/collaboratore` (società «Report QA - SIMULAZIONE», report PDF di archivio di 145.623 byte salvato dal fondatore, scambio v2 su cartella). Collaboratore: scheda con «File: Solo sul dispositivo di Fondatore QA», clic su Scarica → banner con il messaggio, nessun file. Fondatore: «Su questo dispositivo», download 200.
+- Limiti: nessuna prova su WebDAV reale, Android o con client precedenti; nessun binario ricompilato.
+
 ## 20 novembre 2026 — candidato rc-20261120-02 e cartella di release v0.10.0-alpha.1 (non pubblicata)
 
 Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/`, prodotto **0.10.0**, commit `ac00e4a` con working tree pulito (anche al confezionamento): `rc-20261120-01` più SYNC-SPAZIO-01 fasi 0–1. Su richiesta dell’utente la preparazione di release da `rc-20261120-01` non verrà pubblicata: la prima pre-release pubblica è `v0.10.0-alpha.1`, da questo candidato. Nessuna pubblicazione eseguita.

@@ -24,7 +24,7 @@ Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZ
 
 ## Candidato corrente — 19 novembre 2026
 
-Windows: `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/` (commit `73c562d`, solo Windows). Android: ultimo APK debug di test in `win-av02-20261115-02` (commit `3794786`, senza PERIMETRO-01 e core 0.2.0). I candidati del 15 novembre e precedenti restano conservati come storici. [Checklist](COLLAUDO_PILOT.md), [prove](VERIFICA.md).
+Windows: `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/` (commit `73c562d`, solo Windows). Android: `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/` (20 novembre, wheel neutre, debug di test e release non firmato da firmare). I candidati del 15 novembre e precedenti restano conservati come storici. [Checklist](COLLAUDO_PILOT.md), [prove](VERIFICA.md).
 
 ## Candidato precedente — ordine e maturazione, 9 novembre 2026
 

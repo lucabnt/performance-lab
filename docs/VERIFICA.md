@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 novembre 2026 — candidato android-neutre-20261120-01, abi3audit e confezionamento per piattaforma
+
+- **abi3audit 0.0.26** `--strict --assume-minimum-abi3 3.13` sulle due cryptography riparate in `android/wheels`: 1 estensione per ABI, **0 incompatibilità di versione e 0 violazioni ABI** (x86_64 e arm64). Lo strumento è installato solo in `tmp/abi3audit-tools`.
+- `scripts/package_candidate.py` accetta ora Windows (`--bundle` con `--installer`), Android (`--apk`) o entrambi; LEGGIMI, gate e limiti dipendono dalle piattaforme presenti, campo `platforms` nel manifest. Errori verificati per argomenti mancanti o spaiati; ruff senza rilievi. Il percorso combinato non è stato rieseguito con questa modifica.
+- Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/`, **solo Android**, dagli APK di `.local/candidate-android-20261119-01` (commit di riferimento `16d9d66`; il manifest riporta `working_tree_dirty` per la modifica a `package_candidate.py` non ancora committata, che è inclusa nello ZIP sorgenti). Prima del confezionamento verificato che debug e release contengano i moduli `_rust.abi3.so` riparati registrati in `ABI3_REPAIR.json`. Contiene debug di test (`f0ae5ef9…07d7`, 105.097.387 byte), release non firmato (`7533206a…ae75`, 104.035.220 byte), APK strumentale (`f6858060…fdbf`), wheel native, sorgenti, log di firma/allineamento/audit/scansione/abi3audit e riepilogo del runtime su emulatore. **20 checksum** e CRC ZIP verificati.
+- `DISTRIBUZIONE.md`: comando ISCC che cerca sia l’installazione per utente (`%LOCALAPPDATA%/Programs/Inno Setup 6`) sia quella per tutti gli utenti.
+- Limiti: nessuna nuova prova su dispositivo; release ancora da firmare; ARM64 non provato.
+
 ## 19 novembre 2026 — consegna core020-20261119-01 (solo Windows)
 
 Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`, prodotto **0.10.0**, commit `73c562d` con working tree pulito al confezionamento. Rispetto a `win-av02-20261115-02` aggiunge PERIMETRO-01 (etichetta «sperimentale»), core comune 0.2.0 e la correzione di `backup_crypto`. Nessuna build Android, pubblicazione, firma o sostituzione di candidati precedenti.

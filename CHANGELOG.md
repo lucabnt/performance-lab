@@ -1,5 +1,11 @@
 # Changelog
 
+## 20 novembre 2026 — candidato Android android-neutre-20261120-01 e confezionamento per piattaforma
+
+- Candidato locale solo Android in `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/`: APK debug di test, release non firmato con scansione dei percorsi pulita e APK strumentale compilati con le wheel neutre, verificati su emulatore x86_64. abi3audit strict senza violazioni sulle cryptography. Nessuna firma o pubblicazione.
+- `scripts/package_candidate.py` confeziona candidati Windows, Android o entrambi.
+- `DISTRIBUZIONE.md`: comando ISCC valido anche con Inno Setup installato per il solo utente.
+
 ## 19 novembre 2026 — wheel Android ricostruite da radice neutra
 
 - Sostituite in `android/wheels` sei wheel (pydantic-core 2.41.4, cryptography 50.0.2, Pillow 13.0.0, entrambe le ABI) ricostruite sulla Toolbox Fedora in `/build/fuorigiri-20261119-01`; CFFI invariate. Nuovi `SHA256.json`, `ABI3_REPAIR.json` e `PILLOW_BUILD.json`; wheel precedenti conservate fuori dal repository.

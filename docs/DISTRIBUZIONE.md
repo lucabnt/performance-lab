@@ -94,9 +94,12 @@ Build dal sorgente (solo sviluppatore):
 .venv/Scripts/python.exe -m pip install --no-deps --no-index -r requirements-common.txt
 # nella cartella frontend: npm ci; npm run build
 .venv/Scripts/python.exe scripts/build.py
-& 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe' packaging/windows/Fuorigiri.iss
+$iscc = @("$env:LOCALAPPDATA/Programs/Inno Setup 6/ISCC.exe", 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe') | Where-Object { Test-Path $_ } | Select-Object -First 1
+& $iscc packaging/windows/Fuorigiri.iss
 .venv/Scripts/python.exe scripts/release.py
 ```
+
+`ISCC.exe` si trova in `%LOCALAPPDATA%/Programs/Inno Setup 6` se Inno Setup è installato per il solo utente (come sul PC di sviluppo), in `Program Files (x86)` se installato per tutti gli utenti (come sul runner del workflow `desktop-build`). Per le build dei candidati, passare a ISCC le cartelle con `/DAppDistDir=<bundle>` e `/DAppOutputDir=<cartella nuova>`.
 
 L’ultimo comando crea un archivio dei sorgenti mantenuti, `SHA256SUMS.txt` e `release.json`. Non firma e non pubblica. La firma di Inno Setup scaricato identifica il compilatore, **non firma l’installer Fuorigiri risultante**. Il titolare dovrà fornire il proprio certificato di firma per un rilascio firmato; non generare un certificato fittizio presentandolo come attendibile.
 

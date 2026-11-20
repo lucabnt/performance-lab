@@ -1,8 +1,12 @@
 # Collaudo del candidato pilot — Windows e Android
 
-## Candidato corrente — core020, solo Windows, 19 novembre 2026
+## Candidato corrente Android — android-neutre, 20 novembre 2026
 
-Consegna locale `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`, **solo Windows**, dal commit `73c562d` con working tree pulito. Rispetto a `win-av02-20261115-02` aggiunge l’etichetta «sperimentale» di Drive/Dropbox/OneDrive (PERIMETRO-01), il core comune 0.2.0 e la correzione della pulizia del backup protetto; mantiene bootloader locale e risorsa di versione (WIN-AV-02) e MAT-PHV-01. Installer da eseguire sopra l’installazione esistente dopo un backup e con l’app chiusa (W-04), oppure portabile completo. **Prima prova da fare:** installazione, avvio, chiusura e riapertura dal collegamento con Defender attivo, controllando gli eventi 1116/1117 ([WINDOWS_DEFENDER.md](WINDOWS_DEFENDER.md)). Nessun APK: per Android resta `win-av02-20261115-02` (debug di test) o precedenti. Smoke, scansioni Defender e 15 checksum verificati; [prove e digest](VERIFICA.md). Restano WIN-AV-01/02, Windows pulito, firma Authenticode e i gate Android.
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/`, **solo Android**, con le wheel native ricostruite da radice neutra. `android-debug-test.apk` (firma di test abituale) si installa come aggiornamento sopra l’APK di test già presente, senza disinstallare; verificato su emulatore API 35 x86_64, non su telefono. `android-release-unsigned.apk` è da firmare con la chiave del titolare ([FIRMA_ANDROID.md](FIRMA_ANDROID.md)): la scansione dei percorsi è pulita. Restano A-01…A-12, in particolare telefono ARM64 e 4 librerie non conformi a 16 KB. [Prove e digest](VERIFICA.md).
+
+## Candidato corrente Windows — core020, solo Windows, 19 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`, **solo Windows**, dal commit `73c562d` con working tree pulito. Rispetto a `win-av02-20261115-02` aggiunge l’etichetta «sperimentale» di Drive/Dropbox/OneDrive (PERIMETRO-01), il core comune 0.2.0 e la correzione della pulizia del backup protetto; mantiene bootloader locale e risorsa di versione (WIN-AV-02) e MAT-PHV-01. Installer da eseguire sopra l’installazione esistente dopo un backup e con l’app chiusa (W-04), oppure portabile completo. **Prima prova da fare:** installazione, avvio, chiusura e riapertura dal collegamento con Defender attivo, controllando gli eventi 1116/1117 ([WINDOWS_DEFENDER.md](WINDOWS_DEFENDER.md)). Per Android vedere il candidato `android-neutre-20261120-01` sopra. Smoke, scansioni Defender e 15 checksum verificati; [prove e digest](VERIFICA.md). Restano WIN-AV-01/02, Windows pulito, firma Authenticode e i gate Android.
 
 ## Candidato precedente — win-av02, 15 novembre 2026
 

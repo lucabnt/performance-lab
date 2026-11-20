@@ -18,6 +18,8 @@ Primo candidato con queste modifiche: `win-av02-20261115-02` (launcher SHA-256 `
 
 *20 novembre 2026:* la prova va fatta su `rc-20261120-01` (commit `2722aea`, launcher SHA-256 `0e0b6bb8…4c78`, stesso bootloader locale), che succede a `core020-20261119-01` e aggiunge le traduzioni inglesi. Scansioni di confezionamento senza rilevamenti con definizioni 1.463.382.0.
 
+*20 novembre 2026, pomeriggio:* la prova va fatta su `rc-20261120-02` (commit `ac00e4a`, launcher SHA-256 `f7ed4824…ce4a`, stesso bootloader locale), che aggiunge SYNC-SPAZIO-01 ed è la base di `v0.10.0-alpha.2`. Scansioni di confezionamento senza rilevamenti con definizioni 1.463.384.0.
+
 ## 10 novembre 2026 — nuovo blocco sul PC destinatario
 
 Il 10 novembre, dalle 09:52:46 alle 09:53:37, Defender ha rilevato Bearfoos sull’eseguibile installato (1116) e ha registrato la quarantena riuscita (1117), con definizioni 1.463.222.0 e motore 1.1.26100.4. L’EXE è assente. Il file del disinstallatore è datato 9 novembre alle 21:03:21. Le impronte dei file dell’interfaccia rimasti coincidono per 19/19 con ordine-maturazione-20261109-01 e per 18/19 con import-avvisi. Il launcher atteso del 9 novembre ha SHA-256 `6e7257afe7a3aae7dfc1772809d592e552f64181c52e8b98979fa714450b97d0`; manca un digest della copia rimossa. WIN-AV-01 resta aperto sul candidato corrente.

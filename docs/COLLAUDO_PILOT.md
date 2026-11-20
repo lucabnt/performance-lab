@@ -1,6 +1,15 @@
 # Collaudo del candidato pilot — Windows e Android
 
-## Candidato corrente — rc-20261120-01, Windows + Android, 20 novembre 2026
+## Candidato corrente — rc-20261120-02, Windows + Android, 20 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/` dal commit `ac00e4a` con working tree pulito: `rc-20261120-01` più SYNC-SPAZIO-01 (pagine delta della sync v2 e pannello «Spazio occupato dallo scambio»). È la base della release `v0.10.0-alpha.2`, che sostituisce alpha.1 mai pubblicata.
+
+- **Windows:** come per `rc-20261120-01`: installer sopra l’installazione esistente dopo un backup e con l’app chiusa, oppure portabile completo; prima prova installazione, avvio e riapertura con Defender attivo ([WINDOWS_DEFENDER.md](WINDOWS_DEFENDER.md)), poi W-01…W-07.
+- **Android:** `android-debug-test.apk` si installa come aggiornamento; verificato su emulatore x86_64 (2 test strumentali, avvio con dati conservati). `android-release-unsigned.apk` è l’input di confronto per la firma del titolare ([FIRMA_ANDROID.md](FIRMA_ANDROID.md)). ARM64 non provato su dispositivo reale; 4 librerie non conformi a 16 KB.
+- **Sync:** con la v2 attiva, dopo l’aggiornamento di tutti gli admin lo spazio remoto deve crescere solo con le modifiche; verificare con «Analizza lo spazio» prima e dopo alcuni scambi WebDAV reali.
+- Smoke, scansioni Defender, contenuti e 25 checksum verificati; [prove e digest](VERIFICA.md).
+
+## Candidato precedente — rc-20261120-01, Windows + Android, 20 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/` dal commit `2722aea` con working tree pulito: traduzioni inglesi complete (I18N-01), core comune 0.2.0, etichette «sperimentale» dei provider, bootloader Windows locale e wheel Android neutre. Sostituisce per il collaudo `core020-20261119-01` e `android-neutre-20261120-01`.
 
@@ -172,7 +181,7 @@ Consegna successiva `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-05/`, con G
 - [ ] **A-08** Aprire grafico: Scorri pagina predefinito; Esplora/Zoom e ripristino funzionanti. Vista ampia in landscape immersivo senza fascia del titolo; comandi richiamabili; Back e X ripristinano orientamento/barre e mantengono il test.
 - [ ] **A-09** Tastiera completa, rotazione, testo ingrandito e TalkBack: campi/azioni raggiungibili, nomi comprensibili, nessun contenuto indispensabile tagliato.
 - [ ] **A-10** Chiusura forzata/riavvio durante normali operazioni su copia QA. Atteso: nessuna corruzione; operazioni non completate riconoscibili e ripetibili.
-- [ ] **A-11** Aggiornare fra due APK release firmati con la stessa chiave e versionCode crescente. Atteso: dati e identità conservati. Ripetere prima della seconda consegna pilot.
+- [ ] **A-11** Aggiornare fra due APK release firmati con la stessa chiave e versionCode crescente. Atteso: dati e identità conservati. Ripetere prima della seconda consegna pilot. *20 novembre 2026:* alpha.1 → alpha.2 firmati con la stessa chiave su emulatore x86_64: aggiornamento accettato, società e identità conservate; versionCode invariato e nessun telefono, quindi la voce resta aperta.
 - [ ] **A-12** Qualificare compatibilità su dispositivo/emulatore con pagine 16 KB prima di dichiararla o scegliere un canale che la richieda. La sola presenza delle wheel non basta.
 
 Le precedenti prove emulatore x86_64 sono in VERIFICA.md. Questi check sul telefono non sono marcati completati per analogia.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 20 novembre 2026 — candidato rc-20261120-02 e release v0.10.0-alpha.2 in preparazione
+
+- Build Windows e Android dal commit `ac00e4a` (SYNC-SPAZIO-01 fasi 0–1 sopra `rc-20261120-01`) confezionate in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/`; smoke, Defender, firme di test, allineamento, scansione percorsi, test strumentale su emulatore e 25 checksum verificati.
+- La release `v0.10.0-alpha.1` non verrà pubblicata: la prima pre-release pubblica sarà `v0.10.0-alpha.2`. Cartella locale `dist/release/Fuorigiri-0.10.0-alpha.2/` completa: APK firmato dal titolare (stesso certificato di alpha.1, contenuto identico al release del candidato, aggiornamento dalla alpha.1 firmata verificato su emulatore), note di rilascio e `SHA256SUMS.txt`. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
+
 ## 20 novembre 2026 — spazio dello scambio: diagnosi e pagine delta (SYNC-SPAZIO-01)
 
 - Nuovo [SYNC_SPAZIO_REMOTO.md](docs/SYNC_SPAZIO_REMOTO.md): cause della crescita dello spazio remoto in v1 e v2, misure su archivi sintetici e piano in quattro fasi.

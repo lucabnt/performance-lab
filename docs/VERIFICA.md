@@ -1,5 +1,23 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 novembre 2026 — candidato rc-20261120-02 e cartella di release v0.10.0-alpha.2 (non pubblicata)
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/`, prodotto **0.10.0**, commit `ac00e4a` con working tree pulito (anche al confezionamento): `rc-20261120-01` più SYNC-SPAZIO-01 fasi 0–1. Su richiesta dell’utente la release `v0.10.0-alpha.1` non verrà pubblicata: si pubblica direttamente `v0.10.0-alpha.2`. Nessuna pubblicazione eseguita.
+
+- `scripts/verify.py` completo riuscito sullo stesso codice (372 test Python, build `tsc`/Vite, test dei modelli frontend); `verify_versions.py` coerente.
+- **Windows:** PyInstaller in nuova `.local/candidate-windows-20261120-02` (319 s), Inno Setup in output nuovo (121 s), stesso bootloader locale. Smoke con PATH ristretto e dati nuovi `.local/qa-windows-package-20261120-02`: import, logo e backend HTTP in 4,9 s. Defender, definizioni **1.463.384.0**: bundle e installer senza rilevamenti (non dimostra l’esito in installazione). Launcher SHA-256 `f7ed4824a843e831b19374916ad14120a454a69591d770d3ac46ee59512cce4a`. PYZ con `cycling_test.sync_space` e `sync_v2`.
+- **Android:** JDK 21/Gradle 8.13 offline, `clean assembleRelease assembleDebug assembleDebugAndroidTest` in 201 s, APK copiati in nuova `.local/candidate-android-20261120-02`. Debug con certificato di test invariato `89d904a5…09e160b3`; release non firmato; zipalign `-P 16` superato su entrambi; scansione percorsi del release pulita; audit 222 ELF, 4 non conformi a 16 KB (invariati). `app.imy` con `sync_space` e `sync_v2`. Emulatore Pixel_9 API 35 x86_64: aggiornamento sopra l’installazione esistente con dati conservati, `OfflineRuntimeTest` **OK (2 tests)**, avvio dal launcher con elenco atleti della copia sintetica dopo circa 30 s (primo avvio dopo l’aggiornamento).
+- **Contenuti:** 19 asset frontend identici a `frontend/dist` nel bundle e in entrambi gli APK; portabile identico al bundle (3.813 file); CRC ZIP e **25 checksum** verificati; ZIP sorgenti senza percorsi personali né email, con i file di SYNC-SPAZIO-01.
+- Installer: **197.908.876 byte**, SHA-256 `7664cac7ef1a714229661c44b6dd0cd9f7a5b31ed37b163e70b4bc3d43afd65a`.
+- Portabile: **281.988.577 byte**, SHA-256 `747f293d73c2bf86b604066897e16eb4c22f647d560a852230c98a1133d4447a`.
+- Debug test: **105.128.891 byte**, SHA-256 `526fa71c78d2360e94c0c192fb93aba45fd1bd2470fd2383f2e55571b37ed893`.
+- Release non firmato: **104.051.052 byte**, SHA-256 `b633c087b1e76c5b0430bac225a7c2052bb9cdbf62e0bb5e464340bac1bf9828`.
+- Sorgenti: **6.942.116 byte**, SHA-256 `7a770f2f2b50d6c3dc13ce731116f1c52ed2e2dbf843c5748ca049769c00c7b5`.
+- **Cartella di release** `dist/release/Fuorigiri-0.10.0-alpha.2/` (non pubblicata): installer, portabile, sorgenti e wheel native copiati dal candidato e ricontrollati con i suoi checksum; `RELEASE_NOTES.md` derivate da quelle di alpha.1 con le novità dello scambio; `SHA256SUMS.txt` sui soli cinque allegati, riepilogo in `.local/release-v0.10.0-alpha.2.json`.
+- **Firma:** il titolare ha generato il release firmato con Android Studio (*Generate Signed APK*, variante release) sul codice di `ac00e4a`. `apksigner verify`: schema v2 valido, un firmatario, `CN=Luca Bontempi, C=IT`, RSA 2048, certificato SHA-256 `a04c6d2dbb2d47cb87b22e7e280e96d5a1b37c85f4522e9047b97f6af7a9406d` (lo stesso di alpha.1). Zipalign `-P 16` e scansione dei percorsi superati. Le 261 voci sono **identiche byte per byte** a quelle del release non firmato del candidato. APK **104.059.244 byte**, SHA-256 `42d70206feabc0424b06dcc70eb3956bf169b1711fd0a820163fcddd363421fc`. Output di Android Studio spostato in `.local/android-studio-release-20261120-02`.
+- **Aggiornamento fra release firmati (parte di A-11):** emulatore Medium_Phone API 37 x86_64 con alpha.1 firmata installata alle 09:32 e la società «QA Firma Release»: `adb install -r` della alpha.2 riuscito, stessa firma, prima installazione conservata; all’avvio la società e l’identità del fondatore sono presenti. versionCode invariato (1000), quindi non copre l’aumento di versione richiesto da A-11; non provato su telefono.
+- Non provati: installazione e riapertura con Defender attivo, Windows pulito, ARM64 su dispositivo reale, WebDAV reale con le pagine delta, pannello dello spazio su Android.
+
 ## 20 novembre 2026 — spazio dello scambio: diagnosi e pagine delta (SYNC-SPAZIO-01)
 
 - Sorgenti, non pacchetti: nessun EXE/APK ricompilato. `scripts/verify.py` completo riuscito (versioni, UI comune, core, hash lockfile, ruff, formato Python e frontend, build con tsc, 372 test Python, test dei modelli frontend, `git diff --check`).

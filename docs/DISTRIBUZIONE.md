@@ -4,6 +4,8 @@
 
 Il nome prodotto resta 0.10.0. Il tag proposto è `v0.10.0-alpha.1`. Per il primo tag pubblico utilizzare una repository inizializzata dallo snapshot controllato, senza genitori della storia privata. Conservare la repository originale privata. Verificare anche eventuali fork, allegati, Actions, wiki, issue e pull request prima di cambiare la visibilità di un progetto esistente.
 
+**Decisione del 20 novembre 2026:** l’utente pubblica la release `v0.10.0-alpha.1` su **questa** repository e la rende pubblica lui stesso dopo la release, invece di inizializzarne una nuova dallo snapshot. Controllo della storia (71 commit) prima della scelta: nessun percorso personale, account, email, chiave o token; autori con indirizzo noreply GitHub. Prima di cambiare la visibilità rivedere anche issue, pull request, Actions (log e artefatti), wiki e impostazioni dei secret. Allegati della release: cartella locale `dist/release/Fuorigiri-0.10.0-alpha.1/`, tag sul commit `ef56468` da cui sono stati compilati.
+
 | Allegato | Quando inserirlo |
 |---|---|
 | Fuorigiri-0.10.0-sources.zip | Snapshot dei file tracciati del candidato, con esempi sintetici, licenza, componenti comuni e istruzioni. |

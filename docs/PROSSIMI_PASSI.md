@@ -13,8 +13,8 @@ Decisioni PERIMETRO-01 ([requisiti](REQUISITI_E_TODO.md), [analisi](analisi-alte
 L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:
 
 1. **Fedora:** ~~ricostruire le sei wheel da radice neutra~~ **fatto il 19 novembre** ([procedura](ANDROID_WHEEL_FEDORA.md), kit `android-neutral-kit-20261119-02`): riparazione ABI3, provenienza, scanner `--strict` e APK release con scansione dei percorsi pulita; restano 4 moduli LOAD non a 16 KB (FreeType, OpenBLAS/libpng x86_64) e il runtime ARM64 su dispositivo reale (x86_64 verificato su emulatore; la traduzione ARM dell’emulatore non avvia Chaquopy, né con le wheel nuove né con le precedenti, 20 novembre).
-2. **Android:** chiave del titolare ([firma](FIRMA_ANDROID.md)), `build_android.py --release` da snapshot committato, firma, prove A-04…A-08 e A-11 sul telefono. Gli utenti dell’APK debug devono fare un backup e disinstallarlo.
-3. **Windows:** installare il candidato `core020-20261119-01` (19 novembre: avvisi Qt, bootloader locale WIN-AV-02, core 0.2.0) e riaprirlo con Defender attivo (WIN-AV-01/02), poi prove W-01…W-07 in Windows Sandbox. Firma Authenticode da decidere.
+2. **Android:** *20 novembre: chiave creata e release `ef56468` firmato (A-02); restano copia di recupero della chiave, telefono ARM64 e A-11.* Chiave del titolare ([firma](FIRMA_ANDROID.md)), `build_android.py --release` da snapshot committato, firma, prove A-04…A-08 e A-11 sul telefono. Gli utenti dell’APK debug devono fare un backup e disinstallarlo.
+3. **Windows:** installare il candidato `rc-20261120-01` (succede a `core020-20261119-01`) (19 novembre: avvisi Qt, bootloader locale WIN-AV-02, core 0.2.0) e riaprirlo con Defender attivo (WIN-AV-01/02), poi prove W-01…W-07 in Windows Sandbox. Firma Authenticode da decidere.
 4. **Licenze:** decidere se allegare alla release gli archivi sorgente Qt o affidarsi ai link ufficiali.
 5. **Pubblicazione:** nuovo snapshot sorgenti, allegati e `SHA256SUMS.txt` ricalcolati sullo stesso commit. Nelle note: solo WebDAV provato; Drive, Dropbox e OneDrive sperimentali; 16 KB come limite noto.
 
@@ -22,9 +22,9 @@ L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:
 
 Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZIONE.md). La storia privata resta separata. Prima dei binari completare il materiale di licenza Windows e la bonifica delle wheel Android, poi ricompilare e firmare l’APK.
 
-## Candidato corrente — 19 novembre 2026
+## Candidato corrente — 20 novembre 2026
 
-Windows: `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/` (commit `73c562d`, solo Windows). Android: `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/` (20 novembre, wheel neutre, debug di test e release non firmato da firmare). I candidati del 15 novembre e precedenti restano conservati come storici. [Checklist](COLLAUDO_PILOT.md), [prove](VERIFICA.md).
+Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/` (commit `ef56468`, I18N-01 incluso). Il release Android non firmato di questo candidato è l’input della firma del titolare. Precedenti dello stesso periodo: Windows `core020-20261119-01`, Android `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/` (20 novembre, wheel neutre, debug di test e release non firmato da firmare). I candidati del 15 novembre e precedenti restano conservati come storici. [Checklist](COLLAUDO_PILOT.md), [prove](VERIFICA.md).
 
 ## Candidato precedente — ordine e maturazione, 9 novembre 2026
 

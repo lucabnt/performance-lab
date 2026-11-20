@@ -1,10 +1,18 @@
 # Collaudo del candidato pilot — Windows e Android
 
-## Candidato corrente Android — android-neutre, 20 novembre 2026
+## Candidato corrente — rc-20261120-01, Windows + Android, 20 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/` dal commit `ef56468` con working tree pulito: traduzioni inglesi complete (I18N-01), core comune 0.2.0, etichette «sperimentale» dei provider, bootloader Windows locale e wheel Android neutre. Sostituisce per il collaudo `core020-20261119-01` e `android-neutre-20261120-01`.
+
+- **Windows:** installer da eseguire sopra l’installazione esistente dopo un backup e con l’app chiusa, oppure portabile completo. Prima prova: installazione, avvio e riapertura dal collegamento con Defender attivo, controllando gli eventi 1116/1117 ([WINDOWS_DEFENDER.md](WINDOWS_DEFENDER.md)); poi W-01…W-07.
+- **Android:** `android-debug-test.apk` (firma di test) si installa come aggiornamento senza disinstallare; verificato su emulatore x86_64 (2 test strumentali, avvio, passaggio all’inglese). `android-release-unsigned.apk` è il file da firmare con la chiave del titolare ([FIRMA_ANDROID.md](FIRMA_ANDROID.md)); scansione dei percorsi pulita. ARM64 non provato su dispositivo reale; 4 librerie non conformi a 16 KB.
+- Smoke, scansioni Defender, contenuti e 25 checksum verificati; [prove e digest](VERIFICA.md).
+
+## Candidato precedente Android — android-neutre, 20 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/`, **solo Android**, con le wheel native ricostruite da radice neutra. `android-debug-test.apk` (firma di test abituale) si installa come aggiornamento sopra l’APK di test già presente, senza disinstallare; verificato su emulatore API 35 x86_64, non su telefono. `android-release-unsigned.apk` è da firmare con la chiave del titolare ([FIRMA_ANDROID.md](FIRMA_ANDROID.md)): la scansione dei percorsi è pulita. Restano A-01…A-12, in particolare telefono ARM64 e 4 librerie non conformi a 16 KB. [Prove e digest](VERIFICA.md).
 
-## Candidato corrente Windows — core020, solo Windows, 19 novembre 2026
+## Candidato precedente Windows — core020, solo Windows, 19 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`, **solo Windows**, dal commit `73c562d` con working tree pulito. Rispetto a `win-av02-20261115-02` aggiunge l’etichetta «sperimentale» di Drive/Dropbox/OneDrive (PERIMETRO-01), il core comune 0.2.0 e la correzione della pulizia del backup protetto; mantiene bootloader locale e risorsa di versione (WIN-AV-02) e MAT-PHV-01. Installer da eseguire sopra l’installazione esistente dopo un backup e con l’app chiusa (W-04), oppure portabile completo. **Prima prova da fare:** installazione, avvio, chiusura e riapertura dal collegamento con Defender attivo, controllando gli eventi 1116/1117 ([WINDOWS_DEFENDER.md](WINDOWS_DEFENDER.md)). Per Android vedere il candidato `android-neutre-20261120-01` sopra. Smoke, scansioni Defender e 15 checksum verificati; [prove e digest](VERIFICA.md). Restano WIN-AV-01/02, Windows pulito, firma Authenticode e i gate Android.
 
@@ -154,8 +162,8 @@ Consegna successiva `dist/candidates/Fuorigiri-0.10.0-pilot-20261022-05/`, con G
 
 **L’APK release di questo candidato è intenzionalmente NON firmato e non è installabile.** L’utente ha richiesto di preparare la procedura senza generare ora una chiave. Seguire [FIRMA_ANDROID.md](FIRMA_ANDROID.md). La firma Windows Authenticode non è applicata: annotare eventuali avvisi del sistema senza attribuire al prodotto la firma del compilatore Inno Setup.
 
-- [ ] **A-01** Creare/custodire la chiave release del titolare con copia di recupero e password separata; mai committare keystore/password o inviarli in chat.
-- [ ] **A-02** Firmare una copia dell’APK con la chiave stabile, verificare certificato e allineamento e calcolare un nuovo SHA-256. Conservare l’APK non firmato originale.
+- [ ] **A-01** Creare/custodire la chiave release del titolare con copia di recupero e password separata; mai committare keystore/password o inviarli in chat. *20 novembre 2026:* chiave creata dal titolare in Android Studio (certificato SHA-256 `a04c6d2d…406d`); copia di recupero e custodia separata della password ancora da completare.
+- [x] **A-02** Firmare una copia dell’APK con la chiave stabile, verificare certificato e allineamento e calcolare un nuovo SHA-256. Conservare l’APK non firmato originale. *20 novembre 2026:* release `ef56468` firmato con Android Studio (schema v2), certificato `CN=Luca Bontempi, C=IT`, zipalign `-P 16` e scansione percorsi superati, SHA-256 `72094a80…efca`; contenuto equivalente al release non firmato di `rc-20261120-01`.
 - [ ] **A-03** Non tentare aggiornamento diretto debug→release con firme diverse. Predisporre backup dati e recupero accessi; provare il passaggio su copia QA prima di rimuovere qualsiasi installazione.
 - [ ] **A-04** Installare il firmato su telefono ARM64 e aprire offline. Atteso: backend nativo avviato, società disponibile e nessun AVVIO-01.
 - [ ] **A-05** Importare FIT/CSV e ripristinare backup attraverso il picker Android; esportare PDF/MD/CSV/ZIP con SAF e riaprire i file fuori dall’app.

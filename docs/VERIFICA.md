@@ -1,5 +1,27 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 novembre 2026 — APK release firmato e cartella di release v0.10.0-alpha.1
+
+- **Firma:** il titolare ha creato la chiave e generato il release firmato con Android Studio (*Generate Signed APK*, variante release, commit `ef56468`), quindi una nuova build e non la firma del file non firmato del candidato. `apksigner verify`: schema v2 valido (v1 non necessario con minSdk 26), un firmatario, `CN=Luca Bontempi, C=IT`, RSA 2048, certificato SHA-256 `a04c6d2dbb2d47cb87b22e7e280e96d5a1b37c85f4522e9047b97f6af7a9406d`. Zipalign `-P 16` superato; scansione dei percorsi del builder e del checkout pulita. APK **104.057.880 byte**, SHA-256 `72094a8031d35550b803a4d28923ab4cc01c3b55e583a15de5548e9c55dfefca`.
+- **Equivalenza con il candidato:** stesse 261 voci del release non firmato di `rc-20261120-01`; differiscono solo cinque archivi Chaquopy, nei quali tutte le 2.052 differenze sono `.pyc` con bytecode identico e sola intestazione (data) diversa; librerie native e asset identici.
+- **Runtime:** emulatore Medium_Phone API 37 x86_64 senza installazioni precedenti: prima installazione, avvio, creazione di una società sintetica «QA Firma Release» (backend, archivio e identità nel Keystore con la firma release). Nessun test strumentale (l’APK di test ha la firma debug); ARM64 non provato.
+- **Cartella di release** `dist/release/Fuorigiri-0.10.0-alpha.1/` (non pubblicata): installer, portabile, sorgenti e wheel native copiati da `rc-20261120-01` dopo il ricontrollo dei suoi checksum, APK firmato; `SHA256SUMS.txt` calcolato solo sui cinque allegati; bozza `NOTE_DI_RILASCIO.md` fuori dai checksum. ZIP sorgenti controllato: nessun percorso personale, account o indirizzo email. Output originale di Android Studio (APK, metadati, baseline profile) spostato fuori dalla repository in `.local/android-studio-release-20261120-01`.
+- Non verificati: telefono ARM64, aggiornamento fra due release firmati (A-11), Defender con installazione, Windows pulito.
+
+## 20 novembre 2026 — consegna rc-20261120-01 (Windows + Android)
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/`, prodotto **0.10.0**, commit `ef56468` (I18N-01) con working tree pulito, verificato anche al confezionamento. Nessuna pubblicazione, firma o sostituzione di candidati precedenti.
+
+- `scripts/verify.py` completo: tutti i passi riusciti, **363 Python passati**, **43 frontend passati**, build `tsc`/Vite.
+- **Windows:** PyInstaller in nuova `.local/candidate-windows-20261120-01` (308 s, avvisi invariati), Inno Setup in 123 s; bootloader `runw.exe` locale `9776c4f7…1c85`. Smoke con PATH ristretto e dati QA nuovi `.local/qa-windows-package-20261120-01`: import, logo e backend HTTP in 7,2 s. Defender attivo, definizioni **1.463.382.0**: bundle, installer e intera consegna senza rilevamenti. Launcher SHA-256 `0e0b6bb884c0a968bee8179d327d5b93fcc3b44d567ce76cf042de8e9a3c4c78`.
+- **Android:** JDK 21/Gradle 8.13 offline, nuova `.local/candidate-android-20261120-01` (290 s). Debug con certificato di test invariato `89d904a5…09e160b3`; release non firmato; zipalign `-P 16` superato; scansione percorsi del release pulita (in modalità strict solo builder upstream); audit 222 ELF, 4 non conformi a 16 KB (invariati). Emulatore Pixel_9 API 35 x86_64: `OfflineRuntimeTest` **OK (2 tests)**, avvio dal launcher, menu e passaggio a English con elenco atleti tradotto (resta in italiano il nome dato alla copia d’archivio, che è un dato), ripristino dell’italiano.
+- **Contenuti:** 19 asset frontend identici a `frontend/dist` nel bundle Windows e in entrambi gli APK; `_rust.abi3.so` riparati di `ABI3_REPAIR.json` presenti negli APK; portabile confrontato byte per byte con il bundle; CRC ZIP e **25 checksum** verificati.
+- Installer: **197.884.857 byte**, SHA-256 `1713561fbaa292a30a8bf56c3db40a7f28e59691bc7c67a1f5acac33c9ed93c0`.
+- Portabile: **281.963.740 byte**, SHA-256 `59e105f4b3c92928c7fa3b4625699ffd507c62ac4728788cc0fa2827f21551fd`.
+- Debug test: **105.112.459 byte**, SHA-256 `4a8104d7a3536f49f107600bb7b65f9e633d80d90a52466874dced584dff2551`.
+- Release non firmato: **104.048.292 byte**, SHA-256 `bfcc8832548d3330e17c368c098860ad75ebe44ab545a0babd82047569131046`.
+- Non provati: installazione e riapertura con Defender attivo, Windows pulito, ARM64 su dispositivo reale, firma release, provider reali.
+
 ## 20 novembre 2026 — traduzioni inglesi dell'interfaccia (I18N-01)
 
 - Analisi statica (TypeScript AST) dei sorgenti `frontend/src`: dopo la correzione restano senza voce nel dizionario solo stringhe identiche nelle due lingue (unità, sigle, segnaposto di percorso, riferimenti bibliografici).

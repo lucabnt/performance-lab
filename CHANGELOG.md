@@ -1,5 +1,14 @@
 # Changelog
 
+## 20 novembre 2026 — APK release firmato e cartella di release v0.10.0-alpha.1 (non pubblicata)
+
+- Chiave release Android del titolare creata; APK release firmato in Android Studio dal commit `ef56468` (certificato SHA-256 `a04c6d2d…406d`), verificato ed equivalente al release del candidato `rc-20261120-01`; prima installazione e creazione di una società su emulatore riuscite.
+- Preparata in locale la cartella `dist/release/Fuorigiri-0.10.0-alpha.1/` con i cinque allegati previsti da DISTRIBUZIONE.md, `SHA256SUMS.txt` e bozza delle note di rilascio. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
+
+## 20 novembre 2026 — candidato rc-20261120-01 (Windows + Android)
+
+- Build locali dal commit `ef56468` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/`: installer e portabile Windows, APK debug di test, release non firmato e APK strumentale, wheel native e sorgenti. Include I18N-01 e tutti gli interventi del 15–20 novembre. Versione prodotto 0.10.0 invariata, nessuna firma o pubblicazione. [Prove](docs/VERIFICA.md).
+
 ## 20 novembre 2026 — traduzioni inglesi mancanti nell'interfaccia (I18N-01)
 
 - Con la lingua inglese diverse voci restavano in italiano: etichette scritte direttamente nei componenti (editor anaerobico, analisi e preset, lattato/VO₂, campi personalizzati, protocolli, storici e progressione, cloud e sincronizzazione), chiamate `tr()` senza voce nel dizionario (anche «Salva» e «Annulla»), metriche anaerobiche con etichetta inglese uguale a quella italiana, opzioni con valore interno mostrato (fonte del peso, tipo anaerobico) e nomi delle serie/assi nei grafici.

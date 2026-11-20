@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import io
 import fitdecode
 
@@ -31,13 +31,28 @@ def decode_fit(
     if len(sessions) > 1 and session_index is None:
         raise ValueError('FIT con più sessioni: selezionare esplicitamente la sessione da importare.')
     records = [r for r in messages.get("record_mesgs", []) if isinstance(r.get("timestamp"), datetime)]
+    warnings = []
+    session_bounds = 'file'
     if sessions and session_index is not None:
         if not 0 <= session_index < len(sessions):
             raise ValueError('Sessione non valida.')
         selected = sessions[session_index]
         if not all(isinstance(selected.get(k), datetime) for k in ('start_time', 'timestamp')):
             raise ValueError('Limiti sessione mancanti: richiede revisione.')
-        records = [r for r in records if selected['start_time'] <= r['timestamp'] <= selected['timestamp']]
+        start, end = selected['start_time'], selected['timestamp']
+        if end <= start:
+            # Some exporters (e.g. MyWhoosh) write the session end equal to its start.
+            # Rebuild the end only from the elapsed time declared in the same message.
+            elapsed = selected.get('total_elapsed_time')
+            if not isinstance(elapsed, (int, float)) or elapsed <= 0:
+                raise ValueError('Fine sessione non successiva all’inizio e durata assente: richiede revisione.')
+            end = start + timedelta(seconds=elapsed)
+            session_bounds = 'elapsed_time'
+            warnings.append(
+                'Fine sessione assente nel FIT: limite ricostruito da inizio sessione e durata totale dichiarata '
+                f'({elapsed:g} s).'
+            )
+        records = [r for r in records if start <= r['timestamp'] <= end]
     if duplicate_policy not in ('reject', 'keep_last'):
         raise ValueError('Politica duplicati non valida.')
     if duplicate_policy == 'keep_last':
@@ -118,12 +133,16 @@ def decode_fit(
         'decoder': 'fitdecode-strict/3',
         'session_index': session_index or 0,
         'sessions': metadata,
-        'corrections': {'duplicate_policy': duplicate_policy, 'reason': correction_reason, 'input_ordered': ordered},
+        'corrections': {
+            'duplicate_policy': duplicate_policy,
+            'reason': correction_reason,
+            'input_ordered': ordered,
+            'session_bounds': session_bounds,
+        },
         'laps': [
             {'start': str(r.get('start_time', '')), 'end': str(r.get('timestamp', ''))}
             for r in messages.get('lap_mesgs', [])
         ],
-        "warnings": [
-            "Confermare manualmente fine sforzo e offset. Il termine del file può includere recupero o defaticamento."
-        ],
+        "warnings": warnings
+        + ["Confermare manualmente fine sforzo e offset. Il termine del file può includere recupero o defaticamento."],
     }

@@ -1,5 +1,12 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 20 novembre 2026 — FIT con fine sessione uguale all'inizio (FIT-SESSIONE-01)
+
+- FIT reale di un ramp test MyWhoosh fornito dall'utente (non incluso nella repository): CRC valido, una sessione, 1734 record a 1 s, `start_time` = `timestamp` = inizio, `total_elapsed_time` 1734 s. Prima della correzione `decode_fit(session_index=0)` falliva («FIT privo di un tracciato temporale utilizzabile»); dopo, 1734 campioni, 1733 s, `session_bounds = elapsed_time`. Stesso esito con `POST /api/v1/traces` e `session_index=0` (come la UI) su un archivio temporaneo nuovo: 200.
+- Nuovo test `test_session_end_rebuilt_from_declared_elapsed_time` con FIT sintetico: fine ricostruita dalla durata, durata più breve che limita i campioni, durata zero bloccante.
+- `scripts/verify.py` completo riuscito: **374 test Python**, build `tsc`/Vite, test dei modelli frontend, formati e `git diff --check`.
+- Limiti: nessun collaudo GUI dell'intero flusso fino all'analisi del test; gli avvisi del decodificatore FIT non sono mostrati nella UI; nessun binario ricompilato.
+
 ## 20 novembre 2026 — report solo metadati nello scambio (REPORT-LOCALE-01)
 
 - Diagnosi reale fornita dall'utente con il pannello della fase 0: 66,9 MB, 443 file; 10 report pari a 44,7 MB nei pacchetti v1 e i loro blocchi v2 per 19,5 MB; 365 revisioni in 730 copie fra due dispositivi. Dettaglio in SYNC_SPAZIO_REMOTO.md.

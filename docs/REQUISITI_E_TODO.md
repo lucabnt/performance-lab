@@ -1,5 +1,11 @@
 # Requisiti e to-do
 
+## FIT-SESSIONE-01 — FIT con fine sessione uguale all'inizio, 20 novembre 2026
+
+Segnalazione dell'utente: un FIT di MyWhoosh (ramp test, una sola sessione) non si importa e compare «FIT privo di un tracciato temporale utilizzabile». Causa: nel messaggio `session` MyWhoosh scrive in `timestamp` (fine) lo stesso istante di `start_time`; l'importatore, che riceve sempre la sessione selezionata dalla UI, teneva soltanto i campioni compresi fra inizio e fine, cioè uno solo. **Implementato nei sorgenti e verificato localmente**; non incluso nei binari di `v0.10.0-alpha.1`.
+
+- Criteri: se la fine della sessione selezionata non è successiva all'inizio, il limite si ricostruisce soltanto come inizio + `total_elapsed_time` dichiarato nello stesso messaggio, con avviso nel tracciato e `corrections.session_bounds = elapsed_time` nell'oggetto normalizzato; senza durata positiva resta un errore bloccante. Nessuna modifica per i FIT con limiti validi né per i tracciati già importati. Gli avvisi del decodificatore FIT non sono ancora mostrati nella UI.
+
 ## REPORT-LOCALE-01 — report esportati: solo metadati nello scambio, 20 novembre 2026
 
 Dopo la diagnosi dell'archivio reale (66,9 MB, di cui circa 64 MB dovuti a 10 report PDF salvati sia in v1 sia in v2), richiesta dell'utente: «sincronizzare solo i metadati del report, senza il file: il PDF resta sul dispositivo che l'ha creato. Mi sembra questa la strada». **Implementato nei sorgenti e verificato localmente** (test e GUI web su due archivi QA); non incluso nei binari di `v0.10.0-alpha.1`.

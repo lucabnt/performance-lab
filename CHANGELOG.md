@@ -1,5 +1,9 @@
 # Changelog
 
+## 20 novembre 2026 — FIT di MyWhoosh con fine sessione mancante (FIT-SESSIONE-01)
+
+- I FIT in cui la fine della sessione coincide con l'inizio (per esempio quelli esportati da MyWhoosh) si importano: la fine si ricostruisce dalla durata totale dichiarata nella stessa sessione, con avviso e correzione registrata nel tracciato normalizzato (`session_bounds`). Senza durata l'import resta bloccato. FIT con limiti validi invariati. Non incluso nei binari di `v0.10.0-alpha.1`. [Prove](docs/VERIFICA.md).
+
 ## 20 novembre 2026 — file per la repository pubblica
 
 - Nuovi [SECURITY.md](SECURITY.md) (segnalazione privata delle vulnerabilità tramite GitHub, versioni coperte, ambito, dati da non inviare) e [CONTRIBUTING.md](CONTRIBUTING.md) (ambiente, verifiche, regole principali, licenza dei contributi).

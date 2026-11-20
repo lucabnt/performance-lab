@@ -180,6 +180,29 @@ def test_multisession_selection_and_duplicate_correction():
     )
 
 
+def _fit_session_without_end(elapsed_ms):
+    # Session end equal to its start, as written by MyWhoosh; records span 0-5 s.
+    body = bytes([0x40, 0, 0]) + struct.pack('<H', 20) + bytes([2, 253, 4, 0x86, 7, 2, 0x84])
+    epoch = 1_100_000_000
+    for t in range(6):
+        body += bytes([0]) + struct.pack('<IH', epoch + t, 100 + t)
+    body += bytes([0x41, 0, 0]) + struct.pack('<H', 18) + bytes([3, 2, 4, 0x86, 253, 4, 0x86, 7, 4, 0x86])
+    body += bytes([1]) + struct.pack('<III', epoch, epoch, elapsed_ms)
+    raw = struct.pack('<BBHI4s', 12, 0x10, 100, len(body), b'.FIT') + body
+    return raw + struct.pack('<H', crc(raw))
+
+
+def test_session_end_rebuilt_from_declared_elapsed_time():
+    decoded = decode_fit(_fit_session_without_end(5_000), session_index=0)
+    assert [s['power'] for s in decoded['samples']] == [100, 101, 102, 103, 104, 105]
+    assert decoded['corrections']['session_bounds'] == 'elapsed_time'
+    assert 'ricostruito' in decoded['warnings'][0]
+    # The declared duration bounds the selection: nothing beyond it is included.
+    assert len(decode_fit(_fit_session_without_end(3_000), session_index=0)['samples']) == 4
+    with pytest.raises(ValueError, match='durata assente'):
+        decode_fit(_fit_session_without_end(0), session_index=0)
+
+
 def test_report_scope_and_method_separation(tmp_path):
     from cycling_test.archive_report import build, render
     from cycling_test.observations import enrich

@@ -2,11 +2,11 @@
 
 ## 21 novembre 2026 — release v0.10.0-alpha.1 spostata su rc-20261121-01 (preparazione)
 
-- APK release rigenerato e firmato dal titolare con la stessa chiave; differisce dal candidato solo per `certifi` 2026.11.20 (dipendenza secondaria non fissata), accettato. Nuova cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-01/` con allegati, checksum e note aggiornate; tag `v0.10.0-alpha.1` spostato sul commit `8cb232b`. La sostituzione degli allegati nella release su GitHub resta all’utente. [Prove](docs/VERIFICA.md).
+- APK release rigenerato e firmato dal titolare con la stessa chiave; differisce dal candidato solo per `certifi` 2026.11.20 (dipendenza secondaria non fissata), accettato. Nuova cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-01/` con allegati, checksum e note aggiornate; tag `v0.10.0-alpha.1` spostato sul commit `ccc50ce`. La sostituzione degli allegati nella release su GitHub resta all’utente. [Prove](docs/VERIFICA.md).
 
 ## 21 novembre 2026 — candidato rc-20261121-01 (Windows + Android)
 
-- Build locali dal commit `8cb232b` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-01/`: installer e portabile Windows, APK debug di test, release non firmato, APK strumentale, wheel native e sorgenti. Aggiunge a `rc-20261120-02` REPORT-LOCALE-01 e FIT-SESSIONE-01. Destinato a diventare la base della release `v0.10.0-alpha.1`; nessuna firma o pubblicazione. [Prove](docs/VERIFICA.md).
+- Build locali dal commit `ccc50ce` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-01/`: installer e portabile Windows, APK debug di test, release non firmato, APK strumentale, wheel native e sorgenti. Aggiunge a `rc-20261120-02` REPORT-LOCALE-01 e FIT-SESSIONE-01. Destinato a diventare la base della release `v0.10.0-alpha.1`; nessuna firma o pubblicazione. [Prove](docs/VERIFICA.md).
 
 ## 20 novembre 2026 — FIT di MyWhoosh con fine sessione mancante (FIT-SESSIONE-01)
 
@@ -24,7 +24,7 @@
 
 ## 20 novembre 2026 — candidato rc-20261120-02 e release v0.10.0-alpha.1 in preparazione
 
-- Build Windows e Android dal commit `ac00e4a` (SYNC-SPAZIO-01 fasi 0–1 sopra `rc-20261120-01`) confezionate in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/`; smoke, Defender, firme di test, allineamento, scansione percorsi, test strumentale su emulatore e 25 checksum verificati.
+- Build Windows e Android dal commit `8e9de2d` (SYNC-SPAZIO-01 fasi 0–1 sopra `rc-20261120-01`) confezionate in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/`; smoke, Defender, firme di test, allineamento, scansione percorsi, test strumentale su emulatore e 25 checksum verificati.
 - La preparazione di release da `rc-20261120-01` non viene pubblicata: la prima pre-release pubblica è `v0.10.0-alpha.1`, da questo candidato. Cartella locale `dist/release/Fuorigiri-0.10.0-alpha.1/` completa: APK firmato dal titolare (stesso certificato della preparazione precedente, contenuto identico al release del candidato, aggiornamento dall’APK firmato della preparazione precedente verificato su emulatore), note di rilascio e `SHA256SUMS.txt`. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
 
 ## 20 novembre 2026 — spazio dello scambio: diagnosi e pagine delta (SYNC-SPAZIO-01)
@@ -35,12 +35,12 @@
 
 ## 20 novembre 2026 — APK release firmato e preparazione di release da rc-20261120-01 (non pubblicata)
 
-- Chiave release Android del titolare creata; APK release firmato in Android Studio dal commit `2722aea` (certificato SHA-256 `a04c6d2d…406d`), verificato ed equivalente al release del candidato `rc-20261120-01`; prima installazione e creazione di una società su emulatore riuscite.
+- Chiave release Android del titolare creata; APK release firmato in Android Studio dal commit `46959ed` (certificato SHA-256 `a04c6d2d…406d`), verificato ed equivalente al release del candidato `rc-20261120-01`; prima installazione e creazione di una società su emulatore riuscite.
 - Preparata in locale la cartella `dist/release/Fuorigiri-0.10.0-rc-20261120-01-non-pubblicata/` (inizialmente chiamata alpha.1, poi superata da `rc-20261120-02`) con i cinque allegati previsti da DISTRIBUZIONE.md, `SHA256SUMS.txt` e bozza delle note di rilascio. Nessuna pubblicazione. [Prove](docs/VERIFICA.md).
 
 ## 20 novembre 2026 — candidato rc-20261120-01 (Windows + Android)
 
-- Build locali dal commit `2722aea` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/`: installer e portabile Windows, APK debug di test, release non firmato e APK strumentale, wheel native e sorgenti. Include I18N-01 e tutti gli interventi del 15–20 novembre. Versione prodotto 0.10.0 invariata, nessuna firma o pubblicazione. [Prove](docs/VERIFICA.md).
+- Build locali dal commit `46959ed` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261120-01/`: installer e portabile Windows, APK debug di test, release non firmato e APK strumentale, wheel native e sorgenti. Include I18N-01 e tutti gli interventi del 15–20 novembre. Versione prodotto 0.10.0 invariata, nessuna firma o pubblicazione. [Prove](docs/VERIFICA.md).
 
 ## 20 novembre 2026 — traduzioni inglesi mancanti nell'interfaccia (I18N-01)
 
@@ -71,7 +71,7 @@
 
 ## 19 novembre 2026 — candidato core020-20261119-01 (solo Windows)
 
-- Nuove build locali Windows (installer e portabile, launcher con bootloader locale e risorsa di versione) dal commit `9f42773`, in `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`. Include PERIMETRO-01, core comune 0.2.0 e la correzione del backup protetto. Nessun APK; versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-01/02. [Prove](docs/VERIFICA.md).
+- Nuove build locali Windows (installer e portabile, launcher con bootloader locale e risorsa di versione) dal commit `9239cb8`, in `dist/candidates/Fuorigiri-0.10.0-core020-20261119-01/`. Include PERIMETRO-01, core comune 0.2.0 e la correzione del backup protetto. Nessun APK; versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-01/02. [Prove](docs/VERIFICA.md).
 - Documentazione riallineata: candidato corrente in COLLAUDO_PILOT e PROSSIMI_PASSI, schermata `crescita-maturazione.jpg` con la card «HV massima osservata».
 
 ## 19 novembre 2026 — backup protetto: nessuna cancellazione di file preesistenti
@@ -99,7 +99,7 @@
 
 ## 15 novembre 2026 — candidato win-av02-20261115-02
 
-- Nuove build locali Windows (installer e portabile, launcher con bootloader PyInstaller locale e risorsa di versione) e Android (debug di test, release non firmato, supporto strumentale) dal commit `65bb645`, in `dist/candidates/Fuorigiri-0.10.0-win-av02-20261115-02/`. Include MAT-PHV-01. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-02. [Prove](docs/VERIFICA.md).
+- Nuove build locali Windows (installer e portabile, launcher con bootloader PyInstaller locale e risorsa di versione) e Android (debug di test, release non firmato, supporto strumentale) dal commit `d66d337`, in `dist/candidates/Fuorigiri-0.10.0-win-av02-20261115-02/`. Include MAT-PHV-01. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Da installare con Defender attivo per verificare WIN-AV-02. [Prove](docs/VERIFICA.md).
 
 ## 15 novembre 2026 — launcher Windows: bootloader locale e risorsa di versione (WIN-AV-02)
 
@@ -117,7 +117,7 @@
 
 ## 15 novembre 2026 — candidato revisione-tecnica-20261115-01
 
-- Nuove build locali Windows (installer e portabile) e Android (debug di test, release non firmato, supporto strumentale) dal commit `da47723`, in `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Prove in [VERIFICA.md](docs/VERIFICA.md).
+- Nuove build locali Windows (installer e portabile) e Android (debug di test, release non firmato, supporto strumentale) dal commit `c9c829a`, in `dist/candidates/Fuorigiri-0.10.0-revisione-tecnica-20261115-01/`. Versione prodotto 0.10.0 invariata; nessuna pubblicazione. Prove in [VERIFICA.md](docs/VERIFICA.md).
 
 ## 15 novembre 2026 — correzioni del primo run CI
 

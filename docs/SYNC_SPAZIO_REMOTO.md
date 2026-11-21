@@ -69,7 +69,7 @@ Richiesta dell'utente: «sincronizzare solo i metadati del report, senza il file
 - I report salvati da ora in poi (`save_report`) registrano nel record firmato solo i metadati, `file_sha256` e `file_bytes`, senza la lista `objects`. Gli scambi v1 e v2 trasferiscono solo gli oggetti di quella lista, quindi il file non viaggia; resta nella cartella `objects/` del dispositivo che l'ha creato, inclusa nei suoi backup v3. Nessun cambio di protocollo né di formato.
 - Elenco «Report conservati»: per ogni report indica se il file è su questo dispositivo o solo su quello di chi l'ha salvato (nome dal certificato che ha firmato la revisione). Il download di un file assente restituisce un messaggio chiaro; i report di un singolo test vengono semplicemente rigenerati.
 - I report salvati prima restano invariati e continuano a viaggiare con lo scambio; per loro un allegato mancante resta un errore. La separazione delle società copia anche i file dei report presenti sul dispositivo.
-- Limiti: i client precedenti mostrano i report nuovi ma non ne scaricano il file, e il report di un test con un record nuovo senza file locale li fa fallire finché non vengono aggiornati. Lo spazio già occupato dai report vecchi si recupera solo con la fase 2. La modifica **non è nei binari di `v0.10.0-alpha.1`** (commit `ac00e4a`).
+- Limiti: i client precedenti mostrano i report nuovi ma non ne scaricano il file, e il report di un test con un record nuovo senza file locale li fa fallire finché non vengono aggiornati. Lo spazio già occupato dai report vecchi si recupera solo con la fase 2. La modifica **non è nei binari di `v0.10.0-alpha.1`** (commit `8e9de2d`).
 
 ## Vincoli
 

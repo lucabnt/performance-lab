@@ -1,5 +1,9 @@
 # Changelog
 
+## 21 novembre 2026 — candidato rc-20261121-03 (Windows + Android)
+
+- Build locali dal commit `0a6c4be` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/`: `rc-20261121-02` più REPORT-ZIP-01. Su richiesta dell’utente diventa la base della release `v0.10.0-alpha.1` al posto di `rc-20261121-02`; servono un nuovo APK release firmato dal titolare, una nuova cartella di release e il tag su `0a6c4be`. [Prove](docs/VERIFICA.md).
+
 ## 21 novembre 2026 — ZIP dei report deterministici (REPORT-ZIP-01)
 
 - Gli ZIP dei report (test incrementale, anaerobico, personalizzato, storico, archivio, ripetibilità ed export CSV) si scrivono con il nuovo `report_zip.py`: data fissa 1980-01-01, permessi e sistema di origine espliciti, compressione dell'archivio, logo letto come byte invece che con data e permessi del file. A parità di contenuto i byte non dipendono più dall'ora di generazione: un report rigenerato dopo REPORT-LOCALE-01 coincide con quello salvato. Nomi, ordine e contenuti dei membri invariati; report già salvati e loro `file_sha256` non ricalcolati. Corregge il test instabile `test_revision_manual_report_and_lifecycle`. PDF, backup e pacchetti di recupero esclusi. Non incluso nei binari di `rc-20261121-02`; nessun binario ricompilato. [Prove](docs/VERIFICA.md).

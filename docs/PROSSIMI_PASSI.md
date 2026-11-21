@@ -22,7 +22,11 @@ L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:
 
 Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZIONE.md). La storia privata resta separata. Prima dei binari completare il materiale di licenza Windows e la bonifica delle wheel Android, poi ricompilare e firmare l’APK.
 
-## Candidato corrente — 21 novembre 2026, pomeriggio
+## Candidato corrente — rc-20261121-03, 21 novembre 2026
+
+Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/` (commit `0a6c4be`), `rc-20261121-02` più REPORT-ZIP-01. Su richiesta dell’utente diventa la base di `v0.10.0-alpha.1`. Restano: APK release firmato dal titolare con la stessa chiave, nuova cartella `dist/release/` con `SHA256SUMS.txt`, tag spostato su `0a6c4be` (oggi su `0e3f900`), creazione della release su GitHub e pubblicazione della repository.
+
+## Candidato precedente — rc-20261121-02, 21 novembre 2026, pomeriggio
 
 Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261121-02/` (commit `0e3f900`), stesso codice di `rc-20261121-01` ricostruito senza i documenti con le segnalazioni a Microsoft. L’utente ha eliminato la release `v0.10.0-alpha.1` creata su `rc-20261121-01`. APK firmato dal titolare, cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-02/` con `SHA256SUMS.txt` e tag `v0.10.0-alpha.1` su `0e3f900` pronti; resta da creare la release su GitHub caricando i cinque allegati, `SHA256SUMS.txt` e il testo di `RELEASE_NOTES.md`, poi rendere pubblica la repository. Da correggere a parte: report Markdown rigenerato non deterministico (ora corrente nello ZIP), che rende intermittente `test_revision_manual_report_and_lifecycle`.
 

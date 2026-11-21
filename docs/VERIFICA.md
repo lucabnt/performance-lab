@@ -1,5 +1,20 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 21 novembre 2026 — consegna rc-20261121-03 (Windows + Android)
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/`, prodotto **0.10.0**, commit `0a6c4be` con working tree pulito, verificato anche al confezionamento: `rc-20261121-02` più REPORT-ZIP-01 (ZIP dei report deterministici). Su richiesta dell’utente sostituisce `rc-20261121-02` come base della release `v0.10.0-alpha.1`; la cartella di release preparata da `rc-20261121-02` è superata. Nessuna pubblicazione o firma.
+
+- `scripts/verify.py` completo: tutti i passi riusciti, **374 Python passati**, 43 frontend, build `tsc`/Vite.
+- **Windows:** PyInstaller in nuova `.local/candidate-windows-20261121-04` con bootloader locale, Inno Setup in 199 s. Smoke con PATH ristretto e dati QA nuovi: import, logo e backend HTTP in 6,1 s. Defender attivo, definizioni **1.463.398.0**: bundle, installer e intera consegna senza rilevamenti. Launcher SHA-256 `1d8885b3c5cd021fb8e69094e0258175a68acb2146ab859f6930308e9c27cd2a`.
+- **Android:** JDK 21/Gradle 8.13 offline, nuova `.local/candidate-android-20261121-04` (372 s). Debug con certificato di test invariato; release non firmato; zipalign `-P 16` superato; scansione percorsi del release pulita (in modalità strict restano i percorsi noti dei builder Chaquopy); audit 222 ELF, 4 non conformi a 16 KB (invariati). Emulatore Pixel_9 API 35 x86_64: prima installazione subito dopo l’avvio fallita senza messaggio, ripetuta e riuscita; `OfflineRuntimeTest` **OK (2 tests)**, avvio dal launcher senza errori.
+- **Contenuti:** `report_zip` presente nel bundle Windows, in `app.imy` dell’APK e nello ZIP sorgenti; ZIP sorgenti, portabile e documenti della consegna senza riferimenti alle segnalazioni, percorsi personali o email; frontend identico in Windows e APK, `_rust.abi3.so` riparati presenti, portabile identico al bundle; **25 checksum** e CRC verificati.
+- Installer: **197.917.442 byte**, SHA-256 `61c87f2d93a9b3c0222cb50e262e66cb1eb5ef6e205710c08357d68022d410f5`.
+- Portabile: **281.999.642 byte**, SHA-256 `5773e1aef6c9fda7dfe54d1873de0cc71e13fd70626bd6c87532c250a81ac8c8`.
+- Debug test: **105.122.407 byte**, SHA-256 `05401c06fb2c6ba7f0528e2e3521910112ba0ec09fc1d4feae16d2da3b371226`.
+- Release non firmato: **104.058.796 byte**, SHA-256 `a10d3ae430169804efb085dc3ef8d82590416bb0e67b1d9b5917a6bd4b1568cd`.
+- Sorgenti: **6.961.643 byte**, SHA-256 `49eb3a6cf2fe9c5a6e2e89e55041b8f84ed4efd64dc9baf1a4c6e28ed5e11576`; wheel native invariate (`7da8b2ea…9909`).
+- Non provati: firma release, installazione con Defender attivo, Windows pulito, ARM64 su dispositivo reale.
+
 ## 21 novembre 2026 — ZIP dei report deterministici (REPORT-ZIP-01)
 
 - **Causa:** `ZipFile.writestr` per nome usa l'ora corrente e `ZipFile.write` (logo) data e permessi del file; due generazioni in secondi diversi davano byte e `file_sha256` diversi.

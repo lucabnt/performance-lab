@@ -2,7 +2,7 @@
 
 ## 21 novembre 2026 — candidato rc-20261121-04 (Windows + Android)
 
-- Build locali dal commit `fc63893` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-04/`: `rc-20261121-03` con REPORT-ZIP-01 compatibile con Python 3.12. Su richiesta dell’utente diventa la base della release `v0.10.0-alpha.1` al posto di `rc-20261121-03`; servono un nuovo APK release firmato dal titolare, una nuova cartella di release e il tag su `fc63893`. [Prove](docs/VERIFICA.md).
+- Build locali dal commit `fc63893` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-04/`: `rc-20261121-03` con REPORT-ZIP-01 compatibile con Python 3.12. Su richiesta dell’utente diventa la base della release `v0.10.0-alpha.1` al posto di `rc-20261121-03`; APK release firmato dal titolare con la stessa chiave e identico al candidato salvo le intestazioni `.pyc`; cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-04/` con `SHA256SUMS.txt`; tag `v0.10.0-alpha.1` su `fc63893`. Resta da creare la release su GitHub. [Prove](docs/VERIFICA.md).
 
 ## 21 novembre 2026 — REPORT-ZIP-01 compatibile con Python 3.12
 

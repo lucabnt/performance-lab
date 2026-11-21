@@ -2,7 +2,7 @@
 
 ## Prima pre-release 0.10.0-alpha.1
 
-**Decisione del 21 novembre 2026, sera (2):** il CI con Python 3.12 ha rilevato che REPORT-ZIP-01 rompeva report ed export su quella versione; i binari (3.13 e 3.14) non erano colpiti, ma l’utente sceglie di rifare il candidato. Nuovo candidato `rc-20261121-04` (commit `fc63893`); la cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-03/` e il suo APK firmato restano come preparazione superata. Servono un nuovo APK release firmato con la stessa chiave, una nuova cartella di release con `SHA256SUMS.txt` e il tag spostato su `fc63893`.
+**Decisione del 21 novembre 2026, sera (2):** il CI con Python 3.12 ha rilevato che REPORT-ZIP-01 rompeva report ed export su quella versione; i binari (3.13 e 3.14) non erano colpiti, ma l’utente sceglie di rifare il candidato. Nuovo candidato `rc-20261121-04` (commit `fc63893`); la cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-03/` e il suo APK firmato restano come preparazione superata. APK release firmato con la stessa chiave, cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-04/` con `SHA256SUMS.txt` e tag spostato su `fc63893`; resta la creazione della release su GitHub.
 
 **Decisione del 21 novembre 2026, sera:** l’utente sceglie di includere nella release anche REPORT-ZIP-01. Nuovo candidato `rc-20261121-03` (commit `0a6c4be`); la cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-02/` e il suo APK firmato restano come preparazione superata. APK release firmato con la stessa chiave, cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-03/` con `SHA256SUMS.txt` e tag spostato su `0a6c4be`; resta la creazione della release su GitHub.
 

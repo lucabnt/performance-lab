@@ -24,7 +24,7 @@ Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZ
 
 ## Candidato corrente — rc-20261121-04, 21 novembre 2026
 
-Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261121-04/` (commit `fc63893`), `rc-20261121-03` con REPORT-ZIP-01 compatibile con Python 3.12. Su richiesta dell’utente diventa la base di `v0.10.0-alpha.1`. Restano: APK release firmato dal titolare con la stessa chiave, nuova cartella `dist/release/` con `SHA256SUMS.txt`, tag spostato su `fc63893` (oggi su `0a6c4be`), creazione della release su GitHub e pubblicazione della repository. Prima dei prossimi candidati eseguire anche `py -3.12 scripts/test_android_versions.py` (gira solo nel CI, ed è lì che è emerso l’errore 3.12).
+Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261121-04/` (commit `fc63893`), `rc-20261121-03` con REPORT-ZIP-01 compatibile con Python 3.12. Su richiesta dell’utente diventa la base di `v0.10.0-alpha.1`. APK firmato, cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-04/` con `SHA256SUMS.txt` e tag su `fc63893` pronti. Restano la creazione della release su GitHub (cinque allegati, `SHA256SUMS.txt`, testo di `RELEASE_NOTES.md`) e la pubblicazione della repository. Prima dei prossimi candidati eseguire anche `py -3.12 scripts/test_android_versions.py` (gira solo nel CI, ed è lì che è emerso l’errore 3.12).
 
 ## Candidato precedente — rc-20261121-03, 21 novembre 2026
 

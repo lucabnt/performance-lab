@@ -34,7 +34,7 @@ Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/` (commit `a
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-ordine-maturazione-20261109-01/`: nuove build Windows/Android **0.10.0** con **UI-ORDINE-02** (cognome/nome, test e misure dal più recente in pagine indipendenti da 15) e **MAT-AVVISI-01** (stime datate decrescenti e indici antropometrici con avvisi, motore growth-maturity/2), oltre alle funzioni precedenti; UI comune **0.2.9** invariata. Installer/portabile completi, APK debug firmato per i test, release non firmato, supporto strumentale, sorgenti/wheel e **25 checksum finali verificati**. Avvio Windows, scansioni Defender attivo e controlli di contenuti/firme/allineamento riusciti. [Prove e digest](VERIFICA.md).
 
-Nessuna pubblicazione, chiave nuova o installazione sopra dati operativi. Restano Windows pulito/aggiornamento, firma release e runtime Android/telefono, sei problemi LOAD 16 KB, provider reali e validazione esterna. La documentazione congelata nei pacchetti precede questa annotazione conclusiva.
+Nessuna pubblicazione, chiave nuova o installazione sopra dati operativi. Restano Windows pulito/aggiornamento, firma release e runtime Android/telefono, sei problemi LOAD 16 KB, provider reali e validazione esterna. WIN-AV-01 attende reinstallazione/riapertura con protezione attiva: le scansioni di questa nuova build sono una verifica distinta. La documentazione congelata nei pacchetti precede questa annotazione conclusiva.
 
 ## Candidato precedente — import-avvisi, 8 novembre 2026
 
@@ -58,7 +58,7 @@ Disponibile `dist/candidates/Fuorigiri-0.10.0-sync-intervals-20261107-01/`, con 
 
 ## Blocco Windows — 7 novembre 2026
 
-Risolvere WIN-AV-01 prima di qualificare il candidato Windows: Defender rimuove l'EXE di `windows-alpha-review-20261102-01`. [Diagnosi e criteri](WINDOWS_DEFENDER.md). Gli altri lavori Android rimangono distinti.
+Risolvere WIN-AV-01 prima di qualificare il candidato Windows: Defender rimuove l'EXE di `windows-alpha-review-20261102-01`. Occorre la verifica con protezioni attive; nessuna correzione del binario ancora dimostrata. [Diagnosi e criteri](WINDOWS_DEFENDER.md). Gli altri lavori Android rimangono distinti.
 
 ## Seguito operativo native e Windows — 2 novembre 2026
 

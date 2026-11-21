@@ -6,9 +6,9 @@
 
 **Decisione del 20 novembre 2026, pomeriggio:** la preparazione di release del mattino da `rc-20261120-01` (commit `2722aea`, cartella `dist/release/Fuorigiri-0.10.0-rc-20261120-01-non-pubblicata/`) non viene pubblicata; la prima pre-release pubblica è `v0.10.0-alpha.1`, compilata dal candidato `rc-20261120-02` (commit `ac00e4a`), che aggiunge SYNC-SPAZIO-01 fasi 0–1. Allegati in `dist/release/Fuorigiri-0.10.0-alpha.1/`, tag sul commit `ac00e4a`; APK release firmato dal titolare con la stessa chiave il 20 novembre e identico nel contenuto al release del candidato; `SHA256SUMS.txt` calcolato sui cinque allegati. Le indicazioni sotto restano come storico della preparazione.
 
-Il nome prodotto resta 0.10.0. Il tag è `v0.10.0-alpha.1`. Per il primo tag pubblico utilizzare una repository inizializzata dallo snapshot controllato, senza genitori della storia privata. Conservare la repository originale privata. Verificare anche eventuali fork, allegati, Actions, wiki, issue e pull request prima di cambiare la visibilità di un progetto esistente.
+Il nome prodotto resta 0.10.0. Il tag è `v0.10.0-alpha.1`. Per il primo tag pubblico utilizzare una repository inizializzata dallo snapshot controllato, senza genitori della storia privata. Il vecchio identificativo di profilo e i riferimenti delle pratiche di assistenza restano nelle revisioni precedenti. Conservare la repository originale privata. Verificare anche eventuali fork, allegati, Actions, wiki, issue e pull request prima di cambiare la visibilità di un progetto esistente.
 
-**Decisione del 20 novembre 2026:** l’utente pubblica la release `v0.10.0-alpha.1` su **questa** repository e la rende pubblica lui stesso dopo la release, invece di inizializzarne una nuova dallo snapshot. Controllo della storia (71 commit) prima della scelta: nessun percorso personale, account, email, chiave o token; autori con indirizzo noreply GitHub. L’identificativo Intervals.icu usato come esempio nelle prime revisioni (anche nella vecchia `docs/screenshots/intervals-id.png`) è stato rimosso dalla storia il 20 novembre con riscrittura e push forzato, su richiesta dell’utente. Prima di cambiare la visibilità rivedere anche issue, pull request, Actions (log e artefatti), wiki e impostazioni dei secret. Allegati preparati quel mattino: cartella locale `dist/release/Fuorigiri-0.10.0-rc-20261120-01-non-pubblicata/`, compilati dal commit `2722aea`; superati nel pomeriggio da `rc-20261120-02` (decisione sopra).
+**Decisione del 20 novembre 2026:** l’utente pubblica la release `v0.10.0-alpha.1` su **questa** repository e la rende pubblica lui stesso dopo la release, invece di inizializzarne una nuova dallo snapshot. Controllo della storia (71 commit) prima della scelta: nessun percorso personale, account, email, chiave o token; autori con indirizzo noreply GitHub. L’identificativo Intervals.icu usato come esempio nelle prime revisioni (anche nella vecchia `docs/screenshots/intervals-id.png`) è stato rimosso dalla storia il 20 novembre con riscrittura e push forzato, su richiesta dell’utente. Il 21 novembre, su richiesta dell’utente, i riferimenti alle segnalazioni inviate a Microsoft sono stati tolti dai documenti correnti; restano nelle revisioni precedenti della storia. Prima di cambiare la visibilità rivedere anche issue, pull request, Actions (log e artefatti), wiki e impostazioni dei secret. Allegati preparati quel mattino: cartella locale `dist/release/Fuorigiri-0.10.0-rc-20261120-01-non-pubblicata/`, compilati dal commit `2722aea`; superati nel pomeriggio da `rc-20261120-02` (decisione sopra).
 
 | Allegato | Quando inserirlo |
 |---|---|
@@ -31,7 +31,7 @@ La cartella privata del candidato conserva l’APK non firmato per il titolare. 
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-ordine-maturazione-20261109-01/`: nuove build Windows/Android **0.10.0** con **UI-ORDINE-02** (cognome/nome, test e misure dal più recente in pagine indipendenti da 15) e **MAT-AVVISI-01** (stime datate decrescenti e indici antropometrici con avvisi, motore growth-maturity/2), oltre alle funzioni precedenti; UI comune **0.2.9** invariata. Installer/portabile completi, APK debug firmato per i test, release non firmato, supporto strumentale, sorgenti/wheel e **25 checksum finali verificati**. Avvio Windows, scansioni Defender attivo e controlli di contenuti/firme/allineamento riusciti. [Prove e digest](VERIFICA.md).
 
-Nessuna pubblicazione, chiave nuova o installazione sopra dati operativi. Restano Windows pulito/aggiornamento, firma release e runtime Android/telefono, sei problemi LOAD 16 KB, provider reali e validazione esterna. La documentazione congelata nei pacchetti precede questa annotazione conclusiva.
+Nessuna pubblicazione, chiave nuova o installazione sopra dati operativi. Restano Windows pulito/aggiornamento, firma release e runtime Android/telefono, sei problemi LOAD 16 KB, provider reali e validazione esterna. WIN-AV-01 attende reinstallazione/riapertura con protezione attiva: le scansioni di questa nuova build sono una verifica distinta. La documentazione congelata nei pacchetti precede questa annotazione conclusiva.
 
 ## Candidato precedente — import-avvisi, 8 novembre 2026
 
@@ -51,7 +51,7 @@ Restano Windows pulito/aggiornamento, WIN-AV-01 del candidato storico, firma rel
 
 ## Blocco Windows — 7 novembre 2026
 
-Il candidato `windows-alpha-review-20261102-01` è bloccato da Microsoft Defender, che rimuove `Fuorigiri.exe` con rilevamento `Trojan:Win32/Bearfoos.A!ml`. Non è attualmente qualificato per l'uso. Le prove di build/smoke del 2 novembre restano storiche.
+Il candidato `windows-alpha-review-20261102-01` è bloccato da Microsoft Defender, che rimuove `Fuorigiri.exe` con rilevamento `Trojan:Win32/Bearfoos.A!ml`. Non è attualmente qualificato per l'uso. [Diagnosi](WINDOWS_DEFENDER.md); falso positivo non confermato. Le prove di build/smoke del 2 novembre restano storiche.
 
 ## Preparazione alpha — 2 novembre 2026
 

@@ -279,6 +279,7 @@ Richiesta: preparare un candidato e una checklist Markdown con completamenti. Ve
 
 **Riutilizzo:** UI comune 0.2.6, ChartFrame e LoadingState; logica scientifica, scelta dei modi touch, caricamento Plotly, route e contenuti rimangono di Fuorigiri. Nessun aggiornamento automatico di Ammiraglia. Prove effettive in VERIFICA.md; guida suite aggiornata nello stesso intervento.
 
+
 ## TD-99–101 — ergonomia Android e pratiche suite, 20 ottobre 2026
 
 - **TD-99 — implementato:** Indietro chiude prima menu/dialoghi con conferma delle modifiche; altrimenti torna tra sezione/profilo/elenco, con pagina, filtri e scroll conservati nella sessione. Solo la radice consente uscita. Cronologia limitata e azzerata al cambio archivio. Atleti/test Android in schede da 20 record, ricerca e filtri richiudibili, ritorno alla prima pagina dopo un filtro; niente tabelle orizzontali per questi due elenchi. Moduli principali (atleta/gruppo, misura, protocolli, manuale/incrementale/anaerobico/custom/revisione storica) con FormActions comuni; azioni originali e validazioni preservate, campi numerici non negativi con tastiera appropriata, tempi manuali con TimeInput, riferimenti/recupero facoltativi richiudibili. Riepilogo società e guida test richiudibili su Android. Tabelle desktop e viste analitiche restano distinte.
@@ -394,11 +395,13 @@ Stato INC aggiornato: INC-02/03/06/07 attuati nella versione locale; INC-01 ha n
 
 Le sezioni precedenti sotto conservano la cronologia e sono superate dove descrivono funzioni ora sviluppate. [Guida di prova](TESTARE_IL_PROGETTO.md).
 
+
 ## Architettura 1.2 — WebDAV confermato e passi successivi
 
 **TD-59 / CLOUD-02:** supportare **WebDAV su Windows, Fedora e Android**, con la stessa semantica di pacchetti cifrati/firmati, uso offline, ruoli e conflitti. **Requisito confermato, non implementato.** Comprende configurazione URL/cartella, credenziali protette, verifica accessi, ripresa e diagnostica, migrazione dal trasporto cartella e collaudo multipiattaforma. Nextcloud proposto come primo server di riferimento, senza promettere compatibilità con qualsiasi server WebDAV. AND-04 e INC-11 includono questa accettazione.
 
 Ordine tecnico raccomandato: interfaccia di trasporto comune → WebDAV desktop → collaudo/porting Android nella fase mobile; lo spike Drive può procedere indipendentemente. Supporto WebDAV non subordinato a OAuth o alla scelta di Google/Dropbox. [Piano operativo aggiornato](PROSSIMI_PASSI.md). Software invariato 0.4.1.
+
 
 ## Aggiornamento architettura 1.1 — accesso diretto alle API cloud
 
@@ -418,9 +421,11 @@ Step 2 eseguito come **definizione**, non come implementazione dei nuovi motori:
 
 Ordine aggiornato: **(1)** completare e consolidare l’incrementale desktop, predisponendo i contratti portabili; **(2)** fattibilità e sviluppo Android con collaudo offline e scambio desktop/mobile; **(3)** Sprint breve / potenza neuromuscolare, Wingate 30 s, Wingate 15 s. La fattibilità Android può iniziare durante il consolidamento; non si anticipano i nuovi motori prima della copertura incrementale. I candidati ulteriori restano distinti.
 
+
 ## Stato corrente 0.4 — società, ripristino e accessi
 
 17 ottobre 2026. Implementata la prima iterazione TD-45–49: percorsi separati, anteprima/ripristino ZIP, recupero cifrato del fondatore, copia indipendente e di consultazione, prima sincronizzazione da invito anche senza dati, ruoli visibili e rinnovo con nuovo invito. Guida operativa e limiti in [SOCIETA_BACKUP_E_ACCESSI.md](SOCIETA_BACKUP_E_ACCESSI.md). TD-50 rimane parziale per audit completo/rotazione/portachiavi; INC-11 non è completato nel suo insieme. Validazione locale: 45 test, TypeScript/Vite, GUI con dati sintetici; nessun collaudo cloud remoto o Fedora dichiarato.
+
 
 ## Pianificazione confermata e stato aggiornato dei requisiti
 
@@ -446,6 +451,7 @@ La scelta dei tre test successivi è confermata dall'utente; i dettagli dei meto
 ## Stato precedente 0.3 — Fuorigiri Performance Lab
 
 Nuovi requisiti **TD-30–44** implementati/documentati nel [registro della revisione 0.3](archivio/REVISIONE_FUORIGIRI_03.md), con scelte **UI-11–16**, contratto CSV e criteri di accettazione. La collocazione della gestione società è presente, ma il percorso completo di collegamento/ripristino non lo è: TD-45–50 precisano il lavoro residuo. [Copertura e mancanze del motore](archivio/COPERTURA_TEST_E_ROADMAP.md) distingue la fase incrementale obbligatoria dai test successivi. Le sezioni 0.2 sottostanti restano storico del progetto; il nome prodotto è ora confermato.
+
 
 ## Stato del codice 0.2 — 17 ottobre 2026
 
@@ -523,12 +529,14 @@ Stati: **presente** = funzionalità riscontrata nel codice; **parziale** = solo 
 
 Conservare gli ID; per richieste composte aggiornare lo stato di ogni parte. Segnare «completato» solo dopo implementazione e verifica del criterio, citando file/test o versione. Registrare ogni variazione significativa nel [changelog](../CHANGELOG.md), con motivazione, ID coinvolti e distinzione fra progetto e software.
 
+
 ## Dettaglio test: visibilità dei tracciati — 18 ottobre 2026
 
 - [x] Grafico dei campioni FIT/CSV in cima al dettaglio incrementale, anaerobico e custom, con potenza, FC e cadenza sovrapposte su un unico asse temporale, mantenendo scale e unità indipendenti.
 - [x] Canali opzionali con unità esplicite: velocità, temperatura, quota; lattato come osservazioni puntuali nel tempo. Restano disponibili i grafici specialistici gas/lattato-carico.
 - [x] Distinzione e filtro tracciato/riepilogo nello storico; spiegazione nei test senza campioni, nessuna ricostruzione da medie/massimi o interpolazione delle lacune.
 - [x] Recupero dei campioni dall'oggetto del tracciato quando non inclusi nel record, senza ricalcoli automatici. Guida ed esempi in TESTARE_IL_PROGETTO.md.
+
 
 ## Grafici sovrapposti e confronti leggibili — 18 ottobre 2026
 
@@ -538,6 +546,7 @@ Conservare gli ID; per richieste composte aggiornare lo stato di ogni parte. Seg
 - [x] Metrica e protocollo prima dei filtri secondari; legenda breve, metodi nella chiave, tabella riferita alle serie visualizzate, zero/null distinti. Esportazioni complete dell'archivio filtrato chiaramente separate dalla selezione interattiva.
 - [x] Modelli grafici verificati con 12 test Node e GUI sul corpus completo, senza rigenerazione dei dati.
 
+
 ## Lattato configurabile e chiarimento Android — 18 ottobre 2026
 
 - [x] Livelli di lattato configurabili per prova, default 2/3/4 mmol/L: interpolazione lineare locale W, W/kg e FC, senza estrapolazione o equivalenze automatiche con soglie fisiologiche.
@@ -546,6 +555,7 @@ Conservare gli ID; per richieste composte aggiornare lo stato di ogni parte. Seg
 - [x] Verifica numerica, casi ambigui/mancanti e report; PDF renderizzato e ispezionato, cache aggiornata per il nuovo renderer.
 - [x] Chiarimento Android: Kotlin già presente nella shell/credenziali/worker; Python incorporato con Chaquopy per riuso, ASGI in-process senza listener HTTP. Decisione e limiti descritti in ANDROID.md.
 - [ ] Build e collaudo Android su dispositivo fisico: restano rinviati come concordato; toolchain e wheel native non ancora disponibili. Confermare compatibilità dipendenze/ABI, prestazioni e ciclo di vita prima di dichiarare il prodotto Android pronto.
+
 
 ## Osservazioni manuali acquisite — 19 ottobre 2026
 
@@ -570,6 +580,7 @@ Le 11 osservazioni originali sono conservate in [COMMENTI_ORIGINALI_2026-10-19.m
 | TD-97 / MAT-05 | Integrare dati e analisi maturative in storico atleta, CSV esteso, report gerarchici, backup e sincronizzazione per società. | **Implementato e verificato localmente:** snapshot con input completi/metodo/hash, CSV estesi e report gerarchici da analisi conservate; backup/ripristino reale e sync firmata con visualizzatore testati. Schema storico preservato; oracoli indipendenti e corpus crescita dedicato. |
 
 P0 = condizione di accettazione prima del rilascio della funzione; P1 = prossima revisione di usabilità/trasparenza; P2 = nuova area funzionale dopo specifica e consolidamento. La numerazione non impone l'ordine di implementazione. Sync v2, backup scalabili e separazione legacy rimangono priorità infrastrutturali già registrate; questa acquisizione non le dichiara concluse.
+
 
 ## 20 ottobre 2026 — riallineamento UI della suite
 

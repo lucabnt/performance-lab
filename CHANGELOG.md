@@ -93,6 +93,7 @@
 
 ## 18 novembre 2026 — analisi delle alternative e perimetro (PERIMETRO-01, solo documentazione)
 
+- Nuova [analisi delle alternative](docs/analisi-alternative-2026-11-18.md): confronto con GoldenCheetah, Intervals.icu, TrainingPeaks/WKO5, INSCYD, OpenAthlete, Teamworks AMS e altri; verdetto «continuare riducendo il perimetro generico».
 - Decisioni dell'utente registrate in requisiti, architettura, piano, guide e AGENTS.md: WebDAV e cartella trasporti supportati, Google Drive/Dropbox/OneDrive sperimentali e fuori dai gate alpha; app allenamenti sospesa (resta il pulsante Intervals.icu); server opzionale solo futuro; Android confermato come app completa.
 - Nessuna modifica al codice o all'interfaccia: i tre provider non hanno ancora un'etichetta «sperimentale» nella UI. Nessun nuovo EXE/APK.
 
@@ -202,7 +203,7 @@ README riordinato con percorsi Windows, Android e sorgenti. Rimossi riferimenti 
 
 ## 10 novembre 2026 — blocco Windows sul candidato ordine-maturazione
 
-- Registrata la quarantena del launcher sul PC destinatario con le definizioni Defender 1.463.222.0. [Diagnosi](docs/WINDOWS_DEFENDER.md).
+- Registrata la quarantena del launcher sul PC destinatario con le definizioni Defender 1.463.222.0. La riapertura resta da verificare. [Diagnosi](docs/WINDOWS_DEFENDER.md).
 
 ## 9 novembre 2026 — candidato locale ordine-maturazione-20261109-01
 
@@ -417,6 +418,7 @@ Prodotte nuove build Windows e Android 0.10.0 con UI-ORDINE-02 e MAT-AVVISI-01/g
 - Rosa annuale e conteggi basati sulla sovrapposizione inclusiva al periodo 1 gennaio / 31 dicembre, compresi gli inserimenti futuri. La vista attuale della categoria resta distinta. Date proposte per l'assegnazione coerenti con la stagione e modificabili; nuove categorie senza stagione incorporata, comando Aggiungi stagione dedicato. Traduzioni IT/EN.
 - Verifiche locali e limiti in docs/VERIFICA.md; nessun installer o APK aggiornato.
 
+
 ## 22 ottobre 2026 — assegnazione atleti ai gruppi
 
 - GRUPPI-01: comando visibile nel profilo atleta e Aggiungi atleti su gruppi, stagioni ed elenco filtrato. Ricerca e selezione multipla, periodo e anno di categoria, esclusione di appartenenze sovrapposte già presenti; salvataggio atomico e permessi Admin dati. Nessuna modifica retroattiva alle appartenenze esistenti.
@@ -594,10 +596,12 @@ Prodotte nuove build Windows e Android 0.10.0 con UI-ORDINE-02 e MAT-AVVISI-01/g
 - Report società/gruppo/stagione/atleta da modello comune, PDF e Markdown con grafici, copertura, aggregati, schede e provenienza; qualità e analisi specialistiche anche nel singolo test.
 - Fixture sintetiche e verifiche aggiunte; fonti scientifiche e limiti documentati. Nessuna importazione dei dati personali del PDF, validazione clinica o certificazione generale degli esportatori dichiarata.
 
+
 ## Architettura 1.2 — 17 ottobre 2026 / software invariato 0.4.1
 
 - WebDAV confermato per Windows/Fedora e Android: TD-59/CLOUD-02, non più candidato.
 - Aggiornati ordine degli adapter, criteri desktop/mobile e piano dei prossimi passi; nessuna integrazione o credenziale attivata.
+
 
 ## Architettura 1.1 — 17 ottobre 2026 / software invariato 0.4.1
 
@@ -612,6 +616,7 @@ Prodotte nuove build Windows e Android 0.10.0 con UI-ORDINE-02 e MAT-AVVISI-01/g
 - Aggiunto sviluppo Android TD-57/AND-01–05, dopo consolidamento incrementale desktop e prima di Sprint breve/Wingate; proposta architetturale, limiti del cloud su Android, UI-18 e criteri di collaudo.
 - Aggiornati requisiti, decisioni, architettura e guida di prova. I nuovi metodi specialistici e l’app Android non sono ancora implementati.
 
+
 ## Software 0.4.0 / architettura 0.9 — 17 ottobre 2026
 
 - TD-45/UI-17: tre percorsi distinti Crea nuova società, Collega tramite invito, Ripristina da backup; selezione automatica e crediti societari fissi conservati.
@@ -621,6 +626,7 @@ Prodotte nuove build Windows e Android 0.10.0 con UI-ORDINE-02 e MAT-AVVISI-01/g
 - TD-50 parziale: revoca conservativa con hash esatti degli eventi già acquisiti; restano da sviluppare audit completo, portachiavi e rotazione del canale in INC-11.
 - Ripristini e creazioni pubblicati solo a operazione completa; percorsi occupati/sovrapposti rifiutati. Ridotto il nome temporaneo degli allegati per evitare MAX_PATH su Windows.
 - Aggiunte 13 prove automatiche (45 totali) e guida SOCIETA_BACKUP_E_ACCESSI.md; collaudo GUI su fixture sintetiche. Nessun nuovo motore di analisi dell’incrementale o dei test successivi.
+
 
 ## Architettura 0.8 / requisiti — 17 ottobre 2026
 
@@ -641,6 +647,7 @@ Prodotte nuove build Windows e Android 0.10.0 con UI-ORDINE-02 e MAT-AVVISI-01/g
 - PDF uniformati con blu societario, tabelle compatte, logo e attribuzione fissa nel footer di tutte le pagine; nuova versione della cache report.
 - Quattro FIT simulati riproducibili dagli ERG originali, CSV sintetici e demo costruita dai medesimi file; sei nuovi casi automatici.
 - Registro TD-30–44, scelte UI-11–16, lacune del motore incrementale e roadmap di sprint/CP/FTP/lattato/VO2 con fonti primarie.
+
 
 Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce deve indicare data, natura della modifica, motivo e identificatori di requisiti/decisioni. Una modifica documentale non certifica l'implementazione della funzione.
 
@@ -693,6 +700,7 @@ Le versioni dell'architettura sono distinte da quelle del programma. Ogni voce d
 ## Stato precedente
 
 Il documento di partenza era Architettura 0.3 del 16 ottobre 2026, con preview locale 0.1. Questo changelog viene istituito il 17 ottobre: non ricostruisce retroattivamente un elenco completo di modifiche o rilasci precedenti. Lo stato tecnico precedente resta descritto in [README](README.md), [decisioni](docs/archivio/DECISIONI.md) e [verifiche](docs/VERIFICA.md).
+
 
 ## 20 ottobre 2026 — riallineamento UI della suite
 

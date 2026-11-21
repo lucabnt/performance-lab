@@ -31,6 +31,7 @@ Perimetro e posizionamento: [analisi delle alternative del 18 novembre 2026](ana
 - [Backup protetto da password](BACKUP_CIFRATO.md): formato `.fgbak`, uso, garanzie e limiti.
 - [Configurare la sincronizzazione](CONFIGURARE_LA_SINCRONIZZAZIONE.md): WebDAV e cartelle supportati; Drive, Dropbox e OneDrive sperimentali, con prerequisiti OAuth.
 - [Distribuzione](DISTRIBUZIONE.md): bundle Windows, dipendenze incluse, installer e prerequisiti Fedora/Android.
+- [EXE rimosso da Defender](WINDOWS_DEFENDER.md): diagnosi WIN-AV-01, candidato bloccato e criteri di chiusura.
 
 ## Protocolli e metodi
 

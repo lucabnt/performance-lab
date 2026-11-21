@@ -24,7 +24,7 @@ Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZ
 
 ## Candidato corrente — rc-20261121-03, 21 novembre 2026
 
-Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/` (commit `0a6c4be`), `rc-20261121-02` più REPORT-ZIP-01. Su richiesta dell’utente diventa la base di `v0.10.0-alpha.1`. Restano: APK release firmato dal titolare con la stessa chiave, nuova cartella `dist/release/` con `SHA256SUMS.txt`, tag spostato su `0a6c4be` (oggi su `0e3f900`), creazione della release su GitHub e pubblicazione della repository.
+Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/` (commit `0a6c4be`), `rc-20261121-02` più REPORT-ZIP-01. Su richiesta dell’utente diventa la base di `v0.10.0-alpha.1`. APK firmato, cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-03/` con `SHA256SUMS.txt` e tag su `0a6c4be` pronti. Restano la creazione della release su GitHub (cinque allegati, `SHA256SUMS.txt`, testo di `RELEASE_NOTES.md`) e la pubblicazione della repository.
 
 ## Candidato precedente — rc-20261121-02, 21 novembre 2026, pomeriggio
 

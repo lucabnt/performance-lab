@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 21 novembre 2026 — APK firmato e cartella di release da rc-20261121-03
+
+- **Firma:** release rigenerato e firmato dal titolare in Android Studio con il keystore esistente. `apksigner`: schema v2, un firmatario, `CN=Luca Bontempi, C=IT`, certificato SHA-256 `a04c6d2d…406d` (lo stesso del 20 novembre). Zipalign `-P 16` e scansione percorsi superati. **104.066.524 byte**, SHA-256 `312a1236dfead680d427f18f39591f136a16f078721559867d2cb9de35e4a4c2`.
+- **Confronto con il candidato:** stesse 4.679 voci del release non firmato di `rc-20261121-03`, contenuti delle `.imy` compresi (anche `report_zip`); differiscono solo le intestazioni dei `.pyc` e `assets/chaquopy/build.json`, che ne elenca le impronte.
+- **Cartella di release** `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-03/` (non pubblicata): installer, portabile, sorgenti e wheel native da `rc-20261121-03` dopo il ricontrollo dei suoi checksum, APK firmato, `SHA256SUMS.txt` sui cinque allegati e `RELEASE_NOTES.md` invariato. Output originale di Android Studio in `.local/android-studio-release-20261121-03`. La cartella da `rc-20261121-02` resta come preparazione superata.
+- Tag `v0.10.0-alpha.1` spostato su `0a6c4be`.
+- Non provato: installazione del release firmato su emulatore o telefono.
+
 ## 21 novembre 2026 — consegna rc-20261121-03 (Windows + Android)
 
 Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/`, prodotto **0.10.0**, commit `0a6c4be` con working tree pulito, verificato anche al confezionamento: `rc-20261121-02` più REPORT-ZIP-01 (ZIP dei report deterministici). Su richiesta dell’utente sostituisce `rc-20261121-02` come base della release `v0.10.0-alpha.1`; la cartella di release preparata da `rc-20261121-02` è superata. Nessuna pubblicazione o firma.

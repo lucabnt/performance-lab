@@ -2,7 +2,7 @@
 
 ## Prima pre-release 0.10.0-alpha.1
 
-**Decisione del 21 novembre 2026, sera:** l’utente sceglie di includere nella release anche REPORT-ZIP-01. Nuovo candidato `rc-20261121-03` (commit `0a6c4be`); la cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-02/` e il suo APK firmato restano come preparazione superata. Servono un nuovo APK release firmato con la stessa chiave, una nuova cartella di release con `SHA256SUMS.txt` e il tag spostato su `0a6c4be`.
+**Decisione del 21 novembre 2026, sera:** l’utente sceglie di includere nella release anche REPORT-ZIP-01. Nuovo candidato `rc-20261121-03` (commit `0a6c4be`); la cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-02/` e il suo APK firmato restano come preparazione superata. APK release firmato con la stessa chiave, cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-03/` con `SHA256SUMS.txt` e tag spostato su `0a6c4be`; resta la creazione della release su GitHub.
 
 **Decisione del 21 novembre 2026, pomeriggio:** dopo la riscrittura della storia l’utente ha eliminato la release `v0.10.0-alpha.1` costruita su `rc-20261121-01`, perché i suoi allegati Windows e lo ZIP dei sorgenti contenevano ancora i documenti con le segnalazioni a Microsoft. Nuovo candidato `rc-20261121-02` (commit `0e3f900`, stesso codice). APK release firmato dal titolare con la stessa chiave, cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-02/` con `SHA256SUMS.txt` sui cinque allegati e tag spostato su `0e3f900`; resta la creazione della release su GitHub. La cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-01/` resta come preparazione superata.
 

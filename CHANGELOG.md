@@ -2,7 +2,7 @@
 
 ## 21 novembre 2026 — candidato rc-20261121-03 (Windows + Android)
 
-- Build locali dal commit `0a6c4be` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/`: `rc-20261121-02` più REPORT-ZIP-01. Su richiesta dell’utente diventa la base della release `v0.10.0-alpha.1` al posto di `rc-20261121-02`; servono un nuovo APK release firmato dal titolare, una nuova cartella di release e il tag su `0a6c4be`. [Prove](docs/VERIFICA.md).
+- Build locali dal commit `0a6c4be` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/`: `rc-20261121-02` più REPORT-ZIP-01. Su richiesta dell’utente diventa la base della release `v0.10.0-alpha.1` al posto di `rc-20261121-02`; APK release firmato dal titolare con la stessa chiave e identico al candidato salvo le intestazioni `.pyc`; cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-03/` con `SHA256SUMS.txt`; tag `v0.10.0-alpha.1` su `0a6c4be`. Resta da creare la release su GitHub. [Prove](docs/VERIFICA.md).
 
 ## 21 novembre 2026 — ZIP dei report deterministici (REPORT-ZIP-01)
 

@@ -5,7 +5,7 @@
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-rc-20261121-03/` dal commit `0a6c4be` con working tree pulito: `rc-20261121-02` più REPORT-ZIP-01 (ZIP dei report con byte stabili, senza l’ora di generazione). Base della release `v0.10.0-alpha.1`.
 
 - **Windows:** launcher nuovo (SHA-256 `1d8885b3…cd2a`): la prova di installazione, avvio e riapertura con Defender attivo va fatta su questa build, poi W-01…W-07.
-- **Android:** debug verificato su emulatore x86_64 (2 test strumentali, avvio). Release da firmare con la chiave del titolare ([FIRMA_ANDROID.md](FIRMA_ANDROID.md)).
+- **Android:** debug verificato su emulatore x86_64 (2 test strumentali, avvio). Release firmato dal titolare con la stessa chiave (SHA-256 `312a1236…a4c2`, [FIRMA_ANDROID.md](FIRMA_ANDROID.md)), identico al candidato salvo le intestazioni `.pyc`; installazione del firmato non riprovata.
 - Smoke, scansioni Defender, contenuti e 25 checksum verificati; [prove e digest](VERIFICA.md).
 
 ## Candidato precedente — rc-20261121-02, Windows + Android, 21 novembre 2026

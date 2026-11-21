@@ -18,7 +18,9 @@ Primo candidato con queste modifiche: `win-av02-20261115-02` (launcher SHA-256 `
 
 *20 novembre 2026:* la prova va fatta su `rc-20261120-01` (commit `46959ed`, launcher SHA-256 `0e0b6bb8…4c78`, stesso bootloader locale), che succede a `core020-20261119-01` e aggiunge le traduzioni inglesi. Scansioni di confezionamento senza rilevamenti con definizioni 1.463.382.0.
 
-*21 novembre 2026:* la prova va fatta su `rc-20261121-01` (commit `ccc50ce`, launcher SHA-256 `a3649187…1eac`), destinato alla release; scansioni di confezionamento senza rilevamenti con definizioni 1.463.390.0.
+*21 novembre 2026, pomeriggio:* la prova va fatta su `rc-20261121-02` (commit `0e3f900`, launcher SHA-256 `febf062f…3758`), che sostituisce `rc-20261121-01` con gli stessi sorgenti e documenti senza le segnalazioni; scansioni di confezionamento senza rilevamenti con definizioni 1.463.398.0.
+
+*21 novembre 2026:* la prova andava fatta su `rc-20261121-01` (commit `ccc50ce`, launcher SHA-256 `a3649187…1eac`), destinato alla release; scansioni di confezionamento senza rilevamenti con definizioni 1.463.390.0.
 
 *20 novembre 2026, pomeriggio:* la prova andava fatta su `rc-20261120-02` (commit `8e9de2d`, launcher SHA-256 `f7ed4824…ce4a`, stesso bootloader locale), che aggiunge SYNC-SPAZIO-01 ed è la base di `v0.10.0-alpha.1`. Scansioni di confezionamento senza rilevamenti con definizioni 1.463.384.0.
 

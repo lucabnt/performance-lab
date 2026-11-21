@@ -1,5 +1,9 @@
 # Changelog
 
+## 21 novembre 2026 — candidato rc-20261121-02 (Windows + Android)
+
+- Ricostruito dal commit `0e3f900` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-02/` dopo la riscrittura della storia che toglie dai documenti le segnalazioni inviate a Microsoft. Stesso codice di `rc-20261121-01`, che sostituisce: i suoi allegati Windows e lo ZIP dei sorgenti includevano ancora quei documenti. Release `v0.10.0-alpha.1` eliminata dall’utente. APK release firmato dal titolare con la stessa chiave e identico al candidato salvo le intestazioni `.pyc`; nuova cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-02/` con allegati e `SHA256SUMS.txt`; tag `v0.10.0-alpha.1` spostato su `0e3f900`. Resta da creare la release su GitHub. [Prove](docs/VERIFICA.md).
+
 ## 21 novembre 2026 — release v0.10.0-alpha.1 spostata su rc-20261121-01 (preparazione)
 
 - APK release rigenerato e firmato dal titolare con la stessa chiave; differisce dal candidato solo per `certifi` 2026.11.20 (dipendenza secondaria non fissata), accettato. Nuova cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-01/` con allegati, checksum e note aggiornate; tag `v0.10.0-alpha.1` spostato sul commit `ccc50ce`. La sostituzione degli allegati nella release su GitHub resta all’utente. [Prove](docs/VERIFICA.md).

@@ -1,5 +1,27 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 21 novembre 2026 — APK firmato e cartella di release da rc-20261121-02
+
+- **Firma:** release rigenerato e firmato dal titolare in Android Studio con il keystore esistente. `apksigner`: schema v2, un firmatario, `CN=Luca Bontempi, C=IT`, certificato SHA-256 `a04c6d2d…406d` (lo stesso del 20 novembre). Zipalign `-P 16` e scansione percorsi superati. **104.066.044 byte**, SHA-256 `9663b12e357496e205ac76b211d1c8b22126dcba8192138202304bc52847a678`.
+- **Confronto con il candidato:** stesse 4.678 voci del release non firmato di `rc-20261121-02`, contenuti delle `.imy` compresi; differiscono solo le intestazioni dei `.pyc` e `assets/chaquopy/build.json`, che ne elenca le impronte. A differenza della mattina, `certifi` coincide con il candidato.
+- **Cartella di release** `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-02/` (non pubblicata): installer, portabile, sorgenti e wheel native da `rc-20261121-02` dopo il ricontrollo dei suoi checksum, APK firmato, `SHA256SUMS.txt` sui cinque allegati e `RELEASE_NOTES.md` invariato rispetto alla release eliminata. Output originale di Android Studio spostato in `.local/android-studio-release-20261121-02`.
+- Non provato: installazione del release firmato su emulatore o telefono (il contenuto coincide con il debug provato sull'emulatore, ma firma e aggiornamento sopra la versione firmata precedente non sono stati riprovati).
+
+## 21 novembre 2026 — consegna rc-20261121-02 (Windows + Android)
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-rc-20261121-02/`, prodotto **0.10.0**, commit `0e3f900` con working tree pulito, verificato anche al confezionamento. Stesso codice di `rc-20261121-01`: cambiano solo i documenti, senza le segnalazioni inviate a Microsoft, dopo la riscrittura della storia. Sostituisce `rc-20261121-01`, i cui allegati Windows e ZIP sorgenti contenevano ancora quei documenti; la release `v0.10.0-alpha.1` costruita su di esso è stata eliminata dall’utente. Nessuna pubblicazione o firma.
+
+- `scripts/verify.py` completo: tutti i passi riusciti tranne un test Python, **373 passati / 1 fallito**, 43 frontend, build `tsc`/Vite. Il fallimento (`test_revision_manual_report_and_lifecycle`) è intermittente, circa 1 su 5 ripetendo il solo test: il report Markdown rigenerato è uno ZIP scritto con `writestr` per nome, che usa l’ora corrente, e differisce byte per byte se la rigenerazione cade in un secondo diverso. Codice invariato rispetto a `rc-20261121-01`; da correggere a parte.
+- **Windows:** PyInstaller in nuova `.local/candidate-windows-20261121-03` con bootloader locale, Inno Setup in 144 s (una prima build in `-02` è stata interrotta da un riavvio della sessione ed è conservata incompleta). Smoke con PATH ristretto e dati QA nuovi: import, logo e backend HTTP. Defender attivo, protezione in tempo reale attiva, definizioni **1.463.398.0**: bundle, installer e intera consegna senza rilevamenti. Launcher SHA-256 `febf062f8cffb1e1f75e10d1ca0254e3cebdaeb7fc1a7255f69d2ad6cc383758`.
+- **Android:** JDK 21/Gradle 8.13 offline, nuova `.local/candidate-android-20261121-03` (364 s). Debug con certificato di test invariato; release non firmato; zipalign `-P 16` superato; scansione percorsi del release pulita (in modalità strict restano i percorsi noti dei builder Chaquopy); audit 222 ELF, 4 non conformi a 16 KB (invariati). Emulatore Pixel_9 API 35 x86_64: aggiornamento sopra la versione precedente, `OfflineRuntimeTest` **OK (2 tests)**, avvio dal launcher senza errori.
+- **Contenuti:** documenti nel bundle identici a quelli del commit; ZIP sorgenti, portabile e documenti della consegna senza riferimenti alle segnalazioni, percorsi personali o email; frontend identico in Windows e APK, `_rust.abi3.so` riparati presenti, portabile identico al bundle; **25 checksum** e CRC verificati.
+- Installer: **197.905.835 byte**, SHA-256 `5f46ddb47a9936780422a75e5dc30220068bb8ecb10dd578155094fe3df2f16f`.
+- Portabile: **281.996.257 byte**, SHA-256 `04dc593a455edb8727fb97e625487dd90d808722ef3eec8809e63fd62145ffb3`.
+- Debug test: **105.120.235 byte**, SHA-256 `ee571133189d2cc1de250bc6610d80a2c8366576a08c1a60cd2035c99417d564`.
+- Release non firmato: **104.058.344 byte**, SHA-256 `f6a8239d58b5bd96d1e87a04ef224189ccc0346d51db1a50751ccd1b0ff93e0e`.
+- Sorgenti: **6.957.872 byte**, SHA-256 `0fe44241d8b98c8aa70df89dbd14937b1c4c7b49d3cb1ac82f394d0b6c4b8e79`; wheel native invariate (`7da8b2ea…9909`).
+- Non provati: firma release, installazione con Defender attivo, Windows pulito, ARM64 su dispositivo reale.
+
 ## 21 novembre 2026 — APK firmato e cartella di release da rc-20261121-01
 
 - **Firma:** release rigenerato e firmato dal titolare in Android Studio con il keystore esistente. `apksigner`: schema v2, un firmatario, `CN=Luca Bontempi, C=IT`, certificato SHA-256 `a04c6d2d…406d` (lo stesso del 20 novembre). Zipalign `-P 16` e scansione percorsi superati. **104.067.008 byte**, SHA-256 `91095c6f1aefaf565bbc5fa22839758ca1233d831392217b008c7be2e28feceb`.

@@ -1,6 +1,14 @@
 # Collaudo del candidato pilot — Windows e Android
 
-## Candidato corrente — rc-20261121-01, Windows + Android, 21 novembre 2026
+## Candidato corrente — rc-20261121-02, Windows + Android, 21 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-rc-20261121-02/` dal commit `0e3f900` con working tree pulito. Stesso codice di `rc-20261121-01`, ricostruito dopo la riscrittura della storia che toglie dai documenti le segnalazioni inviate a Microsoft (documenti inclusi nel pacchetto Windows e nei sorgenti). Base della nuova release `v0.10.0-alpha.1`: la precedente è stata eliminata.
+
+- **Windows:** come sotto; launcher nuovo (SHA-256 `febf062f…3758`), quindi la prova con Defender attivo va ripetuta su questa build.
+- **Android:** debug verificato su emulatore x86_64 (2 test strumentali, avvio). Release rigenerato e firmato dal titolare con la stessa chiave (SHA-256 `9663b12e…a678`, [FIRMA_ANDROID.md](FIRMA_ANDROID.md)), identico al candidato salvo le intestazioni `.pyc`; installazione del firmato non riprovata.
+- Smoke, scansioni Defender, contenuti e 25 checksum verificati; [prove e digest](VERIFICA.md).
+
+## Candidato precedente — rc-20261121-01, Windows + Android, 21 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-rc-20261121-01/` dal commit `ccc50ce` con working tree pulito: `rc-20261120-02` più REPORT-LOCALE-01 (i file dei report esportati restano sul dispositivo che li crea, solo i metadati sono sincronizzati) e FIT-SESSIONE-01 (import dei FIT con fine sessione uguale all’inizio), oltre a politica di sicurezza e guida ai contributi. Destinato a sostituire `rc-20261120-02` come base della release `v0.10.0-alpha.1`, non ancora resa pubblica.
 

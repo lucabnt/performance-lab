@@ -1,5 +1,20 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 21 novembre 2026 — consegna rc-20261121-04 (Windows + Android)
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-rc-20261121-04/`, prodotto **0.10.0**, commit `fc63893` con working tree pulito, verificato anche al confezionamento: `rc-20261121-03` con REPORT-ZIP-01 reso compatibile con Python 3.12. Su richiesta dell’utente sostituisce `rc-20261121-03` come base della release `v0.10.0-alpha.1`; la cartella di release preparata da `rc-20261121-03` è superata. Nessuna pubblicazione o firma.
+
+- Verifiche sullo stesso codice (sezione REPORT-ZIP-01 su Python 3.12): `scripts/verify.py` completo **374 passati**; `test_android_versions.py` su 3.12 **373 passati, 1 saltato**.
+- **Windows:** PyInstaller in nuova `.local/candidate-windows-20261121-05` con bootloader locale, Inno Setup in 146 s. Smoke con PATH ristretto e dati QA nuovi: import, logo e backend HTTP in 6,8 s. Defender attivo, definizioni **1.463.398.0**: bundle, installer e intera consegna senza rilevamenti. Launcher SHA-256 `9435e203967ede7e30b8abcfb7cfa32cb8b8885f7def80c36670cadb23ac16db`.
+- **Android:** JDK 21/Gradle 8.13 offline, nuova `.local/candidate-android-20261121-05` (318 s). Debug con certificato di test invariato; release non firmato; zipalign `-P 16` superato; scansione percorsi del release pulita; audit 222 ELF, 4 non conformi a 16 KB (invariati). Emulatore Pixel_9 API 35 x86_64: prima installazione subito dopo l’avvio fallita senza messaggio, ripetuta e riuscita; `OfflineRuntimeTest` **OK (2 tests)**, avvio dal launcher senza errori.
+- **Contenuti:** correzione 3.12 presente nello ZIP sorgenti, `report_zip` nel bundle e in `app.imy`; ZIP sorgenti, portabile e documenti della consegna senza riferimenti alle segnalazioni, percorsi personali o email; frontend identico in Windows e APK, `_rust.abi3.so` riparati presenti, portabile identico al bundle; **25 checksum** e CRC verificati.
+- Installer: **197.929.935 byte**, SHA-256 `c9d5f91640aa29f26d6ddeecd6f4bdaaa4342dff1b5dab13ff6421b7c4e11294`.
+- Portabile: **282.001.292 byte**, SHA-256 `20fc39fba1294b2b85da9aed87d425facf8e35524d872dd2c312f594e3bedbaf`.
+- Debug test: **105.122.775 byte**, SHA-256 `f64dd2a2fa86b8eceaab0838965b12aecadba0de78f1c25301b74eecc991f9ab`.
+- Release non firmato: **104.058.664 byte**, SHA-256 `66967516603afe9c497c12b27631278e759d02003c9dd9e3a13b6898fbf490a1`.
+- Sorgenti: **6.963.221 byte**, SHA-256 `2d32ee572fde477b33f63ac75e972289774493336adc9b3264854c4fa84bcbcc`; wheel native invariate (`7da8b2ea…9909`).
+- Non provati: firma release, installazione con Defender attivo, Windows pulito, ARM64 su dispositivo reale.
+
 ## 21 novembre 2026 — REPORT-ZIP-01 su Python 3.12
 
 - **Riscontro dal CI** (`test_android_versions.py`, Python 3.12 con le versioni delle librerie Android): 20 test falliti, tutti con `AttributeError: 'ZipInfo' object has no attribute 'compress_level'` in `report_zip.py`. L’attributo pubblico esiste solo da Python 3.13; su 3.12 `ZipInfo` ha uno slot privato e l’assegnazione fallisce. Ogni report Markdown ed export CSV era quindi rotto su 3.12, versione ammessa da `requires-python`.

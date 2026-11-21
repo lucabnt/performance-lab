@@ -1,5 +1,9 @@
 # Changelog
 
+## 21 novembre 2026 — candidato rc-20261121-04 (Windows + Android)
+
+- Build locali dal commit `fc63893` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-04/`: `rc-20261121-03` con REPORT-ZIP-01 compatibile con Python 3.12. Su richiesta dell’utente diventa la base della release `v0.10.0-alpha.1` al posto di `rc-20261121-03`; servono un nuovo APK release firmato dal titolare, una nuova cartella di release e il tag su `fc63893`. [Prove](docs/VERIFICA.md).
+
 ## 21 novembre 2026 — REPORT-ZIP-01 compatibile con Python 3.12
 
 - `report_zip.py` non assegna più `ZipInfo.compress_level`, che esiste solo da Python 3.13: su 3.12 i report Markdown e gli export CSV fallivano (rilevato dal controllo CI delle versioni Android). Byte invariati su 3.13 e 3.14, quindi nessun effetto sui binari di `rc-20261121-03`; lo ZIP dei sorgenti di quel candidato contiene ancora il codice precedente. [Prove](docs/VERIFICA.md).

@@ -1,6 +1,14 @@
 # Collaudo del candidato pilot — Windows e Android
 
-## Candidato corrente — rc-20261120-02, Windows + Android, 20 novembre 2026
+## Candidato corrente — rc-20261121-01, Windows + Android, 21 novembre 2026
+
+Consegna locale `dist/candidates/Fuorigiri-0.10.0-rc-20261121-01/` dal commit `8cb232b` con working tree pulito: `rc-20261120-02` più REPORT-LOCALE-01 (i file dei report esportati restano sul dispositivo che li crea, solo i metadati sono sincronizzati) e FIT-SESSIONE-01 (import dei FIT con fine sessione uguale all’inizio), oltre a politica di sicurezza e guida ai contributi. Destinato a sostituire `rc-20261120-02` come base della release `v0.10.0-alpha.1`, non ancora resa pubblica.
+
+- **Windows:** installer sopra l’installazione esistente dopo un backup e con l’app chiusa, oppure portabile completo; prova di installazione, avvio e riapertura con Defender attivo, poi W-01…W-07.
+- **Android:** `android-debug-test.apk` (firma di test) si installa come aggiornamento; verificato su emulatore x86_64 (2 test strumentali, avvio). Release rigenerato e firmato dal titolare il 21 novembre con la stessa chiave (SHA-256 `91095c6f…eceb`, [FIRMA_ANDROID.md](FIRMA_ANDROID.md)), con `certifi` 2026.11.20 invece della versione del candidato; aggiornamento sopra il release precedente provato su emulatore. ARM64 non provato su dispositivo reale; 4 librerie non conformi a 16 KB.
+- Smoke, scansioni Defender, contenuti e 25 checksum verificati; [prove e digest](VERIFICA.md).
+
+## Candidato precedente — rc-20261120-02, Windows + Android, 20 novembre 2026
 
 Consegna locale `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/` dal commit `ac00e4a` con working tree pulito: `rc-20261120-01` più SYNC-SPAZIO-01 (pagine delta della sync v2 e pannello «Spazio occupato dallo scambio»). È la base della release `v0.10.0-alpha.1`; la preparazione di release da `rc-20261120-01` non è stata pubblicata.
 

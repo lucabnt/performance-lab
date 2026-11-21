@@ -1,5 +1,13 @@
 # Changelog
 
+## 21 novembre 2026 — release v0.10.0-alpha.1 spostata su rc-20261121-01 (preparazione)
+
+- APK release rigenerato e firmato dal titolare con la stessa chiave; differisce dal candidato solo per `certifi` 2026.11.20 (dipendenza secondaria non fissata), accettato. Nuova cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-01/` con allegati, checksum e note aggiornate; tag `v0.10.0-alpha.1` spostato sul commit `8cb232b`. La sostituzione degli allegati nella release su GitHub resta all’utente. [Prove](docs/VERIFICA.md).
+
+## 21 novembre 2026 — candidato rc-20261121-01 (Windows + Android)
+
+- Build locali dal commit `8cb232b` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-01/`: installer e portabile Windows, APK debug di test, release non firmato, APK strumentale, wheel native e sorgenti. Aggiunge a `rc-20261120-02` REPORT-LOCALE-01 e FIT-SESSIONE-01. Destinato a diventare la base della release `v0.10.0-alpha.1`; nessuna firma o pubblicazione. [Prove](docs/VERIFICA.md).
+
 ## 20 novembre 2026 — FIT di MyWhoosh con fine sessione mancante (FIT-SESSIONE-01)
 
 - I FIT in cui la fine della sessione coincide con l'inizio (per esempio quelli esportati da MyWhoosh) si importano: la fine si ricostruisce dalla durata totale dichiarata nella stessa sessione, con avviso e correzione registrata nel tracciato normalizzato (`session_bounds`). Senza durata l'import resta bloccato. FIT con limiti validi invariati. Non incluso nei binari di `v0.10.0-alpha.1`. [Prove](docs/VERIFICA.md).

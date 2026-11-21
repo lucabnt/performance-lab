@@ -1,5 +1,27 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 21 novembre 2026 — APK firmato e cartella di release da rc-20261121-01
+
+- **Firma:** release rigenerato e firmato dal titolare in Android Studio con il keystore esistente. `apksigner`: schema v2, un firmatario, `CN=Luca Bontempi, C=IT`, certificato SHA-256 `a04c6d2d…406d` (lo stesso del 20 novembre). Zipalign `-P 16` e scansione percorsi superati. **104.067.008 byte**, SHA-256 `91095c6f1aefaf565bbc5fa22839758ca1233d831392217b008c7be2e28feceb`.
+- **Differenza dichiarata dal candidato:** stesse 261 voci del release non firmato di `rc-20261121-01`; oltre alle sole intestazioni dei `.pyc`, la ricompilazione di Android Studio ha installato `certifi` **2026.11.20** invece di 2026.10.23 (pubblicato il giorno prima). `certifi` è una dipendenza secondaria non fissata in `android/requirements.txt` e contiene solo l’elenco delle autorità di certificazione; codice, librerie native, frontend e altre dipendenze sono identici. Accettato dall’utente; fissare tutte le dipendenze secondarie Android è un seguito per la prossima versione.
+- **Runtime:** emulatore Medium_Phone API 37 x86_64 con il release firmato del 20 novembre installato: aggiornamento con `adb install -r` riuscito senza disinstallare (stessa chiave, stesso versionCode), società sintetica e dati conservati, avvio senza errori. Non sostituisce A-11 (serve un versionCode crescente).
+- **Cartella di release** `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-01/` (non pubblicata, la precedente `dist/release/Fuorigiri-0.10.0-alpha.1/` è conservata): installer, portabile, sorgenti e wheel native da `rc-20261121-01` dopo il ricontrollo dei suoi checksum, APK firmato, `SHA256SUMS.txt` sui cinque allegati e `RELEASE_NOTES.md` con una riga su REPORT-LOCALE-01. Output originale di Android Studio spostato in `.local/android-studio-release-20261121-01`.
+
+## 21 novembre 2026 — consegna rc-20261121-01 (Windows + Android)
+
+Candidato nuovo `dist/candidates/Fuorigiri-0.10.0-rc-20261121-01/`, prodotto **0.10.0**, commit `8cb232b` (FIT-SESSIONE-01, REPORT-LOCALE-01 sopra `rc-20261120-02`) con working tree pulito, verificato anche al confezionamento. Nessuna pubblicazione o firma.
+
+- `scripts/verify.py` completo: tutti i passi riusciti, **374 Python passati**, **43 frontend passati**, build `tsc`/Vite.
+- **Windows:** PyInstaller in nuova `.local/candidate-windows-20261121-01` (439 s) con bootloader locale, Inno Setup in 224 s. Smoke con PATH ristretto e dati QA nuovi: import, logo e backend HTTP in 11,9 s. Defender attivo, definizioni **1.463.390.0**: bundle, installer e intera consegna senza rilevamenti. Launcher SHA-256 `a3649187994590a6415b1b38708e008142274e67255acef063226cceb6cb1eac`.
+- **Android:** JDK 21/Gradle 8.13 offline, nuova `.local/candidate-android-20261121-01` (372 s). Debug con certificato di test invariato; release non firmato; zipalign `-P 16` superato; scansione percorsi del release pulita; audit 222 ELF, 4 non conformi a 16 KB (invariati). Emulatore Pixel_9 API 35 x86_64: la prima installazione, subito dopo l’avvio dell’emulatore, è fallita senza messaggio e i test hanno girato sulla versione precedente (1 fallimento, non attribuibile al candidato); dopo un nuovo avvio installazione riuscita, `OfflineRuntimeTest` **OK (2 tests)** e avvio dal launcher senza errori.
+- **Contenuti:** frontend identico in Windows e APK, `_rust.abi3.so` riparati presenti, portabile identico al bundle, ZIP sorgenti senza percorsi personali, account, email o ID Intervals; **25 checksum** e CRC verificati.
+- Installer: **197.916.918 byte**, SHA-256 `efb1284cfc26790608cf3597270e53956ad7de6a89cd36fd7b81d841f4154c51`.
+- Portabile: **281.995.832 byte**, SHA-256 `311a6be35ddb0066f9c6292eafc759240142f93455ffb5dd594e649aadb69cd1`.
+- Debug test: **105.128.539 byte**, SHA-256 `09bd25312b9f44bc9edb0eb8b9b876b8ab548c2bc453dadb09a4deb0320e8984`.
+- Release non firmato: **104.067.128 byte**, SHA-256 `637b7f71cd90247e79c188047c6817bc620d9ad94b35d056346f2a2c7864f6ac`.
+- Sorgenti: **6.957.214 byte**, SHA-256 `f242becf0f7cb1056469fbc0cfb4a53985e28288000ba728b6fa5e7abaddc724`; wheel native invariate (`7da8b2ea…9909`).
+- Non provati: firma release, installazione con Defender attivo, Windows pulito, ARM64 su dispositivo reale.
+
 ## 20 novembre 2026 — FIT con fine sessione uguale all'inizio (FIT-SESSIONE-01)
 
 - FIT reale di un ramp test MyWhoosh fornito dall'utente (non incluso nella repository): CRC valido, una sessione, 1734 record a 1 s, `start_time` = `timestamp` = inizio, `total_elapsed_time` 1734 s. Prima della correzione `decode_fit(session_index=0)` falliva («FIT privo di un tracciato temporale utilizzabile»); dopo, 1734 campioni, 1733 s, `session_bounds = elapsed_time`. Stesso esito con `POST /api/v1/traces` e `session_index=0` (come la UI) su un archivio temporaneo nuovo: 200.

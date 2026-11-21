@@ -22,7 +22,11 @@ L’utente vuole Windows e Android nell’alpha. Ordine dei lavori:
 
 Usare lo snapshot sorgenti controllato e la [selezione degli allegati](DISTRIBUZIONE.md). La storia privata resta separata. Prima dei binari completare il materiale di licenza Windows e la bonifica delle wheel Android, poi ricompilare e firmare l’APK.
 
-## Candidato corrente — 20 novembre 2026
+## Candidato corrente — 21 novembre 2026
+
+Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261121-01/` (commit `8cb232b`: REPORT-LOCALE-01 e FIT-SESSIONE-01 sopra `rc-20261120-02`). Decisione dell’utente: la release `v0.10.0-alpha.1`, già creata ma con la repository ancora privata, viene spostata su questo candidato. APK firmato (con `certifi` 2026.11.20, accettato), cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-01/` e tag su `8cb232b` pronti; restano la sostituzione di allegati e note nella release su GitHub. Seguito per la prossima versione: fissare tutte le dipendenze secondarie Android (oggi solo quelle principali sono in `android/requirements.txt`), così che la build firmata coincida con il candidato.
+
+## Candidato precedente — 20 novembre 2026
 
 Windows + Android: `dist/candidates/Fuorigiri-0.10.0-rc-20261120-02/` (commit `ac00e4a`, SYNC-SPAZIO-01 fasi 0–1 sopra `rc-20261120-01`). Base della release `v0.10.0-alpha.1` (la preparazione da `rc-20261120-01` non è stata pubblicata): allegati, APK firmato e checksum pronti in `dist/release/Fuorigiri-0.10.0-alpha.1/`, da pubblicare con il tag sul commit `ac00e4a`. Candidato precedente `rc-20261120-01` (commit `2722aea`). Precedenti dello stesso periodo: Windows `core020-20261119-01`, Android `dist/candidates/Fuorigiri-0.10.0-android-neutre-20261120-01/` (20 novembre, wheel neutre, debug di test e release non firmato da firmare). I candidati del 15 novembre e precedenti restano conservati come storici. [Checklist](COLLAUDO_PILOT.md), [prove](VERIFICA.md).
 

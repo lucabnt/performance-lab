@@ -1,6 +1,6 @@
 import io
 import json
-import zipfile
+from .report_zip import report_zip
 from xml.sax.saxutils import escape
 from matplotlib.figure import Figure
 from .custom_fields import display_rows
@@ -40,7 +40,7 @@ def render(test, athlete, protocol, format, language='it'):
             text += '\n![Tracciato osservato](tracciato.png)\n'
         text += '\n![Logo societario](logo.png)\n\n' + ATTRIBUTION + '\n'
         out = io.BytesIO()
-        with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
+        with report_zip(out) as z:
             z.writestr('report.md', text)
             z.writestr('manifest.json', json.dumps(test, ensure_ascii=False))
             z.writestr('logo.png', logo_path().read_bytes())

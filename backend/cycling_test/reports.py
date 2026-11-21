@@ -1,6 +1,6 @@
 import json
 import io
-import zipfile
+from .report_zip import report_zip
 from xml.sax.saxutils import escape
 
 import matplotlib
@@ -362,7 +362,7 @@ def report(test, athlete, protocol, format, language='it'):
         for filename, label, _, _ in specialist_images:
             text += '\n\n## ' + label + '\n\n![' + label + '](assets/' + filename + ')\n'
         out = io.BytesIO()
-        with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        with report_zip(out) as z:
             z.writestr("report.md", text)
             z.writestr("assets/test.png", png)
             for filename, _, body, _ in specialist_images:
@@ -600,7 +600,7 @@ def export_csv(store, organization_id):
                 fc_max_riferimento_bpm=s.get('fc_max_reference_bpm'),
             )
     out = io.BytesIO()
-    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+    with report_zip(out) as z:
         for name, header in CSV_HEADERS.items():
             text = io.StringIO(newline="")
             writer = safe_csv.DictWriter(text, fieldnames=header.split(","))

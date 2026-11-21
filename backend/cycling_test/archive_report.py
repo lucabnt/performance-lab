@@ -2,7 +2,7 @@
 
 import io
 import json
-import zipfile
+from .report_zip import report_zip
 from collections import defaultdict
 from datetime import datetime, timezone
 from xml.sax.saxutils import escape
@@ -601,7 +601,7 @@ def render(data, format='pdf'):
     text('Generato: ' + data['generated_at'], 'Small')
     if format == 'md':
         out = io.BytesIO()
-        with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
+        with report_zip(out) as z:
             z.writestr('report.md', '\n'.join(markdown) + '\n\n' + ATTRIBUTION + '\n')
             z.writestr('manifest.json', json.dumps(data, ensure_ascii=False, allow_nan=False))
             for name, body in assets.items():

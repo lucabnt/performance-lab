@@ -110,7 +110,8 @@ def install_analysis(app, store, require, download):
     @app.post('/api/v1/repeatability/report/{format}')
     @viewer_allowed
     def repeat_report(format: str, data: Repeatability):
-        import io, zipfile
+        import io
+        from .report_zip import report_zip
         from xml.sax.saxutils import escape
         from reportlab.platypus import Paragraph, Spacer
         from reportlab.lib.units import cm
@@ -145,7 +146,7 @@ def install_analysis(app, store, require, download):
                 text += '| ' + ' | '.join(v.replace('|', '\\|') for v in row) + ' |\n'
                 if i == 0:
                     text += '|' + '---|' * len(row) + '\n'
-            with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
+            with report_zip(out) as z:
                 z.writestr('report.md', text + '\n' + ATTRIBUTION)
                 z.writestr('manifest.json', json.dumps(result, ensure_ascii=False, allow_nan=False))
                 from .csv_safety import writer as safe_writer

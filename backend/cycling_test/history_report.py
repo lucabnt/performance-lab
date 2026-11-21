@@ -1,6 +1,6 @@
 import io
 import json
-import zipfile
+from .report_zip import report_zip
 from xml.sax.saxutils import escape
 from matplotlib.figure import Figure
 from reportlab.platypus import Paragraph, Image, Spacer
@@ -77,7 +77,7 @@ def render(data, format, language='it', metric='map_w', statistic='median'):
                 text += '|' + '---|' * len(row) + '\n'
         text += '\nFiltri: ' + query + '\n\n![Progetto Ciclismo](assets/logo.png)\n\n' + ATTRIBUTION + '\n'
         out = io.BytesIO()
-        with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
+        with report_zip(out) as z:
             z.writestr('report.md', text)
             z.writestr('assets/history.png', png.getvalue())
             z.writestr('manifest.json', json.dumps(data, ensure_ascii=False))

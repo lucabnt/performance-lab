@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 21 novembre 2026 — ZIP dei report deterministici (REPORT-ZIP-01)
+
+- **Causa:** `ZipFile.writestr` per nome usa l'ora corrente e `ZipFile.write` (logo) data e permessi del file; due generazioni in secondi diversi davano byte e `file_sha256` diversi.
+- **Prima della correzione** (commit `0e3f900`, checkout principale): `tests/test_features.py::test_revision_manual_report_and_lifecycle` ripetuto da solo 30 volte, **21 passati, 9 falliti**.
+- **Dopo la correzione:** stesso test 30 volte consecutive, **30 passati, 0 falliti**. Controllo diretto di `report_zip`: due ZIP generati a 2,1 s di distanza identici byte per byte, membri con data 1980-01-01, deflate, modo `0o600`, sistema di origine Unix.
+- `scripts/verify.py` completo riuscito: **374 test Python**, build `tsc`/Vite, test dei modelli frontend, formati e `git diff --check`.
+- Limiti: report salvati prima della correzione restano con i loro byte e `file_sha256` (se il file locale manca, quello rigenerato differisce nei soli metadati ZIP); byte identici solo con la stessa versione di zlib e degli strumenti grafici; PDF (data di creazione reportlab), backup e pacchetti di recupero non resi deterministici; nessun binario ricompilato.
+
 ## 21 novembre 2026 — APK firmato e cartella di release da rc-20261121-02
 
 - **Firma:** release rigenerato e firmato dal titolare in Android Studio con il keystore esistente. `apksigner`: schema v2, un firmatario, `CN=Luca Bontempi, C=IT`, certificato SHA-256 `a04c6d2d…406d` (lo stesso del 20 novembre). Zipalign `-P 16` e scansione percorsi superati. **104.066.044 byte**, SHA-256 `9663b12e357496e205ac76b211d1c8b22126dcba8192138202304bc52847a678`.

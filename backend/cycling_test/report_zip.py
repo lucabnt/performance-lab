@@ -28,8 +28,12 @@ class ReportZip(zipfile.ZipFile):
             info.create_system = CREATE_SYSTEM
             info.external_attr = FILE_MODE << 16
             info.compress_type = self.compression
-            info.compress_level = self.compresslevel
             zinfo_or_arcname = info
+            # ZipInfo.compress_level exists only from Python 3.13 (3.12 has a private
+            # slot): pass the archive's level through writestr, which sets it on every
+            # supported version.
+            if compresslevel is None:
+                compresslevel = self.compresslevel
         super().writestr(zinfo_or_arcname, data, compress_type, compresslevel)
 
     def write(self, filename, arcname=None, compress_type=None, compresslevel=None):

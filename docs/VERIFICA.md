@@ -1,5 +1,13 @@
 # Verifiche locali — Fuorigiri Performance Lab
 
+## 21 novembre 2026 — REPORT-ZIP-01 su Python 3.12
+
+- **Riscontro dal CI** (`test_android_versions.py`, Python 3.12 con le versioni delle librerie Android): 20 test falliti, tutti con `AttributeError: 'ZipInfo' object has no attribute 'compress_level'` in `report_zip.py`. L’attributo pubblico esiste solo da Python 3.13; su 3.12 `ZipInfo` ha uno slot privato e l’assegnazione fallisce. Ogni report Markdown ed export CSV era quindi rotto su 3.12, versione ammessa da `requires-python`.
+- **Correzione:** il livello di compressione dell’archivio passa ora da `ZipFile.writestr`, che lo imposta su tutte le versioni; prima veniva assegnato direttamente a `ZipInfo`. Il valore è comunque `None`.
+- **Byte invariati sul prodotto:** ZIP di prova identico prima e dopo la correzione con Python 3.13 (runtime Chaquopy di Android) e 3.14 (desktop); su 3.12 ora coincide con 3.13. I binari di `rc-20261121-03` (3.14 e 3.13) non erano colpiti; lo ZIP dei sorgenti contiene il codice precedente.
+- `py -3.12 scripts/test_android_versions.py --venv .local/android-versions-312-20261121b`: **373 passati, 1 saltato**. `scripts/verify.py` completo (3.14): **374 passati**, tutti i passi riusciti.
+- Limite: il controllo locale prima del candidato non includeva `test_android_versions.py`, che gira solo nel CI; l’errore è emerso solo lì.
+
 ## 21 novembre 2026 — APK firmato e cartella di release da rc-20261121-03
 
 - **Firma:** release rigenerato e firmato dal titolare in Android Studio con il keystore esistente. `apksigner`: schema v2, un firmatario, `CN=Luca Bontempi, C=IT`, certificato SHA-256 `a04c6d2d…406d` (lo stesso del 20 novembre). Zipalign `-P 16` e scansione percorsi superati. **104.066.524 byte**, SHA-256 `312a1236dfead680d427f18f39591f136a16f078721559867d2cb9de35e4a4c2`.

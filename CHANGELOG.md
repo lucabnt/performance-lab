@@ -1,5 +1,9 @@
 # Changelog
 
+## 24 novembre 2026 — opentelemetry-api 1.45.2 (avviso Dependabot 1)
+
+- Lockfile Windows e hash aggiornati da `opentelemetry-api` 1.45.1 a 1.45.2, dipendenza indiretta di FastAPI, per la correzione ReDoS nell'analisi di `traceparent`. Fuorigiri non configura un tracer OpenTelemetry, quindi FastAPI non esegue il codice vulnerabile; le intestazioni HTTP non possono comunque contenere a capo. Nessun binario ricompilato: i candidati e la release `v0.10.0-alpha.1` contengono ancora 1.45.1. Android non fissa la versione, che viene risolta alla build successiva. Test Python superati nel venv aggiornato.
+
 ## 21 novembre 2026 — candidato rc-20261121-04 (Windows + Android)
 
 - Build locali dal commit `fc63893` (working tree pulito) in `dist/candidates/Fuorigiri-0.10.0-rc-20261121-04/`: `rc-20261121-03` con REPORT-ZIP-01 compatibile con Python 3.12. Su richiesta dell’utente diventa la base della release `v0.10.0-alpha.1` al posto di `rc-20261121-03`; APK release firmato dal titolare con la stessa chiave e identico al candidato salvo le intestazioni `.pyc`; cartella `dist/release/Fuorigiri-0.10.0-alpha.1-rc-20261121-04/` con `SHA256SUMS.txt`; tag `v0.10.0-alpha.1` su `fc63893`. Resta da creare la release su GitHub. [Prove](docs/VERIFICA.md).
